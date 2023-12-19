@@ -50,6 +50,7 @@ void frg_ast_value_unary_destroy(frg_ast_value_unary_t** ast_value_unary) {
     }
 
     frg_ast_destroy(&(*ast_value_unary)->operand);
+
     free(*ast_value_unary);
     *ast_value_unary = NULL;
 }
@@ -88,6 +89,7 @@ void frg_ast_value_binary_destroy(frg_ast_value_binary_t** ast_value_binary) {
 
     frg_ast_destroy(&(*ast_value_binary)->lhs);
     frg_ast_destroy(&(*ast_value_binary)->rhs);
+
     free(*ast_value_binary);
     *ast_value_binary = NULL;
 }

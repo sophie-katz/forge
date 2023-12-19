@@ -2,6 +2,29 @@
 # --------------------------------------------------------------------------------------
 project('forge-compiler', 'c', default_options: ['c_std=gnu18'])
 
+# Tools
+# --------------------------------------------------------------------------------------
+
+program_flex = find_program('flex')
+
+generator_flex = generator(
+    program_flex,
+    output: '@BASENAME@.yy.c',
+    arguments: ['-o', '@OUTPUT@', '@INPUT@']
+)
+
+generated_files_flex = generator_flex.process('lib/forge/forge.l')
+
+program_bison = find_program('bison')
+
+generator_bison = generator(
+    program_bison,
+    output: ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
+    arguments: ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@']
+)
+
+generated_files_bison = generator_bison.process('lib/forge/forge.y')
+
 # Dependencies
 # --------------------------------------------------------------------------------------
 
@@ -19,11 +42,15 @@ forge_include_directories = include_directories('include')
 forge_compiler_lib = static_library(
     'forge-compiler',
     'lib/forge/ast.c',
+    'lib/forge/color.c',
     'lib/forge/debug.c',
-    'lib/forge/list.c',
     'lib/forge/log.c',
+    'lib/forge/parse.c',
+    generated_files_flex,
+    generated_files_bison,
     include_directories: forge_include_directories,
-    dependencies: [forge_dependency_glib2_0]
+    dependencies: [forge_dependency_glib2_0],
+    implicit_include_directories: true
 )
 
 # Forge Executables

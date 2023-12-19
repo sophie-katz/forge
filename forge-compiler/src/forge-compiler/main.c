@@ -1,19 +1,19 @@
 #include <stdio.h>
+#include <string.h>
 #include <forge/ast.h>
 #include <forge/debug.h>
+#include <forge/log.h>
+#include <forge/parse.h>
 
 int main(int argc, char *argv[]) {
-    frg_ast_t* ast = frg_ast_new_value_log_and(
-        frg_ast_new_value_log_not(
-            frg_ast_new_value_false()
-        ),
-        frg_ast_new_value_true()
-    );
+    frg_ast_t* ast = frg_parse_string("true \n&& (!false)", "--");
 
-    frg_debug_print_ast(ast);
-    printf("\n");
+    if (ast != NULL) {
+        frg_debug_print_ast(ast);
+        printf("\n");
 
-    frg_ast_destroy(&ast);
+        frg_ast_destroy(&ast);
+    }
 
     return 0;
 }

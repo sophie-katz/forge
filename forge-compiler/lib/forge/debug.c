@@ -20,18 +20,18 @@ const char* _frg_debug_get_ast_id_name(frg_ast_id_t id) {
     }
 }
 
-void _frg_debug_print_indent(frg_size_t indent) {
-    for (frg_size_t i = 0; i < indent; i++) {
+void _frg_debug_print_indent(size_t indent) {
+    for (size_t i = 0; i < indent; i++) {
         printf(" ");
     }
 }
 
-void _frg_debug_print_newline(frg_size_t indent) {
+void _frg_debug_print_newline(size_t indent) {
     printf("\n");
     _frg_debug_print_indent(indent);
 }
 
-void frg_debug_print_ast_at_indent(frg_ast_t* ast, frg_size_t indent) {
+void frg_debug_print_ast_at_indent(frg_ast_t* ast, size_t indent) {
     if (ast == NULL) {
         printf("null");
     }

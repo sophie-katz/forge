@@ -2,8 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <forge/types.h>
-#include <forge/str.h>
+#include <glib.h>
 
 typedef uint8_t frg_ast_id_t;
 
@@ -70,17 +69,6 @@ void frg_ast_destroy(frg_ast_t** ast);
 frg_ast_t* frg_ast_new_value_true(void);
 frg_ast_t* frg_ast_new_value_false(void);
 
-typedef struct {
-    frg_ast_t* value;
-    struct frg_ast_list_element_t* next;
-} frg_ast_list_element_t;
-
-typedef struct {
-    frg_ast_t* head;
-    frg_size_t length;
-    frg_ast_list_element_t* next;
-} frg_ast_list_t;
-
 typedef uint8_t frg_ast_prop_flags_t;
 
 #define FRG_AST_PROP_FLAG_NONE 0x0
@@ -91,24 +79,24 @@ typedef uint8_t frg_ast_prop_flags_t;
 
 typedef struct {
     frg_ast_prop_flags_t flags;
-    frg_str_t* name;
+    GString* name;
     frg_ast_t* type;
 } frg_ast_prop_t;
 
 typedef struct {
-    frg_str_t* name;
+    GString* name;
     frg_ast_t* target;
 } frg_ast_ty_alias_t;
 
 typedef struct {
-    frg_str_t* name;
-    frg_ast_list_t* props;
+    GString* name;
+    GList* props;
 } frg_ast_ty_union_t;
 
 typedef struct {
-    frg_str_t* name;
-    frg_ast_list_t* props;
-    frg_ast_list_t* fns;
+    GString* name;
+    GList* props;
+    GList* fns;
 } frg_ast_ty_struct_t;
 
 typedef uint8_t frg_ast_iface_flags_t;
@@ -118,10 +106,10 @@ typedef uint8_t frg_ast_iface_flags_t;
 
 typedef struct {
     frg_ast_iface_flags_t flags;
-    frg_str_t* name;
-    frg_ast_list_t* extends;
-    frg_ast_list_t* props;
-    frg_ast_list_t* fns;
+    GString* name;
+    GList* extends;
+    GList* props;
+    GList* fns;
 } frg_ast_iface_t;
 
 typedef uint8_t frg_ast_fn_arg_flags_t;
@@ -146,8 +134,8 @@ typedef uint8_t frg_ast_fn_flags_t;
 
 typedef struct {
     frg_ast_fn_flags_t flags;
-    frg_str_t* name;
-    frg_ast_list_t* args;
+    GString* name;
+    GList* args;
     frg_ast_t* var_pos_args;
     frg_ast_t* var_kw_args;
     frg_ast_t* body;

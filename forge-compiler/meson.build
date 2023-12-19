@@ -44,6 +44,7 @@ forge_compiler_lib = static_library(
     'lib/forge/ast.c',
     'lib/forge/color.c',
     'lib/forge/debug.c',
+    'lib/forge/exec.c',
     'lib/forge/log.c',
     'lib/forge/parse.c',
     generated_files_flex,

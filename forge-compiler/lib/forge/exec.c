@@ -2,7 +2,7 @@
 
 frg_value_t* frg_value_new_bool(bool data) {
     frg_value_t* value = malloc(sizeof(frg_value_t));
-    value->type_id = FRG_TYPE_ID_BOOL;
+    value->type_id = FRG_EXEC_TYPE_ID_BOOL;
     value->data.as_bool = data;
     return value;
 }
@@ -17,7 +17,7 @@ void frg_value_destroy(frg_value_t** value) {
 }
 
 bool frg_value_is_bool(const frg_value_t* value) {
-    return value->type_id == FRG_TYPE_ID_BOOL;
+    return value->type_id == FRG_EXEC_TYPE_ID_BOOL;
 }
 
 bool frg_value_get_bool(const frg_value_t* value) {
@@ -30,7 +30,7 @@ void frg_value_set_bool(frg_value_t* value, bool data) {
 
 void frg_value_print(FILE* file, const frg_value_t* value) {
     switch (value->type_id) {
-        case FRG_TYPE_ID_BOOL:
+        case FRG_EXEC_TYPE_ID_BOOL:
             fprintf(file, "%s", value->data.as_bool ? "true" : "false");
             break;
         default:

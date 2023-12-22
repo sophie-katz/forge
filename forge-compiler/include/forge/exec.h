@@ -1,18 +1,15 @@
 #pragma once
 
 #include <stdio.h>
+#include <forge/enums.h>
 #include <forge/ast.h>
-
-typedef uint8_t frg_type_id_t;
-
-#define FRG_TYPE_ID_BOOL 0
 
 typedef union {
     bool as_bool;
 } frg_value_data_t;
 
 typedef struct {
-    frg_type_id_t type_id;
+    frg_exec_type_id_t type_id;
     frg_value_data_t data;
 } frg_value_t;
 

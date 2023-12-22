@@ -1,17 +1,32 @@
 #pragma once
 
-#include <stdint.h>
+#include <stdbool.h>
+#include <forge/types.h>
+#include <forge/enums.h>
 
-typedef uint8_t frg_log_severity_t;
+/// \brief Log a message prefix that indicates that the following message is from the
+///        source file \a filename.
+frg_status_t frg_log_prefix_source_file(const char* filename);
 
-#define FRG_LOG_SEVERITY_NOTE 0
-#define FRG_LOG_SEVERITY_DEBUG 1
-#define FRG_LOG_SEVERITY_WARNING 2
-#define FRG_LOG_SEVERITY_ERROR 3
-#define FRG_LOG_SEVERITY_FATAL_ERROR 4
-#define FRG_LOG_SEVERITY_INTERNAL_ERROR 5
+/// \brief Log a message prefix that indicates that the following message is from the
+///        source file \a filename on line \a lineno.
+frg_status_t frg_log_prefix_source_line(const char* filename, frg_lineno_t lineno);
 
-void frg_log_location(const char* filename, size_t line, size_t column);
-void frg_log(frg_log_severity_t severity, const char* format, ...);
-size_t frg_log_get_count_error(void);
-size_t frg_log_get_count_warning(void);
+/// \brief Log a message prefix that indicates that the following message is from the
+///        source file \a filename on line \a lineno at column \a columnno.
+frg_status_t frg_log_prefix_source_char(
+    const char* filename,
+    frg_lineno_t lineno,
+    frg_columnno_t columnno
+);
+
+/// \brief Log a message prefix that indicates that the following message is from the
+///        current line of the Forge compiler source code.
+#define frg_log_prefix_internal() _frg_log_prefix_internal(__FILE__, __LINE__)
+
+void _frg_log_prefix_internal(const char* filename, frg_lineno_t lineno);
+
+/// \brief Log a message.
+frg_status_t frg_log(frg_log_severity_t severity, const char* format, ...);
+
+bool frg_log_summary_if_errors(void);

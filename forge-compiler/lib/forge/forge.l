@@ -9,12 +9,13 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <forge/log.h>
+#include <forge/types.h>
 
 #define YY_USER_ACTION yycolumnno += yyleng;
 
 extern const char* _frg_current_filename;
 
-int yycolumnno = 1;
+frg_columnno_t yycolumnno = 1;
 %}
 
 %%
@@ -54,7 +55,7 @@ false {
 }
 
 . {
-    frg_log_location(_frg_current_filename, yylineno, yycolumnno);
+    frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
     char as_char = yytext[0];
     int as_int = ((int)as_char) & 0xff;
     if (isprint(yytext[0])) {

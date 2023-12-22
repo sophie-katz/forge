@@ -7,22 +7,22 @@
 #include <forge/parse.h>
 
 int main(int argc, char *argv[]) {
-    frg_ast_t* ast = frg_parse_string("true \n&& (!false)", "--");
+    // frg_ast_t* ast = frg_parse_string("true \n&& (!false)", "--");
 
-    if (ast != NULL) {
-        frg_debug_print_ast(ast);
+    // if (ast != NULL) {
+    //     frg_debug_print_ast(ast);
         
-        printf("\n\n=> ");
+    //     printf("\n\n=> ");
 
-        frg_value_t* value = frg_exec(ast);
+    //     frg_value_t* value = frg_exec(ast);
 
-        frg_value_print(stdout, value);
+    //     frg_value_print(stdout, value);
 
-        printf("\n");
+    //     printf("\n");
 
-        frg_value_destroy(&value);
-        frg_ast_destroy(&ast);
-    }
+    //     frg_value_destroy(&value);
+    //     frg_ast_destroy(&ast);
+    // }
 
     return 0;
 }

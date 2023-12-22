@@ -11,7 +11,7 @@
 #include <forge/log.h>
 
 extern int yylineno;
-extern int yycolumnno;
+extern frg_columnno_t yycolumnno;
 extern int yylex();
 
 extern const char* _frg_current_filename;
@@ -21,7 +21,7 @@ int yywrap() {
 }
 
 void yyerror(frg_ast_t**ast, const char* message) {
-    frg_log_location(_frg_current_filename, yylineno, yycolumnno);
+    frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
     frg_log(FRG_LOG_SEVERITY_ERROR, "%s\n", message);
 }
 %}

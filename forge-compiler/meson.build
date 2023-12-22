@@ -47,6 +47,7 @@ forge_compiler_lib = static_library(
     'lib/forge/exec.c',
     'lib/forge/log.c',
     'lib/forge/parse.c',
+    'lib/forge/stream.c',
     generated_files_flex,
     generated_files_bison,
     include_directories: forge_include_directories,
@@ -77,3 +78,50 @@ test_ast = executable(
 )
 
 test('ast', test_ast)
+
+test_stream = executable(
+    'test-stream',
+    'lib/forge/stream_test.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
+)
+
+test('stream', test_stream)
+
+test_color = executable(
+    'test-color',
+    'lib/forge/color_test.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
+)
+
+test('color', test_color)
+
+# Demos
+# --------------------------------------------------------------------------------------
+
+executable(
+    'demo-color',
+    'lib/forge/color_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
+)
+
+executable(
+    'demo-log',
+    'lib/forge/log_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
+)
+
+executable(
+    'demo-debug',
+    'lib/forge/debug_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
+)

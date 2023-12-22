@@ -1,3 +1,6 @@
 [submodule "forge-compiler/subprojects/Unity"]
 	path = forge-compiler/subprojects/Unity
 	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "forge-compiler/subprojects/doxygen-awesome-css"]
+	path = forge-compiler/subprojects/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdio.h>
 
 /// A status result to be returned by functions in Forge
 typedef enum {
@@ -153,6 +154,7 @@ typedef enum {
     FRG_AST_ID_VALUE_LOG_OR_ASSIGN,
 } frg_ast_id_t;
 
+const char* frg_ast_id_to_string(frg_ast_id_t id);
 bool frg_ast_id_is_ty_primary(frg_ast_id_t id);
 bool frg_ast_id_is_value_primary(frg_ast_id_t id);
 bool frg_ast_id_is_value_unary(frg_ast_id_t id);
@@ -166,10 +168,14 @@ typedef enum {
     FRG_AST_DECL_PROP_FLAG_CONST = 0x8,
 } frg_ast_decl_prop_flags_t;
 
+void frg_ast_decl_prop_flags_print(FILE* file, frg_ast_decl_prop_flags_t flags);
+
 typedef enum {
     FRG_AST_DECL_IFACE_FLAG_NONE = 0x0,
     FRG_AST_DECL_IFACE_FLAG_ABSTRACT = 0x1,
 } frg_ast_decl_iface_flags_t;
+
+void frg_ast_decl_iface_flags_print(FILE* file, frg_ast_decl_iface_flags_t flags);
 
 typedef enum {
     FRG_AST_DECL_FN_ARG_FLAG_NONE = 0x0,
@@ -178,6 +184,8 @@ typedef enum {
     FRG_AST_DECL_FN_ARG_FLAG_KW = 0x4,
 } frg_ast_decl_fn_arg_flags_t;
 
+void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t flags);
+
 typedef enum {
     FRG_AST_DECL_FN_FLAG_NONE = 0x0,
     FRG_AST_DECL_FN_FLAG_CONST = 0x1,
@@ -185,8 +193,12 @@ typedef enum {
     FRG_AST_DECL_FN_FLAG_OVERRIDE = 0x4,
 } frg_ast_decl_fn_flags_t;
 
+void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags);
+
 typedef enum {
     FRG_AST_DECL_VAR_FLAG_NONE = 0x0,
     FRG_AST_DECL_VAR_FLAG_CONST = 0x1,
     FRG_AST_DECL_VAR_FLAG_MUT = 0x2,
 } frg_ast_decl_var_flags_t;
+
+void frg_ast_decl_var_flags_print(FILE* file, frg_ast_decl_var_flags_t flags);

@@ -17,6 +17,159 @@ const char* frg_status_to_string(frg_status_t status) {
     }
 }
 
+const char* frg_ast_id_to_string(frg_ast_id_t id) {
+    switch (id) {
+        case FRG_AST_ID_TY_BOOL:
+            return "ty-bool";
+        case FRG_AST_ID_TY_U8:
+            return "ty-u8";
+        case FRG_AST_ID_TY_U16:
+            return "ty-u16";
+        case FRG_AST_ID_TY_U32:
+            return "ty-u32";
+        case FRG_AST_ID_TY_U64:
+            return "ty-u64";
+        case FRG_AST_ID_TY_I8:
+            return "ty-i8";
+        case FRG_AST_ID_TY_I16:
+            return "ty-i16";
+        case FRG_AST_ID_TY_I32:
+            return "ty-i32";
+        case FRG_AST_ID_TY_I64:
+            return "ty-i64";
+        case FRG_AST_ID_TY_F32:
+            return "ty-f32";
+        case FRG_AST_ID_TY_F64:
+            return "ty-f64";
+        case FRG_AST_ID_TY_SYMBOL:
+            return "ty-symbol";
+        case FRG_AST_ID_DECL_ALIAS:
+            return "decl-alias";
+        case FRG_AST_ID_DECL_UNION:
+            return "decl-union";
+        case FRG_AST_ID_DECL_STRUCT:
+            return "decl-struct";
+        case FRG_AST_ID_DECL_PROP:
+            return "decl-prop";
+        case FRG_AST_ID_DECL_IFACE:
+            return "decl-iface";
+        case FRG_AST_ID_DECL_FN_ARG:
+            return "decl-fn-arg";
+        case FRG_AST_ID_DECL_FN:
+            return "decl-fn";
+        case FRG_AST_ID_DECL_VAR:
+            return "decl-var";
+        case FRG_AST_ID_DECL_BLOCK:
+            return "decl-block";
+        case FRG_AST_ID_STMT_RETURN:
+            return "stmt-return";
+        case FRG_AST_ID_STMT_IF:
+            return "stmt-if";
+        case FRG_AST_ID_STMT_WHILE:
+            return "stmt-while";
+        case FRG_AST_ID_STMT_BLOCK:
+            return "stmt-block";
+        case FRG_AST_ID_VALUE_TRUE:
+            return "value-true";
+        case FRG_AST_ID_VALUE_FALSE:
+            return "value-false";
+        case FRG_AST_ID_VALUE_INT:
+            return "value-int";
+        case FRG_AST_ID_VALUE_FLOAT:
+            return "value-float";
+        case FRG_AST_ID_VALUE_CHAR:
+            return "value-char";
+        case FRG_AST_ID_VALUE_STR:
+            return "value-str";
+        case FRG_AST_ID_VALUE_SYMBOL:
+            return "value-symbol";
+        case FRG_AST_ID_VALUE_CALL_KW_ARG:
+            return "value-call-kw-arg";
+        case FRG_AST_ID_VALUE_CALL:
+            return "value-call";
+        case FRG_AST_ID_VALUE_BIT_NOT:
+            return "value-bit-not";
+        case FRG_AST_ID_VALUE_BIT_AND:
+            return "value-bit-and";
+        case FRG_AST_ID_VALUE_BIT_OR:
+            return "value-bit-or";
+        case FRG_AST_ID_VALUE_BIT_XOR:
+            return "value-bit-xor";
+        case FRG_AST_ID_VALUE_BIT_SHL:
+            return "value-bit-shl";
+        case FRG_AST_ID_VALUE_BIT_SHR:
+            return "value-bit-shr";
+        case FRG_AST_ID_VALUE_NEG:
+            return "value-neg";
+        case FRG_AST_ID_VALUE_ADD:
+            return "value-add";
+        case FRG_AST_ID_VALUE_SUB:
+            return "value-sub";
+        case FRG_AST_ID_VALUE_MUL:
+            return "value-mul";
+        case FRG_AST_ID_VALUE_DIV:
+            return "value-div";
+        case FRG_AST_ID_VALUE_DIV_INT:
+            return "value-div-int";
+        case FRG_AST_ID_VALUE_MOD:
+            return "value-mod";
+        case FRG_AST_ID_VALUE_EXP:
+            return "value-exp";
+        case FRG_AST_ID_VALUE_EQ:
+            return "value-eq";
+        case FRG_AST_ID_VALUE_NE:
+            return "value-ne";
+        case FRG_AST_ID_VALUE_LT:
+            return "value-lt";
+        case FRG_AST_ID_VALUE_LE:
+            return "value-le";
+        case FRG_AST_ID_VALUE_GT:
+            return "value-gt";
+        case FRG_AST_ID_VALUE_GE:
+            return "value-ge";
+        case FRG_AST_ID_VALUE_LOG_NOT:
+            return "value-log-not";
+        case FRG_AST_ID_VALUE_LOG_AND:
+            return "value-log-and";
+        case FRG_AST_ID_VALUE_LOG_OR:
+            return "value-log-or";
+        case FRG_AST_ID_VALUE_ASSIGN:
+            return "value-assign";
+        case FRG_AST_ID_VALUE_BIT_AND_ASSIGN:
+            return "value-bit-and-assign";
+        case FRG_AST_ID_VALUE_BIT_OR_ASSIGN:
+            return "value-bit-or-assign";
+        case FRG_AST_ID_VALUE_BIT_XOR_ASSIGN:
+            return "value-bit-xor-assign";
+        case FRG_AST_ID_VALUE_BIT_SHL_ASSIGN:
+            return "value-bit-shl-assign";
+        case FRG_AST_ID_VALUE_BIT_SHR_ASSIGN:
+            return "value-bit-shr-assign";
+        case FRG_AST_ID_VALUE_ADD_ASSIGN:
+            return "value-add-assign";
+        case FRG_AST_ID_VALUE_INC:
+            return "value-inc";
+        case FRG_AST_ID_VALUE_SUB_ASSIGN:
+            return "value-sub-assign";
+        case FRG_AST_ID_VALUE_DEC:
+            return "value-dec";
+        case FRG_AST_ID_VALUE_MUL_ASSIGN:
+            return "value-mul-assign";
+        case FRG_AST_ID_VALUE_DIV_ASSIGN:
+            return "value-div-assign";
+        case FRG_AST_ID_VALUE_DIV_INT_ASSIGN:
+            return "value-div-int-assign";
+        case FRG_AST_ID_VALUE_MOD_ASSIGN:
+            return "value-mod-assign";
+        case FRG_AST_ID_VALUE_EXP_ASSIGN:
+            return "value-exp-assign";
+        case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
+            return "value-log-and-assign";
+        case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
+            return "value-log-or-assign";
+    }
+}
+
 bool frg_ast_id_is_ty_primary(frg_ast_id_t id) {
     switch (id) {
         case FRG_AST_ID_TY_BOOL:
@@ -99,5 +252,175 @@ bool frg_ast_id_is_value_binary(frg_ast_id_t id) {
             return true;
         default:
             return false;
+    }
+}
+
+void frg_ast_decl_prop_flags_print(FILE* file, frg_ast_decl_prop_flags_t flags) {
+    bool first = true;
+
+    if (flags & FRG_AST_DECL_PROP_FLAG_OPTIONAL) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "optional");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "non-optional");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_PROP_FLAG_SPREAD) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "spread");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_PROP_FLAG_CONST) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "const");
+
+        first = false;
+    }
+
+    if (first) {
+        fprintf(file, "none");
+    }
+}
+
+void frg_ast_decl_iface_flags_print(FILE* file, frg_ast_decl_iface_flags_t flags) {
+    bool first = true;
+
+    if (flags & FRG_AST_DECL_IFACE_FLAG_ABSTRACT) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "abstract");
+
+        first = false;
+    }
+
+    if (first) {
+        fprintf(file, "none");
+    }
+}
+
+void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t flags) {
+    bool first = true;
+
+    if (flags & FRG_AST_DECL_FN_ARG_FLAG_CONST) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "const");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_FN_ARG_FLAG_MUT) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "mut");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_FN_ARG_FLAG_KW) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "kw");
+
+        first = false;
+    }
+
+    if (first) {
+        fprintf(file, "none");
+    }
+}
+
+void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags) {
+    bool first = true;
+
+    if (flags & FRG_AST_DECL_FN_FLAG_CONST) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "const");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_FN_FLAG_MUT) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "mut");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_FN_FLAG_OVERRIDE) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "override");
+
+        first = false;
+    }
+
+    if (first) {
+        fprintf(file, "none");
+    }
+}
+
+void frg_ast_decl_var_flags_print(FILE* file, frg_ast_decl_var_flags_t flags) {
+    bool first = true;
+
+    if (flags & FRG_AST_DECL_VAR_FLAG_CONST) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "const");
+
+        first = false;
+    }
+
+    if (flags & FRG_AST_DECL_VAR_FLAG_MUT) {
+        if (!first) {
+            fprintf(file, ",");
+        }
+
+        fprintf(file, "mut");
+
+        first = false;
+    }
+
+    if (first) {
+        fprintf(file, "none");
     }
 }

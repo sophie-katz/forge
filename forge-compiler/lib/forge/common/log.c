@@ -1,9 +1,9 @@
+#include <forge/common/color.h>
+#include <forge/common/log.h>
+#include <forge/common/stream.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
-#include <forge/log.h>
-#include <forge/color.h>
-#include <forge/stream.h>
 
 static size_t _frg_log_count_error = 0;
 static size_t _frg_log_count_warning = 0;

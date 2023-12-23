@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stdint.h>
+#include <forge/common/enums.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <forge/enums.h>
 
 /// Gets the current global color mode.
 ///

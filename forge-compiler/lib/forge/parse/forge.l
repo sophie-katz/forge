@@ -6,10 +6,10 @@
 
 %{
 #include "forge.tab.h"
-#include <stdbool.h>
 #include <ctype.h>
-#include <forge/log.h>
-#include <forge/types.h>
+#include <forge/common/log.h>
+#include <forge/common/types.h>
+#include <stdbool.h>
 
 #define YY_USER_ACTION yycolumnno += yyleng;
 

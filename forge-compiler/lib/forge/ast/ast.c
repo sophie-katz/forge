@@ -1,7 +1,7 @@
+#include <forge/ast/ast.h>
+#include <forge/common/memory.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <forge/ast.h>
-#include <forge/memory.h>
 
 frg_status_t frg_ast_new_ty_primary(
     frg_ast_t** ast,

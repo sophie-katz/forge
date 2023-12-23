@@ -1,8 +1,8 @@
 #pragma once
 
+#include <forge/ast/ast.h>
+#include <forge/common/enums.h>
 #include <stdio.h>
-#include <forge/ast.h>
-#include <forge/enums.h>
 
 /// Parse from a file
 frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename);

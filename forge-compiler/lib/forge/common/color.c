@@ -1,7 +1,6 @@
-#include <forge/color.h>
-
+#include <forge/common/color.h>
+#include <forge/common/stream.h>
 #include <unistd.h>
-#include <forge/stream.h>
 
 // Implementation is heavily based off of:
 // https://github.com/ararslan/termcolor-c/blob/master/include/termcolor-c.h

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <forge/ast/ast.h>
+#include <forge/common/enums.h>
 #include <stdio.h>
-#include <forge/enums.h>
-#include <forge/ast.h>
 
 typedef union {
     bool as_bool;

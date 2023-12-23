@@ -1,8 +1,8 @@
 #pragma once
 
+#include <forge/common/enums.h>
+#include <forge/common/types.h>
 #include <stdbool.h>
-#include <forge/types.h>
-#include <forge/enums.h>
 
 /// \brief Log a message prefix that indicates that the following message is from the
 ///        source file \a filename.

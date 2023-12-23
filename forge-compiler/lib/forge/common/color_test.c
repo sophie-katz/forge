@@ -1,5 +1,5 @@
+#include <forge/common/color.h>
 #include <unity.h>
-#include <forge/color.h>
 
 void setUp(void) {}
 

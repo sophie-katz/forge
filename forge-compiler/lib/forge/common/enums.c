@@ -1,4 +1,4 @@
-#include <forge/enums.h>
+#include <forge/common/enums.h>
 
 const char* frg_status_to_string(frg_status_t status) {
     switch (status) {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <forge/common/enums.h>
+#include <forge/common/types.h>
 #include <glib.h>
-#include <forge/enums.h>
-#include <forge/types.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
     frg_ast_id_t id;

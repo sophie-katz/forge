@@ -1,7 +1,7 @@
+#include <forge/common/enums.h>
+#include <forge/common/log.h>
 #include <stdio.h>
 #include <string.h>
-#include <forge/log.h>
-#include <forge/enums.h>
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {

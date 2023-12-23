@@ -1,5 +1,5 @@
+#include <forge/common/memory.h>
 #include <unity.h>
-#include <forge/memory.h>
 
 void setUp(void) {}
 

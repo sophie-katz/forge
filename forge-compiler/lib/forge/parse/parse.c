@@ -1,6 +1,6 @@
-#include <forge/parse.h>
-#include <forge/log.h>
-#include <forge/memory.h>
+#include <forge/common/log.h>
+#include <forge/common/memory.h>
+#include <forge/parse/parse.h>
 
 extern FILE* yyin;
 extern int yyparse(frg_ast_t** ast);

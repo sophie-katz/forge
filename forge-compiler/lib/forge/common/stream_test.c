@@ -1,5 +1,5 @@
+#include <forge/common/stream.h>
 #include <unity.h>
-#include <forge/stream.h>
 
 void setUp(void) {}
 

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <forge/common/enums.h>
 #include <stdio.h>
-#include <forge/enums.h>
 
 #define FRG_STREAM_DEFAULT stderr
 

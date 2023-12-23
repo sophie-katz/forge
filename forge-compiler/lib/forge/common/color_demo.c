@@ -1,5 +1,5 @@
+#include <forge/common/color.h>
 #include <stdio.h>
-#include <forge/color.h>
 
 int main(void) {
     printf("Font styles:\n");

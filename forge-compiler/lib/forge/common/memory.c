@@ -1,4 +1,4 @@
-#include <forge/memory.h>
+#include <forge/common/memory.h>
 #include <stdlib.h>
 
 frg_status_t frg_safe_malloc(void** ptr, size_t size) {

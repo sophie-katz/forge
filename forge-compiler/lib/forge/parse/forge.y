@@ -6,9 +6,9 @@
 }
 
 %{
+#include <forge/ast/ast.h>
+#include <forge/common/log.h>
 #include <stdio.h>
-#include <forge/ast.h>
-#include <forge/log.h>
 
 extern int yylineno;
 extern frg_columnno_t yycolumnno;

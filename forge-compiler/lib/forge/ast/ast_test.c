@@ -1,5 +1,5 @@
+#include <forge/ast/ast.h>
 #include <unity.h>
-#include <forge/ast.h>
 
 void setUp(void) {}
 

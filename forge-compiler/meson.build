@@ -13,7 +13,7 @@ generator_flex = generator(
     arguments: ['-o', '@OUTPUT@', '@INPUT@']
 )
 
-generated_files_flex = generator_flex.process('lib/forge/forge.l')
+generated_files_flex = generator_flex.process('lib/forge/parse/forge.l')
 
 program_bison = find_program('bison')
 
@@ -23,7 +23,7 @@ generator_bison = generator(
     arguments: ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@']
 )
 
-generated_files_bison = generator_bison.process('lib/forge/forge.y')
+generated_files_bison = generator_bison.process('lib/forge/parse/forge.y')
 
 # Dependencies
 # --------------------------------------------------------------------------------------
@@ -41,15 +41,15 @@ forge_include_directories = include_directories('include')
 
 forge_compiler_lib = static_library(
     'forge-compiler',
-    'lib/forge/ast.c',
-    'lib/forge/color.c',
-    'lib/forge/debug.c',
-    'lib/forge/enums.c',
-    'lib/forge/exec.c',
-    'lib/forge/log.c',
-    'lib/forge/parse.c',
-    'lib/forge/stream.c',
-    'lib/forge/memory.c',
+    'lib/forge/ast/ast.c',
+    'lib/forge/common/color.c',
+    'lib/forge/common/debug.c',
+    'lib/forge/common/enums.c',
+    'lib/forge/common/log.c',
+    'lib/forge/common/memory.c',
+    'lib/forge/common/stream.c',
+    'lib/forge/exec/exec.c',
+    'lib/forge/parse/parse.c',
     generated_files_flex,
     generated_files_bison,
     include_directories: forge_include_directories,
@@ -71,68 +71,68 @@ executable(
 # Tests
 # --------------------------------------------------------------------------------------
 
-test_ast = executable(
-    'test-ast',
-    'lib/forge/ast_test.c',
+test_ast_ast = executable(
+    'test-ast-ast',
+    'lib/forge/ast/ast_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
 )
 
-test('ast', test_ast)
+test('ast/ast_test.c', test_ast_ast)
 
-test_stream = executable(
-    'test-stream',
-    'lib/forge/stream_test.c',
+test_common_stream = executable(
+    'test-common-stream',
+    'lib/forge/common/stream_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
 )
 
-test('stream', test_stream)
+test('common/stream_test.c', test_common_stream)
 
-test_color = executable(
-    'test-color',
-    'lib/forge/color_test.c',
+test_common_color = executable(
+    'test-common-color',
+    'lib/forge/common/color_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
 )
 
-test('color', test_color)
+test('common/color_test.c', test_common_color)
 
-test_memory = executable(
-    'test-memory',
-    'lib/forge/memory_test.c',
+test_common_memory = executable(
+    'test-common-memory',
+    'lib/forge/common/memory_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
 )
 
-test('memory', test_memory)
+test('common/memory_test.c', test_common_memory)
 
 # Demos
 # --------------------------------------------------------------------------------------
 
 executable(
-    'demo-color',
-    'lib/forge/color_demo.c',
+    'demo-common-color',
+    'lib/forge/common/color_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
 )
 
 executable(
-    'demo-log',
-    'lib/forge/log_demo.c',
+    'demo-common-log',
+    'lib/forge/common/log_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
 )
 
 executable(
-    'demo-debug',
-    'lib/forge/debug_demo.c',
+    'demo-common-debug',
+    'lib/forge/common/debug_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
     dependencies: [forge_dependency_glib2_0, forge_dependency_unity]

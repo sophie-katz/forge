@@ -1,5 +1,5 @@
+#include <forge/common/debug.h>
 #include <stdio.h>
-#include <forge/debug.h>
 
 int main(void) {
     frg_debug_print_node("node %d", 0);

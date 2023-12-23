@@ -1,7 +1,8 @@
+#include <forge/common/color.h>
+#include <forge/common/debug.h>
+#include <forge/common/stream.h>
+#include <stdarg.h>
 #include <stdio.h>
-#include <forge/debug.h>
-#include <forge/stream.h>
-#include <forge/color.h>
 
 #define FRG_DEBUG_INDENT_WIDTH 2
 

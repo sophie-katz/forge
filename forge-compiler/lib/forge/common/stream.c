@@ -1,4 +1,4 @@
-#include <forge/stream.h>
+#include <forge/common/stream.h>
 
 frg_status_t frg_validate_console_stream(FILE* stream) {
     if (stream == NULL) {

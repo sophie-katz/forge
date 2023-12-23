@@ -1,17 +1,25 @@
 #pragma once
 
+#include <stdbool.h>
+
 /// A status result to be returned by functions in Forge
 typedef enum {
     /// Function completed successfully
-    FRG_STATUS_OK = 0,
+    FRG_STATUS_OK,
     /// An unexpected null argument was passed into the function
-    FRG_STATUS_ERROR_NULL_ARGUMENT = 1,
+    FRG_STATUS_ERROR_NULL_ARGUMENT,
     /// An unexpected value was passed into the function
-    FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE = 2,
+    FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE,
     /// An unexpected enum variant was used
-    FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE = 3,
+    FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE,
     /// A string was unexpectedly empty
-    FRG_STATUS_ERROR_EMPTY_STRING = 4,
+    FRG_STATUS_ERROR_EMPTY_STRING,
+    /// \brief A file is being accessed which has its error bit set
+    ///
+    /// This is detected with \c ferror
+    FRG_STATUS_ERROR_FILE_ERROR_BIT_SET,
+    /// A memory allocation failed
+    FRG_STATUS_ERROR_OUT_OF_MEMORY,
 } frg_status_t;
 
 const char* frg_status_to_string(frg_status_t status);
@@ -19,11 +27,11 @@ const char* frg_status_to_string(frg_status_t status);
 /// A mode for whether or not to use color for console output
 typedef enum {
     /// Do not use color output
-    FRG_COLOR_MODE_DISABLED = 0,
+    FRG_COLOR_MODE_DISABLED,
     /// Use color if it is available, but otherwise disable it
-    FRG_COLOR_MODE_AUTO = 1,
+    FRG_COLOR_MODE_AUTO,
     /// Force color output no matter what
-    FRG_COLOR_MODE_ENABLED = 2,
+    FRG_COLOR_MODE_ENABLED,
 } frg_color_mode_t;
 
 /// An identifier for which color code to output
@@ -31,128 +39,154 @@ typedef enum {
 /// Codes are a subset of https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 /// that will actually get used by the Forge compiler.
 typedef enum {
-    FRG_COLOR_ID_RESET = 0,
-    FRG_COLOR_ID_BOLD = 1,
-    FRG_COLOR_ID_DIM = 2,
-    FRG_COLOR_ID_ITALIC = 3,
-    FRG_COLOR_ID_UNDERLINE = 4,
-    FRG_COLOR_ID_BLACK = 5,
-    FRG_COLOR_ID_RED = 6,
-    FRG_COLOR_ID_GREEN = 7,
-    FRG_COLOR_ID_YELLOW = 8,
-    FRG_COLOR_ID_BLUE = 9,
-    FRG_COLOR_ID_MAGENTA = 10,
-    FRG_COLOR_ID_CYAN = 11,
-    FRG_COLOR_ID_WHITE = 12,
-    FRG_COLOR_ID_BRIGHT_BLACK = 13,
-    FRG_COLOR_ID_BRIGHT_RED = 14,
-    FRG_COLOR_ID_BRIGHT_GREEN = 15,
-    FRG_COLOR_ID_BRIGHT_YELLOW = 16,
-    FRG_COLOR_ID_BRIGHT_BLUE = 17,
-    FRG_COLOR_ID_BRIGHT_MAGENTA = 18,
-    FRG_COLOR_ID_BRIGHT_CYAN = 19,
-    FRG_COLOR_ID_BRIGHT_WHITE = 20,
+    FRG_COLOR_ID_RESET,
+    FRG_COLOR_ID_BOLD,
+    FRG_COLOR_ID_DIM,
+    FRG_COLOR_ID_ITALIC,
+    FRG_COLOR_ID_UNDERLINE,
+    FRG_COLOR_ID_BLACK,
+    FRG_COLOR_ID_RED,
+    FRG_COLOR_ID_GREEN,
+    FRG_COLOR_ID_YELLOW,
+    FRG_COLOR_ID_BLUE,
+    FRG_COLOR_ID_MAGENTA,
+    FRG_COLOR_ID_CYAN,
+    FRG_COLOR_ID_WHITE,
+    FRG_COLOR_ID_BRIGHT_BLACK,
+    FRG_COLOR_ID_BRIGHT_RED,
+    FRG_COLOR_ID_BRIGHT_GREEN,
+    FRG_COLOR_ID_BRIGHT_YELLOW,
+    FRG_COLOR_ID_BRIGHT_BLUE,
+    FRG_COLOR_ID_BRIGHT_MAGENTA,
+    FRG_COLOR_ID_BRIGHT_CYAN,
+    FRG_COLOR_ID_BRIGHT_WHITE,
 } frg_color_id_t;
 
 typedef enum {
-    FRG_LOG_SEVERITY_NOTE = 0,
-    FRG_LOG_SEVERITY_DEBUG = 1,
-    FRG_LOG_SEVERITY_WARNING = 2,
-    FRG_LOG_SEVERITY_ERROR = 3,
-    FRG_LOG_SEVERITY_FATAL_ERROR = 4,
-    FRG_LOG_SEVERITY_INTERNAL_ERROR = 5,
+    FRG_LOG_SEVERITY_NOTE,
+    FRG_LOG_SEVERITY_DEBUG,
+    FRG_LOG_SEVERITY_WARNING,
+    FRG_LOG_SEVERITY_ERROR,
+    FRG_LOG_SEVERITY_FATAL_ERROR,
+    FRG_LOG_SEVERITY_INTERNAL_ERROR,
 } frg_log_severity_t;
 
 /// Different types of values according to the interpreter
 typedef enum {
-    FRG_EXEC_TYPE_ID_BOOL = 0,
+    FRG_EXEC_TYPE_ID_BOOL,
 } frg_exec_type_id_t;
 
 typedef enum {
-    FRG_AST_ID_PROP = 0,
-    FRG_AST_ID_TY_BOOL = 1,
-    FRG_AST_ID_TY_U8 = 2,
-    FRG_AST_ID_TY_U16 = 3,
-    FRG_AST_ID_TY_U32 = 4,
-    FRG_AST_ID_TY_U64 = 5,
-    FRG_AST_ID_TY_I8 = 6,
-    FRG_AST_ID_TY_I16 = 7,
-    FRG_AST_ID_TY_I32 = 8,
-    FRG_AST_ID_TY_I64 = 9,
-    FRG_AST_ID_TY_F32 = 10,
-    FRG_AST_ID_TY_F64 = 11,
-    FRG_AST_ID_TY_ALIAS = 12,
-    FRG_AST_ID_TY_UNION = 13,
-    FRG_AST_ID_TY_STRUCT = 14,
-    FRG_AST_ID_IFACE = 15,
-    FRG_AST_ID_FN_ARG = 16,
-    FRG_AST_ID_FN = 17,
-    FRG_AST_ID_VAR = 18,
-    FRG_AST_ID_RETURN = 19,
-    FRG_AST_ID_WHILE = 20,
-    FRG_AST_ID_VALUE_TRUE = 21,
-    FRG_AST_ID_VALUE_FALSE = 22,
-    FRG_AST_ID_VALUE_INT = 23,
-    FRG_AST_ID_VALUE_FLOAT = 24,
-    FRG_AST_ID_VALUE_CHAR = 25,
-    FRG_AST_ID_VALUE_STR = 26,
-    FRG_AST_ID_VALUE_BIT_NEG = 27,
-    FRG_AST_ID_VALUE_BIT_AND = 28,
-    FRG_AST_ID_VALUE_BIT_OR = 29,
-    FRG_AST_ID_VALUE_BIT_XOR = 30,
-    FRG_AST_ID_VALUE_BIT_SHL = 31,
-    FRG_AST_ID_VALUE_BIT_SHR = 32,
-    FRG_AST_ID_VALUE_NEG = 33,
-    FRG_AST_ID_VALUE_ADD = 34,
-    FRG_AST_ID_VALUE_SUB = 35,
-    FRG_AST_ID_VALUE_MUL = 36,
-    FRG_AST_ID_VALUE_DIV = 37,
-    FRG_AST_ID_VALUE_DIV_INT = 38,
-    FRG_AST_ID_VALUE_MOD = 39,
-    FRG_AST_ID_VALUE_EXP = 40,
-    FRG_AST_ID_VALUE_EQ = 41,
-    FRG_AST_ID_VALUE_NE = 42,
-    FRG_AST_ID_VALUE_LT = 43,
-    FRG_AST_ID_VALUE_LE = 44,
-    FRG_AST_ID_VALUE_GT = 45,
-    FRG_AST_ID_VALUE_GE = 46,
-    FRG_AST_ID_VALUE_LOG_NOT = 47,
-    FRG_AST_ID_VALUE_LOG_AND = 48,
-    FRG_AST_ID_VALUE_LOG_OR = 49,
-    FRG_AST_ID_VALUE_FOR = 50,
-    FRG_AST_ID_VALUE_IF = 51,
-    FRG_AST_ID_VALUE_MATCH = 52,
+    FRG_AST_ID_TY_BOOL,
+    FRG_AST_ID_TY_U8,
+    FRG_AST_ID_TY_U16,
+    FRG_AST_ID_TY_U32,
+    FRG_AST_ID_TY_U64,
+    FRG_AST_ID_TY_I8,
+    FRG_AST_ID_TY_I16,
+    FRG_AST_ID_TY_I32,
+    FRG_AST_ID_TY_I64,
+    FRG_AST_ID_TY_F32,
+    FRG_AST_ID_TY_F64,
+    FRG_AST_ID_TY_SYMBOL,
+    FRG_AST_ID_DECL_ALIAS,
+    FRG_AST_ID_DECL_UNION,
+    FRG_AST_ID_DECL_STRUCT,
+    FRG_AST_ID_DECL_PROP,
+    FRG_AST_ID_DECL_IFACE,
+    FRG_AST_ID_DECL_FN_ARG,
+    FRG_AST_ID_DECL_FN,
+    FRG_AST_ID_DECL_VAR,
+    FRG_AST_ID_DECL_BLOCK,
+    FRG_AST_ID_STMT_RETURN,
+    FRG_AST_ID_STMT_IF,
+    FRG_AST_ID_STMT_WHILE,
+    FRG_AST_ID_STMT_BLOCK,
+    FRG_AST_ID_VALUE_TRUE,
+    FRG_AST_ID_VALUE_FALSE,
+    FRG_AST_ID_VALUE_INT,
+    FRG_AST_ID_VALUE_FLOAT,
+    FRG_AST_ID_VALUE_CHAR,
+    FRG_AST_ID_VALUE_STR,
+    FRG_AST_ID_VALUE_SYMBOL,
+    FRG_AST_ID_VALUE_CALL_KW_ARG,
+    FRG_AST_ID_VALUE_CALL,
+    FRG_AST_ID_VALUE_BIT_NOT,
+    FRG_AST_ID_VALUE_BIT_AND,
+    FRG_AST_ID_VALUE_BIT_OR,
+    FRG_AST_ID_VALUE_BIT_XOR,
+    FRG_AST_ID_VALUE_BIT_SHL,
+    FRG_AST_ID_VALUE_BIT_SHR,
+    FRG_AST_ID_VALUE_NEG,
+    FRG_AST_ID_VALUE_ADD,
+    FRG_AST_ID_VALUE_SUB,
+    FRG_AST_ID_VALUE_MUL,
+    FRG_AST_ID_VALUE_DIV,
+    FRG_AST_ID_VALUE_DIV_INT,
+    FRG_AST_ID_VALUE_MOD,
+    FRG_AST_ID_VALUE_EXP,
+    FRG_AST_ID_VALUE_EQ,
+    FRG_AST_ID_VALUE_NE,
+    FRG_AST_ID_VALUE_LT,
+    FRG_AST_ID_VALUE_LE,
+    FRG_AST_ID_VALUE_GT,
+    FRG_AST_ID_VALUE_GE,
+    FRG_AST_ID_VALUE_LOG_NOT,
+    FRG_AST_ID_VALUE_LOG_AND,
+    FRG_AST_ID_VALUE_LOG_OR,
+    FRG_AST_ID_VALUE_ASSIGN,
+    FRG_AST_ID_VALUE_BIT_AND_ASSIGN,
+    FRG_AST_ID_VALUE_BIT_OR_ASSIGN,
+    FRG_AST_ID_VALUE_BIT_XOR_ASSIGN,
+    FRG_AST_ID_VALUE_BIT_SHL_ASSIGN,
+    FRG_AST_ID_VALUE_BIT_SHR_ASSIGN,
+    FRG_AST_ID_VALUE_ADD_ASSIGN,
+    FRG_AST_ID_VALUE_INC,
+    FRG_AST_ID_VALUE_SUB_ASSIGN,
+    FRG_AST_ID_VALUE_DEC,
+    FRG_AST_ID_VALUE_MUL_ASSIGN,
+    FRG_AST_ID_VALUE_DIV_ASSIGN,
+    FRG_AST_ID_VALUE_DIV_INT_ASSIGN,
+    FRG_AST_ID_VALUE_MOD_ASSIGN,
+    FRG_AST_ID_VALUE_EXP_ASSIGN,
+    FRG_AST_ID_VALUE_LOG_AND_ASSIGN,
+    FRG_AST_ID_VALUE_LOG_OR_ASSIGN,
 } frg_ast_id_t;
 
-typedef enum {
-    FRG_AST_PROP_FLAG_NONE = 0x0,
-    FRG_AST_PROP_FLAG_OPTIONAL = 0x1,
-    FRG_AST_PROP_FLAG_NON_OPTIONAL = 0x2,
-    FRG_AST_PROP_FLAG_SPREAD = 0x4,
-    FRG_AST_PROP_FLAG_CONST = 0x8,
-} frg_ast_prop_flags_t;
+bool frg_ast_id_is_ty_primary(frg_ast_id_t id);
+bool frg_ast_id_is_value_primary(frg_ast_id_t id);
+bool frg_ast_id_is_value_unary(frg_ast_id_t id);
+bool frg_ast_id_is_value_binary(frg_ast_id_t id);
 
 typedef enum {
-    FRG_AST_IFACE_FLAG_NONE = 0x0,
-    FRG_AST_IFACE_FLAG_ABSTRACT = 0x1,
-} frg_ast_iface_flags_t;
+    FRG_AST_DECL_PROP_FLAG_NONE = 0x0,
+    FRG_AST_DECL_PROP_FLAG_OPTIONAL = 0x1,
+    FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL = 0x2,
+    FRG_AST_DECL_PROP_FLAG_SPREAD = 0x4,
+    FRG_AST_DECL_PROP_FLAG_CONST = 0x8,
+} frg_ast_decl_prop_flags_t;
 
 typedef enum {
-    FRG_AST_FN_ARG_FLAG_NONE = 0x0,
-    FRG_AST_FN_ARG_FLAG_CONST = 0x1,
-    FRG_AST_FN_ARG_FLAG_MUT = 0x2,
-    FRG_AST_FN_ARG_FLAG_KW = 0x4,
-} frg_ast_fn_arg_flags_t;
+    FRG_AST_DECL_IFACE_FLAG_NONE = 0x0,
+    FRG_AST_DECL_IFACE_FLAG_ABSTRACT = 0x1,
+} frg_ast_decl_iface_flags_t;
 
 typedef enum {
-    FRG_AST_FN_FLAG_NONE = 0x0,
-    FRG_AST_FN_FLAG_CONST = 0x1,
-    FRG_AST_FN_FLAG_MUT = 0x2,
-    FRG_AST_FN_FLAG_OVERRIDE = 0x4,
-} frg_ast_fn_flags_t;
+    FRG_AST_DECL_FN_ARG_FLAG_NONE = 0x0,
+    FRG_AST_DECL_FN_ARG_FLAG_CONST = 0x1,
+    FRG_AST_DECL_FN_ARG_FLAG_MUT = 0x2,
+    FRG_AST_DECL_FN_ARG_FLAG_KW = 0x4,
+} frg_ast_decl_fn_arg_flags_t;
 
 typedef enum {
-    FRG_AST_VAR_FLAG_NONE = 0x0,
-    FRG_AST_VAR_FLAG_CONST = 0x1,
-    FRG_AST_VAR_FLAG_MUT = 0x2,
-} frg_ast_var_flags_t;
+    FRG_AST_DECL_FN_FLAG_NONE = 0x0,
+    FRG_AST_DECL_FN_FLAG_CONST = 0x1,
+    FRG_AST_DECL_FN_FLAG_MUT = 0x2,
+    FRG_AST_DECL_FN_FLAG_OVERRIDE = 0x4,
+} frg_ast_decl_fn_flags_t;
+
+typedef enum {
+    FRG_AST_DECL_VAR_FLAG_NONE = 0x0,
+    FRG_AST_DECL_VAR_FLAG_CONST = 0x1,
+    FRG_AST_DECL_VAR_FLAG_MUT = 0x2,
+} frg_ast_decl_var_flags_t;

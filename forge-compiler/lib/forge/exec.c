@@ -39,35 +39,35 @@ void frg_value_print(FILE* file, const frg_value_t* value) {
     }
 }
 
-frg_value_t* frg_exec(const frg_ast_t* ast) {
-    if (ast == NULL) {
-        return NULL;
-    }
+// frg_value_t* frg_exec(const frg_ast_t* ast) {
+//     if (ast == NULL) {
+//         return NULL;
+//     }
 
-    switch (ast->id) {
-        case FRG_AST_ID_VALUE_TRUE:
-            return frg_value_new_bool(true);
-        case FRG_AST_ID_VALUE_FALSE:
-            return frg_value_new_bool(false);
-        case FRG_AST_ID_VALUE_LOG_NOT: {
-            frg_ast_value_unary_t* data = ast->data;
-            return frg_value_new_bool(!frg_value_get_bool(frg_exec(data->operand)));
-        }
-        case FRG_AST_ID_VALUE_LOG_AND: {
-            frg_ast_value_binary_t* data = ast->data;
-            return frg_value_new_bool(
-                frg_value_get_bool(frg_exec(data->lhs)) &&
-                frg_value_get_bool(frg_exec(data->rhs))
-            );
-        }
-        case FRG_AST_ID_VALUE_LOG_OR: {
-            frg_ast_value_binary_t* data = ast->data;
-            return frg_value_new_bool(
-                frg_value_get_bool(frg_exec(data->lhs)) ||
-                frg_value_get_bool(frg_exec(data->rhs))
-            );
-        }
-        default:
-            return NULL;
-    }
-}
+//     switch (ast->id) {
+//         case FRG_AST_ID_VALUE_TRUE:
+//             return frg_value_new_bool(true);
+//         case FRG_AST_ID_VALUE_FALSE:
+//             return frg_value_new_bool(false);
+//         case FRG_AST_ID_VALUE_LOG_NOT: {
+//             frg_ast_value_unary_t* data = ast->data;
+//             return frg_value_new_bool(!frg_value_get_bool(frg_exec(data->operand)));
+//         }
+//         case FRG_AST_ID_VALUE_LOG_AND: {
+//             frg_ast_value_binary_t* data = ast->data;
+//             return frg_value_new_bool(
+//                 frg_value_get_bool(frg_exec(data->lhs)) &&
+//                 frg_value_get_bool(frg_exec(data->rhs))
+//             );
+//         }
+//         case FRG_AST_ID_VALUE_LOG_OR: {
+//             frg_ast_value_binary_t* data = ast->data;
+//             return frg_value_new_bool(
+//                 frg_value_get_bool(frg_exec(data->lhs)) ||
+//                 frg_value_get_bool(frg_exec(data->rhs))
+//             );
+//         }
+//         default:
+//             return NULL;
+//     }
+// }

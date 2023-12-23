@@ -1,5 +1,6 @@
 #include <forge/parse.h>
 #include <forge/log.h>
+#include <forge/memory.h>
 
 extern FILE* yyin;
 extern int yyparse(frg_ast_t** ast);
@@ -7,95 +8,84 @@ extern int yy_scan_buffer(char* base, size_t size);
 
 const char* _frg_current_filename = NULL;
 
-frg_ast_t* frg_parse_file(FILE* file, const char* filename) {
+frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename) {
     if (file == NULL) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse NULL file handle");
-        return NULL;
-    }
-
-    if (ferror(file)) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse from file handle with error bit set");
-        return NULL;
-    }
-
-    if (filename == NULL) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse file with NULL filename");
-        return NULL;
-    }
-
-    if (*filename == 0) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse file with empty filename");
-        return NULL;
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (ferror(file)) {
+        return FRG_STATUS_ERROR_FILE_ERROR_BIT_SET;
+    } else if (filename == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (*filename == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
     }
 
     _frg_current_filename = filename;
 
     yyin = file;
 
-    frg_ast_t* ast = NULL;
-    if (yyparse(&ast) != 0) {
-        frg_ast_destroy(&ast);
+    *ast = NULL;
+    if (yyparse(ast) != 0) {
+        frg_ast_destroy(ast);
     }
 
     _frg_current_filename = NULL;
 
-    return ast;
+    return FRG_STATUS_OK;
 }
 
-frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* filename) {
+frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename) {
     if (buffer == NULL) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse NULL buffer");
-        return NULL;
-    }
-
-    if (length < 2) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse buffer shorter than 2 bytes (buffer must be terminated with two null bytes)");
-        return NULL;
-    }
-
-    if (buffer[length - 2] != 0 || buffer[length - 1] != 0) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse buffer that is not terminated with two null bytes");
-        return NULL;
-    }
-
-    if (filename == NULL) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse buffer with NULL filename");
-        return NULL;
-    }
-
-    if (*filename == 0) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse buffer with empty filename");
-        return NULL;
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (length < 2) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (buffer[length - 2] != 0 || buffer[length - 1] != 0) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (filename == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (*filename == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
     }
 
     _frg_current_filename = filename;
 
     yy_scan_buffer(buffer, length);
     
-    frg_ast_t* ast = NULL;
-    if (yyparse(&ast) != 0) {
-        frg_ast_destroy(&ast);
+    *ast = NULL;
+    if (yyparse(ast) != 0) {
+        frg_ast_destroy(ast);
     }
 
     _frg_current_filename = NULL;
 
-    return ast;
+    return FRG_STATUS_OK;
 }
 
-frg_ast_t* frg_parse_string(const char* text, const char* filename) {
+frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* filename) {
     if (text == NULL) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "cannot parse NULL string");
-        return NULL;
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (filename == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (*filename == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
     }
 
     size_t length = strlen(text);
-    char* buffer = (char*)malloc(length + 2);
+
+    char* buffer = NULL;
+    frg_status_t result = frg_safe_malloc((void**)&buffer, length + 2);
+    if (result != FRG_STATUS_OK) {
+        return result;
+    }
+
     memcpy(buffer, text, length);
     buffer[length] = buffer[length + 1] = 0;
 
-    frg_ast_t* ast = frg_parse_buffer(buffer, length + 2, filename);
+    frg_status_t parse_result = frg_parse_buffer(ast, buffer, length + 2, filename);
 
-    free(buffer);
+    result = frg_safe_free((void**)&buffer);
+    if (result != FRG_STATUS_OK) {
+        return result;
+    }
 
-    return ast;
+    return parse_result;
 }

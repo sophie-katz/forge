@@ -44,10 +44,12 @@ forge_compiler_lib = static_library(
     'lib/forge/ast.c',
     'lib/forge/color.c',
     'lib/forge/debug.c',
+    'lib/forge/enums.c',
     'lib/forge/exec.c',
     'lib/forge/log.c',
     'lib/forge/parse.c',
     'lib/forge/stream.c',
+    'lib/forge/memory.c',
     generated_files_flex,
     generated_files_bison,
     include_directories: forge_include_directories,
@@ -98,6 +100,16 @@ test_color = executable(
 )
 
 test('color', test_color)
+
+test_memory = executable(
+    'test-memory',
+    'lib/forge/memory_test.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [forge_dependency_glib2_0, forge_dependency_unity]
+)
+
+test('memory', test_memory)
 
 # Demos
 # --------------------------------------------------------------------------------------

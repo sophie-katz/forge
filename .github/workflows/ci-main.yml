@@ -32,5 +32,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run CI
-        uses: ./.github/actions/ci.yml
-
+        uses: ./.github/actions/ci

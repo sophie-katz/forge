@@ -1,0 +1,38 @@
+name: Build and Test C Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Set up dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y meson
+
+          # Smoke test
+          meson --version
+          ninja --version
+          cmake --version
+          pkg-config --cflags glib-2.0
+
+      - name: Build compiler
+        working-directory: forge-compiler
+        run: |
+          meson setup build
+          meson compile -C build
+
+      - name: Run tests
+        run: |
+          meson test -C build

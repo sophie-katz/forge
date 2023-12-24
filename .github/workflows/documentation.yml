@@ -78,7 +78,6 @@ jobs:
           cd gh-pages
           git config user.name "Sophie Katz"
           git config user.email "sophie@sophiekatz.us"
-          git add -A .
-          git commit -m "Update Forge compiler Doxygen documentation"
-          git push -u origin gh-pages
+          git commit -am "Update Forge compiler Doxygen documentation"
+          git push
 

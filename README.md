@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-![GitHub License](https://img.shields.io/github/license/sophie-katz/forge) [![Documentation](https://github.com/sophie-katz/forge/actions/workflows/documentation.yml/badge.svg)](https://github.com/sophie-katz/forge/actions/workflows/documentation.yml)
+![GitHub License](https://img.shields.io/github/license/sophie-katz/forge) [![CI](https://github.com/sophie-katz/forge/actions/workflows/ci-main.yml/badge.svg)](https://github.com/sophie-katz/forge/actions/workflows/ci-main.yml) [![Documentation](https://github.com/sophie-katz/forge/actions/workflows/documentation.yml/badge.svg)](https://github.com/sophie-katz/forge/actions/workflows/documentation.yml)
 
 <p align="center"><img src="https://raw.githubusercontent.com/sophie-katz/forge/main/assets/logo/forge-high-resolution-logo-transparent.svg#gh-light-mode-only" width="400rem" alt="Forge logo" /> <img src="https://raw.githubusercontent.com/sophie-katz/forge/main/assets/logo/forge-high-resolution-logo-transparent.svg#gh-dark-mode-only" width="400rem" alt="Forge logo" /><br /><br />Forge is a programming language I'm making for fun :3</p>
 

@@ -81,3 +81,4 @@ jobs:
           git add -A .
           git commit -m "Update Forge compiler Doxygen documentation"
           git push -u origin gh-pages
+

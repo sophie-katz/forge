@@ -30,33 +30,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish-user-documentation:
+  publish-documentation:
     name: Publish user documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-      
-      - name: Deploy documentation
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG_FILE: docs/for-users/mkdocs.yml
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y doxygen
 
-  publish-forge-compiler-doxygen-documentation:
-    name: Publish Forge compiler Doxygen documentation
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
           path: main
       
-      - name: Install Doxygen
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y doxygen
+      - name: Deploy documentation
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_FILE: main/docs/for-users/mkdocs.yml
       
       - name: Build documentation
         working-directory: main/forge-compiler
@@ -81,4 +74,3 @@ jobs:
           git add -A .
           git commit -am "Update Forge compiler Doxygen documentation"
           git push
-

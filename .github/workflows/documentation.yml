@@ -19,6 +19,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'assets/**'
+      - 'docs/for-users/**'
+      - 'forge-compiler/include/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -31,7 +36,7 @@ concurrency:
 
 jobs:
   publish-documentation:
-    name: Publish user documentation
+    name: Publish documentation
     runs-on: ubuntu-latest
     steps:
       - name: Install Doxygen
@@ -44,19 +49,16 @@ jobs:
         with:
           submodules: true
       
-      - name: Deploy documentation
+      - name: Deploy user documentation
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONFIG_FILE: docs/for-users/mkdocs.yml
       
-      - name: Build documentation
+      - name: Build compiler API documentation
         working-directory: forge-compiler
         run: |
           mkdir -p build/doxygen
-          echo "AWESOME"
-          pwd
-          ls -l subprojects/doxygen-awesome-css/doxygen-awesome.css
           doxygen
 
       - name: Checkout gh-pages
@@ -65,7 +67,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      - name: Deploy documentation
+      - name: Deploy copmiler API documentation
         run: |
           rm -rf gh-pages/compiler-api
           mkdir -p gh-pages/compiler-api

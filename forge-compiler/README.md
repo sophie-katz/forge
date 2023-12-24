@@ -20,6 +20,7 @@ not, see <https://www.gnu.org/licenses/>.
 This is the reference implementation of Forge. It follows the specification in the [user documentation](../docs/for-users/).
 
 - [Getting started](#getting-started)
+- [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)
 
 ## Getting started
 

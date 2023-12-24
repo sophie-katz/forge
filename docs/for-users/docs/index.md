@@ -15,6 +15,14 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# Home
+#
 
-Hi.
+<p align="center"><img src="https://raw.githubusercontent.com/sophie-katz/forge/main/assets/logo/forge-high-resolution-logo-transparent.svg#gh-light-mode-only" width="400rem" alt="Forge logo" /> <img src="https://raw.githubusercontent.com/sophie-katz/forge/main/assets/logo/forge-high-resolution-logo-transparent.svg#gh-dark-mode-only" width="400rem" alt="Forge logo" /><br /><br />Forge is a programming language I'm making for fun :3</p>
+
+---
+
+This is the user documentation for the Forge programming language.
+
+- [Language specification](./specification/how-to-use.md)
+- [**Compiler**](https://github.com/sophie-katz/forge/tree/main/forge-compiler)
+    - [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)

@@ -1,38 +1,31 @@
 name: Build and Test C Project
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+runs: 
+  using: composite
+  steps:
+    - name: Checkout main
+      uses: actions/checkout@v4
 
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+    - name: Set up dependencies
+      shell: bash
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y meson
 
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
+        # Smoke test
+        meson --version
+        ninja --version
+        cmake --version
+        pkg-config --cflags glib-2.0
 
-      - name: Set up dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y meson
+    - name: Build compiler
+      working-directory: forge-compiler
+      shell: bash
+      run: |
+        meson setup build
+        meson compile -C build
 
-          # Smoke test
-          meson --version
-          ninja --version
-          cmake --version
-          pkg-config --cflags glib-2.0
-
-      - name: Build compiler
-        working-directory: forge-compiler
-        run: |
-          meson setup build
-          meson compile -C build
-
-      - name: Run tests
-        run: |
-          meson test -C build
+    - name: Run tests
+      shell: bash
+      run: |
+        meson test -C build

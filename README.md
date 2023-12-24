@@ -17,5 +17,11 @@ not, see <https://www.gnu.org/licenses/>.
 
 ![GitHub License](https://img.shields.io/github/license/sophie-katz/forge)
 
-# Forge
+<p align="center"><img src="https://raw.githubusercontent.com/sophie-katz/forge/main/assets/logo/forge-high-resolution-logo-transparent.svg#gh-light-mode-only" width="400rem" alt="Forge logo" /> <img src="https://raw.githubusercontent.com/sophie-katz/forge/main/assets/logo/forge-high-resolution-logo-transparent.svg#gh-dark-mode-only" width="400rem" alt="Forge logo" /><br /><br />Forge is a programming language I'm making for fun :3</p>
 
+---
+
+This repository is a monorepo with multiple projects. See the readmes for those projects for more information:
+- [Forge compiler](./forge-compiler/)
+- [User documentation](./docs/for-users/)
+- [Developer documentation](./docs/for-developers/)

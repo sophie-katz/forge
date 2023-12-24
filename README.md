@@ -23,5 +23,5 @@ not, see <https://www.gnu.org/licenses/>.
 
 This repository is a monorepo with multiple projects. See the readmes for those projects for more information:
 - [Forge compiler](./forge-compiler/)
-- [User documentation](./docs/for-users/)
+- [**User documentation**](https://sophie-katz.github.io/forge/)
 - [Developer documentation](./docs/for-developers/)

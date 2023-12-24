@@ -42,3 +42,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONFIG_FILE: docs/for-users/mkdocs.yml
+
+  publish-forge-compiler-doxygen-documentation:
+    name: Publish Forge compiler Doxygen documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+      
+      - name: Build documentation
+        uses: mattnotmitt/doxygen-action@v1.9.5
+        with:
+          working-directory: forge-compiler

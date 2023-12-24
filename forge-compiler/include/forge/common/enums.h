@@ -1,3 +1,18 @@
+// Copyright (c) 2023 Sophie Katz
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either
+// version 3 of the License, or (at your option) any later version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Forge.
+// If not, see <https://www.gnu.org/licenses/>.
+
 #pragma once
 
 #include <stdbool.h>
@@ -21,6 +36,8 @@ typedef enum {
     FRG_STATUS_ERROR_FILE_ERROR_BIT_SET,
     /// A memory allocation failed
     FRG_STATUS_ERROR_OUT_OF_MEMORY,
+    /// Parsing reached out of text unexpectedly
+    FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
 } frg_status_t;
 
 const char* frg_status_to_string(frg_status_t status);
@@ -112,6 +129,7 @@ typedef enum {
     FRG_AST_ID_VALUE_SYMBOL,
     FRG_AST_ID_VALUE_CALL_KW_ARG,
     FRG_AST_ID_VALUE_CALL,
+    FRG_AST_ID_VALUE_ACCESS,
     FRG_AST_ID_VALUE_BIT_NOT,
     FRG_AST_ID_VALUE_BIT_AND,
     FRG_AST_ID_VALUE_BIT_OR,

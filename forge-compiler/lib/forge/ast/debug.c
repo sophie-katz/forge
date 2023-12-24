@@ -1,6 +1,21 @@
+// Copyright (c) 2023 Sophie Katz
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either
+// version 3 of the License, or (at your option) any later version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Forge.
+// If not, see <https://www.gnu.org/licenses/>.
+
 #include <forge/ast/debug.h>
 #include <forge/common/stream.h>
-#include <forge/common/str_escape.h>
+#include <forge/common/lexical_casts.h>
 
 typedef struct {
     const frg_indent_t indent;
@@ -417,6 +432,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             frg_ast_print_debug(((frg_ast_value_unary_t*)ast)->operand, indent + FRG_DEBUG_INDENT_WIDTH);
 
             break;
+        case FRG_AST_ID_VALUE_ACCESS:
         case FRG_AST_ID_VALUE_BIT_AND:
         case FRG_AST_ID_VALUE_BIT_OR:
         case FRG_AST_ID_VALUE_BIT_XOR:

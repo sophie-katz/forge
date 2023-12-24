@@ -1,3 +1,18 @@
+// Copyright (c) 2023 Sophie Katz
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either
+// version 3 of the License, or (at your option) any later version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Forge.
+// If not, see <https://www.gnu.org/licenses/>.
+
 #include <forge/common/enums.h>
 
 const char* frg_status_to_string(frg_status_t status) {
@@ -12,6 +27,8 @@ const char* frg_status_to_string(frg_status_t status) {
             return "unexpected enum value";
         case FRG_STATUS_ERROR_EMPTY_STRING:
             return "empty string";
+        case FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT:
+            return "unexpected end of text";
         default:
             return "(unknown value for frg_status_t)";
     }
@@ -87,6 +104,8 @@ const char* frg_ast_id_to_string(frg_ast_id_t id) {
             return "value-call-kw-arg";
         case FRG_AST_ID_VALUE_CALL:
             return "value-call";
+        case FRG_AST_ID_VALUE_ACCESS:
+            return "value-access";
         case FRG_AST_ID_VALUE_BIT_NOT:
             return "value-bit-not";
         case FRG_AST_ID_VALUE_BIT_AND:
@@ -214,6 +233,7 @@ bool frg_ast_id_is_value_unary(frg_ast_id_t id) {
 
 bool frg_ast_id_is_value_binary(frg_ast_id_t id) {
     switch (id) {
+        case FRG_AST_ID_VALUE_ACCESS:
         case FRG_AST_ID_VALUE_BIT_AND:
         case FRG_AST_ID_VALUE_BIT_OR:
         case FRG_AST_ID_VALUE_BIT_XOR:

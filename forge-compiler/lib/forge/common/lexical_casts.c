@@ -1,4 +1,19 @@
-#include <forge/common/str_escape.h>
+// Copyright (c) 2023 Sophie Katz
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either
+// version 3 of the License, or (at your option) any later version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Forge.
+// If not, see <https://www.gnu.org/licenses/>.
+
+#include <forge/common/lexical_casts.h>
 #include <utf8proc.h>
 #include <ctype.h>
 
@@ -121,4 +136,18 @@ frg_status_t frg_escape_str(GString** escaped, GString* value) {
     g_string_append_c(*escaped, '\"');
 
     return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_unescape_char_unquoted(frg_char_t *value, const gchar** escaped, const gchar* end, char quote) {
+    if (value == NULL || escaped == NULL || end == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (escaped >= end) {
+        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+    }
+
+    if (**escaped == )
+}
+
+frg_status_t frg_unescape_char(frg_char_t* value, const GString* escaped) {
+
 }

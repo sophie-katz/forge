@@ -13,31 +13,21 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/ast/ast.h>
-#include <forge/common/debug.h>
-#include <forge/common/log.h>
-#include <forge/exec/exec.h>
-#include <forge/parse/parse.h>
-#include <stdio.h>
-#include <string.h>
+#include <forge/common/lexical_casts.h>
+#include <unity.h>
 
-int main(int argc, char *argv[]) {
-    // frg_ast_t* ast = frg_parse_string("true \n&& (!false)", "--");
+void setUp(void) {}
 
-    // if (ast != NULL) {
-    //     frg_debug_print_ast(ast);
-        
-    //     printf("\n\n=> ");
+void tearDown(void) {}
 
-    //     frg_value_t* value = frg_exec(ast);
+void test_escape_char_null(void) {
+    GString* escaped = NULL;
+    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_escape_char(&escaped, 0));
+    TEST_ASSERT_EQUAL_STRING("'\\0'", escaped->str);
+}
 
-    //     frg_value_print(stdout, value);
-
-    //     printf("\n");
-
-    //     frg_value_destroy(&value);
-    //     frg_ast_destroy(&ast);
-    // }
-
-    return 0;
+int main(void) {
+    UNITY_BEGIN();
+    RUN_TEST(test_escape_char_null);
+    return UNITY_END();
 }

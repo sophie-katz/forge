@@ -1,3 +1,18 @@
+# Copyright (c) 2023 Sophie Katz
+#
+# This file is part of Forge.
+#
+# Forge is free software: you can redistribute it and/or modify it under the terms of
+# the GNU General Public License as published by the Free Software Foundation, either
+# version 3 of the License, or (at your option) any later version.
+#
+# Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with Forge. If
+# not, see <https://www.gnu.org/licenses/>.
+
 # Project definition
 # --------------------------------------------------------------------------------------
 project('forge-compiler', 'c', default_options: ['c_std=gnu18'])
@@ -50,9 +65,9 @@ forge_compiler_lib = static_library(
     'lib/forge/common/color.c',
     'lib/forge/common/debug.c',
     'lib/forge/common/enums.c',
+    'lib/forge/common/lexical_casts.c',
     'lib/forge/common/log.c',
     'lib/forge/common/memory.c',
-    'lib/forge/common/str_escape.c',
     'lib/forge/common/stream.c',
     'lib/forge/exec/exec.c',
     'lib/forge/parse/parse.c',
@@ -132,6 +147,20 @@ forge_test_common_memory = executable(
 )
 
 test('common/memory_test.c', forge_test_common_memory)
+
+forge_test_common_lexical_casts = executable(
+    'test-common-lexical-casts',
+    'lib/forge/common/lexical_casts_test.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_compiler_lib],
+    dependencies: [
+        forge_dependency_glib2_0,
+        forge_dependency_utf8proc,
+        forge_dependency_unity
+    ]
+)
+
+test('common/lexical_casts_test.c', forge_test_common_lexical_casts)
 
 # Demos
 # --------------------------------------------------------------------------------------

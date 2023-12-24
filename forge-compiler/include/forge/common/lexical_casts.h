@@ -13,31 +13,16 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/ast/ast.h>
-#include <forge/common/debug.h>
-#include <forge/common/log.h>
-#include <forge/exec/exec.h>
-#include <forge/parse/parse.h>
-#include <stdio.h>
-#include <string.h>
+#pragma once
 
-int main(int argc, char *argv[]) {
-    // frg_ast_t* ast = frg_parse_string("true \n&& (!false)", "--");
+#include <forge/common/enums.h>
+#include <forge/common/types.h>
+#include <glib.h>
 
-    // if (ast != NULL) {
-    //     frg_debug_print_ast(ast);
-        
-    //     printf("\n\n=> ");
+frg_status_t frg_escape_char(GString** escaped, frg_char_t value);
 
-    //     frg_value_t* value = frg_exec(ast);
+frg_status_t frg_escape_str(GString** escaped, GString* value);
 
-    //     frg_value_print(stdout, value);
+frg_status_t frg_unescape_char(frg_char_t* value, const GString* escaped);
 
-    //     printf("\n");
-
-    //     frg_value_destroy(&value);
-    //     frg_ast_destroy(&ast);
-    // }
-
-    return 0;
-}
+frg_status_t frg_unescape_str(GString** value, const GString* escaped);

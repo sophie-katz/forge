@@ -1,0 +1,55 @@
+# Copyright (c) 2023 Sophie Katz
+#
+# This file is part of Forge.
+#
+# Forge is free software: you can redistribute it and/or modify it under the terms of
+# the GNU General Public License as published by the Free Software Foundation, either
+# version 3 of the License, or (at your option) any later version.
+#
+# Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with Forge. If
+# not, see <https://www.gnu.org/licenses/>.
+
+site_name: Forge
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - search.suggest
+    - search.highlight
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: pink
+  font:
+    text: Poppins
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - tables
+  - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - 'Home': 'index.md'
+  - 'Specification':
+    - 'How to use': 'specification/how-to-use.md'
+    - 'Requirements':
+      - 'FR-1: Boolean literals': 'specification/requirements/FR-1-boolean-literals.md'
+      - 'FR-2: Integer literals': 'specification/requirements/FR-2-integer-literals.md'
+      - 'FR-3: Float literals': 'specification/requirements/FR-3-float-literals.md'
+      - 'FR-4: String literals': 'specification/requirements/FR-4-string-literals.md'
+      - 'FR-5: Character literals': 'specification/requirements/FR-5-character-literals.md'

@@ -52,6 +52,8 @@ jobs:
         working-directory: forge-compiler
         run: |
           mkdir -p build/doxygen
+          echo "AWESOME"
+          ls -l subprojects/doxygen-awesome-css/doxygen-awesome.css
           doxygen
 
       - name: Checkout gh-pages

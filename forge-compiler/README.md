@@ -28,6 +28,7 @@ To build the Forge compiler you need these installed on your system:
 - [Meson](https://mesonbuild.com/)
 - [CMake](https://cmake.org/)
 - [Glib 2.0](https://docs.gtk.org/glib/)
+- [Doxygen](https://www.doxygen.nl/index.html) (only needed for building API documentation)
 
 Once these are all installed, run:
 
@@ -49,4 +50,7 @@ meson test -C build
 
 # Run the compiler
 ./build/forge-compiler --help
+
+# Build the documentation (to build/doxygen)
+doxygen
 ```

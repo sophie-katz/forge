@@ -50,7 +50,13 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
       
+      - name: Install Doxygen
+        run: |
+          apt-get update -y
+          apt-get install -y doxygen
+      
       - name: Build documentation
-        uses: mattnotmitt/doxygen-action@v1.9.5
-        with:
-          working-directory: forge-compiler
+        working-directory: forge-compiler
+        run: |
+          mkdir -p build/doxygen
+          doxygen

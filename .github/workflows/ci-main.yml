@@ -29,4 +29,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run CI
-        uses: sophie-katz/forge/actions/ci.yml
+        uses: ../actions/ci.yml

@@ -49,6 +49,9 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
       
       - name: Install Doxygen
         run: |
@@ -56,7 +59,25 @@ jobs:
           sudo apt-get install -y doxygen
       
       - name: Build documentation
-        working-directory: forge-compiler
+        working-directory: main/forge-compiler
         run: |
           mkdir -p build/doxygen
           doxygen
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Deploy documentation
+        run: |
+          rm -rf gh-pages/compiler-api
+          mkdir -p gh-pages/compiler-api
+          cp -rvf main/forge-compiler/build/doxygen/html/* gh-pages/compiler-api
+          cd gh-pages
+          git config user.name "Sophie Katz"
+          git config user.email "sophie@sophiekatz.us"
+          git add -A .
+          git commit -m "Update Forge compiler Doxygen documentation"
+          git push -u origin gh-pages

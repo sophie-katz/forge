@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "github.vscode-github-actions",
+        "ms-vscode.cpptools",
+        "mesonbuild.mesonbuild"
+    ]
+}

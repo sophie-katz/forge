@@ -188,6 +188,8 @@ const char* frg_ast_id_to_string(frg_ast_id_t id) {
             return "value-log-and-assign";
         case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
             return "value-log-or-assign";
+        default:
+            return "(unknown value for frg_ast_id_t)";
     }
 }
 

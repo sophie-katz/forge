@@ -2,12 +2,28 @@
   "name": "forge",
   "displayName": "Forge",
   "description": "Forge language support",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "publisher": "sophie-katz",
+  "repository": {
+    "url": "https://github.com/sophie-katz/forge"
+  },
+  "bugs": {
+    "url": "https://github.com/sophie-katz/forge/issues"
+  },
+  "preview": true,
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#ff851b",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Programming Languages"
+  ],
+  "keywords": [
+    "forge"
   ],
   "contributes": {
     "languages": [{

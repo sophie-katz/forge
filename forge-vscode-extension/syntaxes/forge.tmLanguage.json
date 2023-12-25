@@ -12,7 +12,13 @@
 			"include": "#strings"
 		},
 		{
+			"include": "#fn_calls"
+		},
+		{
 			"include": "#symbols"
+		},
+		{
+			"include": "#numbers"
 		},
 		{
 			"include": "#builtin-symbols"
@@ -34,16 +40,8 @@
 					"match": "\\b(if|while|return|match)\\b"
 				},
 				{
-					"name": "support.class.forge",
-					"match": "\\b(ty|iface)\\b"
-				},
-				{
-					"name": "support.class.forge",
-					"match": "\\b(fn)\\b"
-				},
-				{
-					"name": "support.variable.forge",
-					"match": "\\b(prop|let)\\b"
+					"name": "keyword.other.forge",
+					"match": "\\b(ty|iface|fn|prop|let|override)\\b"
 				},
 				{
 					"name": "storage.type.forge",
@@ -250,6 +248,14 @@
 				}
 			]
 		},
+		"fn_calls": {
+			"patterns": [
+				{
+					"name": "support.function.forge",
+					"match": "\\b([\\p{Lower}_]\\p{Alnum}*)\\("
+				}
+			]
+		},
 		"symbols": {
 			"patterns": [
 				{
@@ -257,13 +263,21 @@
 					"match": "\\b([\\p{Lower}_]\\p{Alnum}*)\\b"
 				},
 				{
-					"name": "storage.type.forge",
+					"name": "support.type.forge",
 					"match": "\\b([\\p{Upper}_]\\p{Alnum}*)\\b"
 				}
 			]
 		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.forge",
+					"match": "\\b([0-9][0-9a-zA-Z_]*)\\b"
+				}
+			]
+		},
 		"builtin-symbols": {
-			"name": "variable.language.forge",
+			"name": "support.function.forge",
 			"match": "@\\b([\\p{Alpha}_]\\p{Alnum}*)\\b"
 		}
 	},

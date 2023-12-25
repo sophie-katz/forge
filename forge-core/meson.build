@@ -15,7 +15,7 @@
 
 # Project definition
 # --------------------------------------------------------------------------------------
-project('forge-compiler', 'c', default_options: ['c_std=gnu18', 'werror=true'])
+project('forge-core', 'c', default_options: ['c_std=gnu18', 'werror=true'])
 
 # Tools
 # --------------------------------------------------------------------------------------
@@ -66,8 +66,8 @@ forge_dependencies = [
 # --------------------------------------------------------------------------------------
 forge_include_directories = include_directories('include')
 
-forge_compiler_lib = static_library(
-    'forge-compiler',
+forge_core_lib = static_library(
+    'forge-core',
     'lib/forge/ast/ast.c',
     'lib/forge/ast/debug.c',
     'lib/forge/common/color.c',
@@ -93,7 +93,15 @@ executable(
     'forge-compiler',
     'src/forge-compiler/main.c',
     include_directories: forge_include_directories,
-    link_with: forge_compiler_lib,
+    link_with: forge_core_lib,
+    dependencies: forge_dependencies
+)
+
+executable(
+    'forge-interpreter',
+    'src/forge-interpreter/main.c',
+    include_directories: forge_include_directories,
+    link_with: forge_core_lib,
     dependencies: forge_dependencies
 )
 
@@ -104,7 +112,7 @@ forge_test_ast_ast = executable(
     'test-ast-ast',
     'lib/forge/ast/ast_test.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
@@ -116,7 +124,7 @@ forge_test_common_stream = executable(
     'test-common-stream',
     'lib/forge/common/stream_test.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
@@ -128,7 +136,7 @@ forge_test_common_color = executable(
     'test-common-color',
     'lib/forge/common/color_test.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
@@ -140,7 +148,7 @@ forge_test_common_memory = executable(
     'test-common-memory',
     'lib/forge/common/memory_test.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
@@ -152,7 +160,7 @@ forge_test_common_lexical_casts = executable(
     'test-common-lexical-casts',
     'lib/forge/common/lexical_casts_test.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
@@ -167,7 +175,7 @@ executable(
     'demo-common-color',
     'lib/forge/common/color_demo.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies
 )
 
@@ -175,7 +183,7 @@ executable(
     'demo-common-log',
     'lib/forge/common/log_demo.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies
 )
 
@@ -183,6 +191,6 @@ executable(
     'demo-common-debug',
     'lib/forge/common/debug_demo.c',
     include_directories: forge_include_directories,
-    link_with: [forge_compiler_lib],
+    link_with: [forge_core_lib],
     dependencies: forge_dependencies
 )

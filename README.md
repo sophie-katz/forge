@@ -22,6 +22,9 @@ not, see <https://www.gnu.org/licenses/>.
 ---
 
 This repository is a monorepo with multiple projects. See the readmes for those projects for more information:
-- [Forge compiler](./forge-compiler/)
+- [Forge Core](./forge-core/)
+    - [Compiler](./forge-core/src/forge-compiler/)
+    - [Interpreter](./forge-core/src/forge-interpreter/)
+    - [Shared library](./forge-core/include/)
 - [**User documentation**](https://sophie-katz.github.io/forge/)
 - [Developer documentation](./docs/for-developers/)

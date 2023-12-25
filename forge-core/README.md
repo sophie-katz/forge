@@ -41,8 +41,8 @@ git clone https://github.com/sophie-katz/forge.git
 cd forge
 git submodule update --init
 
-# Build the compiler
-cd forge-compiler
+# Build the Core
+cd forge-core
 meson setup build
 meson compile -C build
 
@@ -51,6 +51,9 @@ meson test -C build
 
 # Run the compiler
 ./build/forge-compiler --help
+
+# Run the interpreter
+./build/forge-interpreter --help
 
 # Build the documentation (to build/doxygen)
 doxygen

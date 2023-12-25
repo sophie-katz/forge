@@ -154,7 +154,7 @@ void _frg_log_prefix_internal(const char* filename, frg_lineno_t lineno) {
     }
 
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(FRG_STREAM_DEFAULT, "forge-compiler[%s:%d]: ", filename_resolved, lineno);
+    fprintf(FRG_STREAM_DEFAULT, "forge-core[%s:%d]: ", filename_resolved, lineno);
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
 }
 

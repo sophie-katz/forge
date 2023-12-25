@@ -29,6 +29,8 @@ const char* frg_status_to_string(frg_status_t status) {
             return "empty string";
         case FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT:
             return "unexpected end of text";
+        case FRG_STATUS_ERROR_UNEXPECTED_CHARACTER:
+            return "unexpected character";
         default:
             return "(unknown value for frg_status_t)";
     }

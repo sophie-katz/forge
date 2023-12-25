@@ -3,5 +3,13 @@
         88
     ],
     "git.detectSubmodules": false,
-    "git.ignoreSubmodules": true
+    "git.ignoreSubmodules": true,
+    "C_Cpp.default.cStandard": "gnu17",
+    "C_Cpp.default.includePath": [
+        "/opt/homebrew/Cellar/glib/2.78.3/include/glib-2.0",
+        "${workspaceFolder}/forge-compiler/include",
+        "/opt/homebrew/Cellar/glib/2.78.3/lib/glib-2.0/include",
+        "${workspaceFolder}/forge-compiler/subprojects/utf8proc",
+        "${workspaceFolder}/forge-compiler/subprojects/Unity/src"
+    ]
 }

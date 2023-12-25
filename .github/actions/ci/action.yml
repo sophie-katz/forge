@@ -26,6 +26,7 @@ runs:
         meson compile -C build
 
     - name: Run tests
+      working-directory: forge-compiler
       shell: bash
       run: |
         meson test -C build

@@ -1,9 +1,9 @@
 {
   "name": "forge",
-  "displayName": "Forge",
-  "description": "Forge language support",
-  "version": "0.1.1",
-  "publisher": "sophie-katz",
+  "displayName": "Forge language support",
+  "description": "Support for the Forge programming language",
+  "version": "0.1.0",
+  "publisher": "SophieKatz",
   "repository": {
     "url": "https://github.com/sophie-katz/forge"
   },

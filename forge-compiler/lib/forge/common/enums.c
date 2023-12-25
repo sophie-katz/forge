@@ -62,8 +62,6 @@ const char* frg_ast_id_to_string(frg_ast_id_t id) {
             return "ty-f64";
         case FRG_AST_ID_TY_SYMBOL:
             return "ty-symbol";
-        case FRG_AST_ID_DECL_ALIAS:
-            return "decl-alias";
         case FRG_AST_ID_DECL_UNION:
             return "decl-union";
         case FRG_AST_ID_DECL_STRUCT:
@@ -308,16 +306,6 @@ void frg_ast_decl_prop_flags_print(FILE* file, frg_ast_decl_prop_flags_t flags) 
         }
 
         fprintf(file, "spread");
-
-        first = false;
-    }
-
-    if (flags & FRG_AST_DECL_PROP_FLAG_CONST) {
-        if (!first) {
-            fprintf(file, ",");
-        }
-
-        fprintf(file, "const");
 
         first = false;
     }

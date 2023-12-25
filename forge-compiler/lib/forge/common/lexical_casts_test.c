@@ -118,8 +118,7 @@ void test_escape_char_printable_unicode(void) {
 
 void test_unescape_char_printable_ascii(void) {
     frg_char_t value = 0;
-    GString* escaped = g_string_new("'a'");
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_unescape_char(&value, escaped));
+    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_unescape_char(&value, "'a'"));
     TEST_ASSERT_EQUAL('a', value);
 }
 
@@ -131,8 +130,7 @@ void test_uint_to_str_10_base10(void) {
 
 void test_str_to_uint_10_base10(void) {
     uint64_t value = 0;
-    GString* str = g_string_new("10");
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_str_to_uint(&value, str));
+    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_str_to_uint(&value, "10"));
     TEST_ASSERT_EQUAL(10, value);
 }
 
@@ -144,8 +142,7 @@ void test_float_to_str_10_5_base10(void) {
 
 void test_str_to_float_10_5_base10(void) {
     double value = 0;
-    GString* str = g_string_new("10.5");
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_str_to_float(&value, str));
+    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_str_to_float(&value, "10.5"));
     TEST_ASSERT_EQUAL(10.5, value);
 }
 

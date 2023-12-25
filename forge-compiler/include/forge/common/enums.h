@@ -109,7 +109,6 @@ typedef enum {
     FRG_AST_ID_TY_F32,
     FRG_AST_ID_TY_F64,
     FRG_AST_ID_TY_SYMBOL,
-    FRG_AST_ID_DECL_ALIAS,
     FRG_AST_ID_DECL_UNION,
     FRG_AST_ID_DECL_STRUCT,
     FRG_AST_ID_DECL_PROP,
@@ -184,8 +183,7 @@ typedef enum {
     FRG_AST_DECL_PROP_FLAG_NONE = 0x0,
     FRG_AST_DECL_PROP_FLAG_OPTIONAL = 0x1,
     FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL = 0x2,
-    FRG_AST_DECL_PROP_FLAG_SPREAD = 0x4,
-    FRG_AST_DECL_PROP_FLAG_CONST = 0x8,
+    FRG_AST_DECL_PROP_FLAG_SPREAD = 0x4
 } frg_ast_decl_prop_flags_t;
 
 void frg_ast_decl_prop_flags_print(FILE* file, frg_ast_decl_prop_flags_t flags);

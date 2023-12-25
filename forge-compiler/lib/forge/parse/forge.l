@@ -23,6 +23,8 @@ not, see <https://www.gnu.org/licenses/>.
 %{
 #include <ctype.h>
 #include <forge/ast/ast.h>
+#include <forge/common/enums.h>
+#include <forge/common/lexical_casts.h>
 #include <forge/common/log.h>
 #include <forge/common/types.h>
 #include <glib.h>
@@ -115,6 +117,10 @@ mut {
     return KW_MUT;
 }
 
+return {
+    return KW_RETURN;
+}
+
 let {
     return KW_LET;
 }
@@ -140,6 +146,7 @@ false {
 }
 
 [a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]* {
+    yylval.value_str = g_string_new(yytext);
     return SYMBOL;
 }
 
@@ -171,30 +178,83 @@ false {
     return COMMA;
 }
 
+":" {
+    return COLON;
+}
+
 ";" {
     return SEMICOLON;
 }
 
+"?" {
+    return QUESTION_MARK;
+}
+
+"->" {
+    return ARROW_RIGHT;
+}
+
+"..." {
+    return ELIPSIS;
+}
+
 [0-9][0-9a-zA-Z_]* {
+    frg_status_t result = frg_str_to_uint(&yylval.value_int, yytext);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
+        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid integer literal \"%s\"", yytext);
+        yylval.value_int = 0;
+    }
+
     return INT;
 }
 
 [0-9][0-9a-zA-Z_]*\.[0-9a-zA-Z_]* {
+    frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
+        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid float literal \"%s\"", yytext);
+        yylval.value_float = 0.0;
+    }
+
     return FLOAT;
 }
 
 ([0-9][0-9a-zA-Z_]*)?\.[0-9][0-9a-zA-Z_]* {
+    frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
+        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid float literal \"%s\"", yytext);
+        yylval.value_float = 0.0;
+    }
+
     return FLOAT;
 }
 
 
 \"(\\.|[^\\"\n])*\" {
     // Taken from https://gist.github.com/codebrainz/2933703
+
+    frg_status_t result = frg_unescape_str(&yylval.value_str, yytext);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
+        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid string literal %s", yytext);
+        yylval.value_str = g_string_new(NULL);
+    }
+
     return STR;
 }
 
 '(\\.|[^'\n])*' {
     // Taken from https://gist.github.com/codebrainz/2933703
+    
+    frg_status_t result = frg_unescape_char(&yylval.value_char, yytext);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
+        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid character literal %s", yytext);
+        yylval.value_char = 0;
+    }
+
     return CHAR;
 }
 

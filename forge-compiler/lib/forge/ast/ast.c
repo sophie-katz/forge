@@ -61,33 +61,6 @@ frg_status_t frg_ast_new_ty_symbol(
     return FRG_STATUS_OK;
 }
 
-frg_status_t frg_ast_new_decl_alias(
-    frg_ast_decl_alias_t** ast,
-    GString* name,
-    frg_ast_t* target
-) {
-    if (ast == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (name == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (name->len == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (target == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
-
-    frg_status_t result = frg_safe_malloc((void**)ast, sizeof(frg_ast_decl_alias_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
-
-    (*ast)->base.id = FRG_AST_ID_DECL_ALIAS;
-    (*ast)->name = name;
-    (*ast)->target = target;
-
-    return FRG_STATUS_OK;
-}
-
 frg_status_t frg_ast_new_decl_union(
     frg_ast_decl_union_t** ast,
     GString* name,
@@ -852,15 +825,6 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
             g_string_free(((frg_ast_ty_symbol_t*)*ast)->name, TRUE);
 
             break;
-        case FRG_AST_ID_DECL_ALIAS:
-            g_string_free(((frg_ast_decl_alias_t*)*ast)->name, TRUE);
-
-            result = frg_ast_destroy(&((frg_ast_decl_alias_t*)*ast)->target);
-            if (result != FRG_STATUS_OK) {
-                return result;
-            }
-
-            break;
         case FRG_AST_ID_DECL_UNION:
             g_string_free(((frg_ast_decl_union_t*)*ast)->name, TRUE);
 
@@ -1128,16 +1092,6 @@ frg_ast_ty_symbol_t* frg_ast_try_cast_ty_symbol(frg_ast_t* ast) {
         return NULL;
     } else if (ast->id == FRG_AST_ID_TY_SYMBOL) {
         return (frg_ast_ty_symbol_t*)ast;
-    } else {
-        return NULL;
-    }
-}
-
-frg_ast_decl_alias_t* frg_ast_try_cast_decl_alias(frg_ast_t* ast) {
-    if (ast == NULL) {
-        return NULL;
-    } else if (ast->id == FRG_AST_ID_DECL_ALIAS) {
-        return (frg_ast_decl_alias_t*)ast;
     } else {
         return NULL;
     }

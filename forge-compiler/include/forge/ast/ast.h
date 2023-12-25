@@ -33,12 +33,6 @@ typedef struct {
 typedef struct {
     frg_ast_t base;
     GString* name;
-    frg_ast_t* target;
-} frg_ast_decl_alias_t;
-
-typedef struct {
-    frg_ast_t base;
-    GString* name;
     GList* props;
 } frg_ast_decl_union_t;
 
@@ -188,12 +182,6 @@ frg_status_t frg_ast_new_ty_primary(
 frg_status_t frg_ast_new_ty_symbol(
     frg_ast_ty_symbol_t** ast,
     GString* name
-);
-
-frg_status_t frg_ast_new_decl_alias(
-    frg_ast_decl_alias_t** ast,
-    GString* name,
-    frg_ast_t* target
 );
 
 frg_status_t frg_ast_new_decl_union(
@@ -376,8 +364,6 @@ frg_status_t frg_ast_new_value_binary(
 frg_status_t frg_ast_destroy(frg_ast_t** ast);
 
 frg_ast_ty_symbol_t* frg_ast_try_cast_ty_symbol(frg_ast_t* ast);
-
-frg_ast_decl_alias_t* frg_ast_try_cast_decl_alias(frg_ast_t* ast);
 
 frg_ast_decl_union_t* frg_ast_try_cast_decl_union(frg_ast_t* ast);
 

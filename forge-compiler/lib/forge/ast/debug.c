@@ -61,31 +61,17 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
     switch (ast->id) {
         case FRG_AST_ID_TY_SYMBOL:
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_ty_symbol_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_ty_symbol_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
                 frg_debug_print_property("name", "(error while escaping string)");
             }
-
-            break;
-        case FRG_AST_ID_DECL_ALIAS:
-            frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_decl_alias_t*)ast)->name);
-            if (result == FRG_STATUS_OK) {
-                frg_debug_print_property("name", "%s", escaped->str);
-            } else {
-                frg_debug_print_property("name", "(error while escaping string)");
-            }
-
-            frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            frg_debug_print_property("target", NULL);
-            frg_ast_print_debug(((frg_ast_decl_alias_t*)ast)->target, indent + FRG_DEBUG_INDENT_WIDTH);
 
             break;
         case FRG_AST_ID_DECL_UNION:
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_decl_union_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_decl_union_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
@@ -101,7 +87,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_DECL_STRUCT:
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_decl_struct_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_decl_struct_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
@@ -130,7 +116,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_decl_prop_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_decl_prop_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
@@ -151,7 +137,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_decl_iface_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_decl_iface_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
@@ -203,7 +189,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_decl_fn_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_decl_fn_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
@@ -372,7 +358,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_VALUE_STR:
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_value_str_t*)ast)->value);
+            result = frg_escape_str(&escaped, ((frg_ast_value_str_t*)ast)->value->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("value", "%s", escaped->str);
             } else {
@@ -382,7 +368,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_VALUE_SYMBOL:
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_value_symbol_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_value_symbol_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {
@@ -392,7 +378,7 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_VALUE_CALL_KW_ARG:
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            result = frg_escape_str(&escaped, ((frg_ast_value_call_kw_arg_t*)ast)->name);
+            result = frg_escape_str(&escaped, ((frg_ast_value_call_kw_arg_t*)ast)->name->str);
             if (result == FRG_STATUS_OK) {
                 frg_debug_print_property("name", "%s", escaped->str);
             } else {

@@ -15,7 +15,7 @@
 
 # Project definition
 # --------------------------------------------------------------------------------------
-project('forge-compiler', 'c', default_options: ['c_std=gnu18'])
+project('forge-compiler', 'c', default_options: ['c_std=gnu18', 'werror=true'])
 
 # Tools
 # --------------------------------------------------------------------------------------

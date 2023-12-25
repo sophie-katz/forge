@@ -43,6 +43,7 @@ forge_generated_files_bison = forge_generator_bison.process('lib/forge/parse/for
 # Dependencies
 # --------------------------------------------------------------------------------------
 
+compiler = meson.get_compiler('c')
 cmake = import('cmake')
 
 # Subprojects
@@ -53,6 +54,13 @@ forge_subproject_utf8proc = cmake.subproject('utf8proc')
 forge_dependency_unity = forge_subproject_unity.get_variable('unity_dep')
 forge_dependency_utf8proc = forge_subproject_utf8proc.dependency('utf8proc')
 forge_dependency_glib2_0 = dependency('glib-2.0')
+forge_dependency_m = compiler.find_library('m', required: true)
+
+forge_dependencies = [
+    forge_dependency_utf8proc,
+    forge_dependency_glib2_0,
+    forge_dependency_m
+]
 
 # Forge libraries
 # --------------------------------------------------------------------------------------
@@ -74,7 +82,7 @@ forge_compiler_lib = static_library(
     forge_generated_files_flex,
     forge_generated_files_bison,
     include_directories: forge_include_directories,
-    dependencies: [forge_dependency_glib2_0, forge_dependency_utf8proc],
+    dependencies: forge_dependencies,
     implicit_include_directories: true
 )
 
@@ -86,7 +94,7 @@ executable(
     'src/forge-compiler/main.c',
     include_directories: forge_include_directories,
     link_with: forge_compiler_lib,
-    dependencies: [forge_dependency_glib2_0, forge_dependency_utf8proc]
+    dependencies: forge_dependencies
 )
 
 # Tests
@@ -97,9 +105,7 @@ forge_test_ast_ast = executable(
     'lib/forge/ast/ast_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
+    dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
 )
@@ -111,9 +117,7 @@ forge_test_common_stream = executable(
     'lib/forge/common/stream_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
+    dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
 )
@@ -125,9 +129,7 @@ forge_test_common_color = executable(
     'lib/forge/common/color_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
+    dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
 )
@@ -139,9 +141,7 @@ forge_test_common_memory = executable(
     'lib/forge/common/memory_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
+    dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
 )
@@ -153,9 +153,7 @@ forge_test_common_lexical_casts = executable(
     'lib/forge/common/lexical_casts_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
+    dependencies: forge_dependencies + [
         forge_dependency_unity
     ]
 )
@@ -170,11 +168,7 @@ executable(
     'lib/forge/common/color_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
-        forge_dependency_unity
-    ]
+    dependencies: forge_dependencies
 )
 
 executable(
@@ -182,11 +176,7 @@ executable(
     'lib/forge/common/log_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
-        forge_dependency_unity
-    ]
+    dependencies: forge_dependencies
 )
 
 executable(
@@ -194,9 +184,5 @@ executable(
     'lib/forge/common/debug_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_compiler_lib],
-    dependencies: [
-        forge_dependency_glib2_0,
-        forge_dependency_utf8proc,
-        forge_dependency_unity
-    ]
+    dependencies: forge_dependencies
 )

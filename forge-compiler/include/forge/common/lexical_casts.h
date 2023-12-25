@@ -21,8 +21,30 @@
 
 frg_status_t frg_escape_char(GString** escaped, frg_char_t value);
 
-frg_status_t frg_escape_str(GString** escaped, GString* value);
-
 frg_status_t frg_unescape_char(frg_char_t* value, const GString* escaped);
 
+frg_status_t frg_escape_str(GString** escaped, GString* value);
+
 frg_status_t frg_unescape_str(GString** value, const GString* escaped);
+
+frg_status_t frg_uint_to_str(
+    GString** str,
+    uint64_t value,
+    uint32_t base
+);
+
+frg_status_t frg_str_to_uint(
+    uint64_t* value,
+    const GString* str
+);
+
+frg_status_t frg_float_to_str(
+    GString** str,
+    frg_f64_t value,
+    uint32_t base
+);
+
+frg_status_t frg_str_to_float(
+    frg_f64_t* value,
+    const GString* str
+);

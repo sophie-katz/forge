@@ -29,7 +29,13 @@ String literals which represent all possible string values.
 
 Forge string literals are heavily based on [C string literals](https://en.cppreference.com/w/c/language/string_literal), as are most modern programming languages.
 
-This specification references the [ASCII specification](https://www.ascii-code.com/) and the [UTF-8 specification](https://www.unicode.org/versions/Unicode15.1.0/).
+This specification references:
+
+- [ASCII specification](https://www.ascii-code.com/)
+
+- [UTF-8 specification](https://www.unicode.org/versions/Unicode15.1.0/)
+
+- [Summary of UTF-32](https://www.ibm.com/docs/en/i/7.1?topic=unicode-utf-32)
 
 ## Description
 
@@ -77,7 +83,7 @@ The following escape codes are supported:
 
 - `\xHH` where `H` represents a hexadecimal digit (exactly 2 digits must be used)
 
-- `\u{HHHH}` where `H` represents a hexadecimal digit (1-4 digits may be used)
+- `\u{HHHHHH}` where `H` represents a hexadecimal digit (1-6 digits may be used)
 
 `\` followed by any other character simply has the value of that character. For example, `\"` is a string literal with the value `"`.
 

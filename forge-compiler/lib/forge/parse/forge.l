@@ -22,6 +22,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 %{
 #include <ctype.h>
+#include <forge/ast/ast.h>
 #include <forge/common/log.h>
 #include <forge/common/types.h>
 #include <glib.h>

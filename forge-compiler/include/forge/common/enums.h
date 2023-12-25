@@ -38,6 +38,8 @@ typedef enum {
     FRG_STATUS_ERROR_OUT_OF_MEMORY,
     /// Parsing reached out of text unexpectedly
     FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
+    /// An unexpected character was encountered while parsing text
+    FRG_STATUS_ERROR_UNEXPECTED_CHARACTER,
 } frg_status_t;
 
 const char* frg_status_to_string(frg_status_t status);

@@ -24,13 +24,13 @@ Float literals represent floating-point values.
 ## Syntax specification
 
 ```
-0b[0-1_]*[0-1]\.[0-1_]*[0-1](f32|f64)?
+0b[0-1_]*[0-1]\.[0-1_]*[0-1](e-?[0-1_]*[0-1]\.[0-1_]*[0-1])?(f32|f64)?
 
-0o[0-7_]*[0-7]\.[0-7_]*[0-7](f32|f64)?
+0o[0-7_]*[0-7]\.[0-7_]*[0-7](e-?[0-7_]*[0-7]\.[0-7_]*[0-7])?(f32|f64)?
 
 (0|([1-9]([0-9_]*[0-9])?))\.[0-9_]*[0-9](f32|f64)?e-?(0|([1-9]([0-9_]*[0-9])?))\.[0-9_]*[0-9]
 
-0o[0-9a-fA-F_]*[0-9a-fA-F]\.[0-9a-fa-F_]*[0-9a-fA-F](f32|f64)?
+0x[0-9a-fA-F_]*[0-9a-fA-F]\.[0-9a-fa-F_]*(e-?[0-9a-fA-F_]*[0-9a-fA-F]\.[0-9a-fa-F_]*)?[0-9a-fA-F](f32|f64)?
 ```
 
 Regular expression above is specified using the [PCRE2 syntax](https://www.pcre.org/current/doc/html/pcre2syntax.html).
@@ -61,7 +61,7 @@ The float literal will always be put into a value of this type. The value will b
 
 ### Scientific notation
 
-Decimal float literals can have a scientific notation suffix. This is specified using the `e` character followed by an optional `-` character and then another decimal floating point literal.
+Float literals can have a scientific notation suffix. This is specified using the `e` character followed by an optional `-` character and then another floating point literal.
 
 ### Underscores
 

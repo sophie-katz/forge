@@ -91,8 +91,7 @@ frg_status_t frg_ast_new_decl_union(
 frg_status_t frg_ast_new_decl_struct(
     frg_ast_decl_struct_t** ast,
     GString* name,
-    GList* props,
-    GList* fns
+    GList* decls
 ) {
     if (ast == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
@@ -109,8 +108,7 @@ frg_status_t frg_ast_new_decl_struct(
 
     (*ast)->base.id = FRG_AST_ID_DECL_STRUCT;
     (*ast)->name = name;
-    (*ast)->props = props;
-    (*ast)->fns = fns;
+    (*ast)->decls = decls;
 
     return FRG_STATUS_OK;
 }
@@ -149,8 +147,7 @@ frg_status_t frg_ast_new_decl_iface(
     frg_ast_decl_iface_flags_t flags,
     GString* name,
     GList* extends,
-    GList* props,
-    GList* fns
+    GList* decls
 ) {
     if (ast == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
@@ -169,8 +166,7 @@ frg_status_t frg_ast_new_decl_iface(
     (*ast)->flags = flags;
     (*ast)->name = name;
     (*ast)->extends = extends;
-    (*ast)->props = props;
-    (*ast)->fns = fns;
+    (*ast)->decls = decls;
 
     return FRG_STATUS_OK;
 }
@@ -207,6 +203,7 @@ frg_status_t frg_ast_new_decl_fn(
     GList* args,
     GList* var_pos_args,
     GList* var_kw_args,
+    frg_ast_t* return_ty,
     frg_ast_t* body
 ) {
     if (ast == NULL) {
@@ -215,8 +212,6 @@ frg_status_t frg_ast_new_decl_fn(
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (name->len == 0) {
         return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (body == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
     frg_status_t result = frg_safe_malloc((void**)ast, sizeof(frg_ast_decl_fn_t));
@@ -230,6 +225,7 @@ frg_status_t frg_ast_new_decl_fn(
     (*ast)->args = args;
     (*ast)->var_pos_args = var_pos_args;
     (*ast)->var_kw_args = var_kw_args;
+    (*ast)->return_ty = return_ty;
     (*ast)->body = body;
 
     return FRG_STATUS_OK;
@@ -237,7 +233,6 @@ frg_status_t frg_ast_new_decl_fn(
 
 frg_status_t frg_ast_new_decl_var(
     frg_ast_decl_var_t** ast,
-    frg_ast_decl_var_flags_t flags,
     frg_ast_t* prop,
     frg_ast_t* initial_value
 ) {
@@ -255,7 +250,6 @@ frg_status_t frg_ast_new_decl_var(
     }
 
     (*ast)->base.id = FRG_AST_ID_DECL_VAR;
-    (*ast)->flags = flags;
     (*ast)->prop = prop;
     (*ast)->initial_value = initial_value;
 
@@ -814,7 +808,7 @@ frg_status_t _frg_asts_free_glist(GList* list) {
 }
 
 frg_status_t frg_ast_destroy(frg_ast_t** ast) {
-    if (ast == NULL) {
+    if (ast == NULL || *ast == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
@@ -837,12 +831,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_DECL_STRUCT:
             g_string_free(((frg_ast_decl_struct_t*)*ast)->name, TRUE);
 
-            result = _frg_asts_free_glist(((frg_ast_decl_struct_t*)*ast)->props);
-            if (result != FRG_STATUS_OK) {
-                return result;
-            }
-
-            result = _frg_asts_free_glist(((frg_ast_decl_struct_t*)*ast)->fns);
+            result = _frg_asts_free_glist(((frg_ast_decl_struct_t*)*ast)->decls);
             if (result != FRG_STATUS_OK) {
                 return result;
             }
@@ -865,12 +854,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
                 return result;
             }
 
-            result = _frg_asts_free_glist(((frg_ast_decl_iface_t*)*ast)->props);
-            if (result != FRG_STATUS_OK) {
-                return result;
-            }
-
-            result = _frg_asts_free_glist(((frg_ast_decl_iface_t*)*ast)->fns);
+            result = _frg_asts_free_glist(((frg_ast_decl_iface_t*)*ast)->decls);
             if (result != FRG_STATUS_OK) {
                 return result;
             }

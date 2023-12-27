@@ -1,7 +1,5 @@
 # Compiler flow
 
-End to end, the Forge compiler.
-
 ## Syntax
 
 ```mermaid

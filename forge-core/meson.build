@@ -62,6 +62,37 @@ forge_dependencies = [
     forge_dependency_m
 ]
 
+# Build configuration
+# --------------------------------------------------------------------------------------
+
+forge_git_commit_sha_result = run_command(
+    [
+        'git',
+        'rev-parse',
+        'HEAD'
+    ],
+    capture: true,
+    check: true
+)
+
+forge_configuration_data = configuration_data()
+forge_configuration_data.set('version_major', '0')
+forge_configuration_data.set('version_minor', '1')
+forge_configuration_data.set('version_patch', '0')
+forge_configuration_data.set('version_label', 'alpha')
+forge_configuration_data.set('git_commit_sha', forge_git_commit_sha_result.stdout().strip())
+forge_configuration_data.set('compiler_id', compiler.get_id())
+forge_configuration_data.set('compiler_version', compiler.version())
+forge_configuration_data.set('linker_id', compiler.get_linker_id())
+forge_configuration_data.set('host_machine_cpu', host_machine.cpu())
+forge_configuration_data.set('host_machine_system', host_machine.system())
+
+forge_build_config_header = configure_file(
+    input: 'build_config.h.in',
+    output: 'build_config.h',
+    configuration: forge_configuration_data
+)
+
 # Forge libraries
 # --------------------------------------------------------------------------------------
 forge_include_directories = include_directories('include')
@@ -77,6 +108,7 @@ forge_core_lib = static_library(
     'lib/forge/common/log.c',
     'lib/forge/common/memory.c',
     'lib/forge/common/stream.c',
+    'lib/forge/config/cli.c',
     'lib/forge/exec/exec.c',
     'lib/forge/parse/parse.c',
     forge_generated_files_flex,
@@ -90,16 +122,8 @@ forge_core_lib = static_library(
 # --------------------------------------------------------------------------------------
 
 executable(
-    'forge-compiler',
-    'src/forge-compiler/main.c',
-    include_directories: forge_include_directories,
-    link_with: forge_core_lib,
-    dependencies: forge_dependencies
-)
-
-executable(
-    'forge-interpreter',
-    'src/forge-interpreter/main.c',
+    'forge',
+    'src/forge/main.c',
     include_directories: forge_include_directories,
     link_with: forge_core_lib,
     dependencies: forge_dependencies

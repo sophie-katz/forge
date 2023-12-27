@@ -16,7 +16,7 @@ not, see <https://www.gnu.org/licenses/>.
 */
 
 %locations
-%start value
+%start decl_block
 %parse-param { frg_ast_t** ast }
 
 %{
@@ -64,9 +64,11 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %token KW_TY
 %token KW_PROP
 %token KW_IFACE
+%token KW_KW
 %token KW_FN
 %token KW_CONST
 %token KW_MUT
+%token KW_OVERRIDE
 %token KW_LET
 %token KW_RETURN
 %token KW_IF
@@ -147,7 +149,6 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> ty
 %type <list> decl_union_list
 %type <ast> decl_union
-%type <ast> decl_prop_non_const
 %type <ast> decl_prop
 %type <list> decl_struct_list
 %type <ast> decl_struct
@@ -156,6 +157,17 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> decl_iface_list_element
 %type <list> decl_iface_list
 %type <ast> decl_iface
+%type <ast> decl_fn_arg_default_value
+%type <ast> decl_fn_arg
+%type <list> decl_fn_arg_list
+%type <list> decl_fn_arg_list_optional
+%type <ast> decl_fn_return_ty
+%type <ast> decl_fn_body
+%type <ast> decl_fn
+%type <ast> decl_var
+%type <ast> decl
+%type <list> decl_list
+%type <ast> decl_block
 %type <ast> stmt_return
 %type <ast> stmt_if
 %type <ast> stmt_while
@@ -170,19 +182,29 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> value_str
 %type <ast> value_symbol
 %type <ast> value_primary
-%type <ast> value_access
-%type <ast> value_bit_not
+%type <ast> value_access_call
+%type <ast> value_inc_dec
+%type <ast> value_exp
+%type <ast> value_neg_bit_not
+%type <ast> value_mul
+%type <ast> value_add
+%type <ast> value_bit_shift
 %type <ast> value_bit_and
+%type <ast> value_bit_xor
 %type <ast> value_bit_or
+%type <ast> value_cmp
 %type <ast> value_log_not
 %type <ast> value_log_and
 %type <ast> value_log_or
+%type <ast> value_assign
 %type <ast> value
+%type <list> value_list
+%type <list> value_list_optional
 
 %%
 ty_bool : KW_BOOL
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_BOOL);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_BOOL);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -191,7 +213,7 @@ ty_bool : KW_BOOL
 
 ty_u8 : KW_U8
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_U8);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U8);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -200,7 +222,7 @@ ty_u8 : KW_U8
 
 ty_u16 : KW_U16
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_U16);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U16);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -209,7 +231,7 @@ ty_u16 : KW_U16
 
 ty_u32 : KW_U32
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_U32);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U32);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -218,7 +240,7 @@ ty_u32 : KW_U32
 
 ty_u64 : KW_U64
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_U64);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U64);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -227,7 +249,7 @@ ty_u64 : KW_U64
 
 ty_i8 : KW_I8
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_I8);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I8);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -236,7 +258,7 @@ ty_i8 : KW_I8
 
 ty_i16 : KW_I16
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_I16);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I16);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -245,7 +267,7 @@ ty_i16 : KW_I16
 
 ty_i32 : KW_I32
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_I32);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I32);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -254,7 +276,7 @@ ty_i32 : KW_I32
 
 ty_i64 : KW_I64
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_I64);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I64);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -263,7 +285,7 @@ ty_i64 : KW_I64
 
 ty_f32 : KW_F32
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_F32);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_F32);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -272,7 +294,7 @@ ty_f32 : KW_F32
 
 ty_f64 : KW_F64
 {
-    frg_status_t result = frg_ast_new_ty_primary((frg_ast_ty_t**)&$$, FRG_AST_ID_TY_F64);
+    frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_F64);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -339,13 +361,11 @@ ty : ty_bool
 
 decl_union_list : ty
 {
-    $$ = NULL;
-    g_list_append($$, $1);
+    $$ = g_list_append(NULL, $1);
 }
 | decl_union_list BIT_OR ty
 {
-    g_list_append($1, $3);
-    $$ = $1;
+    $$ = g_list_append($1, $3);
 };
 
 decl_union : KW_TY SYMBOL ASSIGN decl_union_list SEMICOLON
@@ -357,7 +377,7 @@ decl_union : KW_TY SYMBOL ASSIGN decl_union_list SEMICOLON
     }
 };
 
-decl_prop_non_const : SYMBOL
+decl_prop : SYMBOL
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_NONE, $1, NULL);
     if (result != FRG_STATUS_OK) {
@@ -406,25 +426,13 @@ decl_prop_non_const : SYMBOL
     }
 };
 
-decl_prop : decl_prop_non_const
-{
-    $$ = $1;
-}
-| KW_CONST decl_prop_non_const
-{
-    $2->flags |= FRG_AST_DECL_PROP_FLAG_CONST;
-    $$ = prop;
-}
-
 decl_struct_list : decl_prop SEMICOLON
 {
-    $$ = NULL;
-    g_list_append($$, $1);
+    $$ = g_list_append(NULL, $1);
 }
 | decl_struct_list decl_prop SEMICOLON
 {
-    g_list_append($1, $2);
-    $$ = $1;
+    $$ = g_list_append($1, $2);
 };
 
 decl_struct : KW_TY SYMBOL CURLY_BRACE_LEFT decl_struct_list CURLY_BRACE_RIGHT
@@ -438,13 +446,11 @@ decl_struct : KW_TY SYMBOL CURLY_BRACE_LEFT decl_struct_list CURLY_BRACE_RIGHT
 
 decl_iface_extends_list : ty
 {
-    $$ = NULL;
-    g_list_append($$, $1);
+    $$ = g_list_append(NULL, $1);
 }
 | decl_iface_extends_list COMMA ty
 {
-    g_list_append($1, $3);
-    $$ = $1;
+    $$ = g_list_append($1, $3);
 };
 
 decl_iface_optional_extends : 
@@ -456,46 +462,170 @@ decl_iface_optional_extends :
     $$ = $2;
 };
 
-decl_iface_list_element : KW_PROP decl_prop_non_const {
+decl_iface_list_element : KW_PROP decl_prop {
     $$ = NULL;
 };
 
 decl_iface_list : decl_iface_list_element
 {
-    $$ = NULL;
-    g_list_append($$, $1);
+    $$ = g_list_append(NULL, $1);
 }
 | decl_iface_list decl_iface_list_element
 {
-    g_list_append($1, $2);
-    $$ = $1;
+    $$ = g_list_append($1, $2);
 };
 
 decl_iface : KW_IFACE SYMBOL decl_iface_optional_extends CURLY_BRACE_LEFT decl_iface_list CURLY_BRACE_RIGHT
 {
-    frg_status_t result = frg_ast_new_decl_iface((frg_ast_decl_iface_t**)&$$, $2, $3, $5);
+    frg_status_t result = frg_ast_new_decl_iface((frg_ast_decl_iface_t**)&$$, FRG_AST_DECL_IFACE_FLAG_NONE, $2, $3, $5);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
     }
 };
 
-/* decl_fn : KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list PAREN_RIGHT stmt_block
+decl_fn_arg_default_value: ASSIGN value
 {
-    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, $2, NULL, NULL);
+    $$ = $2;
+}
+|
+{
+    $$ = NULL;
+};
+
+decl_fn_arg: decl_prop decl_fn_arg_default_value
+{
+    frg_status_t result = frg_ast_new_decl_fn_arg((frg_ast_decl_fn_arg_t**)&$$, FRG_AST_DECL_FN_ARG_FLAG_NONE, $1, $2);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
     }
 }
-| KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list PAREN_RIGHT SEMICOLON
+| KW_KW decl_prop decl_fn_arg_default_value
 {
-    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, $2, NULL, NULL);
+    frg_status_t result = frg_ast_new_decl_fn_arg((frg_ast_decl_fn_arg_t**)&$$, FRG_AST_DECL_FN_ARG_FLAG_KW, $2, $3);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
     }
-} */
+};
+
+decl_fn_arg_list: decl_fn_arg
+{
+    $$ = g_list_append(NULL, $1);
+}
+| decl_fn_arg_list COMMA decl_fn_arg
+{
+    $$ = g_list_append($1, $3);
+};
+
+decl_fn_arg_list_optional: decl_fn_arg_list
+{
+    $$ = $1;
+}
+|
+{
+    $$ = NULL;
+};
+
+decl_fn_body : stmt_block
+{
+    $$ = $1;
+}
+| SEMICOLON
+{
+    $$ = NULL;
+};
+
+decl_fn_return_ty : ARROW_RIGHT ty
+{
+    $$ = $2;
+}
+|
+{
+    $$ = NULL;
+};
+
+decl_fn : KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
+{
+    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_NONE, $2, $4, NULL, NULL, $6, $7);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
+}
+| KW_MUT KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
+{
+    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_MUT, $3, $5, NULL, NULL, $7, $8);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
+}
+| KW_OVERRIDE KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
+{
+    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_OVERRIDE, $3, $5, NULL, NULL, $7, $8);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
+};
+
+decl_var : KW_LET decl_prop SEMICOLON
+{
+    frg_status_t result = frg_ast_new_decl_var((frg_ast_decl_var_t**)&$$, $2, NULL);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| KW_LET decl_prop ASSIGN value SEMICOLON
+{
+    frg_status_t result = frg_ast_new_decl_var((frg_ast_decl_var_t**)&$$, $2, $4);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+};
+
+decl : decl_union
+{
+    $$ = $1;
+}
+| decl_struct
+{
+    $$ = $1;
+}
+| decl_iface
+{
+    $$ = $1;
+}
+| decl_fn
+{
+    $$ = $1;
+}
+| decl_var
+{
+    $$ = $1;
+};
+
+decl_list: decl
+{
+    $$ = g_list_append(NULL, $1);
+}
+| decl_list decl
+{
+    $$ = g_list_append($1, $2);
+};
+
+decl_block: decl_list
+{
+    frg_status_t result = frg_ast_new_decl_block((frg_ast_decl_block_t**)&$$, $1);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
+};
 
 stmt_return : KW_RETURN value SEMICOLON
 {
@@ -576,6 +706,10 @@ stmt : value SEMICOLON
 {
     $$ = $1;
 }
+| decl
+{
+    $$ = $1;
+}
 | SEMICOLON
 {
     $$ = NULL;
@@ -583,13 +717,11 @@ stmt : value SEMICOLON
 
 stmt_list : stmt
 {
-    $$ = NULL;
-    g_list_append($$, $1);
+    $$ = g_list_append(NULL, $1);
 }
 | stmt_list stmt
 {
-    g_list_append($1, $2);
-    $$ = $1;
+    $$ = g_list_append($1, $2);
 };
 
 stmt_block : CURLY_BRACE_LEFT CURLY_BRACE_RIGHT
@@ -598,7 +730,7 @@ stmt_block : CURLY_BRACE_LEFT CURLY_BRACE_RIGHT
 }
 | CURLY_BRACE_LEFT stmt_list CURLY_BRACE_RIGHT
 {
-    frg_status_t result = frg_ast_new_stmt_block((frg_ast_t**)&$$, $2);
+    frg_status_t result = frg_ast_new_stmt_block((frg_ast_stmt_block_t**)&$$, $2);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -701,9 +833,17 @@ value_primary : value_true
     $$ = $2;
 };
 
-value_access : value_primary DOT value_symbol
+value_access_call : value_access_call DOT value_symbol
 {
-    frg_status_t result = frg_ast_new_value_access((frg_ast_value_access_t**)&$$, $1, $3);
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ACCESS, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
+}
+| value_access_call PAREN_LEFT value_list_optional PAREN_RIGHT
+{
+    frg_status_t result = frg_ast_new_value_call((frg_ast_value_call_t**)&$$, $1, $3, NULL);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -714,51 +854,155 @@ value_access : value_primary DOT value_symbol
     $$ = $1;
 };
 
-value_bit_not : BIT_NOT value_access
+value_inc_dec : value_access_call INC
+{
+    frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_INC, $1);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_access_call DEC
+{
+    frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_DEC, $1);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+};
+
+value_exp : value_inc_dec EXP value_exp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_EXP, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_inc_dec
+{
+    $$ = $1;
+};
+
+value_neg_bit_not : BIT_NOT value_neg_bit_not
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_BIT_NOT, $2);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
     }
 }
-| value_access
+| SUB value_neg_bit_not
+{
+    frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_NEG, $2);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_exp
 {
     $$ = $1;
 };
 
-/* value_bit_shift : value_bit_not BIT_SHL value_bit_shift
+value_mul : value_neg_bit_not MUL value_mul
 {
-    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_OR, $1, $3);
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MUL, $1, $3);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
     }
 }
-| value_bit_and
+| value_neg_bit_not DIV value_mul
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_neg_bit_not DIV_INT value_mul
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV_INT, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_neg_bit_not MOD value_mul
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MOD, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_neg_bit_not
 {
     $$ = $1;
-}; */
+};
 
-value_bit_and : value_bit_not BIT_AND value_bit_and
+value_add : value_mul ADD value_add
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ADD, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_mul SUB value_add
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_SUB, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_exp
+{
+    $$ = $1;
+};
+
+value_bit_shift : value_add BIT_SHL value_bit_shift
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHL, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_add BIT_SHR value_bit_shift
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHR, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
+    }
+}
+| value_exp
+{
+    $$ = $1;
+};
+
+value_bit_and : value_bit_shift BIT_AND value_bit_and
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_AND, $1, $3);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result)); 
     }
 }
-| value_bit_not
+| value_bit_shift
 {
     $$ = $1;
 };
 
-value_bit_or : value_bit_and BIT_OR value_bit_or
+value_bit_xor : value_bit_and BIT_XOR value_bit_xor
 {
-    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_OR, $1, $3);
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_XOR, $1, $3);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result)); 
     }
 }
 | value_bit_and
@@ -766,15 +1010,81 @@ value_bit_or : value_bit_and BIT_OR value_bit_or
     $$ = $1;
 };
 
-value_log_not : LOG_NOT value_primary
+value_bit_or : value_bit_xor BIT_OR value_bit_or
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_OR, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_bit_xor
+{
+    $$ = $1;
+};
+
+value_cmp : value_bit_or EQ value_cmp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_EQ, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_bit_or NE value_cmp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_NE, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_bit_or LT value_cmp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LT, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_bit_or LE value_cmp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LE, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_bit_or GT value_cmp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_GT, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_bit_or GE value_cmp
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_GE, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_bit_or
+{
+    $$ = $1;
+};
+
+value_log_not : LOG_NOT value_cmp
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_LOG_NOT, $2);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
     }
 }
-| value_primary
+| value_cmp
 {
     $$ = $1;
 };
@@ -784,7 +1094,7 @@ value_log_and : value_log_not LOG_AND value_log_and
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_AND, $1, $3);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
     }
 }
 | value_log_not
@@ -797,7 +1107,7 @@ value_log_or : value_log_and LOG_OR value_log_or
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_OR, $1, $3);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
     }
 }
 | value_log_and
@@ -805,8 +1115,151 @@ value_log_or : value_log_and LOG_OR value_log_or
     $$ = $1;
 };
 
-value : value_log_or
+value_assign : value_log_or ASSIGN value_assign
 {
-    *ast = $1;
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_log_or ADD_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ADD_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_log_or SUB_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_SUB_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_log_or MUL_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MUL_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+    }
+}
+| value_log_or DIV_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or DIV_INT_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV_INT_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or MOD_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MOD_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or BIT_SHL_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHL_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or BIT_SHR_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHR_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or BIT_AND_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_AND_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or BIT_XOR_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_XOR_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or BIT_OR_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_OR_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or EXP_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_EXP_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or LOG_AND_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_AND_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or LOG_OR_ASSIGN value_assign
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_OR_ASSIGN, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+    }
+}
+| value_log_or
+{
+    $$ = $1;
+};
+
+value : value_assign
+{
+    $$ = $1;
+};
+
+value_list : value
+{
+    $$ = g_list_append(NULL, $1);
+}
+| value_list COMMA value
+{
+    $$ = g_list_append($1, $3);
+};
+
+value_list_optional : value_list
+{
+    $$ = $1;
+}
+|
+{
+    $$ = NULL;
 };
 %%

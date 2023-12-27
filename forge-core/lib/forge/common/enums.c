@@ -31,6 +31,8 @@ const char* frg_status_to_string(frg_status_t status) {
             return "unexpected end of text";
         case FRG_STATUS_ERROR_UNEXPECTED_CHARACTER:
             return "unexpected character";
+        case FRG_STATUS_ERROR_DUPLICATE:
+            return "duplicate";
         default:
             return "(unknown value for frg_status_t)";
     }
@@ -336,26 +338,6 @@ void frg_ast_decl_iface_flags_print(FILE* file, frg_ast_decl_iface_flags_t flags
 void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t flags) {
     bool first = true;
 
-    if (flags & FRG_AST_DECL_FN_ARG_FLAG_CONST) {
-        if (!first) {
-            fprintf(file, ",");
-        }
-
-        fprintf(file, "const");
-
-        first = false;
-    }
-
-    if (flags & FRG_AST_DECL_FN_ARG_FLAG_MUT) {
-        if (!first) {
-            fprintf(file, ",");
-        }
-
-        fprintf(file, "mut");
-
-        first = false;
-    }
-
     if (flags & FRG_AST_DECL_FN_ARG_FLAG_KW) {
         if (!first) {
             fprintf(file, ",");
@@ -374,16 +356,6 @@ void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t fla
 void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags) {
     bool first = true;
 
-    if (flags & FRG_AST_DECL_FN_FLAG_CONST) {
-        if (!first) {
-            fprintf(file, ",");
-        }
-
-        fprintf(file, "const");
-
-        first = false;
-    }
-
     if (flags & FRG_AST_DECL_FN_FLAG_MUT) {
         if (!first) {
             fprintf(file, ",");
@@ -400,34 +372,6 @@ void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags) {
         }
 
         fprintf(file, "override");
-
-        first = false;
-    }
-
-    if (first) {
-        fprintf(file, "none");
-    }
-}
-
-void frg_ast_decl_var_flags_print(FILE* file, frg_ast_decl_var_flags_t flags) {
-    bool first = true;
-
-    if (flags & FRG_AST_DECL_VAR_FLAG_CONST) {
-        if (!first) {
-            fprintf(file, ",");
-        }
-
-        fprintf(file, "const");
-
-        first = false;
-    }
-
-    if (flags & FRG_AST_DECL_VAR_FLAG_MUT) {
-        if (!first) {
-            fprintf(file, ",");
-        }
-
-        fprintf(file, "mut");
 
         first = false;
     }

@@ -39,8 +39,7 @@ typedef struct {
 typedef struct {
     frg_ast_t base;
     GString* name;
-    GList* props;
-    GList* fns;
+    GList* decls;
 } frg_ast_decl_struct_t;
 
 typedef struct {
@@ -55,8 +54,7 @@ typedef struct {
     frg_ast_decl_iface_flags_t flags;
     GString* name;
     GList* extends;
-    GList* props;
-    GList* fns;
+    GList* decls;
 } frg_ast_decl_iface_t;
 
 typedef struct {
@@ -73,12 +71,12 @@ typedef struct {
     GList* args;
     GList* var_pos_args;
     GList* var_kw_args;
+    frg_ast_t* return_ty;
     frg_ast_t* body;
 } frg_ast_decl_fn_t;
 
 typedef struct {
     frg_ast_t base;
-    frg_ast_decl_var_flags_t flags;
     frg_ast_t* prop;
     frg_ast_t* initial_value;
 } frg_ast_decl_var_t;
@@ -193,8 +191,7 @@ frg_status_t frg_ast_new_decl_union(
 frg_status_t frg_ast_new_decl_struct(
     frg_ast_decl_struct_t** ast,
     GString* name,
-    GList* props,
-    GList* fns
+    GList* decls
 );
 
 frg_status_t frg_ast_new_decl_prop(
@@ -209,8 +206,7 @@ frg_status_t frg_ast_new_decl_iface(
     frg_ast_decl_iface_flags_t flags,
     GString* name,
     GList* extends,
-    GList* props,
-    GList* fns
+    GList* decls
 );
 
 frg_status_t frg_ast_new_decl_fn_arg(
@@ -227,12 +223,12 @@ frg_status_t frg_ast_new_decl_fn(
     GList* args,
     GList* var_pos_args,
     GList* var_kw_args,
+    frg_ast_t* return_ty,
     frg_ast_t* body
 );
 
 frg_status_t frg_ast_new_decl_var(
     frg_ast_decl_var_t** ast,
-    frg_ast_decl_var_flags_t flags,
     frg_ast_t* prop,
     frg_ast_t* initial_value
 );

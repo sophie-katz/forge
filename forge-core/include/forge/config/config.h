@@ -13,31 +13,21 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/ast/ast.h>
-#include <forge/common/debug.h>
-#include <forge/common/log.h>
-#include <forge/exec/exec.h>
-#include <forge/parse/parse.h>
-#include <stdio.h>
-#include <string.h>
+#pragma once
 
-int main(int argc, char *argv[]) {
-    // frg_ast_t* ast = frg_parse_string("true \n&& (!false)", "--");
+#include <forge/common/enums.h>
+#include <glib.h>
 
-    // if (ast != NULL) {
-    //     frg_debug_print_ast(ast);
-        
-    //     printf("\n\n=> ");
+typedef struct {
+    frg_color_mode_t color_mode;
+    bool debug;
+    GString* source_file;
+    bool version_short;
+} frg_config_t;
 
-    //     frg_value_t* value = frg_exec(ast);
+frg_status_t frg_config_new_default(frg_config_t** config);
+void frg_config_destroy(frg_config_t** config);
 
-    //     frg_value_print(stdout, value);
+bool frg_config_parse_cli(frg_config_t* config, int argc, const char** argv);
 
-    //     printf("\n");
-
-    //     frg_value_destroy(&value);
-    //     frg_ast_destroy(&ast);
-    // }
-
-    return 0;
-}
+void frg_config_print_debug(const frg_config_t* config);

@@ -33,7 +33,7 @@ void _frg_ast_print_debug_list_gfunc(gpointer data, gpointer user_data) {
         NULL
     );
 
-    frg_ast_print_debug((frg_ast_t*)data, ctx->indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug((const frg_ast_t*)data, ctx->indent + FRG_DEBUG_INDENT_WIDTH);
 
     ctx->index++;
 }
@@ -48,7 +48,7 @@ void _frg_ast_print_debug_list(GList* list, const char* label, frg_indent_t inde
     g_list_foreach(list, _frg_ast_print_debug_list_gfunc, &ctx);
 }
 
-void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
+void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
     if (ast == NULL) {
         frg_debug_print_node("null");
     }
@@ -95,14 +95,8 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             }
 
             _frg_ast_print_debug_list(
-                ((frg_ast_decl_struct_t*)ast)->props,
-                "props",
-                indent + FRG_DEBUG_INDENT_WIDTH
-            );
-
-            _frg_ast_print_debug_list(
-                ((frg_ast_decl_struct_t*)ast)->fns,
-                "fns",
+                ((frg_ast_decl_struct_t*)ast)->decls,
+                "decls",
                 indent + FRG_DEBUG_INDENT_WIDTH
             );
 
@@ -151,14 +145,8 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             );
 
             _frg_ast_print_debug_list(
-                ((frg_ast_decl_iface_t*)ast)->props,
-                "props",
-                indent + FRG_DEBUG_INDENT_WIDTH
-            );
-
-            _frg_ast_print_debug_list(
-                ((frg_ast_decl_iface_t*)ast)->fns,
-                "fns",
+                ((frg_ast_decl_iface_t*)ast)->decls,
+                "decls",
                 indent + FRG_DEBUG_INDENT_WIDTH
             );
 
@@ -215,18 +203,15 @@ void frg_ast_print_debug(frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
+            frg_debug_print_property("return_ty", NULL);
+            frg_ast_print_debug(((frg_ast_decl_fn_t*)ast)->return_ty, indent + FRG_DEBUG_INDENT_WIDTH);
+
+            frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
             frg_debug_print_property("body", NULL);
             frg_ast_print_debug(((frg_ast_decl_fn_t*)ast)->body, indent + FRG_DEBUG_INDENT_WIDTH);
 
             break;
         case FRG_AST_ID_DECL_VAR:
-            frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
-            frg_debug_print_property("flags", NULL);
-            frg_ast_decl_var_flags_print(
-                FRG_STREAM_DEFAULT,
-                ((frg_ast_decl_var_t*)ast)->flags
-            );
-
             frg_debug_print_newline(indent + FRG_DEBUG_INDENT_WIDTH);
             frg_debug_print_property("prop", NULL);
             frg_ast_print_debug(((frg_ast_decl_var_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);

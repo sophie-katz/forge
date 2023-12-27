@@ -105,6 +105,10 @@ iface {
     return KW_IFACE;
 }
 
+kw {
+    return KW_KW;
+}
+
 fn {
     return KW_FN;
 }
@@ -115,6 +119,10 @@ const {
 
 mut {
     return KW_MUT;
+}
+
+override {
+    return KW_OVERRIDE;
 }
 
 return {

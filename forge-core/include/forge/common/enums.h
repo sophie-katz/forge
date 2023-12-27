@@ -40,6 +40,8 @@ typedef enum {
     FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
     /// An unexpected character was encountered while parsing text
     FRG_STATUS_ERROR_UNEXPECTED_CHARACTER,
+    /// A duplicate entry or object was found
+    FRG_STATUS_ERROR_DUPLICATE,
 } frg_status_t;
 
 const char* frg_status_to_string(frg_status_t status);
@@ -197,26 +199,15 @@ void frg_ast_decl_iface_flags_print(FILE* file, frg_ast_decl_iface_flags_t flags
 
 typedef enum {
     FRG_AST_DECL_FN_ARG_FLAG_NONE = 0x0,
-    FRG_AST_DECL_FN_ARG_FLAG_CONST = 0x1,
-    FRG_AST_DECL_FN_ARG_FLAG_MUT = 0x2,
-    FRG_AST_DECL_FN_ARG_FLAG_KW = 0x4,
+    FRG_AST_DECL_FN_ARG_FLAG_KW = 0x1,
 } frg_ast_decl_fn_arg_flags_t;
 
 void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t flags);
 
 typedef enum {
     FRG_AST_DECL_FN_FLAG_NONE = 0x0,
-    FRG_AST_DECL_FN_FLAG_CONST = 0x1,
-    FRG_AST_DECL_FN_FLAG_MUT = 0x2,
-    FRG_AST_DECL_FN_FLAG_OVERRIDE = 0x4,
+    FRG_AST_DECL_FN_FLAG_MUT = 0x1,
+    FRG_AST_DECL_FN_FLAG_OVERRIDE = 0x2,
 } frg_ast_decl_fn_flags_t;
 
 void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags);
-
-typedef enum {
-    FRG_AST_DECL_VAR_FLAG_NONE = 0x0,
-    FRG_AST_DECL_VAR_FLAG_CONST = 0x1,
-    FRG_AST_DECL_VAR_FLAG_MUT = 0x2,
-} frg_ast_decl_var_flags_t;
-
-void frg_ast_decl_var_flags_print(FILE* file, frg_ast_decl_var_flags_t flags);

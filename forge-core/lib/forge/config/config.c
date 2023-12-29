@@ -1,7 +1,12 @@
-#include <forge/config/config.h>
+#include <build_config.h>
+#include <forge/ast/ast.h>
+#include <forge/ast/debug.h>
+#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/common/stream.h>
-#include <forge/common/consts.h>
+#include <forge/config/cli/program.h>
+#include <forge/config/config.h>
+#include <forge/parse/parse.h>
 
 frg_status_t frg_config_new_default(frg_config_t** config) {
     frg_status_t result = frg_safe_malloc((void**)config, sizeof(frg_config_t));
@@ -9,10 +14,10 @@ frg_status_t frg_config_new_default(frg_config_t** config) {
         return result;
     }
 
-    (*config)->command = FRG_CLI_COMMAND_HELP;
     (*config)->color_mode = FRG_COLOR_MODE_AUTO;
     (*config)->debug = false;
     (*config)->source_file = NULL;
+    (*config)->version_short = false;
 
     return FRG_STATUS_OK;
 }
@@ -27,140 +32,317 @@ void frg_config_destroy(frg_config_t** config) {
     frg_safe_free((void**)config);
 }
 
-bool _frg_config_parse_cli_try_get_command(frg_cli_command_t* command, const char* arg) {
-    if (command == NULL || arg == NULL) {
-        return false;
+frg_status_t _frg_cli_command_callback_dump_ast(
+    int* exit_status,
+    const struct frg_cli_program_t* program,
+    void* user_data,
+    GList* pos_args
+) {
+    if (pos_args == NULL) {
+        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "command dump-ast expects a source file as an argument");
+        return FRG_STATUS_CLI_ERROR;
+    } else if (pos_args->next != NULL) {
+        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "command dump-ast expects only one source file as an argument");
+        return FRG_STATUS_CLI_ERROR;
     }
 
-    if (strcmp(arg, "help") == 0) {
-        *command = FRG_CLI_COMMAND_HELP;
-        return true;
-    } else if (strcmp(arg, "dump-ast") == 0) {
-        *command = FRG_CLI_COMMAND_DUMP_AST;
-        return true;
+    const char* path = (const char*)pos_args->data;
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL) {
+        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to open source file: %s (%s)", path, strerror(errno));
+        return FRG_STATUS_CLI_ERROR;
+    }
+
+    frg_ast_t* ast = NULL;
+    frg_status_t result = frg_parse_file(
+        &ast,
+        file,
+        path
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse source file: %s", frg_status_to_string(result));
+        fclose(file);
+        return FRG_STATUS_CLI_ERROR;
+    }
+
+    frg_ast_print_debug(ast, 0);
+
+    fclose(file);
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_create_cli_command_dump_ast(frg_cli_command_t** command) {
+    frg_status_t result = frg_cli_command_new(
+        command,
+        "dump-ast",
+        "source file",
+        "Dump the AST of the source file.",
+        _frg_cli_command_callback_dump_ast
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_cli_command_callback_help(
+    int* exit_status,
+    const struct frg_cli_program_t* program,
+    void* user_data,
+    GList* pos_args
+) {
+    if (pos_args == NULL) {
+        return frg_cli_program_print_help((frg_cli_program_t*)program, NULL);
     } else {
-        return false;
+        return frg_cli_program_print_help((frg_cli_program_t*)program, (const char*)pos_args->data);
     }
 }
 
-bool _frg_config_parse_cli_global_opts(frg_config_t* config, int* argi, int argc, const char** argv) {
-    if (config == NULL || argi == NULL || argv == NULL) {
+frg_status_t _frg_config_create_cli_command_help(frg_cli_command_t** command) {
+    frg_status_t result = frg_cli_command_new(
+        command,
+        "help",
+        NULL,
+        "Display help information.",
+        _frg_cli_command_callback_help
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_cli_command_callback_version(
+    int* exit_status,
+    const struct frg_cli_program_t* program,
+    void* user_data,
+    GList* pos_args
+) {
+    const frg_config_t* config = (const frg_config_t*)user_data;
+
+    if (config->version_short) {
+        return frg_cli_program_print_version_short((frg_cli_program_t*)program);
+    } else {
+        return frg_cli_program_print_version_long((frg_cli_program_t*)program);
+    }
+}
+
+frg_status_t _frg_cli_option_callback_version_short(
+    void* user_data,
+    const char* value
+) {
+    frg_config_t* config = (frg_config_t*)user_data;
+    config->version_short = true;
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_create_cli_command_version(frg_cli_command_t** command) {
+    frg_status_t result = frg_cli_command_new(
+        command,
+        "version",
+        NULL,
+        "Display version information.",
+        _frg_cli_command_callback_version
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_option_t* option = NULL;
+    result = frg_cli_option_new_flag(
+        &option,
+        "short",
+        "Use short format (<major>.<minor>.<patch>-<label>)",
+        _frg_cli_option_callback_version_short
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI option: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_option_set_add_option(
+        (*command)->option_set,
+        option
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI option to command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_cli_program_callback(
+    int* exit_status,
+    const frg_cli_program_t* program,
+    void* user_data,
+    GList* pos_args
+) {
+    return frg_cli_program_print_help(program, NULL);
+}
+
+frg_status_t _frg_cli_option_callback_debug(void* user_data, const char* value) {
+    frg_config_t* config = (frg_config_t*)user_data;
+    config->debug = true;
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_create_cli_program(frg_cli_program_t** program) {
+    GString* version_details = g_string_new(NULL);
+    g_string_append_printf(version_details, "Git commit: %s\n", FRG_GIT_COMMIT_SHA);
+    g_string_append_printf(version_details, "Compiled with: %s %s\n", FRG_COMPILER_ID, FRG_COMPILER_VERSION);
+    g_string_append_printf(version_details, "Linked with: %s\n", FRG_LINKER_ID);
+    g_string_append_printf(version_details, "Built for: %s (%s)", FRG_HOST_MACHINE_SYSTEM, FRG_HOST_MACHINE_CPU);
+
+    frg_status_t result = frg_cli_program_new(
+        program,
+        "Forge",
+        "forge",
+        NULL,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        FRG_VERSION_LABEL,
+        version_details,
+        _frg_cli_program_callback
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_option_t* option = NULL;
+    result = frg_cli_option_new_flag(
+        &option,
+        "debug",
+        "Enable debug logging",
+        _frg_cli_option_callback_debug
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI option: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_option_set_add_option(
+        (*program)->global_options,
+        option
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI option to program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_command_t* command = NULL;
+    result = _frg_config_create_cli_command_dump_ast(&command);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_program_add_command(
+        *program,
+        command
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    command = NULL;
+    result = _frg_config_create_cli_command_help(&command);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_program_add_command(
+        *program,
+        command
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    command = NULL;
+    result = _frg_config_create_cli_command_version(&command);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_program_add_command(
+        *program,
+        command
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int argc, const char** argv) {
+    frg_cli_program_t* program = NULL;
+    frg_status_t result = _frg_config_create_cli_program(&program);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_program_parse(
+        exit_status,
+        program,
+        argc,
+        argv,
+        config
+    );
+    if (result == FRG_STATUS_CLI_ERROR) {
+        return FRG_STATUS_CLI_ERROR;
+    } else if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse args with CLI program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t frg_config_log_debug(const frg_config_t* config) {
+    if (config == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
-    while (*argi < argc) {
-        if (_frg_config_parse_cli_try_get_command(&config->command, argv[*argi])) {
-            return true;
-        } else if (argv[*argi][0] == '-') {
-            if (argv[*argi][1] == 0) {
-                frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "invalid argument '-'");
-                return false;
-            } else if (argv[*argi][1] == '-') {
-                if (strcmp(argv[*argi], "--color-mode") == 0) {
-                    *argi++;
+    frg_log(FRG_LOG_SEVERITY_DEBUG, "Configuration:");
+    frg_log(FRG_LOG_SEVERITY_NOTE, "config.color_mode == %i", config->color_mode);
+    frg_log(FRG_LOG_SEVERITY_NOTE, "config.debug == %s", config->debug ? "true" : "false");
+    frg_log(FRG_LOG_SEVERITY_NOTE, "config.source_file == %s", config->source_file != NULL ? config->source_file->str : "(null)");
+    frg_log(FRG_LOG_SEVERITY_NOTE, "config.version_short == %s", config->version_short ? "true" : "false");
 
-                    if (*argi >= argc) {
-                        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "--color-mode <MODE> expects a value");
-                        return false;
-                    } else if (strcmp(argv[*argi], "auto") == 0) {
-                        config->color_mode = FRG_COLOR_MODE_AUTO;
-                    } else if (strcmp(argv[*argi], "enabled") == 0) {
-                        config->color_mode = FRG_COLOR_MODE_ENABLED;
-                    } else if (strcmp(argv[*argi], "disabled") == 0) {
-                        config->color_mode = FRG_COLOR_MODE_DISABLED;
-                    } else {
-                        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "invalid value for --color-mode '%s'");
-                        frg_log(FRG_LOG_SEVERITY_NOTE, "values available:");
-                        frg_log(FRG_LOG_SEVERITY_NOTE, "  auto");
-                        frg_log(FRG_LOG_SEVERITY_NOTE, "  enabled");
-                        frg_log(FRG_LOG_SEVERITY_NOTE, "  disabled");
-                        return false;
-                    }
-                } else if (strcmp(argv[*argi], "--debug") == 0) {
-                    config->debug = true;
-                }
-            } else {
-                frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unknown argument '%s'", argv[*argi]);
-                return false;
-            }
-        }
-    }
-
-    frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "no command specified");
-    frg_log(FRG_LOG_SEVERITY_NOTE, "commands available:");
-    frg_log(FRG_LOG_SEVERITY_NOTE, "  dump-ast");
-    frg_log(FRG_LOG_SEVERITY_NOTE, "  help");
-    frg_log(FRG_LOG_SEVERITY_NOTE, "  version");
-    return false;
+    return FRG_STATUS_OK;
 }
-
-void _frg_config_parse_cli_print_version(const char* binary_name) {
-    fprintf(FRG_STREAM_DEFAULT, "%s %d.%d.%d-%s\n", binary_name, FRG_VERSION_MAJOR, FRG_VERSION_MINOR, FRG_VERSION_PATCH, FRG_VERSION_LABEL);
-}
-
-void _frg_config_parse_cli_print_help_global(const char* binary_name) {
-    _frg_config_parse_cli_print_version(binary_name);
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Usage: %s [global options] <command>\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Commands:\n");
-    fprintf(FRG_STREAM_DEFAULT, "  dump-ast\n");
-    fprintf(FRG_STREAM_DEFAULT, "  help\n");
-    fprintf(FRG_STREAM_DEFAULT, "  version\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Global options:\n");
-    fprintf(FRG_STREAM_DEFAULT, "  --color-mode <MODE>\n");
-    fprintf(FRG_STREAM_DEFAULT, "    Set the color mode to one of:\n");
-    fprintf(FRG_STREAM_DEFAULT, "    - 'auto' which uses color if it is available\n");
-    fprintf(FRG_STREAM_DEFAULT, "    - 'enabled' which forces the use of color\n");
-    fprintf(FRG_STREAM_DEFAULT, "    - 'disabled' which disables color in all cases\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "  --debug\n");
-    fprintf(FRG_STREAM_DEFAULT, "    Enables debug logging.\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Run %s help <command> for more info.\n");
-}
-
-void _frg_config_parse_cli_print_help_dump_ast(const char* binary_name) {
-    _frg_config_parse_cli_print_version(binary_name);
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Usage: %s [global options] dump-ast <source file *.frg>\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Parses the AST from a given source file and prints it to the console.\n");
-}
-
-void _frg_config_parse_cli_print_help_help(const char* binary_name) {
-    _frg_config_parse_cli_print_version(binary_name);
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Usage: %s [global options] help\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Displays global help or help for a specific command.\n");
-}
-
-void _frg_config_parse_cli_print_help_version(const char* binary_name) {
-    _frg_config_parse_cli_print_version(binary_name);
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Usage: %s [global options] version [command options]\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Displays the version.\n");
-    fprintf(FRG_STREAM_DEFAULT, "\n");
-    fprintf(FRG_STREAM_DEFAULT, "Command options:\n");
-    fprintf(FRG_STREAM_DEFAULT, "  -s|--short\n");
-    fprintf(FRG_STREAM_DEFAULT, "    Use the short form of the version (better for programmatic use).\n");
-}
-
-bool frg_config_parse_cli(frg_config_t* config, int argc, const char** argv) {
-    int argi = 1;
-
-    if (!_frg_config_parse_cli_global_opts(config, &argi, argc, argv)) {
-        return false;
-    }
-
-    if (config->command == FRG_CLI_COMMAND_DUMP_AST) {
-
-    } else if (config->command == FRG_CLI_COMMAND_HELP) {
-        
-    }
-}
-
-void frg_config_print_debug(const frg_config_t* config);

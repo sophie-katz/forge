@@ -16,19 +16,29 @@
 #pragma once
 
 #include <forge/common/enums.h>
-#include <glib.h>
+
+/// \brief The maximum number of option short names possible.
+///
+/// There are 26 for lowercase ASCII letters and 26 more for uppercase.
+#define FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT 52
+
+#define FRG_CLI_OPTION_SHORT_NAME_NULL 0
 
 typedef struct {
-    frg_color_mode_t color_mode;
-    bool debug;
-    GString* source_file;
-    bool version_short;
-} frg_config_t;
+    const char* name;
+    const char* help;
+} frg_cli_choice_t;
 
-frg_status_t frg_config_new_default(frg_config_t** config);
-void frg_config_destroy(frg_config_t** config);
+frg_status_t frg_cli_choice_new(
+    frg_cli_choice_t** choice,
+    const char* name,
+    const char* help
+);
 
-frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int argc, const char** argv);
-frg_status_t frg_config_parse_env(frg_config_t* config);
+frg_status_t frg_cli_choice_destroy(
+    frg_cli_choice_t** choice
+);
 
-frg_status_t frg_config_log_debug(const frg_config_t* config);
+frg_status_t frg_cli_choice_print_help(
+    const frg_cli_choice_t* choice
+);

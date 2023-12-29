@@ -42,6 +42,10 @@ typedef enum {
     FRG_STATUS_ERROR_UNEXPECTED_CHARACTER,
     /// A duplicate entry or object was found
     FRG_STATUS_ERROR_DUPLICATE,
+    FRG_STATUS_ERROR_KEY_NOT_FOUND,
+    FRG_STATUS_CLI_NO_MORE_ARGUMENTS,
+    FRG_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT,
+    FRG_STATUS_CLI_ERROR
 } frg_status_t;
 
 const char* frg_status_to_string(frg_status_t status);

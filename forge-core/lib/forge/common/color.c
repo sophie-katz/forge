@@ -29,26 +29,20 @@ static frg_color_mode_t _frg_color_mode = FRG_COLOR_MODE_AUTO;
 /// unless an error is returned.
 ///
 /// \param mode The mode hint to resolve.
-/// \param stream The output stream for which to resolve the hint. Can be either
-///               \c stdout or \c stderr.
 ///
 /// \retval FRG_STATUS_ERROR_NULL_ARGUMENT If either argument is null
 /// \retval FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE If \a stream is not \c stdout or
 ///         \c stderr
-frg_status_t _frg_resolve_color_mode_from_hint(frg_color_mode_t* mode, FILE* stream) {
+frg_status_t _frg_resolve_color_mode_from_hint(frg_color_mode_t* mode) {
     // Error checking
     if (mode == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
-    frg_status_t result = frg_validate_console_stream(stream);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
-
     // Resolve the color mode if the hint is auto
     if (*mode == FRG_COLOR_MODE_AUTO) {
-        if (isatty(fileno(stream))) {
+        // printf("checking if %d is a tty\n", fileno(stream));
+        if (isatty(fileno(stdout)) && isatty(fileno(stderr))) {
             *mode = FRG_COLOR_MODE_ENABLED;
         } else {
             *mode = FRG_COLOR_MODE_DISABLED;
@@ -61,8 +55,7 @@ frg_status_t _frg_resolve_color_mode_from_hint(frg_color_mode_t* mode, FILE* str
 
 frg_status_t frg_get_color_mode(frg_color_mode_t* mode) {
     frg_status_t result = _frg_resolve_color_mode_from_hint(
-        &_frg_color_mode,
-        FRG_STREAM_DEFAULT
+        &_frg_color_mode
     );
 
     if (result != FRG_STATUS_OK) {
@@ -78,8 +71,7 @@ frg_status_t frg_set_color_mode(frg_color_mode_t hint) {
     _frg_color_mode = hint;
 
     frg_status_t result = _frg_resolve_color_mode_from_hint(
-        &_frg_color_mode,
-        FRG_STREAM_DEFAULT
+        &_frg_color_mode
     );
 
     if (result != FRG_STATUS_OK) {
@@ -103,33 +95,6 @@ frg_status_t frg_set_color(FILE* stream, frg_color_id_t id) {
 
     if (mode == FRG_COLOR_MODE_ENABLED) {
         switch (id) {
-            // case FRG_COLOR_ID_RESET:
-            //     fprintf(stream, "\033[0;0m");
-            //     break;
-            // case FRG_COLOR_ID_NOTE:
-            //     fprintf(stream, "\033[1;90m");
-            //     break;
-            // case FRG_COLOR_ID_DEBUG:
-            //     fprintf(stream, "\033[1;34m");
-            //     break;
-            // case FRG_COLOR_ID_WARNING:
-            //     fprintf(stream, "\033[1;37m");
-            //     break;
-            // case FRG_COLOR_ID_ERROR:
-            //     fprintf(stream, "\033[1;31m");
-            //     break;
-            // case FRG_COLOR_ID_FATAL_ERROR:
-            //     fprintf(stream, "\033[1;31m");
-            //     break;
-            // case FRG_COLOR_ID_INTERNAL_ERROR:
-            //     fprintf(stream, "\033[1;35m");
-            //     break;
-            // case FRG_COLOR_ID_MESSAGE:
-            //     fprintf(stream, "\033[1;28m");
-            //     break;
-            // case FRG_COLOR_ID_LOCATION:
-            //     fprintf(stream, "\033[0;90m");
-            //     break;
             case FRG_COLOR_ID_RESET:
                 fprintf(stream, "\033[0;0m");
                 break;

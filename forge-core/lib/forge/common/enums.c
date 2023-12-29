@@ -33,6 +33,14 @@ const char* frg_status_to_string(frg_status_t status) {
             return "unexpected character";
         case FRG_STATUS_ERROR_DUPLICATE:
             return "duplicate";
+        case FRG_STATUS_ERROR_KEY_NOT_FOUND:
+            return "key not found";
+        case FRG_STATUS_CLI_NO_MORE_ARGUMENTS:
+            return "no more command line arguments";
+        case FRG_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT:
+            return "reached a positional command line arguments";
+        case FRG_STATUS_CLI_ERROR:
+            return "unable to parse command line arguments";
         default:
             return "(unknown value for frg_status_t)";
     }

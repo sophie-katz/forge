@@ -51,6 +51,7 @@ void _frg_ast_print_debug_list(GList* list, const char* label, frg_indent_t inde
 void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
     if (ast == NULL) {
         frg_debug_print_node("null");
+        return;
     }
 
     frg_debug_print_node(frg_ast_id_to_string(ast->id));

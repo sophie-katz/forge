@@ -16,7 +16,7 @@ not, see <https://www.gnu.org/licenses/>.
 */
 
 %locations
-%start decl_block
+%start top_level
 %parse-param { frg_ast_t** ast }
 
 %{
@@ -24,6 +24,8 @@ not, see <https://www.gnu.org/licenses/>.
 #include <forge/common/log.h>
 #include <forge/common/types.h>
 #include <stdio.h>
+
+#define YYERROR_VERBOSE 1
 
 extern int yylineno;
 extern frg_columnno_t yycolumnno;
@@ -37,7 +39,7 @@ int yywrap() {
 
 void yyerror(frg_ast_t**ast, const char* message) {
     frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
-    frg_log(FRG_LOG_SEVERITY_ERROR, "%s\n", message);
+    frg_log(FRG_LOG_SEVERITY_ERROR, "%s", message);
 }
 %}
 
@@ -50,89 +52,89 @@ void yyerror(frg_ast_t**ast, const char* message) {
     GList* list;
 }
 
-%token KW_BOOL
-%token KW_U8
-%token KW_U16
-%token KW_U32
-%token KW_U64
-%token KW_I8
-%token KW_I16
-%token KW_I32
-%token KW_I64
-%token KW_F32
-%token KW_F64
-%token KW_TY
-%token KW_PROP
-%token KW_IFACE
-%token KW_KW
-%token KW_FN
-%token KW_CONST
-%token KW_MUT
-%token KW_OVERRIDE
-%token KW_LET
-%token KW_RETURN
-%token KW_IF
-%token KW_ELSE
-%token KW_WHILE
-%token KW_TRUE
-%token KW_FALSE
-%token <value_str> SYMBOL
-%token CURLY_BRACE_LEFT
-%token CURLY_BRACE_RIGHT
-%token SQUARE_BRACKET_LEFT
-%token SQUARE_BRACKET_RIGHT
-%token PAREN_LEFT
-%token PAREN_RIGHT
-%token COMMA
-%token COLON
-%token SEMICOLON
-%token QUESTION_MARK
-%token ARROW_RIGHT
-%token ELIPSIS
-%token <value_int> INT
-%token <value_float> FLOAT
-%token <value_char> CHAR
-%token <value_str> STR
-%token DOT
-%token BIT_NOT
-%token BIT_AND
-%token BIT_OR
-%token BIT_XOR
-%token BIT_SHL
-%token BIT_SHR
-%token ADD
-%token SUB
-%token MUL
-%token DIV
-%token DIV_INT
-%token MOD
-%token EXP
-%token EQ
-%token NE
-%token LT
-%token LE
-%token GT
-%token GE
-%token LOG_NOT
-%token LOG_AND
-%token LOG_OR
-%token ASSIGN
-%token BIT_AND_ASSIGN
-%token BIT_OR_ASSIGN
-%token BIT_XOR_ASSIGN
-%token BIT_SHL_ASSIGN
-%token BIT_SHR_ASSIGN
-%token ADD_ASSIGN
-%token INC
-%token SUB_ASSIGN
-%token DEC
-%token MUL_ASSIGN
-%token DIV_ASSIGN
-%token DIV_INT_ASSIGN
-%token MOD_ASSIGN
-%token EXP_ASSIGN
-%token LOG_AND_ASSIGN
-%token LOG_OR_ASSIGN
+%token KW_BOOL "bool"
+%token KW_U8 "u8"
+%token KW_U16 "u16"
+%token KW_U32 "u32"
+%token KW_U64 "u64"
+%token KW_I8 "i8"
+%token KW_I16 "i16"
+%token KW_I32 "i32"
+%token KW_I64 "i64"
+%token KW_F32 "f32"
+%token KW_F64 "f64"
+%token KW_TY "ty"
+%token KW_PROP "prop"
+%token KW_IFACE "iface"
+%token KW_KW "kw"
+%token KW_FN "fn"
+%token KW_CONST "const"
+%token KW_MUT "mut"
+%token KW_OVERRIDE "override"
+%token KW_LET "let"
+%token KW_RETURN "return"
+%token KW_IF "if"
+%token KW_ELSE "else"
+%token KW_WHILE "while"
+%token KW_TRUE "true"
+%token KW_FALSE "false"
+%token <value_str> SYMBOL "symbol"
+%token CURLY_BRACE_LEFT "{"
+%token CURLY_BRACE_RIGHT "}"
+%token SQUARE_BRACKET_LEFT "["
+%token SQUARE_BRACKET_RIGHT "]"
+%token PAREN_LEFT "("
+%token PAREN_RIGHT ")"
+%token COMMA ","
+%token COLON ":"
+%token SEMICOLON ";"
+%token QUESTION_MARK "?"
+%token ARROW_RIGHT "->"
+%token ELIPSIS "..."
+%token <value_int> INT "integer literal"
+%token <value_float> FLOAT "float literal"
+%token <value_char> CHAR "char literal"
+%token <value_str> STR "string literal"
+%token DOT "."
+%token BIT_NOT "~"
+%token BIT_AND "&"
+%token BIT_OR "|"
+%token BIT_XOR "^"
+%token BIT_SHL "<<"
+%token BIT_SHR ">>"
+%token ADD "+"
+%token SUB "-"
+%token MUL "*"
+%token DIV "/"
+%token DIV_INT "//"
+%token MOD "%"
+%token EXP "**"
+%token EQ "=="
+%token NE "!="
+%token LT "<"
+%token LE "<="
+%token GT ">"
+%token GE ">="
+%token LOG_NOT "!"
+%token LOG_AND "&&"
+%token LOG_OR "||"
+%token ASSIGN "="
+%token BIT_AND_ASSIGN "&="
+%token BIT_OR_ASSIGN "|="
+%token BIT_XOR_ASSIGN "^="
+%token BIT_SHL_ASSIGN "<<="
+%token BIT_SHR_ASSIGN ">>="
+%token ADD_ASSIGN "+="
+%token INC "++"
+%token SUB_ASSIGN "-="
+%token DEC "--"
+%token MUL_ASSIGN "*="
+%token DIV_ASSIGN "/="
+%token DIV_INT_ASSIGN "//="
+%token MOD_ASSIGN "%="
+%token EXP_ASSIGN "**="
+%token LOG_AND_ASSIGN "&&="
+%token LOG_OR_ASSIGN "||="
 
 %type <ast> ty_bool
 %type <ast> ty_u8
@@ -200,6 +202,7 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> value
 %type <list> value_list
 %type <list> value_list_optional
+%type <ast> top_level
 
 %%
 ty_bool : KW_BOOL
@@ -1261,5 +1264,10 @@ value_list_optional : value_list
 |
 {
     $$ = NULL;
+};
+
+top_level : decl_block
+{
+    $$ = *ast = $1;
 };
 %%

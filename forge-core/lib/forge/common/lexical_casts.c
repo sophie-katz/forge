@@ -76,11 +76,11 @@ frg_status_t _frg_escape_char_unquoted(GString* escaped, frg_char_t value, char 
         }
     } else {
         if (value < 0x80) {
-            g_string_append_printf(escaped, "\\x%02x", value);
+            g_string_append_printf(escaped, "\\x%02x", value & 0xff);
         } else if (value <= 0xff) {
-            g_string_append_printf(escaped, "\\u{%02x}", value);
+            g_string_append_printf(escaped, "\\u{%02x}", value & 0xff);
         } else if (value <= 0xffff) {
-            g_string_append_printf(escaped, "\\u{%04x}", value);
+            g_string_append_printf(escaped, "\\u{%04x}", value & 0xffff);
         } else {
             g_string_append_printf(escaped, "\\u{%06x}", value);
         }

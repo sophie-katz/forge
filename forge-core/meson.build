@@ -108,7 +108,12 @@ forge_core_lib = static_library(
     'lib/forge/common/log.c',
     'lib/forge/common/memory.c',
     'lib/forge/common/stream.c',
-    'lib/forge/config/cli.c',
+    'lib/forge/config/cli/choice.c',
+    'lib/forge/config/cli/command.c',
+    'lib/forge/config/cli/option_set.c',
+    'lib/forge/config/cli/option.c',
+    'lib/forge/config/cli/program.c',
+    'lib/forge/config/config.c',
     'lib/forge/exec/exec.c',
     'lib/forge/parse/parse.c',
     forge_generated_files_flex,
@@ -192,6 +197,30 @@ forge_test_common_lexical_casts = executable(
 
 test('common/lexical_casts_test.c', forge_test_common_lexical_casts)
 
+forge_test_config_cli_option = executable(
+    'test-config-cli-option',
+    'lib/forge/config/cli/option_test.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies + [
+        forge_dependency_unity
+    ]
+)
+
+test('config/cli/option_test.c', forge_test_config_cli_option)
+
+forge_test_config_cli_option_set = executable(
+    'test-config-cli-option-set',
+    'lib/forge/config/cli/option_set_test.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies + [
+        forge_dependency_unity
+    ]
+)
+
+test('config/cli/option_set_test.c', forge_test_config_cli_option_set)
+
 # Demos
 # --------------------------------------------------------------------------------------
 
@@ -214,6 +243,46 @@ executable(
 executable(
     'demo-common-debug',
     'lib/forge/common/debug_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies
+)
+
+executable(
+    'demo-config-cli-choice',
+    'lib/forge/config/cli/choice_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies
+)
+
+executable(
+    'demo-config-cli-option',
+    'lib/forge/config/cli/option_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies
+)
+
+executable(
+    'demo-config-cli-option-set',
+    'lib/forge/config/cli/option_set_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies
+)
+
+executable(
+    'demo-config-cli-command',
+    'lib/forge/config/cli/command_demo.c',
+    include_directories: forge_include_directories,
+    link_with: [forge_core_lib],
+    dependencies: forge_dependencies
+)
+
+executable(
+    'demo-config-cli-program',
+    'lib/forge/config/cli/program_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies

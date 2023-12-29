@@ -23,7 +23,7 @@ on:
       - '.github/**'
       - 'assets/**'
       - 'docs/for-users/**'
-      - 'forge-compiler/include/**'
+      - 'forge-core/include/**'
   workflow_dispatch:
 
 permissions:
@@ -57,7 +57,7 @@ jobs:
           CONFIG_FILE: docs/for-users/mkdocs.yml
       
       - name: Build compiler API documentation
-        working-directory: forge-compiler
+        working-directory: forge-core
         run: |
           mkdir -p build/doxygen
           doxygen
@@ -72,7 +72,7 @@ jobs:
         run: |
           rm -rf gh-pages/compiler-api
           mkdir -p gh-pages/compiler-api
-          cp -rvf forge-compiler/build/doxygen/html/* gh-pages/compiler-api
+          cp -rvf forge-core/build/doxygen/html/* gh-pages/compiler-api
           cd gh-pages
           git config user.name "Sophie Katz"
           git config user.email "sophie@sophiekatz.us"

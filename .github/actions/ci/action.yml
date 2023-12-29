@@ -18,15 +18,15 @@ runs:
         cmake --version
         pkg-config --cflags glib-2.0
 
-    - name: Build compiler
-      working-directory: forge-compiler
+    - name: Build Core
+      working-directory: forge-core
       shell: bash
       run: |
         meson setup build
         meson compile -C build
 
     - name: Run tests
-      working-directory: forge-compiler
+      working-directory: forge-core
       shell: bash
       run: |
         meson test -C build

@@ -1,0 +1,41 @@
+{
+  "name": "forge",
+  "displayName": "Forge language support",
+  "description": "Support for the Forge programming language",
+  "version": "0.1.0",
+  "publisher": "SophieKatz",
+  "repository": {
+    "url": "https://github.com/sophie-katz/forge"
+  },
+  "bugs": {
+    "url": "https://github.com/sophie-katz/forge/issues"
+  },
+  "preview": true,
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#ff851b",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "forge"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "forge",
+      "aliases": ["Forge", "forge"],
+      "extensions": [".frg"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "forge",
+      "scopeName": "source.forge",
+      "path": "./syntaxes/forge.tmLanguage.json"
+    }]
+  }
+}

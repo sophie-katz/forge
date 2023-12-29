@@ -1,0 +1,288 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Forge",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#fn_calls"
+		},
+		{
+			"include": "#symbols"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#builtin-symbols"
+		}
+	],
+	"repository": {
+		"comments": {
+			"match": "((#).*)$",
+			"captures": {
+				"1": {
+					"name": "comment.line.forge"
+				}
+			}
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.forge",
+					"match": "\\b(if|while|return|match)\\b"
+				},
+				{
+					"name": "keyword.other.forge",
+					"match": "\\b(ty|iface|fn|prop|let|override)\\b"
+				},
+				{
+					"name": "storage.type.forge",
+					"match": "\\b(void|bool|u8|u16|u32|u64|uint|i8|i16|i32|i64|int|f32|f64|float|char|str)\\b"
+				},
+				{
+					"name": "storage.modifier.forge",
+					"match": "\\b(const|mut)\\b"
+				},
+				{
+					"name": "variable.language.forge",
+					"match": "\\b(self)\\b"
+				},
+				{
+					"name": "constant.language.forge",
+					"match": "\\b(true|false)\\b"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\."
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "~"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "&"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\|"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\^"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "<<"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": ">>"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "-"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\+"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\*"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "/"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "//"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "%"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\*\\*"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "=="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "!="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "<"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "<="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": ">"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": ">="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "!"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "&&"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\|\\|"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "&="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\|="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\^="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "<<="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": ">>="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\+="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\+\\+"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "--"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\*="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "/="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "//="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "%="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\*\\*="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "&&="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\|\\|="
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "->"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": ","
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": ":"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\?"
+				},
+				{
+					"name": "keyword.operator.forge",
+					"match": "\\.\\.\\."
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.forge",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.forge",
+					"match": "\\\\."
+				}
+			]
+		},
+		"fn_calls": {
+			"patterns": [
+				{
+					"name": "support.function.forge",
+					"match": "\\b([\\p{Lower}_]\\p{Alnum}*)\\("
+				}
+			]
+		},
+		"symbols": {
+			"patterns": [
+				{
+					"name": "variable.name.forge",
+					"match": "\\b([\\p{Lower}_]\\p{Alnum}*)\\b"
+				},
+				{
+					"name": "support.type.forge",
+					"match": "\\b([\\p{Upper}_]\\p{Alnum}*)\\b"
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.forge",
+					"match": "\\b([0-9][0-9a-zA-Z_]*)\\b"
+				}
+			]
+		},
+		"builtin-symbols": {
+			"name": "support.function.forge",
+			"match": "@\\b([\\p{Alpha}_]\\p{Alnum}*)\\b"
+		}
+	},
+	"scopeName": "source.forge",
+	"fileTypes": [
+		"forge"
+	]
+}

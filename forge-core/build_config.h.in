@@ -1,0 +1,27 @@
+// Copyright (c) 2023 Sophie Katz
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either
+// version 3 of the License, or (at your option) any later version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Forge.
+// If not, see <https://www.gnu.org/licenses/>.
+
+#pragma once
+
+#define FRG_VERSION_MAJOR @version_major@
+#define FRG_VERSION_MINOR @version_minor@
+#define FRG_VERSION_PATCH @version_patch@
+#define FRG_VERSION_LABEL "@version_label@"
+#define FRG_GIT_COMMIT_SHA "@git_commit_sha@"
+#define FRG_COMPILER_ID "@compiler_id@"
+#define FRG_COMPILER_VERSION "@compiler_version@"
+#define FRG_LINKER_ID "@linker_id@"
+#define FRG_HOST_MACHINE_CPU "@host_machine_cpu@"
+#define FRG_HOST_MACHINE_SYSTEM "@host_machine_system@"

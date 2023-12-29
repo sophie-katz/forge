@@ -1,0 +1,44 @@
+// Copyright (c) 2023 Sophie Katz
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either
+// version 3 of the License, or (at your option) any later version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with Forge.
+// If not, see <https://www.gnu.org/licenses/>.
+
+#pragma once
+
+#include <forge/common/enums.h>
+
+/// \brief The maximum number of option short names possible.
+///
+/// There are 26 for lowercase ASCII letters and 26 more for uppercase.
+#define FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT 52
+
+#define FRG_CLI_OPTION_SHORT_NAME_NULL 0
+
+typedef struct {
+    const char* name;
+    const char* help;
+} frg_cli_choice_t;
+
+frg_status_t frg_cli_choice_new(
+    frg_cli_choice_t** choice,
+    const char* name,
+    const char* help
+);
+
+frg_status_t frg_cli_choice_destroy(
+    frg_cli_choice_t** choice
+);
+
+frg_status_t frg_cli_choice_print_help(
+    const frg_cli_choice_t* choice
+);

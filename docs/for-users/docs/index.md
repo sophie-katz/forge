@@ -24,5 +24,8 @@ not, see <https://www.gnu.org/licenses/>.
 This is the user documentation for the Forge programming language.
 
 - [Language specification](./specification/how-to-use.md)
-- [**Compiler**](https://github.com/sophie-katz/forge/tree/main/forge-compiler)
+- [**Core**](https://github.com/sophie-katz/forge/tree/main/forge-core)
+    - [**Compiler**](https://github.com/sophie-katz/forge/tree/main/forge-core/src/forge-compiler)
+    - [**Interpreter**](https://github.com/sophie-katz/forge/tree/main/forge-core/src/forge-interpreter)
+    - [**Shared library**](https://github.com/sophie-katz/forge/tree/main/forge-core/include)
     - [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)

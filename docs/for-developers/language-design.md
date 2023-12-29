@@ -235,3 +235,19 @@ fn f(a: A...) {}
 # This is a function with variadic keyword
 fn f(a: A..., kw b: B...) {}
 ```
+
+# Simplified AST
+
+Simplified AST is a subset of the full grammar that lacks any syntactic sugar. Every aspect of the simplified AST can be passed directly to the interpreter or to codegen.
+
+It contains:
+- Signed and unsigned integer types
+- Floating point types
+- Structs
+- Simple unions
+- Functions without variadic or keyword arguments
+- Return, if, while control flow constructs
+- Unsigned integer literals
+- Float literals
+- Struct member access
+- All operators (except compound assignment operators)

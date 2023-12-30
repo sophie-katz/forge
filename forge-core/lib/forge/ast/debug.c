@@ -70,6 +70,11 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             }
 
             break;
+        case FRG_AST_ID_TY_POINTER:
+            frg_debug_print_newline(indent);
+            frg_ast_print_debug(((frg_ast_ty_pointer_t*)ast)->value, indent + FRG_DEBUG_INDENT_WIDTH);
+
+            break;
         case FRG_AST_ID_DECL_UNION:
             frg_debug_print_newline(indent);
             result = frg_escape_str(&escaped, ((frg_ast_decl_union_t*)ast)->name->str);
@@ -399,6 +404,8 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
         case FRG_AST_ID_VALUE_LOG_NOT:
         case FRG_AST_ID_VALUE_INC:
         case FRG_AST_ID_VALUE_DEC:
+        case FRG_AST_ID_VALUE_DEREF:
+        case FRG_AST_ID_VALUE_GETADDR:
             frg_debug_print_newline(indent);
             frg_debug_print_property("operand", NULL);
             frg_ast_print_debug(((frg_ast_value_unary_t*)ast)->operand, indent + FRG_DEBUG_INDENT_WIDTH);

@@ -169,6 +169,7 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> decl_var
 %type <ast> decl
 %type <list> decl_list
+%type <list> decl_list_optional
 %type <ast> decl_block
 %type <ast> stmt_return
 %type <ast> stmt_if
@@ -184,7 +185,8 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> value_str
 %type <ast> value_symbol
 %type <ast> value_primary
-%type <ast> value_access_call
+%type <ast> value_access
+%type <ast> value_call
 %type <ast> value_inc_dec
 %type <ast> value_exp
 %type <ast> value_neg_bit_not
@@ -621,7 +623,16 @@ decl_list: decl
     $$ = g_list_append($1, $2);
 };
 
-decl_block: decl_list
+decl_list_optional: decl_list
+{
+    $$ = $1;
+}
+|
+{
+    $$ = NULL;
+};
+
+decl_block: decl_list_optional
 {
     frg_status_t result = frg_ast_new_decl_block((frg_ast_decl_block_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
@@ -639,17 +650,9 @@ stmt_return : KW_RETURN value SEMICOLON
     }
 };
 
-stmt_if : KW_IF PAREN_LEFT value PAREN_RIGHT SEMICOLON
+stmt_if : KW_IF PAREN_LEFT value PAREN_RIGHT stmt_block
 {
-    frg_status_t result = frg_ast_new_stmt_if((frg_ast_stmt_if_t**)&$$, $3, NULL, NULL);
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
-    }
-}
-| KW_IF PAREN_LEFT value PAREN_RIGHT stmt_block
-{
-    frg_status_t result = frg_ast_new_stmt_if((frg_ast_stmt_if_t**)&$$, $3, NULL, NULL);
+    frg_status_t result = frg_ast_new_stmt_if((frg_ast_stmt_if_t**)&$$, $3, $5, NULL);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
@@ -729,7 +732,11 @@ stmt_list : stmt
 
 stmt_block : CURLY_BRACE_LEFT CURLY_BRACE_RIGHT
 {
-    $$ = NULL;
+    frg_status_t result = frg_ast_new_stmt_block((frg_ast_stmt_block_t**)&$$, NULL);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
 }
 | CURLY_BRACE_LEFT stmt_list CURLY_BRACE_RIGHT
 {
@@ -836,15 +843,7 @@ value_primary : value_true
     $$ = $2;
 };
 
-value_access_call : value_access_call DOT value_symbol
-{
-    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ACCESS, $1, $3);
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
-    }
-}
-| value_access_call PAREN_LEFT value_list_optional PAREN_RIGHT
+value_call : value_symbol PAREN_LEFT value_list_optional PAREN_RIGHT
 {
     frg_status_t result = frg_ast_new_value_call((frg_ast_value_call_t**)&$$, $1, $3, NULL);
     if (result != FRG_STATUS_OK) {
@@ -857,7 +856,20 @@ value_access_call : value_access_call DOT value_symbol
     $$ = $1;
 };
 
-value_inc_dec : value_access_call INC
+value_access : value_access DOT value_call
+{
+    frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ACCESS, $1, $3);
+    if (result != FRG_STATUS_OK) {
+        frg_log_prefix_internal();
+        frg_log(FRG_LOG_SEVERITY_ERROR, "unable to create ast: %s", frg_status_to_string(result));
+    }
+}
+| value_call
+{
+    $$ = $1;
+};
+
+value_inc_dec : value_access INC
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_INC, $1);
     if (result != FRG_STATUS_OK) {
@@ -865,13 +877,17 @@ value_inc_dec : value_access_call INC
         frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
     }
 }
-| value_access_call DEC
+| value_access DEC
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_DEC, $1);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_internal();
         frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
     }
+}
+| value_access
+{
+    $$ = $1;
 };
 
 value_exp : value_inc_dec EXP value_exp
@@ -961,7 +977,7 @@ value_add : value_mul ADD value_add
         frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
     }
 }
-| value_exp
+| value_mul
 {
     $$ = $1;
 };
@@ -982,7 +998,7 @@ value_bit_shift : value_add BIT_SHL value_bit_shift
         frg_log(FRG_LOG_SEVERITY_ERROR, "%s", frg_status_to_string(result));
     }
 }
-| value_exp
+| value_add
 {
     $$ = $1;
 };

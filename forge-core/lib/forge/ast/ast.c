@@ -126,8 +126,6 @@ frg_status_t frg_ast_new_decl_prop(
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (name->len == 0) {
         return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (type == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
     frg_status_t result = frg_safe_malloc((void**)ast, sizeof(frg_ast_decl_prop_t));
@@ -240,8 +238,6 @@ frg_status_t frg_ast_new_decl_var(
     if (ast == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (prop == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (initial_value == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
@@ -358,7 +354,7 @@ frg_status_t frg_ast_new_stmt_block(
         return result;
     }
 
-    (*ast)->base.id = FRG_AST_ID_STMT_WHILE;
+    (*ast)->base.id = FRG_AST_ID_STMT_BLOCK;
     (*ast)->stmts = stmts;
 
     return FRG_STATUS_OK;

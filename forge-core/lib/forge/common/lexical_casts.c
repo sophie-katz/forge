@@ -441,6 +441,8 @@ frg_status_t frg_str_to_uint(
         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
+    *value = 0;
+
     uint32_t base = 10;
 
     frg_status_t result = _frg_get_base_prefix(&base, &str);

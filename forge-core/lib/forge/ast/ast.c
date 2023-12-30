@@ -62,6 +62,25 @@ frg_status_t frg_ast_new_ty_symbol(
     return FRG_STATUS_OK;
 }
 
+frg_status_t frg_ast_new_ty_pointer(
+    frg_ast_ty_pointer_t** ast,
+    frg_ast_t* value
+) {
+    if (ast == NULL || value == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    }
+
+    frg_status_t result = frg_safe_malloc((void**)ast, sizeof(frg_ast_ty_pointer_t));
+    if (result != FRG_STATUS_OK) {
+        return result;
+    }
+
+    (*ast)->base.id = FRG_AST_ID_TY_POINTER;
+    (*ast)->value = value;
+
+    return FRG_STATUS_OK;
+}
+
 frg_status_t frg_ast_new_decl_union(
     frg_ast_decl_union_t** ast,
     GString* name,

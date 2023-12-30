@@ -22,11 +22,6 @@
 #     print("{person.name} is {person.age} years old");
 # }
 
-mut fn main() -> i32 {
-    a = b;
-
-    # let person: Person;
-    # let person = new_person("Sophie", 29);
-    # print_person(person);
-    # return 32;
+fn f(x: *i32) -> *i32 {
+    return &x + &1;
 }

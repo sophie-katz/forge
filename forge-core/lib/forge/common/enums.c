@@ -72,6 +72,8 @@ const char* frg_ast_id_to_string(frg_ast_id_t id) {
             return "ty-f64";
         case FRG_AST_ID_TY_SYMBOL:
             return "ty-symbol";
+        case FRG_AST_ID_TY_POINTER:
+            return "ty-pointer";
         case FRG_AST_ID_DECL_UNION:
             return "decl-union";
         case FRG_AST_ID_DECL_STRUCT:
@@ -110,6 +112,10 @@ const char* frg_ast_id_to_string(frg_ast_id_t id) {
             return "value-str";
         case FRG_AST_ID_VALUE_SYMBOL:
             return "value-symbol";
+        case FRG_AST_ID_VALUE_DEREF:
+            return "value-deref";
+        case FRG_AST_ID_VALUE_GETADDR:
+            return "value-getaddr";
         case FRG_AST_ID_VALUE_CALL_KW_ARG:
             return "value-call-kw-arg";
         case FRG_AST_ID_VALUE_CALL:
@@ -237,6 +243,8 @@ bool frg_ast_id_is_value_unary(frg_ast_id_t id) {
         case FRG_AST_ID_VALUE_LOG_NOT:
         case FRG_AST_ID_VALUE_INC:
         case FRG_AST_ID_VALUE_DEC:
+        case FRG_AST_ID_VALUE_DEREF:
+        case FRG_AST_ID_VALUE_GETADDR:
             return true;
         default:
             return false;

@@ -32,6 +32,11 @@ typedef struct {
 
 typedef struct {
     frg_ast_t base;
+    frg_ast_t* value;
+} frg_ast_ty_pointer_t;
+
+typedef struct {
+    frg_ast_t base;
     GString* name;
     GList* props;
 } frg_ast_decl_union_t;
@@ -180,6 +185,11 @@ frg_status_t frg_ast_new_ty_primary(
 frg_status_t frg_ast_new_ty_symbol(
     frg_ast_ty_symbol_t** ast,
     GString* name
+);
+
+frg_status_t frg_ast_new_ty_pointer(
+    frg_ast_ty_pointer_t** ast,
+    frg_ast_t* value
 );
 
 frg_status_t frg_ast_new_decl_union(

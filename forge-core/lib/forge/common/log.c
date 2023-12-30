@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 
+static frg_log_severity_t _frg_log_minimum_severity = FRG_LOG_SEVERITY_NOTE;
 static size_t _frg_log_count_error = 0;
 static size_t _frg_log_count_warning = 0;
 
@@ -90,11 +91,23 @@ void _frg_log_increment_counts(frg_log_severity_t severity) {
     }
 }
 
-frg_status_t frg_log_prefix_source_file(const char* filename) {
+frg_status_t frg_log_set_minimum_severity(frg_log_severity_t severity) {
+    if (severity != FRG_LOG_SEVERITY_DEBUG && severity != FRG_LOG_SEVERITY_NOTE) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    }
+
+    _frg_log_minimum_severity = severity;
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t frg_log_prefix_source_file(frg_log_severity_t severity, const char* filename) {
     if (filename == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (filename[0] == 0) {
         return FRG_STATUS_ERROR_EMPTY_STRING;
+    } else if (severity < _frg_log_minimum_severity) {
+        return FRG_STATUS_OK;
     }
 
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
@@ -104,13 +117,15 @@ frg_status_t frg_log_prefix_source_file(const char* filename) {
     return FRG_STATUS_OK;
 }
 
-frg_status_t frg_log_prefix_source_line(const char* filename, frg_lineno_t lineno) {
+frg_status_t frg_log_prefix_source_line(frg_log_severity_t severity, const char* filename, frg_lineno_t lineno) {
     if (filename == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (filename[0] == 0) {
         return FRG_STATUS_ERROR_EMPTY_STRING;
     } else if (lineno <= 0) {
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (severity < _frg_log_minimum_severity) {
+        return FRG_STATUS_OK;
     }
 
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
@@ -121,6 +136,7 @@ frg_status_t frg_log_prefix_source_line(const char* filename, frg_lineno_t linen
 }
 
 frg_status_t frg_log_prefix_source_char(
+    frg_log_severity_t severity,
     const char* filename,
     frg_lineno_t lineno,
     frg_columnno_t columnno
@@ -133,6 +149,8 @@ frg_status_t frg_log_prefix_source_char(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     } else if (columnno <= 0) {
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (severity < _frg_log_minimum_severity) {
+        return FRG_STATUS_OK;
     }
 
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
@@ -142,7 +160,21 @@ frg_status_t frg_log_prefix_source_char(
     return FRG_STATUS_OK;
 }
 
-void _frg_log_prefix_internal(const char* filename, frg_lineno_t lineno) {
+frg_status_t _frg_log_prefix_internal(
+    frg_log_severity_t severity,
+    const char* filename,
+    frg_lineno_t lineno
+) {
+    if (filename == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (filename[0] == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
+    } else if (lineno <= 0) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (severity < _frg_log_minimum_severity) {
+        return FRG_STATUS_OK;
+    }
+
     const char* filename_resolved = strstr(filename, "lib/");
 
     if (filename_resolved == NULL) {
@@ -156,9 +188,19 @@ void _frg_log_prefix_internal(const char* filename, frg_lineno_t lineno) {
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
     fprintf(FRG_STREAM_DEFAULT, "forge-core[%s:%d]: ", filename_resolved, lineno);
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+
+    return FRG_STATUS_OK;
 }
 
 frg_status_t frg_log(frg_log_severity_t severity, const char* format, ...) {
+    if (format == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (format[0] == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
+    } else if (severity < _frg_log_minimum_severity) {
+        return FRG_STATUS_OK;
+    }
+
     // Start variadic arguments
     va_list args;
     va_start(args, format);

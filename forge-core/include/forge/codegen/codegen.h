@@ -15,17 +15,28 @@
 
 #pragma once
 
-#include <forge/common/enums.h>
-#include <glib.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef struct {
-    bool version_short;
-} frg_config_t;
+#include <forge/ast/ast.h>
 
-frg_status_t frg_config_new_default(frg_config_t** config);
-void frg_config_destroy(frg_config_t** config);
+typedef struct frg_llvm_module_t frg_llvm_module_t;
 
-frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int argc, const char** argv);
-frg_status_t frg_config_parse_env(frg_config_t* config);
+frg_status_t frg_codegen(frg_llvm_module_t** module, const frg_ast_t* ast);
 
-frg_status_t frg_config_log_debug(const frg_config_t* config);
+frg_status_t frg_codegen_call_function(
+    void* returned_value,
+    frg_llvm_module_t* module,
+    const char* name,
+    GList* pos_args
+);
+
+frg_status_t frg_codegen_write_object_file(
+    frg_llvm_module_t* module,
+    const char* path
+);
+
+#ifdef __cplusplus
+}
+#endif

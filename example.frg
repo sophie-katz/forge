@@ -13,15 +13,6 @@
 # You should have received a copy of the GNU General Public License along with Forge. If
 # not, see <https://www.gnu.org/licenses/>.
 
-# ty Person {
-#     name: str;
-#     age: i32;
-# }
-
-# override fn print_person(person: Person) -> void {
-#     print("{person.name} is {person.age} years old");
-# }
-
-fn f(x: *i32) -> *i32 {
-    return &x + &1;
+fn main() -> i32 {
+    return 5;
 }

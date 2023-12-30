@@ -89,8 +89,8 @@ typedef enum {
 } frg_color_id_t;
 
 typedef enum {
-    FRG_LOG_SEVERITY_NOTE,
     FRG_LOG_SEVERITY_DEBUG,
+    FRG_LOG_SEVERITY_NOTE,
     FRG_LOG_SEVERITY_WARNING,
     FRG_LOG_SEVERITY_ERROR,
     FRG_LOG_SEVERITY_FATAL_ERROR,

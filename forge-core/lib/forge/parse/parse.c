@@ -48,6 +48,37 @@ frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename) {
     return FRG_STATUS_OK;
 }
 
+frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path) {
+    if (ast == NULL || path == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (*ast != NULL) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (*path == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
+    }
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL) {
+        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to open source file: %s (%s)", path, strerror(errno));
+        return FRG_STATUS_CLI_ERROR;
+    }
+
+    frg_status_t result = frg_parse_file(
+        ast,
+        file,
+        path
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse source file: %s", frg_status_to_string(result));
+        fclose(file);
+        return FRG_STATUS_CLI_ERROR;
+    }
+
+    fclose(file);
+
+    return FRG_STATUS_OK;
+}
+
 frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename) {
     if (buffer == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;

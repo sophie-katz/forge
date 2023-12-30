@@ -16,7 +16,7 @@
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
-#include <forge/config/cli/option.h>
+#include <forge/cli/option.h>
 
 bool frg_cli_is_valid_short_name(char short_name) {
     if (short_name >= 'a' && short_name <= 'z') {
@@ -223,7 +223,7 @@ frg_status_t frg_cli_option_destroy(
     for (GList* choice = (*option)->choices; choice != NULL; choice = choice->next) {
         frg_status_t result = frg_cli_choice_destroy((frg_cli_choice_t**)&choice->data);
         if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal();
+            frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
             frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy choice: %s", frg_status_to_string(result)); 
             return result;
         }
@@ -284,7 +284,7 @@ frg_status_t frg_cli_option_print_help(
         for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
             frg_status_t result = frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print choice help: %s", frg_status_to_string(result)); 
                 return result;
             }
@@ -346,7 +346,7 @@ frg_status_t frg_cli_option_parse_next(
         argv[*argi]
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to ensure that option matches current argument: %s", frg_status_to_string(result)); 
         return result;
     }

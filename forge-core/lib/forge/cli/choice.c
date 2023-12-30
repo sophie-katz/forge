@@ -16,7 +16,7 @@
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
-#include <forge/config/cli/choice.h>
+#include <forge/cli/choice.h>
 
 frg_status_t frg_cli_choice_new(
     frg_cli_choice_t** choice,
@@ -61,7 +61,7 @@ frg_status_t frg_cli_choice_print_help(
     frg_color_mode_t mode;
     frg_status_t result = frg_get_color_mode(&mode);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get color mode: %s", frg_status_to_string(result)); 
         return result;
     }

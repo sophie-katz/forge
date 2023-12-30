@@ -22,6 +22,8 @@
 /// Parse from a file
 frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename);
 
+frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path);
+
 /// Parse from a pre-allocated buffer
 frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename);
 

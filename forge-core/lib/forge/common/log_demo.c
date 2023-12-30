@@ -38,16 +38,16 @@ int main(int argc, char *argv[]) {
 
         frg_log(FRG_LOG_SEVERITY_DEBUG, "this is a debug message without a location prefix");
 
-        frg_log_prefix_source_file("main.frg");
+        frg_log_prefix_source_file(FRG_LOG_SEVERITY_DEBUG, "main.frg");
         frg_log(FRG_LOG_SEVERITY_DEBUG, "this is a debug message with a source file location prefix");
 
-        frg_log_prefix_source_line("main.frg", 11);
+        frg_log_prefix_source_line(FRG_LOG_SEVERITY_DEBUG, "main.frg", 11);
         frg_log(FRG_LOG_SEVERITY_DEBUG, "this is a debug message with a source line location prefix");
 
-        frg_log_prefix_source_char("main.frg", 11, 5);
+        frg_log_prefix_source_char(FRG_LOG_SEVERITY_DEBUG, "main.frg", 11, 5);
         frg_log(FRG_LOG_SEVERITY_DEBUG, "this is a debug message with a source character location prefix");
 
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_DEBUG);
         frg_log(FRG_LOG_SEVERITY_DEBUG, "this is a debug message with an internal location prefix");
 
         if (strcmp(argv[1], "only-warnings-single") == 0

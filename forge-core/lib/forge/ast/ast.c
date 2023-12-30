@@ -417,7 +417,7 @@ frg_status_t frg_ast_new_value_i8(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_I8);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -443,7 +443,7 @@ frg_status_t frg_ast_new_value_i16(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_I16);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -469,7 +469,7 @@ frg_status_t frg_ast_new_value_i32(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_I32);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -495,7 +495,7 @@ frg_status_t frg_ast_new_value_i64(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_I64);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -521,7 +521,7 @@ frg_status_t frg_ast_new_value_u8(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_U8);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -547,7 +547,7 @@ frg_status_t frg_ast_new_value_u16(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_U16);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -573,7 +573,7 @@ frg_status_t frg_ast_new_value_u32(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_U32);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -599,7 +599,7 @@ frg_status_t frg_ast_new_value_u64(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_U64);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -625,7 +625,7 @@ frg_status_t frg_ast_new_value_f32(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_F32);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -651,7 +651,7 @@ frg_status_t frg_ast_new_value_f64(
 
     result = frg_ast_new_ty_primary(&(*ast)->ty, FRG_AST_ID_TY_F64);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
+        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
         frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create primary type: %s", frg_status_to_string(result));
         return result;
     }
@@ -860,7 +860,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
 
             result = _frg_asts_free_glist(((frg_ast_decl_union_t*)*ast)->props);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
@@ -871,7 +871,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
 
             result = _frg_asts_free_glist(((frg_ast_decl_struct_t*)*ast)->decls);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
@@ -882,7 +882,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
 
             result = frg_ast_destroy(&((frg_ast_decl_prop_t*)*ast)->type);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -893,14 +893,14 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
 
             result = _frg_asts_free_glist(((frg_ast_decl_iface_t*)*ast)->extends);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = _frg_asts_free_glist(((frg_ast_decl_iface_t*)*ast)->decls);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
@@ -909,14 +909,14 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_DECL_FN_ARG:
             result = frg_ast_destroy(&((frg_ast_decl_fn_arg_t*)*ast)->prop);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_decl_fn_arg_t*)*ast)->default_value);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -927,28 +927,28 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
 
             result = _frg_asts_free_glist(((frg_ast_decl_fn_t*)*ast)->args);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = _frg_asts_free_glist(((frg_ast_decl_fn_t*)*ast)->var_pos_args);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = _frg_asts_free_glist(((frg_ast_decl_fn_t*)*ast)->var_kw_args);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_decl_fn_t*)*ast)->body);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -957,14 +957,14 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_DECL_VAR:
             result = frg_ast_destroy(&((frg_ast_decl_var_t*)*ast)->prop);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_decl_var_t*)*ast)->initial_value);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -973,7 +973,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_DECL_BLOCK:
             result = _frg_asts_free_glist(((frg_ast_decl_block_t*)*ast)->decls);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
@@ -982,7 +982,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_STMT_RETURN:
             result = frg_ast_destroy(&((frg_ast_stmt_return_t*)*ast)->value);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -991,21 +991,21 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_STMT_IF:
             result = frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->condition);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->then_clause);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->else_clause);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1014,14 +1014,14 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_STMT_WHILE:
             result = frg_ast_destroy(&((frg_ast_stmt_while_t*)*ast)->condition);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_stmt_while_t*)*ast)->body);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1030,7 +1030,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_STMT_BLOCK:
             result = _frg_asts_free_glist(((frg_ast_stmt_block_t*)*ast)->stmts);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1039,7 +1039,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_INT:
             result = frg_ast_destroy(&((frg_ast_value_int_t*)*ast)->ty);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1048,7 +1048,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_FLOAT:
             result = frg_ast_destroy(&((frg_ast_value_float_t*)*ast)->ty);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1067,7 +1067,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
 
             result = frg_ast_destroy(&((frg_ast_value_call_kw_arg_t*)*ast)->value);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1076,21 +1076,21 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_CALL:
             result = frg_ast_destroy(&((frg_ast_value_call_t*)*ast)->callee);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = _frg_asts_free_glist(((frg_ast_value_call_t*)*ast)->args);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = _frg_asts_free_glist(((frg_ast_value_call_t*)*ast)->kw_args);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST list: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1103,7 +1103,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_DEC:
             result = frg_ast_destroy(&((frg_ast_value_unary_t*)*ast)->operand);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
@@ -1147,14 +1147,14 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
             result = frg_ast_destroy(&((frg_ast_value_binary_t*)*ast)->left);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }
 
             result = frg_ast_destroy(&((frg_ast_value_binary_t*)*ast)->right);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
+                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
                 frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy AST: %s", frg_status_to_string(result));
                 return result;
             }

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/config/cli/option.h>
+#include <forge/cli/option.h>
 #include <unity.h>
 
 void setUp(void) {}

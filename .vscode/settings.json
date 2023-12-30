@@ -11,9 +11,11 @@
         "${workspaceFolder}/forge-core/build",
         "/opt/homebrew/Cellar/glib/2.78.3/lib/glib-2.0/include",
         "${workspaceFolder}/forge-core/subprojects/utf8proc",
-        "${workspaceFolder}/forge-core/subprojects/Unity/src"
+        "${workspaceFolder}/forge-core/subprojects/Unity/src",
+        "/opt/homebrew/Cellar/llvm/17.0.6/include"
     ],
     "files.associations": {
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "config.h": "c"
     }
 }

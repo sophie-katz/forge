@@ -17,7 +17,7 @@
 
 #include <glib.h>
 #include <forge/common/enums.h>
-#include <forge/config/cli/option.h>
+#include <forge/cli/option.h>
 
 typedef struct {
     GList* options;

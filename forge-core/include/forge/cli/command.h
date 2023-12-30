@@ -16,7 +16,7 @@
 #pragma once
 
 #include <glib.h>
-#include <forge/config/cli/option_set.h>
+#include <forge/cli/option_set.h>
 
 struct frg_cli_program_t;
 

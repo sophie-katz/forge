@@ -13,19 +13,10 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include "generators.hpp"
 
-#include <forge/common/enums.h>
-#include <glib.h>
-
-typedef struct {
-    bool version_short;
-} frg_config_t;
-
-frg_status_t frg_config_new_default(frg_config_t** config);
-void frg_config_destroy(frg_config_t** config);
-
-frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int argc, const char** argv);
-frg_status_t frg_config_parse_env(frg_config_t* config);
-
-frg_status_t frg_config_log_debug(const frg_config_t* config);
+namespace frg {
+llvm::Type* generate_type(frg_ast_t* ast) {
+    return nullptr;
+}
+}

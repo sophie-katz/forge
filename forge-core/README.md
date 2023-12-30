@@ -29,6 +29,9 @@ To build the Forge compiler you need these installed on your system:
 - [Meson](https://mesonbuild.com/)
 - [CMake](https://cmake.org/)
 - [Glib 2.0](https://docs.gtk.org/glib/)
+- [LLVM](https://llvm.org/)
+    - [Debian/Ubuntu packages](https://apt.llvm.org/)
+    - [macOS package](https://formulae.brew.sh/formula/llvm)
 - [Doxygen](https://www.doxygen.nl/index.html) (only needed for building API documentation)
 
 Once these are all installed, run:

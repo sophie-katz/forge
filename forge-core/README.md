@@ -58,3 +58,19 @@ meson test -C build
 # Build the documentation (to build/doxygen)
 doxygen
 ```
+
+## Building in watch mode
+
+You will need to install [`fswatch`](https://github.com/emcrisostomo/fswatch) to do this.
+
+Run this command to watch the `forge-core` directory for changes and rebuild the compiler when changes are detected:
+
+```shell
+fswatch -o . | xargs -n1 -I{} meson compile -C build
+```
+
+You can also run this to watch a dump of the AST:
+
+```shell
+fswatch -o .. | xargs -n1 -I{} bash -c "clear && ./build/forge dump-ast ../example.frg"
+```

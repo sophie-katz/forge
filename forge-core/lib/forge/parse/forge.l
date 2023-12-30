@@ -243,6 +243,7 @@ false {
 \"(\\.|[^\\"\n])*\" {
     // Taken from https://gist.github.com/codebrainz/2933703
 
+    yylval.value_str = NULL;
     frg_status_t result = frg_unescape_str(&yylval.value_str, yytext);
     if (result != FRG_STATUS_OK) {
         frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
@@ -416,6 +417,14 @@ false {
 
 "||=" {
     return LOG_OR_ASSIGN;
+}
+
+"++" {
+    return INC;
+}
+
+"--" {
+    return DEC;
 }
 
 . {

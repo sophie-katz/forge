@@ -23,6 +23,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 This is the user documentation for the Forge programming language.
 
+- [Guide](./guide/hello-world.md)
 - [Language specification](./specification/how-to-use.md)
 - [**Core**](https://github.com/sophie-katz/forge/tree/main/forge-core)
     - [**Compiler**](https://github.com/sophie-katz/forge/tree/main/forge-core/src/forge-compiler)

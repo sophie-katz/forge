@@ -37,7 +37,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.forge",
-					"match": "\\b(if|while|return|match)\\b"
+					"match": "\\b(if|else|while|return|match)\\b"
 				},
 				{
 					"name": "keyword.other.forge",

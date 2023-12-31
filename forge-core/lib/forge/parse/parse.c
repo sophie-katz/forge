@@ -59,7 +59,7 @@ frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path) {
 
     FILE *file = fopen(path, "r");
     if (file == NULL) {
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to open source file: %s (%s)", path, strerror(errno));
+        frg_log_fatal_error("unable to open source file: %s (%s)", path, strerror(errno));
         return FRG_STATUS_CLI_ERROR;
     }
 
@@ -69,7 +69,7 @@ frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path) {
         path
     );
     if (result != FRG_STATUS_OK) {
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse source file: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to parse source file: %s", frg_status_to_string(result));
         fclose(file);
         return FRG_STATUS_CLI_ERROR;
     }

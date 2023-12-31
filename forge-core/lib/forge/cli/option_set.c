@@ -62,8 +62,7 @@ frg_status_t frg_cli_option_set_destroy(
     for (GList* option = (*option_set)->options; option != NULL; option = option->next) {
         frg_status_t result = frg_cli_option_destroy((frg_cli_option_t**)&option->data);
         if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result)); 
+            frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result)); 
             return result;
         }
     }
@@ -89,8 +88,7 @@ frg_status_t frg_cli_option_set_add_option(
         int index = 0;
         frg_status_t result = _frg_cli_get_short_name_index(&index, option->short_name);
         if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get short name index: %s", frg_status_to_string(result));
+            frg_log_internal_error("unable to get short name index: %s", frg_status_to_string(result));
             return result;
         }
 
@@ -146,14 +144,12 @@ frg_status_t frg_cli_option_set_get_option_by_short_name(
     int index = -1;
     frg_status_t result = _frg_cli_get_short_name_index(&index, name);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get short name index: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to get short name index: %s", frg_status_to_string(result)); 
         return result;
     }
 
     if (index < 0 || index >= FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "invalid index %i", index);
+        frg_log_internal_error("invalid index %i", index);
         return FRG_STATUS_ERROR_KEY_NOT_FOUND;
     }
 
@@ -184,8 +180,7 @@ frg_status_t frg_cli_option_set_print_help(
 
         frg_status_t result = frg_cli_option_print_help((const frg_cli_option_t*)option->data);
         if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result)); 
+            frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result)); 
             return result;
         }
     }
@@ -209,7 +204,7 @@ frg_status_t _frg_cli_option_set_parse_next_long(
     } else if (argv[*argi][0] == 0) {
         return FRG_STATUS_ERROR_EMPTY_STRING;
     } else if (name[0] == 0) {
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "invalid argument '--'");
+        frg_log_fatal_error("invalid argument '--'");
         return FRG_STATUS_CLI_ERROR;
     }
 
@@ -220,11 +215,10 @@ frg_status_t _frg_cli_option_set_parse_next_long(
         name
     );
     if (result == FRG_STATUS_ERROR_KEY_NOT_FOUND) {
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unknown argument '--%s'", name);
+        frg_log_fatal_error("unknown argument '--%s'", name);
         return FRG_STATUS_CLI_ERROR;
     } else if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get option by long name: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to get option by long name: %s", frg_status_to_string(result)); 
         return result;
     }
 
@@ -261,8 +255,7 @@ frg_status_t _frg_cli_option_set_parse_next_short(
         name
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get option by short name: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to get option by short name: %s", frg_status_to_string(result)); 
         return result;
     }
 

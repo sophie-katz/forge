@@ -16,6 +16,7 @@
     ],
     "files.associations": {
         "*.in": "cpp",
-        "config.h": "c"
+        "config.h": "c",
+        "vector": "c"
     }
 }

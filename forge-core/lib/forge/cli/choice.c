@@ -61,8 +61,7 @@ frg_status_t frg_cli_choice_print_help(
     frg_color_mode_t mode;
     frg_status_t result = frg_get_color_mode(&mode);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get color mode: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to get color mode: %s", frg_status_to_string(result)); 
         return result;
     }
 

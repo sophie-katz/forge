@@ -25,10 +25,10 @@ frg_status_t frg_config_commands_get_single_source_file(
     } else if (*path != NULL) {
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     } else if (pos_args == NULL) {
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "command compile expects a source file as an argument");
+        frg_log_fatal_error("command compile expects a source file as an argument");
         return FRG_STATUS_CLI_ERROR;
     } else if (pos_args->next != NULL) {
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "command compile expects only one source file as an argument");
+        frg_log_fatal_error("command compile expects only one source file as an argument");
         return FRG_STATUS_CLI_ERROR;
     } else {
         *path = (const char*)pos_args->data;

@@ -48,8 +48,7 @@ frg_status_t frg_cli_command_new(
         &(*command)->option_set
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option set: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create option set: %s", frg_status_to_string(result)); 
         return result;
     }
 
@@ -67,8 +66,7 @@ frg_status_t frg_cli_command_destroy(
         &(*command)->option_set
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option set: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to destroy option set: %s", frg_status_to_string(result)); 
         return result;
     }
 

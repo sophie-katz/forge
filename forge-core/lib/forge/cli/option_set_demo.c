@@ -26,8 +26,7 @@ int main(void) {
         &option_set
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -39,15 +38,13 @@ int main(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -60,15 +57,13 @@ int main(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -81,15 +76,13 @@ int main(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -103,15 +96,13 @@ int main(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -124,8 +115,7 @@ int main(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -136,8 +126,7 @@ int main(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -153,8 +142,7 @@ int main(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -165,8 +153,7 @@ int main(void) {
 
     result = frg_cli_option_set_add_option(option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -180,8 +167,7 @@ int main(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -192,8 +178,7 @@ int main(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -209,8 +194,7 @@ int main(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -221,8 +205,7 @@ int main(void) {
 
     result = frg_cli_option_set_add_option(option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -230,15 +213,13 @@ int main(void) {
         option_set
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option set help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option set help: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_destroy(&option_set);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable destroy option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable destroy option set: %s", frg_status_to_string(result));
         return 1;
     }
 

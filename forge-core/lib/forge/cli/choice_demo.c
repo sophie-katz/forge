@@ -24,22 +24,19 @@ int main(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_choice_print_help(choice);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print choice help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print choice help: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_choice_destroy(&choice);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy choice: %s", frg_status_to_string(result));
         return 1;
     }
 

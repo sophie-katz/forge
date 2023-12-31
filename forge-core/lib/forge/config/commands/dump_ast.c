@@ -42,12 +42,13 @@ frg_status_t _frg_config_commands_callback_dump_ast(
         path
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse source file: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to parse source file: %s", frg_status_to_string(result));
         return FRG_STATUS_CLI_ERROR;
     }
 
     frg_ast_print_debug(ast, 0);
+
+    printf("\n");
 
     return FRG_STATUS_OK;
 }
@@ -61,8 +62,7 @@ frg_status_t frg_config_commands_new_dump_ast(frg_cli_command_t** command) {
         _frg_config_commands_callback_dump_ast
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 

@@ -29,20 +29,17 @@ void flag(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_print_help(option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_destroy(&option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
     }
 }
 
@@ -56,20 +53,17 @@ void flag_short(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_print_help(option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_destroy(&option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
     }
 }
 
@@ -83,20 +77,17 @@ void argument(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_print_help(option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_destroy(&option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
     }
 }
 
@@ -111,20 +102,17 @@ void argument_short(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_print_help(option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_destroy(&option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
     }
 }
 
@@ -138,8 +126,7 @@ void choice(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
     }
 
     frg_cli_choice_t* choice = NULL;
@@ -149,8 +136,7 @@ void choice(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_add_choice(
@@ -165,8 +151,7 @@ void choice(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_add_choice(
@@ -176,14 +161,12 @@ void choice(void) {
 
     result = frg_cli_option_print_help(option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_destroy(&option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
     }
 }
 
@@ -198,8 +181,7 @@ void choice_short(void) {
         callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
     }
 
     frg_cli_choice_t* choice = NULL;
@@ -209,8 +191,7 @@ void choice_short(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_add_choice(
@@ -225,8 +206,7 @@ void choice_short(void) {
         "A description of the choice"
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create choice: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_add_choice(
@@ -236,14 +216,12 @@ void choice_short(void) {
 
     result = frg_cli_option_print_help(option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
     }
 
     result = frg_cli_option_destroy(&option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
     }
 }
 

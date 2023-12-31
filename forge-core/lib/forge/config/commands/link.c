@@ -36,8 +36,7 @@ frg_status_t frg_config_commands_new_link(frg_cli_command_t** command) {
         _frg_config_commands_callback_link
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 

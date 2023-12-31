@@ -17,6 +17,7 @@
 #include <forge/ast/ast.h>
 #include <forge/ast/debug.h>
 #include <forge/codegen/codegen.h>
+#include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/common/stream.h>
@@ -31,7 +32,6 @@ frg_status_t frg_config_new_default(frg_config_t** config) {
         return result;
     }
 
-    (*config)->source_file = NULL;
     (*config)->version_short = false;
 
     return FRG_STATUS_OK;
@@ -42,8 +42,6 @@ void frg_config_destroy(frg_config_t** config) {
         return;
     }
 
-    g_string_free((*config)->source_file, true);
-
     frg_safe_free((void**)config);
 }
 
@@ -51,8 +49,7 @@ frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int ar
     frg_cli_program_t* program = NULL;
     frg_status_t result = frg_config_cli_program_new(&program);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI program: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -66,8 +63,77 @@ frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int ar
     if (result == FRG_STATUS_CLI_ERROR) {
         return FRG_STATUS_CLI_ERROR;
     } else if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse args with CLI program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to parse args with CLI program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_parse_env_bool(bool* result, const char* text) {
+    if (strcmp(text, "true") == 0) {
+        *result = true;
+    } else if (strcmp(text, "false") == 0) {
+        *result = false;
+    } else {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_parse_env_debug(frg_config_t* config) {
+    if (config == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    }
+
+    const char* debug_text = getenv("FORGE_DEBUG");
+    if (debug_text != NULL && *debug_text != 0) {
+        bool debug_value = false;
+        frg_status_t result = _frg_parse_env_bool(&debug_value, debug_text);
+        if (result != FRG_STATUS_OK) {
+            frg_log_fatal_error("invalid value for FORGE_DEBUG: %s (expected either 'true' or 'false')");
+            return FRG_STATUS_CLI_ERROR;
+        }
+
+        if (debug_value) {
+            frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
+        }
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_parse_env_color_mode(frg_config_t* config) {
+    if (config == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    }
+
+    const char* color_mode_text = getenv("FORGE_COLOR_MODE");
+    if (color_mode_text != NULL && *color_mode_text != 0) {
+        if (strcmp(color_mode_text, "disabled") == 0) {
+            frg_set_color_mode(FRG_COLOR_MODE_DISABLED);
+        } else if (strcmp(color_mode_text, "auto") == 0) {
+            frg_set_color_mode(FRG_COLOR_MODE_AUTO);
+        } else if (strcmp(color_mode_text, "enabled") == 0) {
+            frg_set_color_mode(FRG_COLOR_MODE_ENABLED);
+        } else {
+            frg_log_fatal_error("unknown color mode: %s", color_mode_text);
+            return FRG_STATUS_CLI_ERROR;
+        }
+    }
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t frg_config_parse_env(frg_config_t* config) {
+    frg_status_t result = _frg_config_parse_env_debug(config);
+    if (result != FRG_STATUS_OK) {
+        return result;
+    }
+
+    result = _frg_config_parse_env_color_mode(config);
+    if (result != FRG_STATUS_OK) {
         return result;
     }
 
@@ -79,9 +145,8 @@ frg_status_t frg_config_log_debug(const frg_config_t* config) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
-    frg_log(FRG_LOG_SEVERITY_DEBUG, "Configuration:");
-    frg_log(FRG_LOG_SEVERITY_NOTE, "config.source_file == %s", config->source_file != NULL ? config->source_file->str : "(null)");
-    frg_log(FRG_LOG_SEVERITY_NOTE, "config.version_short == %s", config->version_short ? "true" : "false");
+    frg_log_result_t result = frg_log_debug("Configuration: %s");
+    frg_log_note(&result, "config.version_short == %s", config->version_short ? "true" : "false");
 
     return FRG_STATUS_OK;
 }

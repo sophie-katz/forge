@@ -16,6 +16,7 @@
 #include <forge/ast/ast.h>
 #include <forge/cli/program.h>
 #include <forge/config/commands/link.h>
+#include <forge/config/cli_program.h>
 #include <forge/config/config.h>
 #include <forge/common/log.h>
 
@@ -25,6 +26,8 @@ frg_status_t _frg_config_commands_callback_help(
     void* user_data,
     GList* pos_args
 ) {
+    frg_config_cli_program_banner();
+
     if (pos_args == NULL) {
         return frg_cli_program_print_help((frg_cli_program_t*)program, NULL);
     } else {
@@ -41,8 +44,7 @@ frg_status_t frg_config_commands_new_help(frg_cli_command_t** command) {
         _frg_config_commands_callback_help
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 

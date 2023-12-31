@@ -16,6 +16,7 @@
 #include <forge/config/cli_program.h>
 #include <forge/config/config.h>
 #include <build_config.h>
+#include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/config/commands/compile.h>
 #include <forge/config/commands/dump_ast.h>
@@ -23,17 +24,53 @@
 #include <forge/config/commands/link.h>
 #include <forge/config/commands/version.h>
 
+void frg_config_cli_program_banner(void) {
+    frg_set_color(stdout, FRG_COLOR_ID_BOLD);
+    frg_set_color(stdout, FRG_COLOR_ID_BRIGHT_YELLOW);
+    printf("\n       \\ | / ,\n");
+    printf("     `\n");
+    frg_set_color(stdout, FRG_COLOR_ID_BRIGHT_RED);
+    printf("---------------\n");
+    printf("  ----.      /\n");
+    printf("      /___^__\\\n\n");
+    frg_set_color(stdout, FRG_COLOR_ID_RESET);
+}
+
 frg_status_t _frg_config_cli_program_callback(
     int* exit_status,
     const frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {
+    frg_config_cli_program_banner();
+
     return frg_cli_program_print_help(program, NULL);
 }
 
 frg_status_t _frg_config_cli_option_callback_debug(void* user_data, const char* value) {
     frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_cli_option_callback_color_mode(void* user_data, const char* value) {
+    frg_status_t result;
+
+    if (strcmp(value, "disabled") == 0) {
+        result = frg_set_color_mode(FRG_COLOR_MODE_DISABLED);
+    } else if (strcmp(value, "auto") == 0) {
+        result = frg_set_color_mode(FRG_COLOR_MODE_AUTO);
+    } else if (strcmp(value, "enabled") == 0) {
+        result = frg_set_color_mode(FRG_COLOR_MODE_ENABLED);
+    } else {
+        frg_log_fatal_error("unknown color mode: %s", value);
+        return FRG_STATUS_CLI_ERROR;
+    }
+
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to set color mode: %s", frg_status_to_string(result));
+        return result;
+    }
 
     return FRG_STATUS_OK;
 }
@@ -58,8 +95,7 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         _frg_config_cli_program_callback
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI program: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -71,8 +107,7 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         _frg_config_cli_option_callback_debug
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI option: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -81,16 +116,96 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         option
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI option to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add CLI option to program: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    option = NULL;
+    result = frg_cli_option_new_choice(
+        &option,
+        "color-mode",
+        "mode",
+        "Set the color mode",
+        _frg_config_cli_option_callback_color_mode
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create CLI option: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_choice_t* choice = NULL;
+    result = frg_cli_choice_new(
+        &choice,
+        "disabled",
+        "Disable color output"
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create CLI option choice: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_option_add_choice(
+        option,
+        choice
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to add CLI option choice: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    choice = NULL;
+    result = frg_cli_choice_new(
+        &choice,
+        "auto",
+        "Automatically detect whether or not to use color output"
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create CLI option choice: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_option_add_choice(
+        option,
+        choice
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to add CLI option choice: %s", frg_status_to_string(result));
+        return result;
+    }
+    
+    choice = NULL;
+    result = frg_cli_choice_new(
+        &choice,
+        "enabled",
+        "Force color output to be enabled"
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create CLI option choice: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    frg_cli_option_add_choice(
+        option,
+        choice
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to add CLI option choice: %s", frg_status_to_string(result));
+        return result;
+    }
+
+    result = frg_cli_option_set_add_option(
+        (*program)->global_options,
+        option
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to add CLI option to program: %s", frg_status_to_string(result));
         return result;
     }
 
     frg_cli_command_t* command = NULL;
     result = frg_config_commands_new_compile(&command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -99,16 +214,14 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add CLI command to program: %s", frg_status_to_string(result));
         return result;
     }
 
     command = NULL;
     result = frg_config_commands_new_dump_ast(&command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -117,16 +230,14 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add CLI command to program: %s", frg_status_to_string(result));
         return result;
     }
 
     command = NULL;
     result = frg_config_commands_new_help(&command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -135,16 +246,14 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add CLI command to program: %s", frg_status_to_string(result));
         return result;
     }
 
     command = NULL;
     result = frg_config_commands_new_link(&command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -153,16 +262,14 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add CLI command to program: %s", frg_status_to_string(result));
         return result;
     }
 
     command = NULL;
     result = frg_config_commands_new_version(&command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create CLI command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
         return result;
     }
 
@@ -171,8 +278,7 @@ frg_status_t frg_config_cli_program_new(frg_cli_program_t** program) {
         command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add CLI command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add CLI command to program: %s", frg_status_to_string(result));
         return result;
     }
 

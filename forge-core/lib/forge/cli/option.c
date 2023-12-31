@@ -223,8 +223,7 @@ frg_status_t frg_cli_option_destroy(
     for (GList* choice = (*option)->choices; choice != NULL; choice = choice->next) {
         frg_status_t result = frg_cli_choice_destroy((frg_cli_choice_t**)&choice->data);
         if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy choice: %s", frg_status_to_string(result)); 
+            frg_log_internal_error("unable to destroy choice: %s", frg_status_to_string(result)); 
             return result;
         }
     }
@@ -284,8 +283,7 @@ frg_status_t frg_cli_option_print_help(
         for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
             frg_status_t result = frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data);
             if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-                frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print choice help: %s", frg_status_to_string(result)); 
+                frg_log_internal_error("unable to print choice help: %s", frg_status_to_string(result)); 
                 return result;
             }
         }
@@ -346,8 +344,7 @@ frg_status_t frg_cli_option_parse_next(
         argv[*argi]
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal(FRG_LOG_SEVERITY_INTERNAL_ERROR);
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to ensure that option matches current argument: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to ensure that option matches current argument: %s", frg_status_to_string(result)); 
         return result;
     }
 
@@ -361,7 +358,7 @@ frg_status_t frg_cli_option_parse_next(
         // If the argument does take a value, make sure there is a value to parse
 
         if (*argi >= argc) {
-            frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "argument '%s' expects a value", argv[*argi - 1]);
+            frg_log_fatal_error("argument '%s' expects a value", argv[*argi - 1]);
             return FRG_STATUS_CLI_ERROR;
         } else if (argv[*argi] == NULL) {
             return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
@@ -379,11 +376,11 @@ frg_status_t frg_cli_option_parse_next(
             }
 
             if (!found) {
-                frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unexpected value for argument '%s', allowed values are:");
+                frg_log_result_t result = frg_log_fatal_error("unexpected value for argument '%s', allowed values are:");
 
                 for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
                     const frg_cli_choice_t* choice_casted = (const frg_cli_choice_t*)choice->data;
-                    frg_log(FRG_LOG_SEVERITY_NOTE, "  '%s' - %s", choice_casted->name, choice_casted->help);
+                    frg_log_note(&result, "  '%s' - %s", choice_casted->name, choice_casted->help);
                 }
 
                 return FRG_STATUS_CLI_ERROR;

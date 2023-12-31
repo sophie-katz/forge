@@ -21,41 +21,254 @@
 
 frg_status_t frg_log_set_minimum_severity(frg_log_severity_t severity);
 
-/// \brief Log a message prefix that indicates that the following message is from the
-///        source file \a filename.
-frg_status_t frg_log_prefix_source_file(
-    frg_log_severity_t severity,
-    const char* filename
+typedef struct {
+    bool emitted;
+} frg_log_result_t;
+
+frg_log_result_t _frg_log_debug(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
 );
 
-/// \brief Log a message prefix that indicates that the following message is from the
-///        source file \a filename on line \a lineno.
-frg_status_t frg_log_prefix_source_line(
-    frg_log_severity_t severity,
-    const char* filename,
-    frg_lineno_t lineno
+#define frg_log_debug(format, ...) _frg_log_debug( \
+    __FILE__, \
+    __LINE__, \
+    (format), \
+    ##__VA_ARGS__ \
+)
+
+frg_log_result_t _frg_log_debug_in_source_file(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    const char* format,
+    ...
 );
 
-/// \brief Log a message prefix that indicates that the following message is from the
-///        source file \a filename on line \a lineno at column \a columnno.
-frg_status_t frg_log_prefix_source_char(
-    frg_log_severity_t severity,
-    const char* filename,
-    frg_lineno_t lineno,
-    frg_columnno_t columnno
+#define frg_log_debug_in_source_file(source_path, format, ...) \
+    _frg_log_debug_in_source_file( \
+        __FILE__, \
+        __LINE__, \
+        (source_path), \
+        (format), \
+        ##__VA_ARGS__ \
+    )
+
+frg_log_result_t _frg_log_debug_on_source_line(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
 );
 
-/// \brief Log a message prefix that indicates that the following message is from the
-///        current line of the Forge compiler source code.
-#define frg_log_prefix_internal(severity) _frg_log_prefix_internal((severity), __FILE__, __LINE__)
+#define frg_log_debug_on_source_line(source_path, format, source_lineno, ...) \
+    _frg_log_debug_on_source_line( \
+        __FILE__, \
+        __LINE__, \
+        (source_path), \
+        (format), \
+        (source_lineno), \
+        ##__VA_ARGS__ \
+    )
 
-frg_status_t _frg_log_prefix_internal(
-    frg_log_severity_t severity,
-    const char* filename,
-    frg_lineno_t lineno
+frg_log_result_t _frg_log_debug_at_source_char(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
 );
 
-/// \brief Log a message.
-frg_status_t frg_log(frg_log_severity_t severity, const char* format, ...);
+#define frg_log_debug_at_source_char(source_path, format, source_lineno, source_columnno, ...) \
+    _frg_log_debug_at_source_char( \
+        __FILE__, \
+        __LINE__, \
+        (source_path), \
+        (format), \
+        (source_lineno), \
+        (columnno), \
+        ##__VA_ARGS__ \
+    )
+
+void frg_log_note(
+    const frg_log_result_t* parent_result,
+    const char* format,
+    ...
+);
+
+void frg_log_note_in_source_file(
+    const frg_log_result_t* parent_result,
+    const char* source_path,
+    const char* format,
+    ...
+);
+
+void frg_log_note_on_source_line(
+    const frg_log_result_t* parent_result,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+);
+
+void frg_log_note_at_source_char(
+    const frg_log_result_t* parent_result,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_warning(
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_warning_in_source_file(
+    const char* source_path,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_warning_on_source_line(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_warning_at_source_char(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_error(
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_error_in_source_file(
+    const char* source_path,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_error_on_source_line(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_error_at_source_char(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_fatal_error(
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_fatal_error_in_source_file(
+    const char* source_path,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_fatal_error_on_source_line(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t frg_log_fatal_error_at_source_char(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+);
+
+frg_log_result_t _frg_log_internal_error(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
+);
+
+#define frg_log_internal_error(format, ...) \
+    _frg_log_internal_error(__FILE__, __LINE__, (format), ##__VA_ARGS__)
+
+frg_log_result_t _frg_log_internal_error_in_source_file(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    const char* format,
+    ...
+);
+
+#define frg_log_internal_error_in_source_file(source_path, format, ...) \
+    _frg_log_internal_error_in_source_file( \
+        __FILE__, \
+        __LINE__, \
+        (source_path), \
+        (format), \
+        ##__VA_ARGS__ \
+    )
+
+frg_log_result_t _frg_log_internal_error_on_source_line(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+);
+
+#define frg_log_internal_error_on_source_line(source_path, format, source_lineno, ...) \
+    _frg_log_internal_error_on_source_line( \
+        __FILE__, \
+        __LINE__, \
+        (source_path), \
+        (format), \
+        (source_lineno), \
+        ##__VA_ARGS__ \
+    )
+
+frg_log_result_t _frg_log_internal_error_at_source_char(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+);
+
+#define frg_log_internal_error_at_source_char(source_path, format, source_lineno, source_columnno, ...) \
+    _frg_log_internal_error_at_source_char( \
+        __FILE__, \
+        __LINE__, \
+        (source_path), \
+        (format), \
+        (source_lineno), \
+        (columnno), \
+        ##__VA_ARGS__ \
+    )
 
 bool frg_log_summary_if_errors(void);

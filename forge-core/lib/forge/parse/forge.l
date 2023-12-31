@@ -209,8 +209,7 @@ false {
 [0-9][0-9a-zA-Z_]* {
     frg_status_t result = frg_str_to_uint(&yylval.value_int, yytext);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_source_char(FRG_LOG_SEVERITY_ERROR, _frg_current_filename, yylineno, yycolumnno);
-        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid integer literal \"%s\"", yytext);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid integer literal \"%s\"", yytext);
         yylval.value_int = 0;
     }
 
@@ -220,8 +219,7 @@ false {
 [0-9][0-9a-zA-Z_]*\.[0-9a-zA-Z_]* {
     frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_source_char(FRG_LOG_SEVERITY_ERROR, _frg_current_filename, yylineno, yycolumnno);
-        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid float literal \"%s\"", yytext);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
         yylval.value_float = 0.0;
     }
 
@@ -231,8 +229,7 @@ false {
 ([0-9][0-9a-zA-Z_]*)?\.[0-9][0-9a-zA-Z_]* {
     frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_source_char(FRG_LOG_SEVERITY_ERROR, _frg_current_filename, yylineno, yycolumnno);
-        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid float literal \"%s\"", yytext);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
         yylval.value_float = 0.0;
     }
 
@@ -246,8 +243,7 @@ false {
     yylval.value_str = NULL;
     frg_status_t result = frg_unescape_str(&yylval.value_str, yytext);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_source_char(FRG_LOG_SEVERITY_ERROR, _frg_current_filename, yylineno, yycolumnno);
-        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid string literal %s", yytext);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid string literal %s", yytext);
         yylval.value_str = g_string_new(NULL);
     }
 
@@ -259,8 +255,7 @@ false {
     
     frg_status_t result = frg_unescape_char(&yylval.value_char, yytext);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_source_char(FRG_LOG_SEVERITY_ERROR, _frg_current_filename, yylineno, yycolumnno);
-        frg_log(FRG_LOG_SEVERITY_ERROR, "invalid character literal %s", yytext);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid character literal %s", yytext);
         yylval.value_char = 0;
     }
 
@@ -428,13 +423,12 @@ false {
 }
 
 . {
-    frg_log_prefix_source_char(FRG_LOG_SEVERITY_ERROR, _frg_current_filename, yylineno, yycolumnno);
     char as_char = yytext[0];
     int as_int = ((int)as_char) & 0xff;
     if (isprint(yytext[0])) {
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unexpected character '%c' (0x%2x)", as_char, as_int);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "unexpected character '%c' (0x%2x)", as_char, as_int);
     } else {
-        frg_log(FRG_LOG_SEVERITY_ERROR, "unexpected byte 0x%2x", as_int);
+        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "unexpected byte 0x%2x", as_int);
     }
 }
 

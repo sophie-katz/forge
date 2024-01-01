@@ -15,26 +15,13 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# Compiler flow
+# User documentation
 
-## Syntax
+To preview, run:
 
-```mermaid
-flowchart LR
-    source_code["Source code"] --> lexer
-    lexer(["Lexer (flex)"]) --> parser
-    parser(["Parser (bison)"]) --> ast
-    ast[AST]
-```
-
-## Semantics
-
-```mermaid
-flowchart LR
-    ast[AST] --> simplifier
-    simplifier([Simplifier]) --> simplified_ast
-    simplified_ast["AST (Simplified)"] --> interpreter
-    interpreter([Interpreter])
-    simplified_ast --> code_generator
-    code_generator(["Code generator (LLVM)"])
+```shell
+python3 -m venv .venv
+. .venv/bin/activate
+pip3 install -r requirements.txt
+mkdocs serve
 ```

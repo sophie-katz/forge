@@ -13,7 +13,7 @@ runs:
       shell: bash
       run: |
         git config --global --add safe.directory $(realpath ..)
-        meson setup build || cat build/meson-logs/meson-log.txt
+        meson setup build
         meson compile -C build
 
     - name: Run tests

@@ -12,6 +12,7 @@ runs:
       working-directory: forge-core
       shell: bash
       run: |
+        git config --global --add safe.directory $(realpath ..)
         meson setup build || cat build/meson-logs/meson-log.txt
         meson compile -C build
 

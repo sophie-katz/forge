@@ -16,7 +16,7 @@
 #pragma once
 
 #include <forge/common/enums.h>
-#include <forge/config/cli/choice.h>
+#include <forge/cli/choice.h>
 #include <glib.h>
 
 /// \brief The maximum number of option short names possible.

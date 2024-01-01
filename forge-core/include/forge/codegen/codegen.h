@@ -15,20 +15,32 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <forge/ast/ast.h>
-#include <forge/common/enums.h>
-#include <stdio.h>
 
-/// Parse from a file
-frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename);
+typedef struct frg_llvm_module_t frg_llvm_module_t;
 
-frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path);
+frg_status_t frg_codegen(frg_llvm_module_t** module, frg_ast_t* ast);
 
-/// Parse from a pre-allocated buffer
-frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename);
+frg_status_t frg_codegen_call_function(
+    void* returned_value,
+    frg_llvm_module_t* module,
+    const char* name,
+    GList* pos_args
+);
 
-/// \brief Parse from a string
-///
-/// Note that this will copy the string. Use \c frg_parse_buffer if you want to avoid
-/// this.
-frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* filename);
+frg_status_t frg_codegen_write_object_file(
+    frg_llvm_module_t* module,
+    const char* path
+);
+
+frg_status_t frg_codegen_destroy_module(frg_llvm_module_t** module);
+
+frg_status_t frg_codegen_print_module(frg_llvm_module_t* module);
+
+#ifdef __cplusplus
+}
+#endif

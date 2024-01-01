@@ -13,22 +13,31 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
 #include <forge/ast/ast.h>
-#include <forge/common/enums.h>
-#include <stdio.h>
+#include <forge/config/commands/link.h>
+#include <forge/config/config.h>
+#include <forge/common/check.h>
+#include <forge/common/log.h>
 
-/// Parse from a file
-frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename);
+frg_status_t _frg_config_commands_callback_link(
+    int* exit_status,
+    const struct frg_cli_program_t* program,
+    void* user_data,
+    GList* pos_args
+) {
+    return FRG_STATUS_OK;
+}
 
-frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path);
+frg_status_t frg_config_commands_new_link(frg_cli_command_t** command) {
+    frg_check(
+        frg_cli_command_new(
+            command,
+            "link",
+            "object files",
+            "Links object files into executables or libraries.",
+            _frg_config_commands_callback_link
+        )
+    );
 
-/// Parse from a pre-allocated buffer
-frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename);
-
-/// \brief Parse from a string
-///
-/// Note that this will copy the string. Use \c frg_parse_buffer if you want to avoid
-/// this.
-frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* filename);
+    return FRG_STATUS_OK;
+}

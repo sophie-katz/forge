@@ -19,14 +19,12 @@
 #include <glib.h>
 
 typedef struct {
-    frg_color_mode_t color_mode;
-    bool debug;
-    GString* source_file;
     bool version_short;
+    const char* compile_output_path;
 } frg_config_t;
 
 frg_status_t frg_config_new_default(frg_config_t** config);
-void frg_config_destroy(frg_config_t** config);
+frg_status_t frg_config_destroy(frg_config_t** config);
 
 frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int argc, const char** argv);
 frg_status_t frg_config_parse_env(frg_config_t* config);

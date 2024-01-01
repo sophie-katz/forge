@@ -15,20 +15,40 @@
 
 #pragma once
 
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Type.h>
+
+extern "C" {
 #include <forge/ast/ast.h>
-#include <forge/common/enums.h>
-#include <stdio.h>
+#include <forge/ast/scope.h>
 
-/// Parse from a file
-frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename);
+frg_status_t _frg_generate_type(
+    llvm::Type** ir,
+    llvm::LLVMContext& ctx,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
 
-frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path);
+frg_status_t _frg_generate_decl_fn(
+    llvm::IRBuilder<>& builder,
+    llvm::LLVMContext& ctx,
+    llvm::Module& module,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
 
-/// Parse from a pre-allocated buffer
-frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename);
+frg_status_t _frg_generate_stmt(
+    llvm::IRBuilder<>& builder,
+    llvm::LLVMContext& ctx,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
 
-/// \brief Parse from a string
-///
-/// Note that this will copy the string. Use \c frg_parse_buffer if you want to avoid
-/// this.
-frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* filename);
+frg_status_t _frg_generate_value(
+    llvm::Value** ir,
+    llvm::LLVMContext& ctx,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
+}

@@ -15,7 +15,16 @@
 
 # Project definition
 # --------------------------------------------------------------------------------------
-project('forge-core', 'c', default_options: ['c_std=gnu18', 'werror=true'])
+project(
+    'forge-core',
+    'c',
+    'cpp',
+    default_options: [
+        'c_std=gnu18',
+        'cpp_std=c++20',
+        'werror=true'
+    ]
+)
 
 # Tools
 # --------------------------------------------------------------------------------------
@@ -62,6 +71,45 @@ forge_dependencies = [
     forge_dependency_m
 ]
 
+# LLVM
+forge_llvm_config_cxxflags = run_command(
+    [
+        'llvm-config',
+        '--cxxflags'
+    ],
+    capture: true,
+    check: true
+)
+
+add_project_arguments(
+    forge_llvm_config_cxxflags.stdout().strip().split(' '),
+    language: ['cpp']
+)
+
+forge_llvm_config_ldflags = run_command(
+    [
+        'llvm-config',
+        '--ldflags'
+    ],
+    capture: true,
+    check: true
+)
+
+forge_llvm_config_libs = run_command(
+    [
+        'llvm-config',
+        '--libs'
+    ],
+    capture: true,
+    check: true
+)
+
+add_project_link_arguments(
+    forge_llvm_config_ldflags.stdout().strip().split(' ')
+        + forge_llvm_config_libs.stdout().strip().split(' '),
+    language: ['c', 'cpp']
+)
+
 # Build configuration
 # --------------------------------------------------------------------------------------
 
@@ -101,6 +149,15 @@ forge_core_lib = static_library(
     'forge-core',
     'lib/forge/ast/ast.c',
     'lib/forge/ast/debug.c',
+    'lib/forge/ast/scope.c',
+    'lib/forge/cli/choice.c',
+    'lib/forge/cli/command.c',
+    'lib/forge/cli/option_set.c',
+    'lib/forge/cli/option.c',
+    'lib/forge/cli/program.c',
+    'lib/forge/codegen/codegen.cpp',
+    'lib/forge/codegen/generators.cpp',
+    'lib/forge/common/check.c',
     'lib/forge/common/color.c',
     'lib/forge/common/debug.c',
     'lib/forge/common/enums.c',
@@ -108,11 +165,14 @@ forge_core_lib = static_library(
     'lib/forge/common/log.c',
     'lib/forge/common/memory.c',
     'lib/forge/common/stream.c',
-    'lib/forge/config/cli/choice.c',
-    'lib/forge/config/cli/command.c',
-    'lib/forge/config/cli/option_set.c',
-    'lib/forge/config/cli/option.c',
-    'lib/forge/config/cli/program.c',
+    'lib/forge/config/cli_program.c',
+    'lib/forge/config/commands/common.c',
+    'lib/forge/config/commands/compile.c',
+    'lib/forge/config/commands/dump_ast.c',
+    'lib/forge/config/commands/dump_ir.c',
+    'lib/forge/config/commands/help.c',
+    'lib/forge/config/commands/link.c',
+    'lib/forge/config/commands/version.c',
     'lib/forge/config/config.c',
     'lib/forge/exec/exec.c',
     'lib/forge/parse/parse.c',
@@ -199,7 +259,7 @@ test('common/lexical_casts_test.c', forge_test_common_lexical_casts)
 
 forge_test_config_cli_option = executable(
     'test-config-cli-option',
-    'lib/forge/config/cli/option_test.c',
+    'lib/forge/cli/option_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
@@ -211,7 +271,7 @@ test('config/cli/option_test.c', forge_test_config_cli_option)
 
 forge_test_config_cli_option_set = executable(
     'test-config-cli-option-set',
-    'lib/forge/config/cli/option_set_test.c',
+    'lib/forge/cli/option_set_test.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies + [
@@ -250,7 +310,7 @@ executable(
 
 executable(
     'demo-config-cli-choice',
-    'lib/forge/config/cli/choice_demo.c',
+    'lib/forge/cli/choice_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies
@@ -258,7 +318,7 @@ executable(
 
 executable(
     'demo-config-cli-option',
-    'lib/forge/config/cli/option_demo.c',
+    'lib/forge/cli/option_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies
@@ -266,7 +326,7 @@ executable(
 
 executable(
     'demo-config-cli-option-set',
-    'lib/forge/config/cli/option_set_demo.c',
+    'lib/forge/cli/option_set_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies
@@ -274,7 +334,7 @@ executable(
 
 executable(
     'demo-config-cli-command',
-    'lib/forge/config/cli/command_demo.c',
+    'lib/forge/cli/command_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies
@@ -282,7 +342,7 @@ executable(
 
 executable(
     'demo-config-cli-program',
-    'lib/forge/config/cli/program_demo.c',
+    'lib/forge/cli/program_demo.c',
     include_directories: forge_include_directories,
     link_with: [forge_core_lib],
     dependencies: forge_dependencies

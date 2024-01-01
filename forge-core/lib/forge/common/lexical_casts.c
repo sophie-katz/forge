@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <ctype.h>
+#include <forge/common/check.h>
 #include <forge/common/lexical_casts.h>
 #include <math.h>
 #include <utf8proc.h>
@@ -100,10 +101,10 @@ frg_status_t frg_escape_char(GString** escaped, frg_char_t value) {
         return FRG_STATUS_ERROR_OUT_OF_MEMORY;
     }
 
-    frg_status_t status = _frg_escape_char_unquoted(*escaped, value, '\'');
-    if (status != FRG_STATUS_OK) {
+    frg_status_t result = _frg_escape_char_unquoted(*escaped, value, '\'');
+    if (result != FRG_STATUS_OK) {
         g_string_free(*escaped, true);
-        return status;
+        frg_check(result);
     }
 
     g_string_append_c(*escaped, '\'');
@@ -215,10 +216,9 @@ frg_status_t frg_unescape_char(frg_char_t* value, const char* escaped) {
         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    frg_status_t result = _frg_unescape_char_unquoted(value, &escaped, '\'');
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        _frg_unescape_char_unquoted(value, &escaped, '\'')
+    );
 
     escaped++;
 
@@ -243,10 +243,10 @@ frg_status_t frg_escape_str(GString** escaped, const char* value) {
     }
 
     for (const char* iter = value; *iter != 0; iter++) {
-        frg_status_t status = _frg_escape_char_unquoted(*escaped, *iter, '"');
-        if (status != FRG_STATUS_OK) {
+        frg_status_t result = _frg_escape_char_unquoted(*escaped, *iter, '"');
+        if (result != FRG_STATUS_OK) {
             g_string_free(*escaped, true);
-            return status;
+            frg_check(result);
         }
     }
 
@@ -286,10 +286,9 @@ frg_status_t frg_unescape_str(GString** value, const char* escaped) {
         }
 
         frg_char_t current_character;
-        frg_status_t result = _frg_unescape_char_unquoted(&current_character, &escaped, '"');
-        if (result != FRG_STATUS_OK) {
-            return result;
-        }
+        frg_check(
+            _frg_unescape_char_unquoted(&current_character, &escaped, '"')
+        );
 
         g_string_append_c(*value, current_character);
 
@@ -445,10 +444,9 @@ frg_status_t frg_str_to_uint(
 
     uint32_t base = 10;
 
-    frg_status_t result = _frg_get_base_prefix(&base, &str);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        _frg_get_base_prefix(&base, &str)
+    );
 
     if (*str == 0) {
         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
@@ -456,10 +454,9 @@ frg_status_t frg_str_to_uint(
 
     while (*str != 0) {
         uint32_t digit;
-        result = _frg_get_next_digit(&digit, base, &str);
-        if (result != FRG_STATUS_OK) {
-            return result;
-        }
+        frg_check(
+            _frg_get_next_digit(&digit, base, &str)
+        );
 
         *value = (*value * base) + digit;
     }
@@ -549,10 +546,9 @@ frg_status_t frg_str_to_float(
 
     uint32_t base = 10;
 
-    frg_status_t result = _frg_get_base_prefix(&base, &str);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        _frg_get_base_prefix(&base, &str)
+    );
 
     if (*str == 0) {
         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
@@ -568,10 +564,9 @@ frg_status_t frg_str_to_float(
         }
 
         uint32_t digit;
-        result = _frg_get_next_digit(&digit, base, &str);
-        if (result != FRG_STATUS_OK) {
-            return result;
-        }
+        frg_check(
+            _frg_get_next_digit(&digit, base, &str)
+        );
 
         integer_part = (integer_part * base) + digit;
     }
@@ -594,10 +589,9 @@ frg_status_t frg_str_to_float(
         }
 
         uint32_t digit;
-        result = _frg_get_next_digit(&digit, base, &str);
-        if (result != FRG_STATUS_OK) {
-            return result;
-        }
+        frg_check(
+            _frg_get_next_digit(&digit, base, &str)
+        );
 
         fractional_part = (fractional_part * base) + digit;
         fractional_factor /= base;
@@ -630,10 +624,9 @@ frg_status_t frg_str_to_float(
         }
 
         uint32_t digit;
-        result = _frg_get_next_digit(&digit, base, &str);
-        if (result != FRG_STATUS_OK) {
-            return result;
-        }
+        frg_check(
+            _frg_get_next_digit(&digit, base, &str)
+        );
 
         exponent_integer_part = (exponent_integer_part * base) + digit;
     }
@@ -656,10 +649,9 @@ frg_status_t frg_str_to_float(
         }
 
         uint32_t digit;
-        result = _frg_get_next_digit(&digit, base, &str);
-        if (result != FRG_STATUS_OK) {
-            return result;
-        }
+        frg_check(
+            _frg_get_next_digit(&digit, base, &str)
+        );
 
         exponent_fractional_part = (exponent_fractional_part * base) + digit;
         exponent_fractional_factor /= base;

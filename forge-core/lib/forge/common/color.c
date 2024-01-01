@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/color.h>
 #include <forge/common/stream.h>
 #include <unistd.h>
@@ -54,13 +55,11 @@ frg_status_t _frg_resolve_color_mode_from_hint(frg_color_mode_t* mode) {
 }
 
 frg_status_t frg_get_color_mode(frg_color_mode_t* mode) {
-    frg_status_t result = _frg_resolve_color_mode_from_hint(
-        &_frg_color_mode
+    frg_check(
+        _frg_resolve_color_mode_from_hint(
+            &_frg_color_mode
+        )
     );
-
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     *mode = _frg_color_mode;
 
@@ -70,28 +69,24 @@ frg_status_t frg_get_color_mode(frg_color_mode_t* mode) {
 frg_status_t frg_set_color_mode(frg_color_mode_t hint) {
     _frg_color_mode = hint;
 
-    frg_status_t result = _frg_resolve_color_mode_from_hint(
-        &_frg_color_mode
+    frg_check(
+        _frg_resolve_color_mode_from_hint(
+            &_frg_color_mode
+        )
     );
-
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }
 
 frg_status_t frg_set_color(FILE* stream, frg_color_id_t id) {
-    frg_status_t result = frg_validate_console_stream(stream);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_validate_console_stream(stream)
+    );
 
     frg_color_mode_t mode;
-    result = frg_get_color_mode(&mode);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_get_color_mode(&mode)
+    );
 
     if (mode == FRG_COLOR_MODE_ENABLED) {
         switch (id) {

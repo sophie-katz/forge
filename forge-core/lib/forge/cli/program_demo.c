@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/config/cli/program.h>
+#include <forge/cli/program.h>
 #include <forge/common/log.h>
 
 frg_status_t callback_command(
@@ -44,37 +44,32 @@ int no_commands(void) {
         NULL
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create program: %s", frg_status_to_string(result));
         return 1;
     }
 
     frg_cli_option_t* option = NULL;
     result = frg_cli_option_new_flag(&option, "debug", "Enable debug mode", callback_option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(program->global_options, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to global option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to global option set: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_print_help(program, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print program help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print program help: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_destroy(&program);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy program: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -96,23 +91,20 @@ int one_command_global(void) {
         NULL
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create program: %s", frg_status_to_string(result));
         return 1;
     }
 
     frg_cli_option_t* option = NULL;
     result = frg_cli_option_new_flag(&option, "debug", "Enable debug mode", callback_option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(program->global_options, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to global option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to global option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -125,44 +117,38 @@ int one_command_global(void) {
         callback_command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to create command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create command: %s", frg_status_to_string(result));
         return 1;
     }
 
     option = NULL;
     result = frg_cli_option_new_flag(&option, "option", "An option", callback_option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(command->option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_add_command(program, command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to add command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add command to program: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_print_help(program, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print program help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print program help: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_destroy(&program);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy program: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -184,23 +170,20 @@ int one_command_command(void) {
         NULL
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create program: %s", frg_status_to_string(result));
         return 1;
     }
 
     frg_cli_option_t* option = NULL;
     result = frg_cli_option_new_flag(&option, "debug", "Enable debug mode", callback_option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(program->global_options, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to add option to global option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to global option set: %s", frg_status_to_string(result));
         return 1;
     }
 
@@ -213,44 +196,38 @@ int one_command_command(void) {
         callback_command
     );
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to create command: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create command: %s", frg_status_to_string(result));
         return 1;
     }
 
     option = NULL;
     result = frg_cli_option_new_flag(&option, "option", "An option", callback_option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to create option: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_option_set_add_option(command->option_set, option);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to add option to option set: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_add_command(program, command);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unable to add command to program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to add command to program: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_print_help(program, "command");
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print program help: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to print program help: %s", frg_status_to_string(result));
         return 1;
     }
 
     result = frg_cli_program_destroy(&program);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy program: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to destroy program: %s", frg_status_to_string(result));
         return 1;
     }
 

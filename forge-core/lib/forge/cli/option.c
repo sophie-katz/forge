@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
-#include <forge/config/cli/option.h>
+#include <forge/cli/option.h>
 
 bool frg_cli_is_valid_short_name(char short_name) {
     if (short_name >= 'a' && short_name <= 'z') {
@@ -42,10 +43,9 @@ frg_status_t frg_cli_option_new_flag(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option, sizeof(frg_cli_option_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
+    );
 
     (*option)->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
     (*option)->long_name = long_name;
@@ -72,10 +72,9 @@ frg_status_t frg_cli_option_new_flag_short(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option, sizeof(frg_cli_option_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
+    );
 
     (*option)->short_name = short_name;
     (*option)->long_name = long_name;
@@ -103,10 +102,9 @@ frg_status_t frg_cli_option_new_argument(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option, sizeof(frg_cli_option_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
+    );
 
     (*option)->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
     (*option)->long_name = long_name;
@@ -135,10 +133,9 @@ frg_status_t frg_cli_option_new_argument_short(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option, sizeof(frg_cli_option_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
+    );
 
     (*option)->short_name = short_name;
     (*option)->long_name = long_name;
@@ -166,10 +163,9 @@ frg_status_t frg_cli_option_new_choice(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option, sizeof(frg_cli_option_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
+    );
 
     (*option)->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
     (*option)->long_name = long_name;
@@ -198,10 +194,9 @@ frg_status_t frg_cli_option_new_choice_short(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option, sizeof(frg_cli_option_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
+    );
 
     (*option)->short_name = short_name;
     (*option)->long_name = long_name;
@@ -221,12 +216,9 @@ frg_status_t frg_cli_option_destroy(
     }
 
     for (GList* choice = (*option)->choices; choice != NULL; choice = choice->next) {
-        frg_status_t result = frg_cli_choice_destroy((frg_cli_choice_t**)&choice->data);
-        if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal();
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy choice: %s", frg_status_to_string(result)); 
-            return result;
-        }
+        frg_check(
+            frg_cli_choice_destroy((frg_cli_choice_t**)&choice->data)
+        );
     }
 
     g_list_free((*option)->choices);
@@ -282,12 +274,9 @@ frg_status_t frg_cli_option_print_help(
 
         frg_set_color(stdout, FRG_COLOR_ID_RESET);
         for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
-            frg_status_t result = frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data);
-            if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
-                frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print choice help: %s", frg_status_to_string(result)); 
-                return result;
-            }
+            frg_check(
+                frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data)
+            );
         }
     }
 
@@ -341,15 +330,12 @@ frg_status_t frg_cli_option_parse_next(
     }
 
     // Make sure the argument being parsed actually matches 'option'
-    frg_status_t result = _frg_cli_option_ensure_matches_argument(
-        option,
-        argv[*argi]
+    frg_check(
+        _frg_cli_option_ensure_matches_argument(
+            option,
+            argv[*argi]
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to ensure that option matches current argument: %s", frg_status_to_string(result)); 
-        return result;
-    }
 
     // Increment argument index
     (*argi)++;
@@ -361,7 +347,7 @@ frg_status_t frg_cli_option_parse_next(
         // If the argument does take a value, make sure there is a value to parse
 
         if (*argi >= argc) {
-            frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "argument '%s' expects a value", argv[*argi - 1]);
+            frg_log_fatal_error("argument '%s' expects a value", argv[*argi - 1]);
             return FRG_STATUS_CLI_ERROR;
         } else if (argv[*argi] == NULL) {
             return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
@@ -379,11 +365,11 @@ frg_status_t frg_cli_option_parse_next(
             }
 
             if (!found) {
-                frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unexpected value for argument '%s', allowed values are:");
+                frg_log_result_t result = frg_log_fatal_error("unexpected value for argument '%s', allowed values are:");
 
                 for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
                     const frg_cli_choice_t* choice_casted = (const frg_cli_choice_t*)choice->data;
-                    frg_log(FRG_LOG_SEVERITY_NOTE, "  '%s' - %s", choice_casted->name, choice_casted->help);
+                    frg_log_note(&result, "  '%s' - %s", choice_casted->name, choice_casted->help);
                 }
 
                 return FRG_STATUS_CLI_ERROR;
@@ -391,12 +377,13 @@ frg_status_t frg_cli_option_parse_next(
         }
 
         // Call the callback with the value
-        result = option->callback(user_data, argv[*argi]);
+        frg_check(
+            option->callback(user_data, argv[*argi])
+        );
 
         // Increment argument index
         (*argi)++;
 
-        // Return the result for the callback
-        return result;
+        return FRG_STATUS_OK;
     }
 }

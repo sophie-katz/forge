@@ -15,20 +15,19 @@
 
 #pragma once
 
-#include <forge/ast/ast.h>
 #include <forge/common/enums.h>
-#include <stdio.h>
+#include <forge/common/types.h>
 
-/// Parse from a file
-frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename);
+bool _frg_check(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    frg_status_t status
+);
 
-frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path);
-
-/// Parse from a pre-allocated buffer
-frg_status_t frg_parse_buffer(frg_ast_t** ast, char* buffer, size_t length, const char* filename);
-
-/// \brief Parse from a string
-///
-/// Note that this will copy the string. Use \c frg_parse_buffer if you want to avoid
-/// this.
-frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* filename);
+#define frg_check(status) if (!_frg_check( \
+        __FILE__, \
+        __LINE__, \
+        (status) \
+    )) { \
+        return (status); \
+    }

@@ -17,7 +17,7 @@
 
 #include <glib.h>
 #include <forge/common/enums.h>
-#include <forge/config/cli/command.h>
+#include <forge/cli/command.h>
 
 typedef struct {
     const char* name;

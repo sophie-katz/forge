@@ -38,8 +38,7 @@ int yywrap() {
 }
 
 void yyerror(frg_ast_t**ast, const char* message) {
-    frg_log_prefix_source_char(_frg_current_filename, yylineno, yycolumnno);
-    frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", message);
+    frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "%s", message);
 }
 %}
 
@@ -214,8 +213,7 @@ ty_bool : KW_BOOL
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_BOOL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -223,8 +221,7 @@ ty_u8 : KW_U8
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U8);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -232,8 +229,7 @@ ty_u16 : KW_U16
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U16);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -241,8 +237,7 @@ ty_u32 : KW_U32
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U32);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -250,8 +245,7 @@ ty_u64 : KW_U64
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_U64);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -259,8 +253,7 @@ ty_i8 : KW_I8
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I8);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -268,8 +261,7 @@ ty_i16 : KW_I16
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I16);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -277,8 +269,7 @@ ty_i32 : KW_I32
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I32);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -286,8 +277,7 @@ ty_i64 : KW_I64
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_I64);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -295,8 +285,7 @@ ty_f32 : KW_F32
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_F32);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -304,8 +293,7 @@ ty_f64 : KW_F64
 {
     frg_status_t result = frg_ast_new_ty_primary((frg_ast_t**)&$$, FRG_AST_ID_TY_F64);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -313,8 +301,7 @@ ty_symbol : SYMBOL
 {
     frg_status_t result = frg_ast_new_ty_symbol((frg_ast_ty_symbol_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -371,8 +358,7 @@ ty_pointer: MUL ty_primary
 {
     frg_status_t result = frg_ast_new_ty_pointer((frg_ast_ty_pointer_t**)&$$, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | ty_primary
@@ -398,8 +384,7 @@ decl_union : KW_TY SYMBOL ASSIGN decl_union_list SEMICOLON
 {
     frg_status_t result = frg_ast_new_decl_union((frg_ast_decl_union_t**)&$$, $2, $4);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -407,48 +392,42 @@ decl_prop : SYMBOL
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_NONE, $1, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | SYMBOL QUESTION_MARK
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_OPTIONAL, $1, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | SYMBOL LOG_NOT
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL, $1, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | ELIPSIS SYMBOL
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_SPREAD, $2, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | SYMBOL COLON ty
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_NONE, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | SYMBOL QUESTION_MARK COLON ty
 {
     frg_status_t result = frg_ast_new_decl_prop((frg_ast_decl_prop_t**)&$$, FRG_AST_DECL_PROP_FLAG_OPTIONAL, $1, $4);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -465,8 +444,7 @@ decl_struct : KW_TY SYMBOL CURLY_BRACE_LEFT decl_struct_list CURLY_BRACE_RIGHT
 {
     frg_status_t result = frg_ast_new_decl_struct((frg_ast_decl_struct_t**)&$$, $2, $4);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -505,8 +483,7 @@ decl_iface : KW_IFACE SYMBOL decl_iface_optional_extends CURLY_BRACE_LEFT decl_i
 {
     frg_status_t result = frg_ast_new_decl_iface((frg_ast_decl_iface_t**)&$$, FRG_AST_DECL_IFACE_FLAG_NONE, $2, $3, $5);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -523,16 +500,14 @@ decl_fn_arg: decl_prop decl_fn_arg_default_value
 {
     frg_status_t result = frg_ast_new_decl_fn_arg((frg_ast_decl_fn_arg_t**)&$$, FRG_AST_DECL_FN_ARG_FLAG_NONE, $1, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_KW decl_prop decl_fn_arg_default_value
 {
     frg_status_t result = frg_ast_new_decl_fn_arg((frg_ast_decl_fn_arg_t**)&$$, FRG_AST_DECL_FN_ARG_FLAG_KW, $2, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -576,24 +551,21 @@ decl_fn : KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_
 {
     frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_NONE, $2, $4, NULL, NULL, $6, $7);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_MUT KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
 {
     frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_MUT, $3, $5, NULL, NULL, $7, $8);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_OVERRIDE KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
 {
     frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_OVERRIDE, $3, $5, NULL, NULL, $7, $8);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -601,16 +573,14 @@ decl_var : KW_LET decl_prop SEMICOLON
 {
     frg_status_t result = frg_ast_new_decl_var((frg_ast_decl_var_t**)&$$, $2, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_LET decl_prop ASSIGN value SEMICOLON
 {
     frg_status_t result = frg_ast_new_decl_var((frg_ast_decl_var_t**)&$$, $2, $4);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -657,8 +627,7 @@ decl_block: decl_list_optional
 {
     frg_status_t result = frg_ast_new_decl_block((frg_ast_decl_block_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -666,8 +635,7 @@ stmt_return : KW_RETURN value SEMICOLON
 {
     frg_status_t result = frg_ast_new_stmt_return((frg_ast_stmt_return_t**)&$$, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -675,24 +643,21 @@ stmt_if : KW_IF PAREN_LEFT value PAREN_RIGHT stmt_block
 {
     frg_status_t result = frg_ast_new_stmt_if((frg_ast_stmt_if_t**)&$$, $3, $5, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_IF PAREN_LEFT value PAREN_RIGHT stmt_block KW_ELSE stmt_if
 {
     frg_status_t result = frg_ast_new_stmt_if((frg_ast_stmt_if_t**)&$$, $3, $5, $7);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_IF PAREN_LEFT value PAREN_RIGHT stmt_block KW_ELSE stmt_block
 {
     frg_status_t result = frg_ast_new_stmt_if((frg_ast_stmt_if_t**)&$$, $3, $5, $7);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -700,16 +665,14 @@ stmt_while : KW_WHILE PAREN_LEFT value PAREN_RIGHT SEMICOLON
 {
     frg_status_t result = frg_ast_new_stmt_while((frg_ast_stmt_while_t**)&$$, $3, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_WHILE PAREN_LEFT value PAREN_RIGHT stmt_block
 {
     frg_status_t result = frg_ast_new_stmt_while((frg_ast_stmt_while_t**)&$$, $3, $5);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -755,16 +718,14 @@ stmt_block : CURLY_BRACE_LEFT CURLY_BRACE_RIGHT
 {
     frg_status_t result = frg_ast_new_stmt_block((frg_ast_stmt_block_t**)&$$, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | CURLY_BRACE_LEFT stmt_list CURLY_BRACE_RIGHT
 {
     frg_status_t result = frg_ast_new_stmt_block((frg_ast_stmt_block_t**)&$$, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -772,8 +733,7 @@ value_true : KW_TRUE
 {
     frg_status_t result = frg_ast_new_value_primary((frg_ast_t**)&$$, FRG_AST_ID_VALUE_TRUE);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -781,8 +741,7 @@ value_false : KW_FALSE
 {
     frg_status_t result = frg_ast_new_value_primary((frg_ast_t**)&$$, FRG_AST_ID_VALUE_FALSE);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -790,8 +749,7 @@ value_int : INT
 {
     frg_status_t result = frg_ast_new_value_i64((frg_ast_value_int_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -799,8 +757,7 @@ value_float : FLOAT
 {
     frg_status_t result = frg_ast_new_value_f64((frg_ast_value_float_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -808,8 +765,7 @@ value_char : CHAR
 {
     frg_status_t result = frg_ast_new_value_char((frg_ast_value_char_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -817,8 +773,7 @@ value_str : STR
 {
     frg_status_t result = frg_ast_new_value_str((frg_ast_value_str_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -826,8 +781,7 @@ value_symbol : SYMBOL
 {
     frg_status_t result = frg_ast_new_value_symbol((frg_ast_value_symbol_t**)&$$, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 };
 
@@ -868,8 +822,7 @@ value_call : value_symbol PAREN_LEFT value_list_optional PAREN_RIGHT
 {
     frg_status_t result = frg_ast_new_value_call((frg_ast_value_call_t**)&$$, $1, $3, NULL);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_primary
@@ -881,8 +834,7 @@ value_access : value_access DOT value_call
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ACCESS, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_call
@@ -894,16 +846,14 @@ value_deref_getaddr: BIT_AND value_deref_getaddr
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_GETADDR, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | MUL value_deref_getaddr
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_DEREF, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_access
@@ -915,16 +865,14 @@ value_inc_dec : value_deref_getaddr INC
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_INC, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_deref_getaddr DEC
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_DEC, $1);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_deref_getaddr
@@ -936,8 +884,7 @@ value_exp : value_inc_dec EXP value_exp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_EXP, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_inc_dec
@@ -949,16 +896,14 @@ value_neg_bit_not : BIT_NOT value_neg_bit_not
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_BIT_NOT, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | SUB value_neg_bit_not
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_NEG, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_exp
@@ -970,32 +915,28 @@ value_mul : value_neg_bit_not MUL value_mul
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MUL, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_neg_bit_not DIV value_mul
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_neg_bit_not DIV_INT value_mul
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV_INT, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_neg_bit_not MOD value_mul
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MOD, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_neg_bit_not
@@ -1007,16 +948,14 @@ value_add : value_mul ADD value_add
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ADD, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_mul SUB value_add
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_SUB, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_mul
@@ -1028,16 +967,14 @@ value_bit_shift : value_add BIT_SHL value_bit_shift
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHL, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_add BIT_SHR value_bit_shift
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHR, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_add
@@ -1049,8 +986,7 @@ value_bit_and : value_bit_shift BIT_AND value_bit_and
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_AND, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_bit_shift
@@ -1062,8 +998,7 @@ value_bit_xor : value_bit_and BIT_XOR value_bit_xor
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_XOR, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_bit_and
@@ -1075,8 +1010,7 @@ value_bit_or : value_bit_xor BIT_OR value_bit_or
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_OR, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_bit_xor
@@ -1088,48 +1022,42 @@ value_cmp : value_bit_or EQ value_cmp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_EQ, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_bit_or NE value_cmp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_NE, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_bit_or LT value_cmp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LT, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_bit_or LE value_cmp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LE, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_bit_or GT value_cmp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_GT, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_bit_or GE value_cmp
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_GE, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_bit_or
@@ -1141,8 +1069,7 @@ value_log_not : LOG_NOT value_cmp
 {
     frg_status_t result = frg_ast_new_value_unary((frg_ast_value_unary_t**)&$$, FRG_AST_ID_VALUE_LOG_NOT, $2);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_cmp
@@ -1154,8 +1081,7 @@ value_log_and : value_log_not LOG_AND value_log_and
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_AND, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_log_not
@@ -1167,8 +1093,7 @@ value_log_or : value_log_and LOG_OR value_log_or
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_OR, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_log_and
@@ -1180,120 +1105,105 @@ value_assign : value_log_or ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_log_or ADD_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_ADD_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_log_or SUB_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_SUB_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_log_or MUL_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MUL_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result));
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | value_log_or DIV_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or DIV_INT_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_DIV_INT_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or MOD_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_MOD_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or BIT_SHL_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHL_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or BIT_SHR_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_SHR_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_ERROR,"%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or BIT_AND_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_AND_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create AST: %s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or BIT_XOR_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_XOR_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or BIT_OR_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_BIT_OR_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or EXP_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_EXP_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or LOG_AND_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_AND_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or LOG_OR_ASSIGN value_assign
 {
     frg_status_t result = frg_ast_new_value_binary((frg_ast_value_binary_t**)&$$, FRG_AST_ID_VALUE_LOG_OR_ASSIGN, $1, $3);
     if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "%s", frg_status_to_string(result)); 
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result)); 
     }
 }
 | value_log_or

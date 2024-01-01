@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
-#include <forge/config/cli/program.h>
+#include <forge/cli/program.h>
 
 frg_status_t frg_cli_program_new(
     frg_cli_program_t** program,
@@ -40,10 +41,9 @@ frg_status_t frg_cli_program_new(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)program, sizeof(frg_cli_program_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)program, sizeof(frg_cli_program_t))
+    );
 
     (*program)->name = name;
     (*program)->binary_name = binary_name;
@@ -58,14 +58,11 @@ frg_status_t frg_cli_program_new(
     (*program)->commands_by_name = g_hash_table_new(g_str_hash, g_str_equal);
 
     (*program)->global_options = NULL;
-    result = frg_cli_option_set_new(
-        &(*program)->global_options
+    frg_check(
+        frg_cli_option_set_new(
+            &(*program)->global_options
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option set: %s", frg_status_to_string(result)); 
-        return result;
-    }
 
     return FRG_STATUS_OK;
 
@@ -79,26 +76,20 @@ frg_status_t frg_cli_program_destroy(
     }
 
     for (GList* command = (*program)->commands; command != NULL; command = command->next) {
-        frg_status_t result = frg_cli_command_destroy((frg_cli_command_t**)&command->data);
-        if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal();
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy command: %s", frg_status_to_string(result)); 
-            return result;
-        }
+        frg_check(
+            frg_cli_command_destroy((frg_cli_command_t**)&command->data)
+        );
     }
 
     g_list_free((*program)->commands);
 
     g_hash_table_destroy((*program)->commands_by_name);
 
-    frg_status_t result = frg_cli_option_set_destroy(
-        &(*program)->global_options
+    frg_check(
+        frg_cli_option_set_destroy(
+            &(*program)->global_options
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option set: %s", frg_status_to_string(result)); 
-        return result;
-    }
 
     return frg_safe_free((void**)program);
 }
@@ -151,12 +142,9 @@ frg_status_t frg_cli_program_print_help(
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
-    frg_status_t result = frg_cli_program_print_version_long(program);
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print long version: %s", frg_status_to_string(result)); 
-        return result;
-    }
+    frg_check(
+        frg_cli_program_print_version_long(program)
+    );
 
     printf("\n");
 
@@ -193,14 +181,11 @@ frg_status_t frg_cli_program_print_help(
             printf("\n");
         }
 
-        result = frg_cli_option_set_print_help(
-            program->global_options
+        frg_check(
+            frg_cli_option_set_print_help(
+                program->global_options
+            )
         );
-        if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal();
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option set help: %s", frg_status_to_string(result)); 
-            return result;
-        }
 
         if (program->commands != NULL) {
             printf("\n");
@@ -253,14 +238,11 @@ frg_status_t frg_cli_program_print_help(
         frg_set_color(stdout, FRG_COLOR_ID_RESET);
         printf("\n");
 
-        frg_status_t result = frg_cli_option_set_print_help(
-            program->global_options
+        frg_check(
+            frg_cli_option_set_print_help(
+                program->global_options
+            )
         );
-        if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal();
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option set help: %s", frg_status_to_string(result)); 
-            return result;
-        }
 
         if (command->option_set->options != NULL) {
             printf("\n");
@@ -269,12 +251,9 @@ frg_status_t frg_cli_program_print_help(
             frg_set_color(stdout, FRG_COLOR_ID_RESET);
             printf("\n");
 
-            result = frg_cli_option_set_print_help(command->option_set);
-            if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to print option set help: %s", frg_status_to_string(result)); 
-                return result;
-            }
+            frg_check(
+                frg_cli_option_set_print_help(command->option_set)
+            );
         }
     }
 
@@ -349,10 +328,8 @@ frg_status_t frg_cli_program_parse(
             );
             if (result == FRG_STATUS_CLI_ERROR) {
                 return FRG_STATUS_CLI_ERROR;
-            } else if (result != FRG_STATUS_OK) {
-                frg_log_prefix_internal();
-                frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse next argument: %s", frg_status_to_string(result)); 
-                return result;
+            } else {
+                frg_check(result);
             }
         } else {
             if (program->commands == NULL) {
@@ -383,12 +360,10 @@ frg_status_t frg_cli_program_parse(
             argv[argi]
         );
         if (result == FRG_STATUS_ERROR_KEY_NOT_FOUND) {
-            frg_log(FRG_LOG_SEVERITY_FATAL_ERROR, "unknown command '%s'", argv[argi]);
+            frg_log_fatal_error("unknown command '%s'", argv[argi]);
             return FRG_STATUS_CLI_ERROR;
-        } else if (result != FRG_STATUS_OK) {
-            frg_log_prefix_internal();
-            frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to get command by name: %s", frg_status_to_string(result)); 
-            return result;
+        } else {
+            frg_check(result);
         }
 
         argi++;
@@ -408,10 +383,8 @@ frg_status_t frg_cli_program_parse(
                 );
                 if (result == FRG_STATUS_CLI_ERROR) {
                     return FRG_STATUS_CLI_ERROR;
-                } else if (result != FRG_STATUS_OK) {
-                    frg_log_prefix_internal();
-                    frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to parse next argument: %s", frg_status_to_string(result)); 
-                    return result;
+                } else {
+                    frg_check(result);
                 }
             } else {
                 pos_args = g_list_append(pos_args, (void*)argv[argi]);

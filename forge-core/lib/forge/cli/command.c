@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
-#include <forge/config/cli/command.h>
+#include <forge/cli/command.h>
 
 frg_status_t frg_cli_command_new(
     frg_cli_command_t** command,
@@ -33,10 +34,9 @@ frg_status_t frg_cli_command_new(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)command, sizeof(frg_cli_command_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)command, sizeof(frg_cli_command_t))
+    );
 
     (*command)->name = name;
     (*command)->pos_args_name = pos_args_name;
@@ -44,14 +44,11 @@ frg_status_t frg_cli_command_new(
     (*command)->option_set = NULL;
     (*command)->callback = callback;
 
-    result = frg_cli_option_set_new(
-        &(*command)->option_set
+    frg_check(
+        frg_cli_option_set_new(
+            &(*command)->option_set
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to create option set: %s", frg_status_to_string(result)); 
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }
@@ -63,14 +60,11 @@ frg_status_t frg_cli_command_destroy(
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
-    frg_status_t result = frg_cli_option_set_destroy(
-        &(*command)->option_set
+    frg_check(
+        frg_cli_option_set_destroy(
+            &(*command)->option_set
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_prefix_internal();
-        frg_log(FRG_LOG_SEVERITY_INTERNAL_ERROR, "unable to destroy option set: %s", frg_status_to_string(result)); 
-        return result;
-    }
 
     return frg_safe_free((void**)command);
 }

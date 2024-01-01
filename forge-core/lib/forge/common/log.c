@@ -19,22 +19,40 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
+static frg_log_severity_t _frg_log_minimum_severity = FRG_LOG_SEVERITY_NOTE;
 static size_t _frg_log_count_error = 0;
 static size_t _frg_log_count_warning = 0;
 
-frg_status_t _frg_log_prefix(frg_log_severity_t severity) {
+frg_status_t frg_log_set_minimum_severity(frg_log_severity_t severity) {
+    if (severity > FRG_LOG_SEVERITY_NOTE) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    }
+
+    _frg_log_minimum_severity = severity;
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_log_prefix_severity(frg_log_severity_t severity) {
     switch (severity) {
-        case FRG_LOG_SEVERITY_NOTE:
+        case FRG_LOG_SEVERITY_TRACE:
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
-            fprintf(FRG_STREAM_DEFAULT, "note: ");
+            fprintf(FRG_STREAM_DEFAULT, "trace: ");
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
             return FRG_STATUS_OK;
         case FRG_LOG_SEVERITY_DEBUG:
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_MAGENTA);
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "debug: ");
+            frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            return FRG_STATUS_OK;
+        case FRG_LOG_SEVERITY_NOTE:
+            frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
+            frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
+            fprintf(FRG_STREAM_DEFAULT, "note: ");
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
             return FRG_STATUS_OK;
         case FRG_LOG_SEVERITY_WARNING:
@@ -90,7 +108,7 @@ void _frg_log_increment_counts(frg_log_severity_t severity) {
     }
 }
 
-frg_status_t frg_log_prefix_source_file(const char* filename) {
+frg_status_t _frg_log_prefix_source_file(const char* filename) {
     if (filename == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (filename[0] == 0) {
@@ -104,7 +122,7 @@ frg_status_t frg_log_prefix_source_file(const char* filename) {
     return FRG_STATUS_OK;
 }
 
-frg_status_t frg_log_prefix_source_line(const char* filename, frg_lineno_t lineno) {
+frg_status_t _frg_log_prefix_source_line(const char* filename, frg_lineno_t lineno) {
     if (filename == NULL) {
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (filename[0] == 0) {
@@ -120,7 +138,7 @@ frg_status_t frg_log_prefix_source_line(const char* filename, frg_lineno_t linen
     return FRG_STATUS_OK;
 }
 
-frg_status_t frg_log_prefix_source_char(
+frg_status_t _frg_log_prefix_source_char(
     const char* filename,
     frg_lineno_t lineno,
     frg_columnno_t columnno
@@ -142,52 +160,764 @@ frg_status_t frg_log_prefix_source_char(
     return FRG_STATUS_OK;
 }
 
-void _frg_log_prefix_internal(const char* filename, frg_lineno_t lineno) {
-    const char* filename_resolved = strstr(filename, "lib/");
-
-    if (filename_resolved == NULL) {
-        filename_resolved = strstr(filename, "src/");
+frg_status_t _frg_log_prefix_internal(
+    const char* log_path,
+    frg_lineno_t log_lineno
+) {
+    if (log_path == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (log_path[0] == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
+    } else if (log_lineno <= 0) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    if (filename_resolved == NULL) {
-        filename_resolved = filename;
+    const char* log_path_resolved = strstr(log_path, "lib/");
+
+    if (log_path_resolved == NULL) {
+        log_path_resolved = strstr(log_path, "src/");
+    }
+
+    if (log_path_resolved == NULL) {
+        log_path_resolved = log_path;
     }
 
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(FRG_STREAM_DEFAULT, "forge-core[%s:%d]: ", filename_resolved, lineno);
+    fprintf(FRG_STREAM_DEFAULT, "forge-core[%s:%d]: ", log_path_resolved, log_lineno);
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+
+    return FRG_STATUS_OK;
 }
 
-frg_status_t frg_log(frg_log_severity_t severity, const char* format, ...) {
-    // Start variadic arguments
-    va_list args;
-    va_start(args, format);
+frg_log_result_t _frg_log_helper(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_log_severity_t severity,
+    const char* format,
+    va_list args
+) {
+    bool has_internal_prefix = severity == FRG_LOG_SEVERITY_DEBUG
+        || severity == FRG_LOG_SEVERITY_INTERNAL_ERROR
+        || severity == FRG_LOG_SEVERITY_TRACE;
 
-    // Log prefix
-    frg_status_t result = _frg_log_prefix(severity);
-    if (result != FRG_STATUS_OK) {
-        return result;
+    if (has_internal_prefix) {
+        if (log_path == NULL) {
+            fprintf(stderr, "internal logging error: log_path cannot be NULL\n");
+            _exit(1);
+        } else if (*log_path == 0) {
+            fprintf(stderr, "internal logging error: log_path cannot be empty\n");
+            _exit(1);
+        } else if (log_lineno <= 0) {
+            fprintf(stderr, "internal logging error: log_lineno must be positive\n");
+            _exit(1);
+        }
     }
 
-    // Log message
+    if (format == NULL) {
+        fprintf(stderr, "internal logging error: format cannot be NULL\n");
+        _exit(1);
+    } else if (*format == 0) {
+        fprintf(stderr, "internal logging error: format cannot be empty\n");
+        _exit(1);
+    } else if (_frg_log_minimum_severity > severity) {
+        return (frg_log_result_t) {
+            .emitted = false
+        };
+    }
+
+    if (has_internal_prefix) {
+        frg_status_t result = _frg_log_prefix_internal(
+            log_path,
+            log_lineno
+        );
+        if (result != FRG_STATUS_OK) {
+            fprintf(
+                stderr,
+                "internal logging error: unable to print internal log prefix: %s\n",
+                frg_status_to_string(result)
+            );
+            _exit(1);
+        }
+    }
+
+    if (source_path != NULL) {
+        if (*source_path == 0) {
+            fprintf(stderr, "internal logging error: source_path cannot be empty\n");
+            _exit(1);
+        } else if (source_lineno > 0) {
+            if (source_columnno > 0) {
+                _frg_log_prefix_source_char(
+                    source_path,
+                    source_lineno,
+                    source_columnno
+                );
+            } else {
+                _frg_log_prefix_source_line(
+                    source_path,
+                    source_lineno
+                );
+            }
+        } else {
+            _frg_log_prefix_source_file(
+                source_path
+            );
+        }
+    }
+
+    frg_status_t result = _frg_log_prefix_severity(severity);
+    if (result != FRG_STATUS_OK) {
+        fprintf(
+            stderr,
+            "internal logging error: unable to print log severity prefix: %s\n",
+            frg_status_to_string(result)
+        );
+        _exit(1);
+    }
+
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_WHITE);
     vfprintf(FRG_STREAM_DEFAULT, format, args);
     frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
 
-    // Log suffix
     _frg_log_suffix();
 
-    // Flush output
     fflush(FRG_STREAM_DEFAULT);
 
-    // End variadic arguments
-    va_end(args);
-
-    // Increment log counts
     _frg_log_increment_counts(severity);
 
-    return FRG_STATUS_OK;
+    return (frg_log_result_t) {
+        .emitted = true
+    };
+}
+
+frg_log_result_t frg_log_trace(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_TRACE,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_debug(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_DEBUG,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_debug_in_source_file(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        source_path,
+        0,
+        0,
+        FRG_LOG_SEVERITY_DEBUG,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_debug_on_source_line(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        source_path,
+        source_lineno,
+        0,
+        FRG_LOG_SEVERITY_DEBUG,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_debug_at_source_char(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        source_path,
+        source_lineno,
+        source_columnno,
+        FRG_LOG_SEVERITY_DEBUG,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+void frg_log_note(
+    const frg_log_result_t* parent_result,
+    const char* format,
+    ...
+) {
+    if (parent_result == NULL) {
+        fprintf(stderr, "internal logging error: parent_result cannot be NULL\n");
+        _exit(1);
+    } else if (!parent_result->emitted) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    _frg_log_helper(
+        NULL,
+        0,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_NOTE,
+        format,
+        args
+    );
+
+    va_end(args);
+}
+
+void frg_log_note_in_source_file(
+    const frg_log_result_t* parent_result,
+    const char* source_path,
+    const char* format,
+    ...
+) {
+    if (parent_result == NULL) {
+        fprintf(stderr, "internal logging error: parent_result cannot be NULL\n");
+        _exit(1);
+    } else if (!parent_result->emitted) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        0,
+        0,
+        FRG_LOG_SEVERITY_NOTE,
+        format,
+        args
+    );
+
+    va_end(args);
+}
+
+void frg_log_note_on_source_line(
+    const frg_log_result_t* parent_result,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+) {
+    if (parent_result == NULL) {
+        fprintf(stderr, "internal logging error: parent_result cannot be NULL\n");
+        _exit(1);
+    } else if (!parent_result->emitted) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        0,
+        FRG_LOG_SEVERITY_NOTE,
+        format,
+        args
+    );
+
+    va_end(args);
+}
+
+void frg_log_note_at_source_char(
+    const frg_log_result_t* parent_result,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+) {
+    if (parent_result == NULL) {
+        fprintf(stderr, "internal logging error: parent_result cannot be NULL\n");
+        _exit(1);
+    } else if (!parent_result->emitted) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+
+    _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        source_columnno,
+        FRG_LOG_SEVERITY_NOTE,
+        format,
+        args
+    );
+
+    va_end(args);
+}
+
+frg_log_result_t frg_log_warning(
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_WARNING,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_warning_in_source_file(
+    const char* source_path,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        0,
+        0,
+        FRG_LOG_SEVERITY_WARNING,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_warning_on_source_line(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        0,
+        FRG_LOG_SEVERITY_WARNING,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_warning_at_source_char(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        source_columnno,
+        FRG_LOG_SEVERITY_WARNING,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_error(
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_error_in_source_file(
+    const char* source_path,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        0,
+        0,
+        FRG_LOG_SEVERITY_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_error_on_source_line(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        0,
+        FRG_LOG_SEVERITY_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_error_at_source_char(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        source_columnno,
+        FRG_LOG_SEVERITY_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_fatal_error(
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_FATAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_fatal_error_in_source_file(
+    const char* source_path,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        0,
+        0,
+        FRG_LOG_SEVERITY_FATAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t frg_log_fatal_error_on_source_line(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        NULL,
+        0,
+        source_path,
+        source_lineno,
+        0,
+        FRG_LOG_SEVERITY_FATAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_internal_error(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_INTERNAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_internal_error_in_source_file(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        source_path,
+        0,
+        0,
+        FRG_LOG_SEVERITY_INTERNAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_internal_error_on_source_line(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        source_path,
+        source_lineno,
+        0,
+        FRG_LOG_SEVERITY_INTERNAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
+}
+
+frg_log_result_t _frg_log_internal_error_at_source_char(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        source_path,
+        source_lineno,
+        source_columnno,
+        FRG_LOG_SEVERITY_INTERNAL_ERROR,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
 }
 
 bool frg_log_summary_if_errors(void) {

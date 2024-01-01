@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/parse/parse.h>
@@ -44,6 +45,34 @@ frg_status_t frg_parse_file(frg_ast_t** ast, FILE* file, const char* filename) {
     }
 
     _frg_current_filename = NULL;
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path) {
+    if (ast == NULL || path == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    } else if (*ast != NULL) {
+        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+    } else if (*path == 0) {
+        return FRG_STATUS_ERROR_EMPTY_STRING;
+    }
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL) {
+        frg_log_fatal_error("unable to open source file: %s (%s)", path, strerror(errno));
+        return FRG_STATUS_CLI_ERROR;
+    }
+
+    frg_status_t result = frg_parse_file(
+        ast,
+        file,
+        path
+    );
+
+    fclose(file);
+
+    frg_check(result);
 
     return FRG_STATUS_OK;
 }
@@ -87,20 +116,20 @@ frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* fil
     size_t length = strlen(text);
 
     char* buffer = NULL;
-    frg_status_t result = frg_safe_malloc((void**)&buffer, length + 2);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)&buffer, length + 2)
+    );
 
     memcpy(buffer, text, length);
     buffer[length] = buffer[length + 1] = 0;
 
-    frg_status_t parse_result = frg_parse_buffer(ast, buffer, length + 2, filename);
+    frg_status_t result = frg_parse_buffer(ast, buffer, length + 2, filename);
 
-    result = frg_safe_free((void**)&buffer);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_free((void**)&buffer)
+    );
 
-    return parse_result;
+    frg_check(result);
+
+    return FRG_STATUS_OK;
 }

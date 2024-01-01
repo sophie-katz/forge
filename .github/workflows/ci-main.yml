@@ -29,7 +29,7 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     container:
-      image: sophiekatz/forge-development:0.1.1
+      image: sophiekatz/forge-development:latest
       volumes:
         - .:/workspace
       options: /bin/bash

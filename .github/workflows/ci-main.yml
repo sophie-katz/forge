@@ -30,7 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: sophiekatz/forge-development:latest
-      options: /bin/bash
     steps:
       - name: Checkout main
         uses: actions/checkout@v4

@@ -32,6 +32,7 @@ jobs:
       image: sophiekatz/forge-development:0.1.1
       volumes:
         - .:/workspace
+      options: /bin/bash
     steps:
       - name: Checkout main
         uses: actions/checkout@v4

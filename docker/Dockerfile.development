@@ -30,6 +30,7 @@ RUN apt-get update -y && \
         libglib2.0-0 \
         libglib2.0-dev \
         lsb-release \
+        man \
         meson \
         python3-pip \
         python3.11 \
@@ -78,3 +79,5 @@ RUN useradd -m -s /bin/bash dev && \
     git config --global --add safe.directory /workspace
 
 WORKDIR /workspace
+
+ENTRYPOINT ["/bin/bash"]

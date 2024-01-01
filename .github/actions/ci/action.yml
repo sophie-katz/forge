@@ -5,6 +5,8 @@ runs:
   steps:
     - name: Checkout main
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Build Core
       working-directory: forge-core

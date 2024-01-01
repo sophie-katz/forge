@@ -20,7 +20,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   build_and_push:
@@ -42,3 +42,4 @@ jobs:
         with:
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/forge-development:latest
+          file: docker/Dockerfile.development

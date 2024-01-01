@@ -3,6 +3,13 @@
         "github.vscode-github-actions",
         "ms-vscode.cpptools",
         "mesonbuild.mesonbuild",
-        "sophiekatz.forge"
+        "sophiekatz.forge",
+        "eamodio.gitlens",
+        "streetsidesoftware.code-spell-checker",
+        "bierner.markdown-checkbox",
+        "bierner.markdown-emoji",
+        "bierner.markdown-preview-github-styles",
+        "bierner.markdown-mermaid",
+        "daohong-emilio.yash"
     ]
 }

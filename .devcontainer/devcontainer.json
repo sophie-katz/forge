@@ -1,0 +1,11 @@
+{
+	"name": "Forge development",
+	"build": {
+		"dockerfile": "../docker/Dockerfile.development"
+	},
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+	],
+	"workspaceFolder": "/workspace",
+	"remoteUser": "dev"
+}

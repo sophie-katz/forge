@@ -26,8 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: sophiekatz/forge-development:latest
-      volumes:
-        - .:/workspace
     steps:
       - name: Checkout main
         uses: actions/checkout@v4

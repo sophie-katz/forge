@@ -30,8 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: sophiekatz/forge-development:latest
-      volumes:
-        - .:/workspace
       options: /bin/bash
     steps:
       - name: Checkout main

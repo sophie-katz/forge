@@ -72,17 +72,17 @@ forge_dependencies = [
 ]
 
 # LLVM
-forge_llvm_config_cxxflags = run_command(
+forge_llvm_config_cppflags = run_command(
     [
         'llvm-config',
-        '--cxxflags'
+        '--cppflags'
     ],
     capture: true,
     check: true
 )
 
 add_project_arguments(
-    forge_llvm_config_cxxflags.stdout().strip().split(' '),
+    forge_llvm_config_cppflags.stdout().strip().split(' '),
     language: ['cpp']
 )
 

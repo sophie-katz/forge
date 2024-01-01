@@ -26,7 +26,7 @@ static size_t _frg_log_count_error = 0;
 static size_t _frg_log_count_warning = 0;
 
 frg_status_t frg_log_set_minimum_severity(frg_log_severity_t severity) {
-    if (severity != FRG_LOG_SEVERITY_DEBUG && severity != FRG_LOG_SEVERITY_NOTE) {
+    if (severity > FRG_LOG_SEVERITY_NOTE) {
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
@@ -37,16 +37,22 @@ frg_status_t frg_log_set_minimum_severity(frg_log_severity_t severity) {
 
 frg_status_t _frg_log_prefix_severity(frg_log_severity_t severity) {
     switch (severity) {
-        case FRG_LOG_SEVERITY_NOTE:
+        case FRG_LOG_SEVERITY_TRACE:
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
-            fprintf(FRG_STREAM_DEFAULT, "note: ");
+            fprintf(FRG_STREAM_DEFAULT, "trace: ");
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
             return FRG_STATUS_OK;
         case FRG_LOG_SEVERITY_DEBUG:
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_MAGENTA);
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "debug: ");
+            frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            return FRG_STATUS_OK;
+        case FRG_LOG_SEVERITY_NOTE:
+            frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
+            frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
+            fprintf(FRG_STREAM_DEFAULT, "note: ");
             frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
             return FRG_STATUS_OK;
         case FRG_LOG_SEVERITY_WARNING:
@@ -194,7 +200,8 @@ frg_log_result_t _frg_log_helper(
     va_list args
 ) {
     bool has_internal_prefix = severity == FRG_LOG_SEVERITY_DEBUG
-        || severity == FRG_LOG_SEVERITY_INTERNAL_ERROR;
+        || severity == FRG_LOG_SEVERITY_INTERNAL_ERROR
+        || severity == FRG_LOG_SEVERITY_TRACE;
 
     if (has_internal_prefix) {
         if (log_path == NULL) {
@@ -284,6 +291,31 @@ frg_log_result_t _frg_log_helper(
     return (frg_log_result_t) {
         .emitted = true
     };
+}
+
+frg_log_result_t frg_log_trace(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
+) {
+    va_list args;
+    va_start(args, format);
+
+    frg_log_result_t result = _frg_log_helper(
+        log_path,
+        log_lineno,
+        NULL,
+        0,
+        0,
+        FRG_LOG_SEVERITY_TRACE,
+        format,
+        args
+    );
+
+    va_end(args);
+
+    return result;
 }
 
 frg_log_result_t _frg_log_debug(

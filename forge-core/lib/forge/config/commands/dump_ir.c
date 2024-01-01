@@ -15,14 +15,15 @@
 
 #include <forge/ast/ast.h>
 #include <forge/ast/debug.h>
-#include <forge/config/commands/dump_ast.h>
+#include <forge/config/commands/dump_ir.h>
 #include <forge/config/commands/common.h>
 #include <forge/parse/parse.h>
 #include <forge/config/config.h>
 #include <forge/common/check.h>
 #include <forge/common/log.h>
+#include <forge/codegen/codegen.h>
 
-frg_status_t _frg_config_commands_callback_dump_ast(
+frg_status_t _frg_config_commands_callback_dump_ir(
     int* exit_status,
     const struct frg_cli_program_t* program,
     void* user_data,
@@ -44,21 +45,35 @@ frg_status_t _frg_config_commands_callback_dump_ast(
         )
     );
 
-    frg_ast_print_debug(ast, 0);
+    frg_llvm_module_t* llvm_module = NULL;
+    frg_check(
+        frg_codegen(
+            &llvm_module,
+            ast
+        )
+    );
 
-    printf("\n");
+    frg_check(
+        frg_codegen_print_module(
+            llvm_module
+        )
+    );
+
+    frg_check(
+        frg_codegen_destroy_module(&llvm_module)
+    );
 
     return FRG_STATUS_OK;
 }
 
-frg_status_t frg_config_commands_new_dump_ast(frg_cli_command_t** command) {
+frg_status_t frg_config_commands_new_dump_ir(frg_cli_command_t** command) {
     frg_check(
         frg_cli_command_new(
             command,
-            "dump-ast",
+            "dump-ir",
             "source file",
-            "Dump the AST of the source file.",
-            _frg_config_commands_callback_dump_ast
+            "Dump the compiled intermediate representation of the source file.",
+            _frg_config_commands_callback_dump_ir
         )
     );
 

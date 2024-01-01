@@ -18,7 +18,9 @@
 #include <forge/config/commands/compile.h>
 #include <forge/config/config.h>
 #include <forge/parse/parse.h>
+#include <forge/common/check.h>
 #include <forge/common/log.h>
+#include <forge/codegen/codegen.h>
 #include <forge/config/commands/common.h>
 
 frg_status_t _frg_config_commands_callback_compile(
@@ -27,45 +29,89 @@ frg_status_t _frg_config_commands_callback_compile(
     void* user_data,
     GList* pos_args
 ) {
-    const char* path = NULL;
-    frg_status_t result = frg_config_commands_get_single_source_file(
-        &path,
-        pos_args
-    );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
-
     frg_config_t* config = (frg_config_t*)user_data;
-    config->version_short = true;
-
-    frg_ast_t* ast = NULL;
-    result = frg_parse_file_at_path(
-        &ast,
-        path
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to parse source file: %s", frg_status_to_string(result));
+    if (config->compile_output_path == NULL) {
+        frg_log_error("no output path specified with -o or --output-path");
         return FRG_STATUS_CLI_ERROR;
     }
 
-    frg_ast_print_debug(ast, 0);
+    const char* path = NULL;
+    frg_check(
+        frg_config_commands_get_single_source_file(
+            &path,
+            pos_args
+        )
+    );
+
+    frg_ast_t* ast = NULL;
+    frg_check(
+        frg_parse_file_at_path(
+            &ast,
+            path
+        )
+    );
+
+    frg_llvm_module_t* llvm_module = NULL;
+    frg_check(
+        frg_codegen(
+            &llvm_module,
+            ast
+        )
+    );
+
+    frg_check(
+        frg_codegen_write_object_file(
+            llvm_module,
+            config->compile_output_path
+        )
+    );
+
+    frg_check(
+        frg_codegen_destroy_module(&llvm_module)
+    );
+
+    return FRG_STATUS_OK;
+}
+
+frg_status_t _frg_config_commands_option_callback_output_path(
+    void* user_data,
+    const char* value
+) {
+    frg_config_t* config = (frg_config_t*)user_data;
+    config->compile_output_path = value;
 
     return FRG_STATUS_OK;
 }
 
 frg_status_t frg_config_commands_new_compile(frg_cli_command_t** command) {
-    frg_status_t result = frg_cli_command_new(
-        command,
-        "compile",
-        "source file",
-        "Compiles one source file into an object file.",
-        _frg_config_commands_callback_compile
+    frg_check(
+        frg_cli_command_new(
+            command,
+            "compile",
+            "source file",
+            "Compiles one source file into an object file.",
+            _frg_config_commands_callback_compile
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
-        return result;
-    }
+
+    frg_cli_option_t* option = NULL;
+    frg_check(
+        frg_cli_option_new_argument_short(
+            &option,
+            'o',
+            "output-path",
+            "path",
+            "The path to output the *.o file to.",
+            _frg_config_commands_option_callback_output_path
+        )
+    );
+
+    frg_check(
+        frg_cli_option_set_add_option(
+            (*command)->option_set,
+            option
+        )
+    );
 
     return FRG_STATUS_OK;
 }

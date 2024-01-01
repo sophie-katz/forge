@@ -412,3 +412,5 @@ frg_ast_value_call_t* frg_ast_try_cast_value_call(frg_ast_t* ast);
 frg_ast_value_unary_t* frg_ast_try_cast_value_unary(frg_ast_t* ast);
 
 frg_ast_value_binary_t* frg_ast_try_cast_value_binary(frg_ast_t* ast);
+
+frg_status_t frg_ast_get_name(const char** name, frg_ast_t* ast);

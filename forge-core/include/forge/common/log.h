@@ -25,6 +25,13 @@ typedef struct {
     bool emitted;
 } frg_log_result_t;
 
+frg_log_result_t frg_log_trace(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    const char* format,
+    ...
+);
+
 frg_log_result_t _frg_log_debug(
     const char* log_path,
     frg_lineno_t log_lineno,

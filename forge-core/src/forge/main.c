@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
         return exit_status;
     }
 
-    if (!frg_log_summary_if_errors()) {
+    if (frg_log_summary_if_errors()) {
         return 1;
     }
 

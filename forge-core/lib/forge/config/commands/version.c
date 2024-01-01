@@ -16,6 +16,7 @@
 #include <forge/ast/ast.h>
 #include <forge/cli/program.h>
 #include <forge/config/commands/link.h>
+#include <forge/common/check.h>
 #include <forge/common/log.h>
 #include <forge/config/config.h>
 
@@ -45,38 +46,32 @@ frg_status_t _frg_config_commands_option_callback_version_short(
 }
 
 frg_status_t frg_config_commands_new_version(frg_cli_command_t** command) {
-    frg_status_t result = frg_cli_command_new(
-        command,
-        "version",
-        NULL,
-        "Display version information.",
-        _frg_config_commands_callback_version
+    frg_check(
+        frg_cli_command_new(
+            command,
+            "version",
+            NULL,
+            "Display version information.",
+            _frg_config_commands_callback_version
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
-        return result;
-    }
 
     frg_cli_option_t* option = NULL;
-    result = frg_cli_option_new_flag(
-        &option,
-        "short",
-        "Use short format (<major>.<minor>.<patch>-<label>). This is intended for scripting use.",
-        _frg_config_commands_option_callback_version_short
+    frg_check(
+        frg_cli_option_new_flag(
+            &option,
+            "short",
+            "Use short format (<major>.<minor>.<patch>-<label>). This is intended for scripting use.",
+            _frg_config_commands_option_callback_version_short
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create CLI option: %s", frg_status_to_string(result));
-        return result;
-    }
 
-    result = frg_cli_option_set_add_option(
-        (*command)->option_set,
-        option
+    frg_check(
+        frg_cli_option_set_add_option(
+            (*command)->option_set,
+            option
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add CLI option to command: %s", frg_status_to_string(result));
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }

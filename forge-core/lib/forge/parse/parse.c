@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/parse/parse.h>
@@ -68,13 +69,10 @@ frg_status_t frg_parse_file_at_path(frg_ast_t** ast, const char* path) {
         file,
         path
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to parse source file: %s", frg_status_to_string(result));
-        fclose(file);
-        return FRG_STATUS_CLI_ERROR;
-    }
 
     fclose(file);
+
+    frg_check(result);
 
     return FRG_STATUS_OK;
 }
@@ -118,20 +116,20 @@ frg_status_t frg_parse_string(frg_ast_t** ast, const char* text, const char* fil
     size_t length = strlen(text);
 
     char* buffer = NULL;
-    frg_status_t result = frg_safe_malloc((void**)&buffer, length + 2);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)&buffer, length + 2)
+    );
 
     memcpy(buffer, text, length);
     buffer[length] = buffer[length + 1] = 0;
 
-    frg_status_t parse_result = frg_parse_buffer(ast, buffer, length + 2, filename);
+    frg_status_t result = frg_parse_buffer(ast, buffer, length + 2, filename);
 
-    result = frg_safe_free((void**)&buffer);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_free((void**)&buffer)
+    );
 
-    return parse_result;
+    frg_check(result);
+
+    return FRG_STATUS_OK;
 }

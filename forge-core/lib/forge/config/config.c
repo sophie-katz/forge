@@ -17,6 +17,7 @@
 #include <forge/ast/ast.h>
 #include <forge/ast/debug.h>
 #include <forge/codegen/codegen.h>
+#include <forge/common/check.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
@@ -27,33 +28,31 @@
 #include <forge/parse/parse.h>
 
 frg_status_t frg_config_new_default(frg_config_t** config) {
-    frg_status_t result = frg_safe_malloc((void**)config, sizeof(frg_config_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)config, sizeof(frg_config_t))
+    );
 
     (*config)->version_short = false;
+    (*config)->compile_output_path = NULL;
 
     return FRG_STATUS_OK;
 }
 
-void frg_config_destroy(frg_config_t** config) {
-    if (*config == NULL) {
-        return;
-    }
+frg_status_t frg_config_destroy(frg_config_t** config) {
+    frg_check(
+        frg_safe_free((void**)config)
+    );
 
-    frg_safe_free((void**)config);
+    return FRG_STATUS_OK;
 }
 
 frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int argc, const char** argv) {
     frg_cli_program_t* program = NULL;
-    frg_status_t result = frg_config_cli_program_new(&program);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create CLI program: %s", frg_status_to_string(result));
-        return result;
-    }
+    frg_check(
+        frg_config_cli_program_new(&program)
+    );
 
-    result = frg_cli_program_parse(
+    frg_status_t result = frg_cli_program_parse(
         exit_status,
         program,
         argc,
@@ -62,9 +61,8 @@ frg_status_t frg_config_parse_cli(int* exit_status, frg_config_t* config, int ar
     );
     if (result == FRG_STATUS_CLI_ERROR) {
         return FRG_STATUS_CLI_ERROR;
-    } else if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to parse args with CLI program: %s", frg_status_to_string(result));
-        return result;
+    } else {
+        frg_check(result);
     }
 
     return FRG_STATUS_OK;
@@ -97,7 +95,9 @@ frg_status_t _frg_config_parse_env_debug(frg_config_t* config) {
         }
 
         if (debug_value) {
-            frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
+            frg_check(
+                frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG)
+            );
         }
     }
 
@@ -112,11 +112,17 @@ frg_status_t _frg_config_parse_env_color_mode(frg_config_t* config) {
     const char* color_mode_text = getenv("FORGE_COLOR_MODE");
     if (color_mode_text != NULL && *color_mode_text != 0) {
         if (strcmp(color_mode_text, "disabled") == 0) {
-            frg_set_color_mode(FRG_COLOR_MODE_DISABLED);
+            frg_check(
+                frg_set_color_mode(FRG_COLOR_MODE_DISABLED)
+            );
         } else if (strcmp(color_mode_text, "auto") == 0) {
-            frg_set_color_mode(FRG_COLOR_MODE_AUTO);
+            frg_check(
+                frg_set_color_mode(FRG_COLOR_MODE_AUTO)
+            );
         } else if (strcmp(color_mode_text, "enabled") == 0) {
-            frg_set_color_mode(FRG_COLOR_MODE_ENABLED);
+            frg_check(
+                frg_set_color_mode(FRG_COLOR_MODE_ENABLED)
+            );
         } else {
             frg_log_fatal_error("unknown color mode: %s", color_mode_text);
             return FRG_STATUS_CLI_ERROR;
@@ -127,15 +133,13 @@ frg_status_t _frg_config_parse_env_color_mode(frg_config_t* config) {
 }
 
 frg_status_t frg_config_parse_env(frg_config_t* config) {
-    frg_status_t result = _frg_config_parse_env_debug(config);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        _frg_config_parse_env_debug(config)
+    );
 
-    result = _frg_config_parse_env_color_mode(config);
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        _frg_config_parse_env_color_mode(config)
+    );
 
     return FRG_STATUS_OK;
 }

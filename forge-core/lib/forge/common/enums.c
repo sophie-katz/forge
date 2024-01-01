@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/enums.h>
+#include <forge/common/log.h>
 
 const char* frg_status_to_string(frg_status_t status) {
     switch (status) {

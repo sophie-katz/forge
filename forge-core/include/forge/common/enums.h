@@ -17,6 +17,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <forge/common/types.h>
 
 /// A status result to be returned by functions in Forge
 typedef enum {
@@ -89,6 +90,7 @@ typedef enum {
 } frg_color_id_t;
 
 typedef enum {
+    FRG_LOG_SEVERITY_TRACE,
     FRG_LOG_SEVERITY_DEBUG,
     FRG_LOG_SEVERITY_NOTE,
     FRG_LOG_SEVERITY_WARNING,

@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/cli/option.h>
 #include <unity.h>
 
@@ -100,104 +101,94 @@ frg_status_t create_option_argument_short(frg_cli_option_t** option) {
 }
 
 frg_status_t create_option_choice(frg_cli_option_t** option) {
-    frg_status_t result = frg_cli_option_new_choice(
-        option,
-        "long-choice",
-        "value",
-        "A long-only choice.",
-        callback_choice
+    frg_check(
+        frg_cli_option_new_choice(
+            option,
+            "long-choice",
+            "value",
+            "A long-only choice.",
+            callback_choice
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     frg_cli_choice_t* choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-1",
-        "A choice."
+    frg_check(
+        frg_cli_choice_new(
+            &choice,
+            "option-1",
+            "A choice."
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
-    result = frg_cli_option_add_choice(
-        *option,
-        choice
+    frg_check(
+        frg_cli_option_add_choice(
+            *option,
+            choice
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-2",
-        "Another choice."
+    frg_check(
+        frg_cli_choice_new(
+            &choice,
+            "option-2",
+            "Another choice."
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
-    result = frg_cli_option_add_choice(
-        *option,
-        choice
+    frg_check(
+        frg_cli_option_add_choice(
+            *option,
+            choice
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }
 
 frg_status_t create_option_choice_short(frg_cli_option_t** option) {
-    frg_status_t result = frg_cli_option_new_choice_short(
-        option,
-        'c',
-        "long-choice",
-        "value",
-        "A long-only choice.",
-        callback_choice
+    frg_check(
+        frg_cli_option_new_choice_short(
+            option,
+            'c',
+            "long-choice",
+            "value",
+            "A long-only choice.",
+            callback_choice
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     frg_cli_choice_t* choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-1",
-        "A choice."
+    frg_check(
+        frg_cli_choice_new(
+            &choice,
+            "option-1",
+            "A choice."
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
-    result = frg_cli_option_add_choice(
-        *option,
-        choice
+    frg_check(
+        frg_cli_option_add_choice(
+            *option,
+            choice
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-2",
-        "Another choice."
+    frg_check(
+        frg_cli_choice_new(
+            &choice,
+            "option-2",
+            "Another choice."
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
-    result = frg_cli_option_add_choice(
-        *option,
-        choice
+    frg_check(
+        frg_cli_option_add_choice(
+            *option,
+            choice
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }

@@ -16,6 +16,7 @@
 #include <forge/ast/ast.h>
 #include <forge/config/commands/link.h>
 #include <forge/config/config.h>
+#include <forge/common/check.h>
 #include <forge/common/log.h>
 
 frg_status_t _frg_config_commands_callback_link(
@@ -28,17 +29,15 @@ frg_status_t _frg_config_commands_callback_link(
 }
 
 frg_status_t frg_config_commands_new_link(frg_cli_command_t** command) {
-    frg_status_t result = frg_cli_command_new(
-        command,
-        "link",
-        "object files",
-        "Links object files into executables or libraries.",
-        _frg_config_commands_callback_link
+    frg_check(
+        frg_cli_command_new(
+            command,
+            "link",
+            "object files",
+            "Links object files into executables or libraries.",
+            _frg_config_commands_callback_link
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }

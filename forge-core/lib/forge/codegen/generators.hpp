@@ -15,12 +15,40 @@
 
 #pragma once
 
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Type.h>
 
 extern "C" {
 #include <forge/ast/ast.h>
-}
+#include <forge/ast/scope.h>
 
-namespace frg {
-llvm::Type* generate_type(frg_ast_t* ast);
+frg_status_t _frg_generate_type(
+    llvm::Type** ir,
+    llvm::LLVMContext& ctx,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
+
+frg_status_t _frg_generate_decl_fn(
+    llvm::IRBuilder<>& builder,
+    llvm::LLVMContext& ctx,
+    llvm::Module& module,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
+
+frg_status_t _frg_generate_stmt(
+    llvm::IRBuilder<>& builder,
+    llvm::LLVMContext& ctx,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
+
+frg_status_t _frg_generate_value(
+    llvm::Value** ir,
+    llvm::LLVMContext& ctx,
+    frg_ast_scope_t* scope,
+    frg_ast_t* ast
+);
 }

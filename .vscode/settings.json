@@ -17,6 +17,9 @@
     "files.associations": {
         "*.in": "cpp",
         "config.h": "c",
-        "vector": "c"
+        "vector": "c",
+        "option_set.h": "c",
+        "__locale": "c",
+        "check.h": "c"
     }
 }

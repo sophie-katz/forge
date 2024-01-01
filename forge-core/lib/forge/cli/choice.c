@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
@@ -31,13 +32,12 @@ frg_status_t frg_cli_choice_new(
         return FRG_STATUS_ERROR_EMPTY_STRING;
     }
 
-    frg_status_t result = frg_safe_malloc(
-        (void**)choice,
-        sizeof(frg_cli_choice_t)
+    frg_check(
+        frg_safe_malloc(
+            (void**)choice,
+            sizeof(frg_cli_choice_t)
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
 
     (*choice)->name = name;
     (*choice)->help = help;
@@ -59,11 +59,7 @@ frg_status_t frg_cli_choice_print_help(
     }
 
     frg_color_mode_t mode;
-    frg_status_t result = frg_get_color_mode(&mode);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to get color mode: %s", frg_status_to_string(result)); 
-        return result;
-    }
+    frg_check(frg_get_color_mode(&mode));
 
     if (mode == FRG_COLOR_MODE_ENABLED) {
         printf("      • ");

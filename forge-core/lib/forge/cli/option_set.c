@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/common/check.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option_set.h>
@@ -40,10 +41,9 @@ frg_status_t frg_cli_option_set_new(
         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
     }
 
-    frg_status_t result = frg_safe_malloc((void**)option_set, sizeof(frg_cli_option_set_t));
-    if (result != FRG_STATUS_OK) {
-        return result;
-    }
+    frg_check(
+        frg_safe_malloc((void**)option_set, sizeof(frg_cli_option_set_t))
+    );
 
     (*option_set)->options = NULL;
     memset((*option_set)->options_by_short_name, 0, sizeof((*option_set)->options_by_short_name));
@@ -60,11 +60,9 @@ frg_status_t frg_cli_option_set_destroy(
     }
 
     for (GList* option = (*option_set)->options; option != NULL; option = option->next) {
-        frg_status_t result = frg_cli_option_destroy((frg_cli_option_t**)&option->data);
-        if (result != FRG_STATUS_OK) {
-            frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result)); 
-            return result;
-        }
+        frg_check(
+            frg_cli_option_destroy((frg_cli_option_t**)&option->data)
+        );
     }
 
     g_list_free((*option_set)->options);
@@ -86,11 +84,9 @@ frg_status_t frg_cli_option_set_add_option(
 
     if (option->short_name != FRG_CLI_OPTION_SHORT_NAME_NULL) {
         int index = 0;
-        frg_status_t result = _frg_cli_get_short_name_index(&index, option->short_name);
-        if (result != FRG_STATUS_OK) {
-            frg_log_internal_error("unable to get short name index: %s", frg_status_to_string(result));
-            return result;
-        }
+        frg_check(
+            _frg_cli_get_short_name_index(&index, option->short_name)
+        );
 
         if (option_set->options_by_short_name[index] != NULL) {
             return FRG_STATUS_ERROR_DUPLICATE;
@@ -142,11 +138,9 @@ frg_status_t frg_cli_option_set_get_option_by_short_name(
     }
 
     int index = -1;
-    frg_status_t result = _frg_cli_get_short_name_index(&index, name);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to get short name index: %s", frg_status_to_string(result)); 
-        return result;
-    }
+    frg_check(
+        _frg_cli_get_short_name_index(&index, name)
+    );
 
     if (index < 0 || index >= FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT) {
         frg_log_internal_error("invalid index %i", index);
@@ -178,11 +172,9 @@ frg_status_t frg_cli_option_set_print_help(
             printf("\n");
         }
 
-        frg_status_t result = frg_cli_option_print_help((const frg_cli_option_t*)option->data);
-        if (result != FRG_STATUS_OK) {
-            frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result)); 
-            return result;
-        }
+        frg_check(
+            frg_cli_option_print_help((const frg_cli_option_t*)option->data)
+        );
     }
 
     return FRG_STATUS_OK;
@@ -217,9 +209,8 @@ frg_status_t _frg_cli_option_set_parse_next_long(
     if (result == FRG_STATUS_ERROR_KEY_NOT_FOUND) {
         frg_log_fatal_error("unknown argument '--%s'", name);
         return FRG_STATUS_CLI_ERROR;
-    } else if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to get option by long name: %s", frg_status_to_string(result)); 
-        return result;
+    } else {
+        frg_check(result);
     }
 
     return frg_cli_option_parse_next(
@@ -254,9 +245,11 @@ frg_status_t _frg_cli_option_set_parse_next_short(
         option_set,
         name
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to get option by short name: %s", frg_status_to_string(result)); 
-        return result;
+    if (result == FRG_STATUS_ERROR_KEY_NOT_FOUND) {
+        frg_log_fatal_error("unknown argument '--%s'", name);
+        return FRG_STATUS_CLI_ERROR;
+    } else {
+        frg_check(result);
     }
 
     return frg_cli_option_parse_next(

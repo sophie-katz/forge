@@ -17,6 +17,7 @@
 #include <forge/cli/program.h>
 #include <forge/config/commands/link.h>
 #include <forge/config/cli_program.h>
+#include <forge/common/check.h>
 #include <forge/config/config.h>
 #include <forge/common/log.h>
 
@@ -36,17 +37,15 @@ frg_status_t _frg_config_commands_callback_help(
 }
 
 frg_status_t frg_config_commands_new_help(frg_cli_command_t** command) {
-    frg_status_t result = frg_cli_command_new(
-        command,
-        "help",
-        NULL,
-        "Display help information. Use 'help <command>' for help with that command.",
-        _frg_config_commands_callback_help
+    frg_check(
+        frg_cli_command_new(
+            command,
+            "help",
+            NULL,
+            "Display help information. Use 'help <command>' for help with that command.",
+            _frg_config_commands_callback_help
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create CLI command: %s", frg_status_to_string(result));
-        return result;
-    }
 
     return FRG_STATUS_OK;
 }

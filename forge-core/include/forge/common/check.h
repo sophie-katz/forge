@@ -15,32 +15,19 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <forge/common/enums.h>
+#include <forge/common/types.h>
 
-#include <forge/ast/ast.h>
-
-typedef struct frg_llvm_module_t frg_llvm_module_t;
-
-frg_status_t frg_codegen(frg_llvm_module_t** module, frg_ast_t* ast);
-
-frg_status_t frg_codegen_call_function(
-    void* returned_value,
-    frg_llvm_module_t* module,
-    const char* name,
-    GList* pos_args
+bool _frg_check(
+    const char* log_path,
+    frg_lineno_t log_lineno,
+    frg_status_t status
 );
 
-frg_status_t frg_codegen_write_object_file(
-    frg_llvm_module_t* module,
-    const char* path
-);
-
-frg_status_t frg_codegen_destroy_module(frg_llvm_module_t** module);
-
-frg_status_t frg_codegen_print_module(frg_llvm_module_t* module);
-
-#ifdef __cplusplus
-}
-#endif
+#define frg_check(status) if (!_frg_check( \
+        __FILE__, \
+        __LINE__, \
+        (status) \
+    )) { \
+        return (status); \
+    }

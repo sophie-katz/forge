@@ -6,18 +6,6 @@ runs:
     - name: Checkout main
       uses: actions/checkout@v4
 
-    - name: Set up dependencies
-      shell: bash
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y meson
-
-        # Smoke test
-        meson --version
-        ninja --version
-        cmake --version
-        pkg-config --cflags glib-2.0
-
     - name: Build Core
       working-directory: forge-core
       shell: bash

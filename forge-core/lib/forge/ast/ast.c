@@ -79,6 +79,30 @@ frg_status_t frg_ast_new_ty_pointer(
     return FRG_STATUS_OK;
 }
 
+frg_status_t frg_ast_new_ty_fn(
+    frg_ast_ty_fn_t** ast,
+    GList* args,
+    GList* var_pos_args,
+    GList* var_kw_args,
+    frg_ast_t* return_ty
+) {
+    if (ast == NULL || return_ty == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
+    }
+
+    frg_check(
+        frg_safe_malloc((void**)ast, sizeof(frg_ast_ty_fn_t))
+    );
+
+    (*ast)->base.id = FRG_AST_ID_TY_FN;
+    (*ast)->args = args;
+    (*ast)->var_pos_args = var_pos_args;
+    (*ast)->var_kw_args = var_kw_args;
+    (*ast)->return_ty = return_ty;
+
+    return FRG_STATUS_OK;
+}
+
 frg_status_t frg_ast_new_decl_union(
     frg_ast_decl_union_t** ast,
     GString* name,
@@ -186,7 +210,7 @@ frg_status_t frg_ast_new_decl_iface(
 frg_status_t frg_ast_new_decl_fn_arg(
     frg_ast_decl_fn_arg_t** ast,
     frg_ast_decl_fn_arg_flags_t flags,
-    frg_ast_t* prop,
+    frg_ast_decl_prop_t* prop,
     frg_ast_t* default_value
 ) {
     if (ast == NULL) {
@@ -211,10 +235,7 @@ frg_status_t frg_ast_new_decl_fn(
     frg_ast_decl_fn_t** ast,
     frg_ast_decl_fn_flags_t flags,
     GString* name,
-    GList* args,
-    GList* var_pos_args,
-    GList* var_kw_args,
-    frg_ast_t* return_ty,
+    frg_ast_ty_fn_t* ty,
     frg_ast_t* body
 ) {
     if (ast == NULL) {
@@ -223,6 +244,8 @@ frg_status_t frg_ast_new_decl_fn(
         return FRG_STATUS_ERROR_NULL_ARGUMENT;
     } else if (name->len == 0) {
         return FRG_STATUS_ERROR_EMPTY_STRING;
+    } else if (ty == NULL) {
+        return FRG_STATUS_ERROR_NULL_ARGUMENT;
     }
 
     frg_check(
@@ -232,10 +255,7 @@ frg_status_t frg_ast_new_decl_fn(
     (*ast)->base.id = FRG_AST_ID_DECL_FN;
     (*ast)->flags = flags;
     (*ast)->name = name;
-    (*ast)->args = args;
-    (*ast)->var_pos_args = var_pos_args;
-    (*ast)->var_kw_args = var_kw_args;
-    (*ast)->return_ty = return_ty;
+    (*ast)->ty = ty;
     (*ast)->body = body;
 
     return FRG_STATUS_OK;
@@ -243,7 +263,7 @@ frg_status_t frg_ast_new_decl_fn(
 
 frg_status_t frg_ast_new_decl_var(
     frg_ast_decl_var_t** ast,
-    frg_ast_t* prop,
+    frg_ast_decl_prop_t* prop,
     frg_ast_t* initial_value
 ) {
     if (ast == NULL) {
@@ -793,6 +813,24 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
             g_string_free(((frg_ast_ty_symbol_t*)*ast)->name, TRUE);
 
             break;
+        case FRG_AST_ID_TY_FN:
+            frg_check(
+                _frg_asts_free_glist(((frg_ast_ty_fn_t*)*ast)->args)
+            );
+
+            frg_check(
+                _frg_asts_free_glist(((frg_ast_ty_fn_t*)*ast)->var_pos_args)
+            );
+
+            frg_check(
+                _frg_asts_free_glist(((frg_ast_ty_fn_t*)*ast)->var_kw_args)
+            );
+
+            frg_check(
+                frg_ast_destroy(&((frg_ast_ty_fn_t*)*ast)->return_ty)
+            );
+
+            break;
         case FRG_AST_ID_DECL_UNION:
             g_string_free(((frg_ast_decl_union_t*)*ast)->name, TRUE);
 
@@ -831,7 +869,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
             break;
         case FRG_AST_ID_DECL_FN_ARG:
             frg_check(
-                frg_ast_destroy(&((frg_ast_decl_fn_arg_t*)*ast)->prop)
+                frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_fn_arg_t*)*ast)->prop)
             );
 
             frg_check(
@@ -843,15 +881,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
             g_string_free(((frg_ast_decl_fn_t*)*ast)->name, TRUE);
 
             frg_check(
-                _frg_asts_free_glist(((frg_ast_decl_fn_t*)*ast)->args)
-            );
-
-            frg_check(
-                _frg_asts_free_glist(((frg_ast_decl_fn_t*)*ast)->var_pos_args)
-            );
-
-            frg_check(
-                _frg_asts_free_glist(((frg_ast_decl_fn_t*)*ast)->var_kw_args)
+                frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_fn_t*)*ast)->ty)
             );
 
             frg_check(
@@ -861,7 +891,7 @@ frg_status_t frg_ast_destroy(frg_ast_t** ast) {
             break;
         case FRG_AST_ID_DECL_VAR:
             frg_check(
-                frg_ast_destroy(&((frg_ast_decl_var_t*)*ast)->prop)
+                frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_var_t*)*ast)->prop)
             );
 
             frg_check(

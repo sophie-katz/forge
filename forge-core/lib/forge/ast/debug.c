@@ -75,6 +75,30 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             frg_ast_print_debug(((frg_ast_ty_pointer_t*)ast)->value, indent + FRG_DEBUG_INDENT_WIDTH);
 
             break;
+        case FRG_AST_ID_TY_FN:
+            _frg_ast_print_debug_list(
+                ((frg_ast_ty_fn_t*)ast)->args,
+                "args",
+                indent + FRG_DEBUG_INDENT_WIDTH
+            );
+
+            _frg_ast_print_debug_list(
+                ((frg_ast_ty_fn_t*)ast)->var_pos_args,
+                "var-pos-args",
+                indent + FRG_DEBUG_INDENT_WIDTH
+            );
+
+            _frg_ast_print_debug_list(
+                ((frg_ast_ty_fn_t*)ast)->var_kw_args,
+                "var-kw-args",
+                indent + FRG_DEBUG_INDENT_WIDTH
+            );
+
+            frg_debug_print_newline(indent);
+            frg_debug_print_property("return-ty", NULL);
+            frg_ast_print_debug(((frg_ast_ty_fn_t*)ast)->return_ty, indent + FRG_DEBUG_INDENT_WIDTH);
+
+            break;
         case FRG_AST_ID_DECL_UNION:
             frg_debug_print_newline(indent);
             result = frg_escape_str(&escaped, ((frg_ast_decl_union_t*)ast)->name->str);
@@ -167,7 +191,7 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("prop", NULL);
-            frg_ast_print_debug(((frg_ast_decl_fn_arg_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);
+            frg_ast_print_debug((const frg_ast_t*)((frg_ast_decl_fn_arg_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("default-value", NULL);
@@ -190,27 +214,9 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
                 frg_debug_print_property("name", "(error while escaping string)");
             }
 
-            _frg_ast_print_debug_list(
-                ((frg_ast_decl_fn_t*)ast)->args,
-                "args",
-                indent + FRG_DEBUG_INDENT_WIDTH
-            );
-
-            _frg_ast_print_debug_list(
-                ((frg_ast_decl_fn_t*)ast)->var_pos_args,
-                "var-pos-args",
-                indent + FRG_DEBUG_INDENT_WIDTH
-            );
-
-            _frg_ast_print_debug_list(
-                ((frg_ast_decl_fn_t*)ast)->var_kw_args,
-                "var-kw-args",
-                indent + FRG_DEBUG_INDENT_WIDTH
-            );
-
             frg_debug_print_newline(indent);
-            frg_debug_print_property("return_ty", NULL);
-            frg_ast_print_debug(((frg_ast_decl_fn_t*)ast)->return_ty, indent + FRG_DEBUG_INDENT_WIDTH);
+            frg_debug_print_property("ty", NULL);
+            frg_ast_print_debug((const frg_ast_t*)((frg_ast_decl_fn_t*)ast)->ty, indent + FRG_DEBUG_INDENT_WIDTH);
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("body", NULL);
@@ -220,7 +226,7 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
         case FRG_AST_ID_DECL_VAR:
             frg_debug_print_newline(indent);
             frg_debug_print_property("prop", NULL);
-            frg_ast_print_debug(((frg_ast_decl_var_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);
+            frg_ast_print_debug((const frg_ast_t*)((frg_ast_decl_var_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("initial-value", NULL);

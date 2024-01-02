@@ -161,7 +161,7 @@ frg_status_t frg_ast_scope_frame_load_fn_args(
 
     GList* it = NULL;
     for (
-        it = g_list_first(fn->args);
+        it = g_list_first(fn->ty->args);
         it != NULL;
         it = g_list_next(it)
     ) {

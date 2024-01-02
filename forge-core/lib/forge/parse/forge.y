@@ -38,7 +38,7 @@ int yywrap() {
 }
 
 void yyerror(frg_ast_t**ast, const char* message) {
-    frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "%s", message);
+    frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "[%s]", message);
 }
 %}
 
@@ -149,7 +149,10 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %type <ast> ty_symbol
 %type <ast> ty_primary
 %type <ast> ty_pointer
+%type <ast> ty_fn
 %type <ast> ty
+%type <list> ty_list
+%type <list> ty_list_optional
 %type <list> decl_union_list
 %type <ast> decl_union
 %type <ast> decl_prop
@@ -366,9 +369,45 @@ ty_pointer: MUL ty_primary
     $$ = $1;
 };
 
-ty : ty_pointer
+ty_fn: PAREN_LEFT ty_list_optional PAREN_RIGHT ARROW_RIGHT ty_pointer
+{
+    frg_status_t result = frg_ast_new_ty_fn(
+        (frg_ast_ty_fn_t**)&$$,
+        $2,
+        NULL,
+        NULL,
+        $5
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
+    }
+}
+| ty_pointer
 {
     $$ = $1;
+};
+
+ty : ty_fn
+{
+    $$ = $1;
+};
+
+ty_list: ty
+{
+    $$ = g_list_append(NULL, $1);
+}
+| ty_list COMMA ty
+{
+    $$ = g_list_append($1, $3);
+};
+
+ty_list_optional: ty_list
+{
+    $$ = $1;
+}
+|
+{
+    $$ = NULL;
 };
 
 decl_union_list : ty
@@ -549,21 +588,57 @@ decl_fn_return_ty : ARROW_RIGHT ty
 
 decl_fn : KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
 {
-    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_NONE, $2, $4, NULL, NULL, $6, $7);
+    frg_ast_ty_fn_t* ty_fn = NULL;
+    frg_status_t result = frg_ast_new_ty_fn(
+        &ty_fn,
+        $4,
+        NULL,
+        NULL,
+        $6
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
+    }
+
+    result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_NONE, $2, ty_fn, $7);
     if (result != FRG_STATUS_OK) {
         frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_MUT KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
 {
-    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_MUT, $3, $5, NULL, NULL, $7, $8);
+    frg_ast_ty_fn_t* ty_fn = NULL;
+    frg_status_t result = frg_ast_new_ty_fn(
+        &ty_fn,
+        $5,
+        NULL,
+        NULL,
+        $7
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
+    }
+
+    result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_MUT, $3, ty_fn, $8);
     if (result != FRG_STATUS_OK) {
         frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }
 }
 | KW_OVERRIDE KW_FN SYMBOL PAREN_LEFT decl_fn_arg_list_optional PAREN_RIGHT decl_fn_return_ty decl_fn_body
 {
-    frg_status_t result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_OVERRIDE, $3, $5, NULL, NULL, $7, $8);
+    frg_ast_ty_fn_t* ty_fn = NULL;
+    frg_status_t result = frg_ast_new_ty_fn(
+        &ty_fn,
+        $5,
+        NULL,
+        NULL,
+        $7
+    );
+    if (result != FRG_STATUS_OK) {
+        frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
+    }
+
+    result = frg_ast_new_decl_fn((frg_ast_decl_fn_t**)&$$, FRG_AST_DECL_FN_FLAG_OVERRIDE, $3, ty_fn, $8);
     if (result != FRG_STATUS_OK) {
         frg_log_internal_error("unable to create AST: %s", frg_status_to_string(result));
     }

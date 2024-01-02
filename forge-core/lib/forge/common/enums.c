@@ -75,6 +75,8 @@ const char* frg_ast_id_to_string(frg_ast_id_t id) {
             return "ty-symbol";
         case FRG_AST_ID_TY_POINTER:
             return "ty-pointer";
+        case FRG_AST_ID_TY_FN:
+            return "ty-fn";
         case FRG_AST_ID_DECL_UNION:
             return "decl-union";
         case FRG_AST_ID_DECL_STRUCT:

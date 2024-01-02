@@ -116,14 +116,14 @@ frg_status_t _frg_generate_decl_fn(
             &return_ty,
             ctx,
             scope,
-            decl_fn->return_ty
+            decl_fn->ty->return_ty
         )
     );
 
     // Generate argument types
     std::vector<llvm::Type*> arg_types;
 
-    for (GList* it = decl_fn->args; it != NULL; it = it->next) {
+    for (GList* it = decl_fn->ty->args; it != NULL; it = it->next) {
         llvm::Type* arg_ty = NULL;
         frg_check(
             _frg_generate_type(
@@ -152,7 +152,7 @@ frg_status_t _frg_generate_decl_fn(
         module
     );
 
-    GList* it_ast = decl_fn->args;
+    GList* it_ast = decl_fn->ty->args;
     auto it_ir = fn->arg_begin();
     while (it_ast != NULL && it_ir != fn->arg_end()) {
         frg_ast_decl_fn_arg_t* arg = (frg_ast_decl_fn_arg_t*)it_ast->data;

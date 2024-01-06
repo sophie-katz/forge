@@ -15,9 +15,14 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# FR-1: Boolean literals
+# Requirement-1: Boolean literals
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**First supported in Forge version:** 0.1.0
+
+## Summary
 
 Boolean literals are a way to represent truthy and falsy values in an explicit way.
 

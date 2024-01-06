@@ -52,8 +52,11 @@ nav:
   - 'Specification':
     - 'How to use': 'specification/how-to-use.md'
     - 'Requirements':
-      - 'FR-1: Boolean literals': 'specification/requirements/FR-1-boolean-literals.md'
-      - 'FR-2: Integer literals': 'specification/requirements/FR-2-integer-literals.md'
-      - 'FR-3: Float literals': 'specification/requirements/FR-3-float-literals.md'
-      - 'FR-4: String literals': 'specification/requirements/FR-4-string-literals.md'
-      - 'FR-5: Character literals': 'specification/requirements/FR-5-character-literals.md'
+      - 'Requirement-1: Boolean literals': 'specification/requirements/Requirement-1-boolean-literals.md'
+      - 'Requirement-2: Integer literals': 'specification/requirements/Requirement-2-integer-literals.md'
+      - 'Requirement-3: Float literals': 'specification/requirements/Requirement-3-float-literals.md'
+      - 'Requirement-4: String literals': 'specification/requirements/Requirement-4-string-literals.md'
+      - 'Requirement-5: Character literals': 'specification/requirements/Requirement-5-character-literals.md'
+      - 'Requirement-6: File naming': 'specification/requirements/Requirement-6-file-naming.md'
+      - 'Requirement-7: Operators': 'specification/requirements/Requirement-7-operators.md'
+      - 'Requirement-8: Operator precedence': 'specification/requirements/Requirement-8-operator-precedence.md'

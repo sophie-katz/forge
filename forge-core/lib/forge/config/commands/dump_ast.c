@@ -19,48 +19,44 @@
 #include <forge/config/commands/common.h>
 #include <forge/parse/parse.h>
 #include <forge/config/config.h>
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/log.h>
 
-frg_status_t _frg_config_commands_callback_dump_ast(
-    int* exit_status,
+int _frg_config_commands_callback_dump_ast(
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {
-    const char* path = NULL;
-    frg_check(
-        frg_config_commands_get_single_source_file(
-            &path,
-            pos_args
-        )
+    frg_assert_pointer_non_null(program);
+
+    const char* path = frg_config_commands_get_single_source_file(
+        pos_args
     );
 
-    frg_ast_t* ast = NULL;
-    frg_check(
-        frg_parse_file_at_path(
-            &ast,
-            path
-        )
+    if (path == NULL) {
+        return 1;
+    }
+
+    frg_ast_t* ast = frg_parse_file_at_path(
+        path
     );
+
+    if (ast == NULL) {
+        return 1;
+    }
 
     frg_ast_print_debug(ast, 0);
 
     printf("\n");
 
-    return FRG_STATUS_OK;
+    return 0;
 }
 
-frg_status_t frg_config_commands_new_dump_ast(frg_cli_command_t** command) {
-    frg_check(
-        frg_cli_command_new(
-            command,
-            "dump-ast",
-            "source file",
-            "Dump the AST of the source file.",
-            _frg_config_commands_callback_dump_ast
-        )
+frg_cli_command_t* frg_config_commands_new_dump_ast() {
+    return frg_cli_command_new(
+        "dump-ast",
+        "source file",
+        "Dump the AST of the source file.",
+        _frg_config_commands_callback_dump_ast
     );
-
-    return FRG_STATUS_OK;
 }

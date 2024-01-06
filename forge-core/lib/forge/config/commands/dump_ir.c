@@ -19,63 +19,55 @@
 #include <forge/config/commands/common.h>
 #include <forge/parse/parse.h>
 #include <forge/config/config.h>
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/log.h>
 #include <forge/codegen/codegen.h>
 
-frg_status_t _frg_config_commands_callback_dump_ir(
-    int* exit_status,
+int _frg_config_commands_callback_dump_ir(
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {
-    const char* path = NULL;
-    frg_check(
-        frg_config_commands_get_single_source_file(
-            &path,
-            pos_args
-        )
+    frg_assert_pointer_non_null(program);
+
+    const char* path = frg_config_commands_get_single_source_file(
+        pos_args
+    );
+    
+    if (path == NULL) {
+        return 1;
+    }
+
+    frg_ast_t* ast = frg_parse_file_at_path(
+        path
     );
 
-    frg_ast_t* ast = NULL;
-    frg_check(
-        frg_parse_file_at_path(
-            &ast,
-            path
-        )
+    if (ast == NULL) {
+        return 1;
+    }
+
+    frg_llvm_module_t* llvm_module = frg_codegen(
+        ast
     );
 
-    frg_llvm_module_t* llvm_module = NULL;
-    frg_check(
-        frg_codegen(
-            &llvm_module,
-            ast
-        )
+    if (llvm_module == NULL) {
+        return 1;
+    }
+
+    frg_codegen_print_module(
+        llvm_module
     );
 
-    frg_check(
-        frg_codegen_print_module(
-            llvm_module
-        )
-    );
+    frg_codegen_destroy_module(&llvm_module);
 
-    frg_check(
-        frg_codegen_destroy_module(&llvm_module)
-    );
-
-    return FRG_STATUS_OK;
+    return 0;
 }
 
-frg_status_t frg_config_commands_new_dump_ir(frg_cli_command_t** command) {
-    frg_check(
-        frg_cli_command_new(
-            command,
-            "dump-ir",
-            "source file",
-            "Dump the compiled intermediate representation of the source file.",
-            _frg_config_commands_callback_dump_ir
-        )
+frg_cli_command_t* frg_config_commands_new_dump_ir() {
+    return frg_cli_command_new(
+        "dump-ir",
+        "source file",
+        "Dump the compiled intermediate representation of the source file.",
+        _frg_config_commands_callback_dump_ir
     );
-
-    return FRG_STATUS_OK;
 }

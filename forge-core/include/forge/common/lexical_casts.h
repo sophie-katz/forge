@@ -19,32 +19,30 @@
 #include <forge/common/types.h>
 #include <glib.h>
 
-frg_status_t frg_escape_char(GString** escaped, frg_char_t value);
+GString* frg_escape_char(frg_char_t value);
 
-frg_status_t frg_unescape_char(frg_char_t* value, const char* escaped);
+frg_recoverable_status_t frg_unescape_char(frg_char_t* value, const char* escaped);
 
-frg_status_t frg_escape_str(GString** escaped, const char* value);
+GString* frg_escape_str(const char* value);
 
-frg_status_t frg_unescape_str(GString** value, const char* escaped);
+frg_recoverable_status_t frg_unescape_str(GString** value, const char* escaped);
 
-frg_status_t frg_uint_to_str(
-    GString** str,
+GString* frg_uint_to_str(
     uint64_t value,
-    uint32_t base
+    frg_int_base_t base
 );
 
-frg_status_t frg_str_to_uint(
+frg_recoverable_status_t frg_str_to_uint(
     uint64_t* value,
     const char* str
 );
 
-frg_status_t frg_float_to_str(
-    GString** str,
-    frg_f64_t value,
-    uint32_t base
-);
+// GString* frg_float_to_str(
+//     frg_f64_t value,
+//     frg_int_base_t base
+// );
 
-frg_status_t frg_str_to_float(
-    frg_f64_t* value,
-    const char* str
-);
+// frg_recoverable_status_t frg_str_to_float(
+//     frg_f64_t* value,
+//     const char* str
+// );

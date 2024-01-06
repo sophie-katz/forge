@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
+> [!WARNING]  
+> This was an initial planning document I drafted up when starting this project. It's now out of date but is here for reference until I fully replace it with better documentation.
+
 # Goals
 
 - Native

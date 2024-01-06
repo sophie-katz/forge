@@ -23,13 +23,13 @@
 /// Gets the current global color mode.
 ///
 /// \param mode An output parameter for the current color mode.
-frg_status_t frg_get_color_mode(frg_color_mode_t* mode);
+frg_color_mode_t frg_color_mode_get();
 
 /// \brief Sets the color mode based on \a hint.
 ///
 /// If \a hint is \c FRG_COLOR_MODE_AUTO it will auto-detect. Otherwise it will set the
 /// mode to \a hint exactly.
-frg_status_t frg_set_color_mode(frg_color_mode_t hint);
+frg_color_mode_t frg_color_mode_set(frg_color_mode_t hint);
 
 /// \brief Sets the color for \a stream to \a id.
 ///
@@ -41,4 +41,4 @@ frg_status_t frg_set_color_mode(frg_color_mode_t hint);
 /// \retval FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE If \a stream is not \c stdout or
 ///         \c stderr
 /// \retval FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE If \a id is unexpected
-frg_status_t frg_set_color(FILE* stream, frg_color_id_t id);
+void frg_color_set(FILE* stream, frg_color_id_t id);

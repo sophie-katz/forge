@@ -23,6 +23,9 @@
         "vector": "c",
         "option_set.h": "c",
         "__locale": "c",
-        "check.h": "c"
+        "check.h": "c",
+        "stream.h": "c",
+        "common.h": "c",
+        "error.h": "c"
     }
 }

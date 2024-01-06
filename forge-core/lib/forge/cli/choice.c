@@ -13,64 +13,48 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/choice.h>
 
-frg_status_t frg_cli_choice_new(
-    frg_cli_choice_t** choice,
+frg_cli_choice_t* frg_cli_choice_new(
     const char* name,
     const char* help
 ) {
-    if (choice == NULL || name == NULL || help == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*choice != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (*name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    }
+    frg_assert_string_non_empty(name);
+    frg_assert_string_non_empty(help);
 
-    frg_check(
-        frg_safe_malloc(
-            (void**)choice,
-            sizeof(frg_cli_choice_t)
-        )
+    frg_cli_choice_t* choice = frg_safe_malloc(
+        sizeof(frg_cli_choice_t)
     );
 
-    (*choice)->name = name;
-    (*choice)->help = help;
+    choice->name = name;
+    choice->help = help;
 
-    return FRG_STATUS_OK;
+    return choice;
 }
 
-frg_status_t frg_cli_choice_destroy(
+void frg_cli_choice_destroy(
     frg_cli_choice_t** choice
 ) {
-    return frg_safe_free((void**)choice);
+    frg_safe_free((void**)choice);
 }
 
-frg_status_t frg_cli_choice_print_help(
+void frg_cli_choice_print_help(
     const frg_cli_choice_t* choice
 ) {
-    if (choice == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(choice);
 
-    frg_color_mode_t mode;
-    frg_check(frg_get_color_mode(&mode));
-
-    if (mode == FRG_COLOR_MODE_ENABLED) {
+    if (frg_color_mode_get() == FRG_COLOR_MODE_ENABLED) {
         printf("      • ");
     } else {
         printf("      - ");
     }
 
-    frg_set_color(stdout, FRG_COLOR_ID_BOLD);
+    frg_color_set(stdout, FRG_COLOR_ID_BOLD);
     printf("%s", choice->name);
-    frg_set_color(stdout, FRG_COLOR_ID_RESET);
+    frg_color_set(stdout, FRG_COLOR_ID_RESET);
     printf(" (%s)\n", choice->help);
-
-    return FRG_STATUS_OK;
 }

@@ -34,15 +34,13 @@ typedef struct {
     GHashTable* commands_by_name;
 } frg_cli_program_t;
 
-typedef frg_status_t (*frg_cli_program_callback_t)(
-    int* exit_status,
+typedef int (*frg_cli_program_callback_t)(
     const frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 );
 
-frg_status_t frg_cli_program_new(
-    frg_cli_program_t** program,
+frg_cli_program_t* frg_cli_program_new(
     const char* name,
     const char* binary_name,
     const char* pos_args_name,
@@ -54,37 +52,33 @@ frg_status_t frg_cli_program_new(
     frg_cli_program_callback_t callback
 );
 
-frg_status_t frg_cli_program_destroy(
-    frg_cli_program_t** program
-);
+void frg_cli_program_destroy(frg_cli_program_t** program);
 
-frg_status_t frg_cli_program_add_command(
+void frg_cli_program_add_command(
     frg_cli_program_t* program,
     frg_cli_command_t* command
 );
 
-frg_status_t frg_cli_program_get_command_by_name(
-    frg_cli_command_t** command,
+frg_cli_command_t* frg_cli_program_get_command_by_name(
     frg_cli_program_t* program,
     const char* name
 );
 
-frg_status_t frg_cli_program_print_help(
+bool frg_cli_program_print_help(
     const frg_cli_program_t* program,
     const char* command_name
 );
 
-frg_status_t frg_cli_program_print_version_long(
+void frg_cli_program_print_version_long(
     const frg_cli_program_t* program
 );
 
-frg_status_t frg_cli_program_print_version_short(
+void frg_cli_program_print_version_short(
     const frg_cli_program_t* program
 );
 
-frg_status_t frg_cli_program_parse(
-    int* exit_status,
-    frg_cli_program_t* program,
+int frg_cli_program_parse(
+    const frg_cli_program_t* program,
     int argc,
     const char** argv,
     void* user_data

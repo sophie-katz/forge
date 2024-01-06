@@ -19,7 +19,7 @@
 #include <forge/common/types.h>
 #include <stdbool.h>
 
-frg_status_t frg_log_set_minimum_severity(frg_log_severity_t severity);
+void frg_log_set_minimum_severity(frg_log_severity_t severity);
 
 typedef struct {
     bool emitted;
@@ -190,27 +190,6 @@ frg_log_result_t frg_log_fatal_error(
     ...
 );
 
-frg_log_result_t frg_log_fatal_error_in_source_file(
-    const char* source_path,
-    const char* format,
-    ...
-);
-
-frg_log_result_t frg_log_fatal_error_on_source_line(
-    const char* source_path,
-    frg_lineno_t source_lineno,
-    const char* format,
-    ...
-);
-
-frg_log_result_t frg_log_fatal_error_at_source_char(
-    const char* source_path,
-    frg_lineno_t source_lineno,
-    frg_columnno_t source_columnno,
-    const char* format,
-    ...
-);
-
 frg_log_result_t _frg_log_internal_error(
     const char* log_path,
     frg_lineno_t log_lineno,
@@ -220,62 +199,5 @@ frg_log_result_t _frg_log_internal_error(
 
 #define frg_log_internal_error(format, ...) \
     _frg_log_internal_error(__FILE__, __LINE__, (format), ##__VA_ARGS__)
-
-frg_log_result_t _frg_log_internal_error_in_source_file(
-    const char* log_path,
-    frg_lineno_t log_lineno,
-    const char* source_path,
-    const char* format,
-    ...
-);
-
-#define frg_log_internal_error_in_source_file(source_path, format, ...) \
-    _frg_log_internal_error_in_source_file( \
-        __FILE__, \
-        __LINE__, \
-        (source_path), \
-        (format), \
-        ##__VA_ARGS__ \
-    )
-
-frg_log_result_t _frg_log_internal_error_on_source_line(
-    const char* log_path,
-    frg_lineno_t log_lineno,
-    const char* source_path,
-    frg_lineno_t source_lineno,
-    const char* format,
-    ...
-);
-
-#define frg_log_internal_error_on_source_line(source_path, format, source_lineno, ...) \
-    _frg_log_internal_error_on_source_line( \
-        __FILE__, \
-        __LINE__, \
-        (source_path), \
-        (format), \
-        (source_lineno), \
-        ##__VA_ARGS__ \
-    )
-
-frg_log_result_t _frg_log_internal_error_at_source_char(
-    const char* log_path,
-    frg_lineno_t log_lineno,
-    const char* source_path,
-    frg_lineno_t source_lineno,
-    frg_columnno_t source_columnno,
-    const char* format,
-    ...
-);
-
-#define frg_log_internal_error_at_source_char(source_path, format, source_lineno, source_columnno, ...) \
-    _frg_log_internal_error_at_source_char( \
-        __FILE__, \
-        __LINE__, \
-        (source_path), \
-        (format), \
-        (source_lineno), \
-        (columnno), \
-        ##__VA_ARGS__ \
-    )
 
 bool frg_log_summary_if_errors(void);

@@ -16,12 +16,11 @@
 #include <forge/ast/ast.h>
 #include <forge/cli/program.h>
 #include <forge/config/commands/link.h>
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/log.h>
 #include <forge/config/config.h>
 
-frg_status_t _frg_config_commands_callback_version(
-    int* exit_status,
+int _frg_config_commands_callback_version(
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -29,49 +28,40 @@ frg_status_t _frg_config_commands_callback_version(
     const frg_config_t* config = (const frg_config_t*)user_data;
 
     if (config->version_short) {
-        return frg_cli_program_print_version_short((frg_cli_program_t*)program);
+        frg_cli_program_print_version_short((frg_cli_program_t*)program);
     } else {
-        return frg_cli_program_print_version_long((frg_cli_program_t*)program);
+        frg_cli_program_print_version_long((frg_cli_program_t*)program);
     }
+
+    return 0;
 }
 
-frg_status_t _frg_config_commands_option_callback_version_short(
+bool _frg_config_commands_option_callback_version_short(
     void* user_data,
     const char* value
 ) {
     frg_config_t* config = (frg_config_t*)user_data;
     config->version_short = true;
 
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t frg_config_commands_new_version(frg_cli_command_t** command) {
-    frg_check(
-        frg_cli_command_new(
-            command,
-            "version",
-            NULL,
-            "Display version information.",
-            _frg_config_commands_callback_version
-        )
+frg_cli_command_t* frg_config_commands_new_version() {
+    frg_cli_command_t* command = frg_cli_command_new(
+        "version",
+        NULL,
+        "Display version information.",
+        _frg_config_commands_callback_version
     );
 
-    frg_cli_option_t* option = NULL;
-    frg_check(
+    frg_cli_option_set_add_option(
+        command->option_set,
         frg_cli_option_new_flag(
-            &option,
             "short",
             "Use short format (<major>.<minor>.<patch>-<label>). This is intended for scripting use.",
             _frg_config_commands_option_callback_version_short
         )
     );
 
-    frg_check(
-        frg_cli_option_set_add_option(
-            (*command)->option_set,
-            option
-        )
-    );
-
-    return FRG_STATUS_OK;
+    return command;
 }

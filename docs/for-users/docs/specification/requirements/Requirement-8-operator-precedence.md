@@ -15,9 +15,12 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# FR-8: Operator precedence
+# Requirement-8: Operator precedence
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**Fully supported as of Forge version:** 0.1.0
 
 It defines the precedence, or order of operations, for the operators in the language.
 
@@ -64,4 +67,4 @@ x && y || z # the result is x and y, then that result or z
 
 ## Related
 
-- [FR-7: Operators](./FR-7-operators.md)
+- [Requirement-7: Operators](./Requirement-7-operators.md)

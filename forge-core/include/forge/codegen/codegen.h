@@ -23,23 +23,22 @@ extern "C" {
 
 typedef struct frg_llvm_module_t frg_llvm_module_t;
 
-frg_status_t frg_codegen(frg_llvm_module_t** module, frg_ast_t* ast);
+frg_llvm_module_t* frg_codegen(const frg_ast_t* ast);
 
-frg_status_t frg_codegen_call_function(
-    void* returned_value,
-    frg_llvm_module_t* module,
+void* frg_codegen_call_function(
+    const frg_llvm_module_t* llvm_module,
     const char* name,
-    GList* pos_args
+    const GList* pos_args
 );
 
-frg_status_t frg_codegen_write_object_file(
-    frg_llvm_module_t* module,
+frg_recoverable_status_t frg_codegen_write_object_file(
+    const frg_llvm_module_t* llvm_module,
     const char* path
 );
 
-frg_status_t frg_codegen_destroy_module(frg_llvm_module_t** module);
+void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module);
 
-frg_status_t frg_codegen_print_module(frg_llvm_module_t* module);
+void frg_codegen_print_module(const frg_llvm_module_t* llvm_module);
 
 #ifdef __cplusplus
 }

@@ -13,155 +13,99 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option_set.h>
 
-frg_status_t _frg_cli_get_short_name_index(int* index, char short_name) {
-    if (index == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (short_name >= 'a' && short_name <= 'z') {
-        *index = short_name - 'a';
-        return FRG_STATUS_OK;
+int _frg_cli_get_short_name_index(char short_name) {
+    if (short_name >= 'a' && short_name <= 'z') {
+        return short_name - 'a';
     } else if (short_name >= 'A' && short_name <= 'Z') {
-        *index = short_name - 'A' + 26;
-        return FRG_STATUS_OK;
+        return short_name - 'A' + 26;
     } else {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+        frg_die("invalid short name '%c' (%i)", short_name, short_name);
     }
 }
 
-frg_status_t frg_cli_option_set_new(
-    frg_cli_option_set_t** option_set
-) {
-    if (option_set == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*option_set != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+frg_cli_option_set_t* frg_cli_option_set_new() {
+    frg_cli_option_set_t* option_set = frg_safe_malloc(sizeof(frg_cli_option_set_t));
 
-    frg_check(
-        frg_safe_malloc((void**)option_set, sizeof(frg_cli_option_set_t))
-    );
+    option_set->options = NULL;
+    memset(option_set->options_by_short_name, 0, sizeof(option_set->options_by_short_name));
+    option_set->options_by_long_name = g_hash_table_new(g_str_hash, g_str_equal);
 
-    (*option_set)->options = NULL;
-    memset((*option_set)->options_by_short_name, 0, sizeof((*option_set)->options_by_short_name));
-    (*option_set)->options_by_long_name = g_hash_table_new(g_str_hash, g_str_equal);
-
-    return FRG_STATUS_OK;
+    return option_set;
 }
 
-frg_status_t frg_cli_option_set_destroy(
+void frg_cli_option_set_destroy(
     frg_cli_option_set_t** option_set
 ) {
-    if (option_set == NULL || *option_set == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(*option_set);
 
     for (GList* option = (*option_set)->options; option != NULL; option = option->next) {
-        frg_check(
-            frg_cli_option_destroy((frg_cli_option_t**)&option->data)
-        );
+        frg_cli_option_destroy((frg_cli_option_t**)&option->data);
     }
 
     g_list_free((*option_set)->options);
 
     g_hash_table_destroy((*option_set)->options_by_long_name);
 
-    return frg_safe_free((void**)option_set);
+    frg_safe_free((void**)option_set);
 }
 
-frg_status_t frg_cli_option_set_add_option(
+void frg_cli_option_set_add_option(
     frg_cli_option_set_t* option_set,
     frg_cli_option_t* option
 ) {
-    if (option_set == NULL || option == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(option);
 
     option_set->options = g_list_append(option_set->options, option);
 
     if (option->short_name != FRG_CLI_OPTION_SHORT_NAME_NULL) {
-        int index = 0;
-        frg_check(
-            _frg_cli_get_short_name_index(&index, option->short_name)
-        );
+        int index = _frg_cli_get_short_name_index(option->short_name);
 
         if (option_set->options_by_short_name[index] != NULL) {
-            return FRG_STATUS_ERROR_DUPLICATE;
+            frg_die("short option already set for '%c'", option->short_name);
         }
 
         option_set->options_by_short_name[index] = option;
     }
 
     if (g_hash_table_contains(option_set->options_by_long_name, option->long_name)) {
-        return FRG_STATUS_ERROR_DUPLICATE;
+        frg_die("long option already set for '%s'", option->long_name);
     } else {
         g_hash_table_insert(option_set->options_by_long_name, (void*)option->long_name, option);
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t frg_cli_option_set_get_option_by_long_name(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_set_get_option_by_long_name(
     frg_cli_option_set_t* option_set,
     const char* name
 ) {
-    if (option == NULL || option_set == NULL || name == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*option != NULL || name[0] == '-') {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (*name == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    }
+    frg_assert_pointer_non_null(option_set);
+    frg_assert_string_non_empty(name);
+    frg_assert_int_ne(name[0], '-');
 
-    *option = (frg_cli_option_t*)g_hash_table_lookup(option_set->options_by_long_name, name);
-
-    if (*option == NULL) {
-        return FRG_STATUS_ERROR_KEY_NOT_FOUND;
-    }
-
-    return FRG_STATUS_OK;
+    return (frg_cli_option_t*)g_hash_table_lookup(option_set->options_by_long_name, name);
 }
 
-frg_status_t frg_cli_option_set_get_option_by_short_name(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_set_get_option_by_short_name(
     frg_cli_option_set_t* option_set,
     char name
 ) {
-    if (option == NULL || option_set == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*option != NULL || !frg_cli_is_valid_short_name(name)) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_pointer_non_null(option_set);
+    frg_assert(frg_cli_is_valid_short_name(name));
 
-    int index = -1;
-    frg_check(
-        _frg_cli_get_short_name_index(&index, name)
-    );
-
-    if (index < 0 || index >= FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT) {
-        frg_log_internal_error("invalid index %i", index);
-        return FRG_STATUS_ERROR_KEY_NOT_FOUND;
-    }
-
-    *option = option_set->options_by_short_name[index];
-
-    if (*option == NULL) {
-        return FRG_STATUS_ERROR_KEY_NOT_FOUND;
-    }
-
-    return FRG_STATUS_OK;
+    return option_set->options_by_short_name[_frg_cli_get_short_name_index(name)];
 }
 
-frg_status_t frg_cli_option_set_print_help(
+void frg_cli_option_set_print_help(
     const frg_cli_option_set_t* option_set
 ) {
-    if (option_set == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option_set);
 
     bool first = true;
 
@@ -172,16 +116,12 @@ frg_status_t frg_cli_option_set_print_help(
             printf("\n");
         }
 
-        frg_check(
-            frg_cli_option_print_help((const frg_cli_option_t*)option->data)
-        );
+        frg_cli_option_print_help((const frg_cli_option_t*)option->data);
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t _frg_cli_option_set_parse_next_long(
-    frg_cli_option_set_t* option_set,
+bool _frg_cli_option_set_parse_next_long(
+    const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
     const char** argv,
@@ -189,28 +129,30 @@ frg_status_t _frg_cli_option_set_parse_next_long(
     const char* name
 ) {
     // Error checking
-    if (option_set == NULL || argi == NULL || argv == NULL || name == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*argi < 0 || argc <= 0 || *argi >= argc || argv[*argi] == NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (argv[*argi][0] == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (name[0] == 0) {
+    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(argv);
+    frg_assert_int_ge(*argi, 0);
+    frg_assert_int_gt(argc, 0);
+    frg_assert_int_lt(*argi, argc);
+    frg_assert_string_non_empty(argv[*argi]);
+    frg_assert_int_eq(argv[*argi][0], '-');
+    frg_assert_int_eq(argv[*argi][1], '-');
+    frg_assert_pointer_non_null(name);
+
+    if (name[0] == 0) {
         frg_log_fatal_error("invalid argument '--'");
-        return FRG_STATUS_CLI_ERROR;
+        return false;
     }
 
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_set_get_option_by_long_name(
-        &option,
-        option_set,
+    frg_cli_option_t* option = frg_cli_option_set_get_option_by_long_name(
+        (frg_cli_option_set_t*)option_set,
         name
     );
-    if (result == FRG_STATUS_ERROR_KEY_NOT_FOUND) {
+
+    if (option == NULL) {
         frg_log_fatal_error("unknown argument '--%s'", name);
-        return FRG_STATUS_CLI_ERROR;
-    } else {
-        frg_check(result);
+        return false;
     }
 
     return frg_cli_option_parse_next(
@@ -222,8 +164,8 @@ frg_status_t _frg_cli_option_set_parse_next_long(
     );
 }
 
-frg_status_t _frg_cli_option_set_parse_next_short(
-    frg_cli_option_set_t* option_set,
+bool _frg_cli_option_set_parse_next_short(
+    const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
     const char** argv,
@@ -231,25 +173,23 @@ frg_status_t _frg_cli_option_set_parse_next_short(
     char name
 ) {
     // Error checking
-    if (option_set == NULL || argi == NULL || argv == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*argi < 0 || argc <= 0 || *argi >= argc || argv[*argi] == NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (argv[*argi][0] == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    }
+    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(argv);
+    frg_assert_int_ge(*argi, 0);
+    frg_assert_int_gt(argc, 0);
+    frg_assert_int_lt(*argi, argc);
+    frg_assert_string_non_empty(argv[*argi]);
+    frg_assert_int_eq(argv[*argi][0], '-');
 
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_set_get_option_by_short_name(
-        &option,
-        option_set,
+    frg_cli_option_t* option = frg_cli_option_set_get_option_by_short_name(
+        (frg_cli_option_set_t*)option_set,
         name
     );
-    if (result == FRG_STATUS_ERROR_KEY_NOT_FOUND) {
+
+    if (option == NULL) {
         frg_log_fatal_error("unknown argument '--%s'", name);
-        return FRG_STATUS_CLI_ERROR;
-    } else {
-        frg_check(result);
+        return false;
     }
 
     return frg_cli_option_parse_next(
@@ -261,28 +201,22 @@ frg_status_t _frg_cli_option_set_parse_next_short(
     );
 }
 
-frg_status_t frg_cli_option_set_parse_next(
-    frg_cli_option_set_t* option_set,
+bool frg_cli_option_set_parse_next(
+    const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
     const char** argv,
     void* user_data
 ) {
     // Error checking
-    if (option_set == NULL || argi == NULL || argv == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*argi >= argc) {
-        return FRG_STATUS_CLI_NO_MORE_ARGUMENTS;
-    } else if (*argi < 0 || argc <= 0 || argv[*argi] == NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (argv[*argi][0] == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    }
-
-    // Handle positional arguments
-    if (argv[*argi][0] != '-') {
-        return FRG_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(argv);
+    frg_assert_int_ge(*argi, 0);
+    frg_assert_int_gt(argc, 0);
+    frg_assert_int_lt(*argi, argc);
+    frg_assert_string_non_empty(argv[*argi]);
+    frg_assert_int_eq(argv[*argi][0], '-');
 
     // Try to parse the next argument
     if (argv[*argi][1] == '-') {
@@ -296,6 +230,12 @@ frg_status_t frg_cli_option_set_parse_next(
             argv[*argi] + 2
         );
     } else {
+        if (argv[*argi][2] != 0) {
+            // It is a short argument like -abc
+            frg_log_fatal_error("short arguments cannot be combined");
+            return false;
+        }
+
         // It is a short argument like -a
         return _frg_cli_option_set_parse_next_short(
             option_set,

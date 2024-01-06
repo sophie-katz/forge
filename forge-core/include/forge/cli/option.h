@@ -28,7 +28,7 @@
 
 bool frg_cli_is_valid_short_name(char short_name);
 
-typedef frg_status_t (*frg_cli_option_callback_t)(void* user_data, const char* value);
+typedef bool (*frg_cli_option_callback_t)(void* user_data, const char* value);
 
 typedef struct {
     char short_name;
@@ -39,31 +39,27 @@ typedef struct {
     frg_cli_option_callback_t callback;
 } frg_cli_option_t;
 
-frg_status_t frg_cli_option_new_flag(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_flag(
     const char* long_name,
     const char* help,
     frg_cli_option_callback_t callback
 );
 
-frg_status_t frg_cli_option_new_flag_short(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_flag_short(
     char short_name,
     const char* long_name,
     const char* help,
     frg_cli_option_callback_t callback
 );
 
-frg_status_t frg_cli_option_new_argument(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_argument(
     const char* long_name,
     const char* value_name,
     const char* help,
     frg_cli_option_callback_t callback
 );
 
-frg_status_t frg_cli_option_new_argument_short(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_argument_short(
     char short_name,
     const char* long_name,
     const char* value_name,
@@ -71,16 +67,14 @@ frg_status_t frg_cli_option_new_argument_short(
     frg_cli_option_callback_t callback
 );
 
-frg_status_t frg_cli_option_new_choice(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_choice(
     const char* long_name,
     const char* value_name,
     const char* help,
     frg_cli_option_callback_t callback
 );
 
-frg_status_t frg_cli_option_new_choice_short(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_choice_short(
     char short_name,
     const char* long_name,
     const char* value_name,
@@ -88,20 +82,20 @@ frg_status_t frg_cli_option_new_choice_short(
     frg_cli_option_callback_t callback
 );
 
-frg_status_t frg_cli_option_destroy(
+void frg_cli_option_destroy(
     frg_cli_option_t** option
 );
 
-frg_status_t frg_cli_option_add_choice(
+void frg_cli_option_add_choice(
     frg_cli_option_t* option,
     frg_cli_choice_t* choice
 );
 
-frg_status_t frg_cli_option_print_help(
+void frg_cli_option_print_help(
     const frg_cli_option_t* option
 );
 
-frg_status_t frg_cli_option_parse_next(
+bool frg_cli_option_parse_next(
     const frg_cli_option_t* option,
     int* argi,
     int argc,

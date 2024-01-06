@@ -15,31 +15,18 @@
 
 #include <forge/config/config.h>
 #include <forge/common/log.h>
+#include <build_config.h>
 
 int main(int argc, char *argv[]) {
-    frg_config_t* config = NULL;
-    frg_status_t result = frg_config_new_default(&config);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create config: %s", frg_status_to_string(result));
+    frg_config_t* config = frg_config_new_default();
+
+    frg_recoverable_status_t result = frg_config_parse_env(config);
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
         return 1;
     }
 
-    result = frg_config_parse_env(config);
-    if (result == FRG_STATUS_CLI_ERROR) {
-        return 1;
-    } else if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to parse config from environment variables: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    int exit_status = 0;
-    result = frg_config_parse_cli(&exit_status, config, argc, (const char**)argv);
-    if (result == FRG_STATUS_CLI_ERROR) {
-        return 1;
-    } else if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to parse config from CLI: %s", frg_status_to_string(result));
-        return 1;
-    } else if (exit_status != 0) {
+    int exit_status = frg_config_parse_cli(config, argc, (const char**)argv);
+    if (exit_status != 0) {
         return exit_status;
     }
 

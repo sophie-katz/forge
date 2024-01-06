@@ -18,7 +18,6 @@
 #include <forge/common/enums.h>
 #include <glib.h>
 
-frg_status_t frg_config_commands_get_single_source_file(
-    const char** path,
-    GList* pos_args
+const char* frg_config_commands_get_single_source_file(
+    const GList* pos_args
 );

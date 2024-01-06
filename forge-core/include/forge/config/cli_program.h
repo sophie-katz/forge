@@ -19,4 +19,4 @@
 
 void frg_config_cli_program_banner(void);
 
-frg_status_t frg_config_cli_program_new(frg_cli_program_t** program);
+frg_cli_program_t* frg_config_cli_program_new();

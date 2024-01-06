@@ -19,119 +19,86 @@
 #include <llvm/IR/TypedPointerType.h>
 
 extern "C" {
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 
-frg_status_t _frg_generate_type(
-    llvm::Type** ir,
+llvm::Type* _frg_generate_type(
     llvm::LLVMContext& ctx,
     frg_ast_scope_t* scope,
     frg_ast_t* ast
 ) {
-    if (ir == NULL || scope == NULL || ast == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*ir != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(ast);
 
     llvm::Type* value = NULL;
-
+    
     switch (ast->id) {
         case FRG_AST_ID_TY_BOOL:
-            *ir = llvm::Type::getInt1Ty(ctx);
-            break;
+            return llvm::Type::getInt1Ty(ctx);
         case FRG_AST_ID_TY_U8:
         case FRG_AST_ID_TY_I8:
-            *ir = llvm::Type::getInt8Ty(ctx);
-            break;
+            return llvm::Type::getInt8Ty(ctx);
         case FRG_AST_ID_TY_U16:
         case FRG_AST_ID_TY_I16:
-            *ir = llvm::Type::getInt16Ty(ctx);
-            break;
+            return llvm::Type::getInt16Ty(ctx);
         case FRG_AST_ID_TY_U32:
         case FRG_AST_ID_TY_I32:
-            *ir = llvm::Type::getInt32Ty(ctx);
-            break;
+            return llvm::Type::getInt32Ty(ctx);
         case FRG_AST_ID_TY_U64:
         case FRG_AST_ID_TY_I64:
-            *ir = llvm::Type::getInt64Ty(ctx);
-            break;
+            return llvm::Type::getInt64Ty(ctx);
         case FRG_AST_ID_TY_F32:
-            *ir = llvm::Type::getFloatTy(ctx);
-            break;
+            return llvm::Type::getFloatTy(ctx);
         case FRG_AST_ID_TY_F64:
-            *ir = llvm::Type::getDoubleTy(ctx);
-            break;
+            return llvm::Type::getDoubleTy(ctx);
         case FRG_AST_ID_TY_SYMBOL:
-            frg_check(
-                frg_ast_scope_get_ir(
-                    (void**)ir,
-                    scope,
-                    ((frg_ast_ty_symbol_t*)ast)->name->str
-                )
+            return (llvm::Type*)frg_ast_scope_get_ir(
+                scope,
+                ((frg_ast_ty_symbol_t*)ast)->name->str
             );
-            break;
         case FRG_AST_ID_TY_POINTER:
-            frg_check(
-                _frg_generate_type(
-                    &value,
-                    ctx,
-                    scope,
-                    ((frg_ast_ty_pointer_t*)ast)->value
-                )
+            value = _frg_generate_type(
+                ctx,
+                scope,
+                ((frg_ast_ty_pointer_t*)ast)->value
             );
 
-            *ir = llvm::TypedPointerType::get(
+            return llvm::TypedPointerType::get(
                 value,
                 0
             );
-
-            break;
         default:
-            return FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE;
+            frg_die_unexpected_enum_value(ast->id);
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t _frg_generate_decl_fn(
+void _frg_generate_decl_fn(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
     llvm::Module& module,
     frg_ast_scope_t* scope,
     frg_ast_t* ast
 ) {
-    if (scope == NULL || ast == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(ast);
 
     frg_ast_decl_fn_t* decl_fn = frg_ast_try_cast_decl_fn(ast);
-    if (decl_fn == NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_pointer_non_null(decl_fn);
 
     // Generate return type
-    llvm::Type* return_ty = NULL;
-    frg_check(
-        _frg_generate_type(
-            &return_ty,
-            ctx,
-            scope,
-            decl_fn->ty->return_ty
-        )
+    llvm::Type* return_ty = _frg_generate_type(
+        ctx,
+        scope,
+        decl_fn->ty->return_ty
     );
 
     // Generate argument types
     std::vector<llvm::Type*> arg_types;
 
     for (GList* it = decl_fn->ty->args; it != NULL; it = it->next) {
-        llvm::Type* arg_ty = NULL;
-        frg_check(
-            _frg_generate_type(
-                &arg_ty,
-                ctx,
-                scope,
-                ((frg_ast_decl_prop_t*)((frg_ast_decl_fn_arg_t*)it->data)->prop)->type
-            )
+        llvm::Type* arg_ty = _frg_generate_type(
+            ctx,
+            scope,
+            ((frg_ast_decl_prop_t*)((frg_ast_decl_fn_arg_t*)it->data)->prop)->type
         );
 
         arg_types.push_back(arg_ty);
@@ -167,66 +134,52 @@ frg_status_t _frg_generate_decl_fn(
     llvm::BasicBlock* basic_block = llvm::BasicBlock::Create(ctx, "entry", fn);
     builder.SetInsertPoint(basic_block);
 
-    frg_check(
-        _frg_generate_stmt(
-            builder,
-            ctx,
-            scope,
-            decl_fn->body
-        )
+    _frg_generate_stmt(
+        builder,
+        ctx,
+        scope,
+        decl_fn->body
     );
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t _frg_generate_stmt(
+void _frg_generate_stmt(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
     frg_ast_scope_t* scope,
     frg_ast_t* ast
 ) {
-    if (scope == NULL || ast == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(ast);
 
     llvm::Value* value = NULL;
 
     switch (ast->id) {
         case FRG_AST_ID_STMT_RETURN:
-            frg_check(
-                _frg_generate_value(
-                    &value,
-                    ctx,
-                    scope,
-                    ((frg_ast_stmt_return_t*)ast)->value
-                )
+            value = _frg_generate_value(
+                ctx,
+                scope,
+                ((frg_ast_stmt_return_t*)ast)->value
             );
 
             builder.CreateRet(value);
 
             break;
         case FRG_AST_ID_STMT_BLOCK:
-            frg_check(
-                frg_ast_scope_push_frame(
-                    scope
-                )
+            frg_ast_scope_push_frame(
+                scope
             );
 
             for (GList* it = ((frg_ast_stmt_block_t*)ast)->stmts; it != NULL; it = it->next) {
-                frg_check(
-                    _frg_generate_stmt(
-                        builder,
-                        ctx,
-                        scope,
-                        (frg_ast_t*)it->data
-                    )
+                _frg_generate_stmt(
+                    builder,
+                    ctx,
+                    scope,
+                    (frg_ast_t*)it->data
                 );
             }
 
-            frg_check(
-                frg_ast_scope_pop_frame(
-                    scope
-                )
+            frg_ast_scope_pop_frame(
+                scope
             );
 
             break;
@@ -282,113 +235,99 @@ frg_status_t _frg_generate_stmt(
         case FRG_AST_ID_VALUE_EXP_ASSIGN:
         case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
         case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
-            frg_check(
-                _frg_generate_value(
-                    &value,
-                    ctx,
-                    scope,
-                    ast
-                )
+            value = _frg_generate_value(
+                ctx,
+                scope,
+                ast
             );
 
             builder.Insert(value);
 
             break;
         default:
-            return FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE;
+            frg_die_unexpected_enum_value(ast->id);
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t _frg_generate_value(
-    llvm::Value** ir,
+llvm::Value* _frg_generate_value(
     llvm::LLVMContext& ctx,
     frg_ast_scope_t* scope,
     frg_ast_t* ast
 ) {
-    if (ir == NULL || scope == NULL || ast == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*ir != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(ast);
 
     frg_ast_value_int_t* value_int = NULL;
 
     switch (ast->id) {
         case FRG_AST_ID_VALUE_TRUE:
-            *ir = llvm::ConstantInt::getTrue(ctx);
-            break;
+            return llvm::ConstantInt::getTrue(ctx);
         case FRG_AST_ID_VALUE_FALSE:
-            *ir = llvm::ConstantInt::getFalse(ctx);
-            break;
+            return llvm::ConstantInt::getFalse(ctx);
         case FRG_AST_ID_VALUE_INT:
             value_int = (frg_ast_value_int_t*)ast;
             switch (value_int->ty->id) {
                 case FRG_AST_ID_TY_U8:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt8Ty(ctx),
                         value_int->value.u8,
                         false
                     );
                     break;
                 case FRG_AST_ID_TY_U16:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt16Ty(ctx),
                         value_int->value.u16,
                         false
                     );
                     break;
                 case FRG_AST_ID_TY_U32:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt32Ty(ctx),
                         value_int->value.u32,
                         false
                     );
                     break;
                 case FRG_AST_ID_TY_U64:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt64Ty(ctx),
                         value_int->value.u64,
                         false
                     );
                     break;
                 case FRG_AST_ID_TY_I8:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt8Ty(ctx),
                         value_int->value.i8,
                         true
                     );
                     break;
                 case FRG_AST_ID_TY_I16:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt16Ty(ctx),
                         value_int->value.i16,
                         true
                     );
                     break;
                 case FRG_AST_ID_TY_I32:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt32Ty(ctx),
                         value_int->value.i32,
                         true
                     );
                     break;
                 case FRG_AST_ID_TY_I64:
-                    *ir = llvm::ConstantInt::get(
+                    return llvm::ConstantInt::get(
                         llvm::Type::getInt64Ty(ctx),
                         value_int->value.i64,
                         true
                     );
                     break;
                 default:
-                    return FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE;
+                    frg_die_unexpected_enum_value(value_int->ty->id);
             }
-            break;
         default:
-            return FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE;
+            frg_die_unexpected_enum_value(ast->id);
     }
-
-    return FRG_STATUS_OK;
 }
 }

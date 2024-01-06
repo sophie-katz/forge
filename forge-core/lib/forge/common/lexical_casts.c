@@ -14,7 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <ctype.h>
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/lexical_casts.h>
 #include <math.h>
 #include <utf8proc.h>
@@ -38,12 +38,9 @@ bool _frg_is_char_printable(frg_char_t value) {
     }
 }
 
-frg_status_t _frg_escape_char_unquoted(GString* escaped, frg_char_t value, char quote) {
-    if (escaped == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (quote != '"' && quote != '\'') {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+void _frg_escape_char_unquoted(GString* escaped, frg_char_t value, char quote) {
+    frg_assert_pointer_non_null(escaped);
+    frg_assert(quote == '"' || quote == '\'');
 
     if (value == quote) {
         g_string_append_printf(escaped, "\\%c", quote);
@@ -86,44 +83,29 @@ frg_status_t _frg_escape_char_unquoted(GString* escaped, frg_char_t value, char 
             g_string_append_printf(escaped, "\\u{%06x}", value);
         }
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t frg_escape_char(GString** escaped, frg_char_t value) {
-    if (escaped == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+GString* frg_escape_char(frg_char_t value) {
+    GString* escaped = g_string_new("'");
 
-    *escaped = g_string_new("'");
+    _frg_escape_char_unquoted(escaped, value, '\'');
 
-    if (*escaped == NULL) {
-        return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-    }
+    g_string_append_c(escaped, '\'');
 
-    frg_status_t result = _frg_escape_char_unquoted(*escaped, value, '\'');
-    if (result != FRG_STATUS_OK) {
-        g_string_free(*escaped, true);
-        frg_check(result);
-    }
-
-    g_string_append_c(*escaped, '\'');
-
-    return FRG_STATUS_OK;
+    return escaped;
 }
 
-frg_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped, char quote) {
-    if (value == NULL || escaped == NULL || *escaped == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (**escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    }
+frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped, char quote) {
+    frg_assert_pointer_non_null(value);
+    frg_assert_pointer_non_null(escaped);
+    frg_assert_string_non_empty(*escaped);
+    frg_assert(quote == '"' || quote == '\'');
 
     if (**escaped == '\\') {
         (*escaped)++;
 
         if (**escaped == 0) {
-            return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+            return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
         } else if (**escaped == 'a') {
             *value = '\a';
         } else if (**escaped == 'b') {
@@ -149,7 +131,7 @@ frg_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped
                 (*escaped)++;
 
                 if (**escaped == 0) {
-                    return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+                    return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
                 } else if (**escaped >= '0' && **escaped <= '9') {
                     *value = (*value << 4) | (**escaped - '0');
                 } else if (**escaped >= 'a' && **escaped <= 'f') {
@@ -157,7 +139,8 @@ frg_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped
                 } else if (**escaped >= 'A' && **escaped <= 'F') {
                     *value = (*value << 4) | (**escaped - 'A' + 10);
                 } else {
-                    return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+                    // TODO: Make error handling better here
+                    return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
         } else if (**escaped == 'u') {
@@ -166,16 +149,17 @@ frg_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped
             (*escaped)++;
 
             if (**escaped == 0) {
-                return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+                return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
             } else if (**escaped == '{') {
-                return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+                // TODO: Make error handling better here
+                return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
             }
 
             for (int digit = 0; digit < 6; digit++) {
                 (*escaped)++;
 
                 if (**escaped == 0) {
-                    return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+                    return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
                 } else if (**escaped == '}') {
                     break;
                 } else if (**escaped >= '0' && **escaped <= '9') {
@@ -185,100 +169,87 @@ frg_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped
                 } else if (**escaped >= 'A' && **escaped <= 'F') {
                     *value = (*value << 4) | (**escaped - 'A' + 10);
                 } else {
-                    return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+                    // TODO: Make error handling better here
+                    return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
         }
 
-        return FRG_STATUS_OK;
+        return FRG_RECOVERABLE_STATUS_OK;
     } else if (**escaped == quote) {
-        return FRG_STATUS_OK;
+        return FRG_RECOVERABLE_STATUS_OK;
     } else {
         *value = **escaped;
-        return FRG_STATUS_OK;
+        return FRG_RECOVERABLE_STATUS_OK;
     }
 }
 
-frg_status_t frg_unescape_char(frg_char_t* value, const char* escaped) {
-    if (value == NULL || escaped == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    }
+frg_recoverable_status_t frg_unescape_char(frg_char_t* value, const char* escaped) {
+    frg_assert_pointer_non_null(value);
+    frg_assert_string_non_empty(escaped);
 
     if (*escaped != '\'') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+        // TODO: Make error handling better here
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     escaped++;
 
     if (*escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    frg_check(
-        _frg_unescape_char_unquoted(value, &escaped, '\'')
-    );
+    frg_recoverable_status_t result = _frg_unescape_char_unquoted(value, &escaped, '\'');
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
+        return result;
+    }
 
     escaped++;
 
     if (*escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     } else if (*escaped != '\'') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+        // TODO: Make error handling better here
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
-    return FRG_STATUS_OK;
+    return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_status_t frg_escape_str(GString** escaped, const char* value) {
-    if (escaped == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+GString* frg_escape_str(const char* value) {
+    frg_assert_pointer_non_null(value);
 
-    *escaped = g_string_new("\"");
-
-    if (*escaped == NULL) {
-        return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-    }
+    GString* escaped = g_string_new("\"");
 
     for (const char* iter = value; *iter != 0; iter++) {
-        frg_status_t result = _frg_escape_char_unquoted(*escaped, *iter, '"');
-        if (result != FRG_STATUS_OK) {
-            g_string_free(*escaped, true);
-            frg_check(result);
-        }
+        _frg_escape_char_unquoted(escaped, *iter, '"');
     }
 
-    g_string_append_c(*escaped, '\"');
+    g_string_append_c(escaped, '\"');
 
-    return FRG_STATUS_OK;
+    return escaped;
 }
 
-frg_status_t frg_unescape_str(GString** value, const char* escaped) {
-    if (value == NULL || escaped == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*value != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (*escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+frg_recoverable_status_t frg_unescape_str(GString** value, const char* escaped) {
+    frg_assert_pointer_non_null(value);
+    frg_assert_pointer_non_null(escaped);
+
+    if (*escaped == 0) {
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     if (*escaped != '"') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+        // TODO: Make error handling better here
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     escaped++;
 
     if (*escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     *value = g_string_new(NULL);
-
-    if (*value == NULL) {
-        return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-    }
 
     while (*escaped != 0) {
         if (*escaped == '"') {
@@ -286,9 +257,10 @@ frg_status_t frg_unescape_str(GString** value, const char* escaped) {
         }
 
         frg_char_t current_character;
-        frg_check(
-            _frg_unescape_char_unquoted(&current_character, &escaped, '"')
-        );
+        frg_recoverable_status_t result = _frg_unescape_char_unquoted(&current_character, &escaped, '"');
+        if (result != FRG_RECOVERABLE_STATUS_OK) {
+            return result;
+        }
 
         g_string_append_c(*value, current_character);
 
@@ -296,43 +268,35 @@ frg_status_t frg_unescape_str(GString** value, const char* escaped) {
     }
 
     if (*escaped == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     } else if (*escaped != '"') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+        // TODO: Make error handling better here
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
-    return FRG_STATUS_OK;
+    return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_status_t frg_uint_to_str(
-    GString** str,
+GString* frg_uint_to_str(
     uint64_t value,
     uint32_t base
 ) {
-    if (str == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*str != NULL || (!(base == 2 || base == 8 || base == 10 || base == 16))) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert(base == 2 || base == 8 || base == 10 || base == 16);
 
-    *str = g_string_new(NULL);
-
-    if (*str == NULL) {
-        return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-    }
+    GString* str = g_string_new(NULL);
 
     if (base == 2) {
-        g_string_append(*str, "0b");
+        g_string_append(str, "0b");
     } else if (base == 8) {
-        g_string_append(*str, "0o");
+        g_string_append(str, "0o");
     } else if (base == 16) {
-        g_string_append(*str, "0x");
+        g_string_append(str, "0x");
     }
 
     if (value == 0) {
-        g_string_append_c(*str, '0');
+        g_string_append_c(str, '0');
     } else {
-        gchar* after_prefix = (*str)->str + (*str)->len;
+        gchar* after_prefix = str->str + str->len;
         uint64_t current_value = value;
 
         while (current_value != 0) {
@@ -340,26 +304,27 @@ frg_status_t frg_uint_to_str(
             current_value /= base;
 
             if (digit < 10) {
-                g_string_append_c(*str, '0' + digit);
+                g_string_append_c(str, '0' + digit);
             } else {
-                g_string_append_c(*str, 'a' + digit - 10);
+                g_string_append_c(str, 'a' + digit - 10);
             }
         }
 
         g_strreverse(after_prefix);
     }
 
-    return FRG_STATUS_OK;
+    return str;
 }
 
-frg_status_t _frg_get_base_prefix(
-    uint32_t* base,
+frg_recoverable_status_t _frg_get_base_prefix(
+    frg_int_base_t* base,
     const char** iter
 ) {
-    if (base == NULL || iter == NULL || *iter == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (**iter == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+    frg_assert_pointer_non_null(base);
+    frg_assert_pointer_non_null(iter);
+
+    if (**iter == 0) {
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     const char* iter_original = *iter;
@@ -370,7 +335,7 @@ frg_status_t _frg_get_base_prefix(
         if (**iter == 0) {
             *base = 10;
             *iter = iter_original;
-            return FRG_STATUS_OK;
+            return FRG_RECOVERABLE_STATUS_OK;
         } else if (**iter == 'b') {
             *base = 2;
             (*iter)++;
@@ -387,28 +352,25 @@ frg_status_t _frg_get_base_prefix(
         *base = 10;
     }
 
-    return FRG_STATUS_OK;
+    return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_status_t _frg_get_next_digit(
+frg_recoverable_status_t _frg_get_next_digit(
     uint32_t* value,
-    uint32_t base,
+    frg_int_base_t base,
     const char** iter
 ) {
-    if (value == NULL || iter == NULL || *iter == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (**iter == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    } else if (!(base == 2 || base == 8 || base == 10 || base == 16)) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_pointer_non_null(value);
+    frg_assert(base == 2 || base == 8 || base == 10 || base == 16);
+    frg_assert_pointer_non_null(iter);
+    frg_assert_pointer_non_null(*iter);
 
     while (**iter != 0 && **iter == '_') {
         (*iter)++;
     }
 
     if (**iter == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     if (**iter >= '0' && **iter <= '9') {
@@ -418,249 +380,254 @@ frg_status_t _frg_get_next_digit(
     } else if (**iter >= 'A' && **iter <= 'Z') {
         *value = **iter - 'A' + 10;
     } else {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+        // TODO: Make error handling better here
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     if (*value >= base) {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+        // TODO: Make error handling better here
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     (*iter)++;
 
-    return FRG_STATUS_OK;
+    return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_status_t frg_str_to_uint(
+frg_recoverable_status_t frg_str_to_uint(
     uint64_t* value,
     const char* str
 ) {
-    if (value == NULL || str == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+    frg_assert_pointer_non_null(value);
+    frg_assert_pointer_non_null(str);
+
+    if (*str == 0) {
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     *value = 0;
 
     uint32_t base = 10;
 
-    frg_check(
-        _frg_get_base_prefix(&base, &str)
-    );
+    frg_recoverable_status_t result = _frg_get_base_prefix(&base, &str);
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
+        return result;
+    }
 
     if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+        return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     while (*str != 0) {
         uint32_t digit;
-        frg_check(
-            _frg_get_next_digit(&digit, base, &str)
-        );
+        frg_recoverable_status_t result = _frg_get_next_digit(&digit, base, &str);
+        if (result != FRG_RECOVERABLE_STATUS_OK) {
+            return result;
+        }
 
         *value = (*value * base) + digit;
     }
 
-    return FRG_STATUS_OK;
+    return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_status_t frg_float_to_str(
-    GString** str,
-    frg_f64_t value,
-    uint32_t base
-) {
-    if (str == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*str != NULL || (!(base == 2 || base == 8 || base == 10 || base == 16))) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+// frg_status_t frg_float_to_str(
+//     GString** str,
+//     frg_f64_t value,
+//     uint32_t base
+// ) {
+//     if (str == NULL) {
+//         return FRG_STATUS_ERROR_NULL_ARGUMENT;
+//     } else if (*str != NULL || (!(base == 2 || base == 8 || base == 10 || base == 16))) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+//     }
 
-    *str = g_string_new(NULL);
+//     *str = g_string_new(NULL);
 
-    if (*str == NULL) {
-        return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-    }
+//     if (*str == NULL) {
+//         return FRG_STATUS_ERROR_OUT_OF_MEMORY;
+//     }
 
-    if (base == 2) {
-        g_string_append(*str, "0b");
-    } else if (base == 8) {
-        g_string_append(*str, "0o");
-    } else if (base == 16) {
-        g_string_append(*str, "0x");
-    }
+//     if (base == 2) {
+//         g_string_append(*str, "0b");
+//     } else if (base == 8) {
+//         g_string_append(*str, "0o");
+//     } else if (base == 16) {
+//         g_string_append(*str, "0x");
+//     }
 
-    double integer_part = floor(value);
-    double fractional_part = value - integer_part;
+//     double integer_part = floor(value);
+//     double fractional_part = value - integer_part;
 
-    if (integer_part == 0.0) {
-        g_string_append_c(*str, '0');
-    } else {
-        gchar* after_prefix = (*str)->str + (*str)->len;
+//     if (integer_part == 0.0) {
+//         g_string_append_c(*str, '0');
+//     } else {
+//         gchar* after_prefix = (*str)->str + (*str)->len;
 
-        while (integer_part != 0.0) {
-            uint32_t digit = (uint32_t)fmod(integer_part, base);
+//         while (integer_part != 0.0) {
+//             uint32_t digit = (uint32_t)fmod(integer_part, base);
 
-            if (digit < 10) {
-                g_string_append_c(*str, '0' + digit);
-            } else {
-                g_string_append_c(*str, 'a' + digit - 10);
-            }
+//             if (digit < 10) {
+//                 g_string_append_c(*str, '0' + digit);
+//             } else {
+//                 g_string_append_c(*str, 'a' + digit - 10);
+//             }
 
-            integer_part = floor(integer_part / base);
-        }
+//             integer_part = floor(integer_part / base);
+//         }
 
-        g_strreverse(after_prefix);
-    }
+//         g_strreverse(after_prefix);
+//     }
 
-    g_string_append_c(*str, '.');
+//     g_string_append_c(*str, '.');
 
-    if (fractional_part == 0.0) {
-        g_string_append_c(*str, '0');
-    } else {
-        while (fractional_part != 0.0) {
-            uint32_t digit = (uint32_t)fmod(fractional_part * base, base);
+//     if (fractional_part == 0.0) {
+//         g_string_append_c(*str, '0');
+//     } else {
+//         while (fractional_part != 0.0) {
+//             uint32_t digit = (uint32_t)fmod(fractional_part * base, base);
 
-            if (digit < 10) {
-                g_string_append_c(*str, '0' + digit);
-            } else {
-                g_string_append_c(*str, 'a' + digit - 10);
-            }
+//             if (digit < 10) {
+//                 g_string_append_c(*str, '0' + digit);
+//             } else {
+//                 g_string_append_c(*str, 'a' + digit - 10);
+//             }
 
-            fractional_part *= base;
-            fractional_part -= floor(fractional_part);
-        }
-    }
+//             fractional_part *= base;
+//             fractional_part -= floor(fractional_part);
+//         }
+//     }
 
-    return FRG_STATUS_OK;
-}
+//     return FRG_STATUS_OK;
+// }
 
-frg_status_t frg_str_to_float(
-    frg_f64_t* value,
-    const char* str
-) {
-    if (value == NULL || str == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    }
+// frg_status_t frg_str_to_float(
+//     frg_f64_t* value,
+//     const char* str
+// ) {
+//     if (value == NULL || str == NULL) {
+//         return FRG_STATUS_ERROR_NULL_ARGUMENT;
+//     } else if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     }
 
-    uint32_t base = 10;
+//     uint32_t base = 10;
 
-    frg_check(
-        _frg_get_base_prefix(&base, &str)
-    );
+//     frg_check(
+//         _frg_get_base_prefix(&base, &str)
+//     );
 
-    if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    }
+//     if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     }
 
-    double integer_part = 0.0;
-    double fractional_part = 0.0;
-    double fractional_factor = 1.0;
+//     double integer_part = 0.0;
+//     double fractional_part = 0.0;
+//     double fractional_factor = 1.0;
 
-    while (*str != 0) {
-        if (*str == '.') {
-            break;
-        }
+//     while (*str != 0) {
+//         if (*str == '.') {
+//             break;
+//         }
 
-        uint32_t digit;
-        frg_check(
-            _frg_get_next_digit(&digit, base, &str)
-        );
+//         uint32_t digit;
+//         frg_check(
+//             _frg_get_next_digit(&digit, base, &str)
+//         );
 
-        integer_part = (integer_part * base) + digit;
-    }
+//         integer_part = (integer_part * base) + digit;
+//     }
 
-    if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    } else if (*str != '.') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
-    }
+//     if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     } else if (*str != '.') {
+//         return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+//     }
 
-    str++;
+//     str++;
 
-    if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    }
+//     if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     }
 
-    while (*str != 0) {
-        if (*str == '.') {
-            break;
-        }
+//     while (*str != 0) {
+//         if (*str == '.') {
+//             break;
+//         }
 
-        uint32_t digit;
-        frg_check(
-            _frg_get_next_digit(&digit, base, &str)
-        );
+//         uint32_t digit;
+//         frg_check(
+//             _frg_get_next_digit(&digit, base, &str)
+//         );
 
-        fractional_part = (fractional_part * base) + digit;
-        fractional_factor /= base;
-    }
+//         fractional_part = (fractional_part * base) + digit;
+//         fractional_factor /= base;
+//     }
 
-    if (*str == 0) {
-        *value = integer_part + fractional_part * fractional_factor;
-        return FRG_STATUS_OK;
-    } else if (*str != 'e') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
-    }
+//     if (*str == 0) {
+//         *value = integer_part + fractional_part * fractional_factor;
+//         return FRG_STATUS_OK;
+//     } else if (*str != 'e') {
+//         return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+//     }
 
-    str++;
+//     str++;
 
-    double exponent_integer_factor = 1.0;
-    double exponent_integer_part = 0.0;
-    double exponent_fractional_part = 0.0;
-    double exponent_fractional_factor = 1.0;
+//     double exponent_integer_factor = 1.0;
+//     double exponent_integer_part = 0.0;
+//     double exponent_fractional_part = 0.0;
+//     double exponent_fractional_factor = 1.0;
 
-    if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    } else if (*str == '-') {
-        exponent_integer_factor = -1.0;
-        str++;
-    }
+//     if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     } else if (*str == '-') {
+//         exponent_integer_factor = -1.0;
+//         str++;
+//     }
 
-    while (*str != 0) {
-        if (*str == '.') {
-            break;
-        }
+//     while (*str != 0) {
+//         if (*str == '.') {
+//             break;
+//         }
 
-        uint32_t digit;
-        frg_check(
-            _frg_get_next_digit(&digit, base, &str)
-        );
+//         uint32_t digit;
+//         frg_check(
+//             _frg_get_next_digit(&digit, base, &str)
+//         );
 
-        exponent_integer_part = (exponent_integer_part * base) + digit;
-    }
+//         exponent_integer_part = (exponent_integer_part * base) + digit;
+//     }
 
-    if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    } else if (*str != '.') {
-        return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
-    }
+//     if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     } else if (*str != '.') {
+//         return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
+//     }
 
-    str++;
+//     str++;
 
-    if (*str == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    }
+//     if (*str == 0) {
+//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
+//     }
 
-    while (*str != 0) {
-        if (*str == '.') {
-            break;
-        }
+//     while (*str != 0) {
+//         if (*str == '.') {
+//             break;
+//         }
 
-        uint32_t digit;
-        frg_check(
-            _frg_get_next_digit(&digit, base, &str)
-        );
+//         uint32_t digit;
+//         frg_check(
+//             _frg_get_next_digit(&digit, base, &str)
+//         );
 
-        exponent_fractional_part = (exponent_fractional_part * base) + digit;
-        exponent_fractional_factor /= base;
-    }
+//         exponent_fractional_part = (exponent_fractional_part * base) + digit;
+//         exponent_fractional_factor /= base;
+//     }
 
-    *value = pow(
-        integer_part + fractional_part * fractional_factor,
-        exponent_integer_part * exponent_integer_factor + exponent_fractional_part * exponent_fractional_factor
-    );
+//     *value = pow(
+//         integer_part + fractional_part * fractional_factor,
+//         exponent_integer_part * exponent_integer_factor + exponent_fractional_part * exponent_fractional_factor
+//     );
 
-    return FRG_STATUS_OK;
-}
+//     return FRG_STATUS_OK;
+// }

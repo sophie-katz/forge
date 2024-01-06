@@ -17,12 +17,11 @@
 #include <forge/cli/program.h>
 #include <forge/config/commands/link.h>
 #include <forge/config/cli_program.h>
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/config/config.h>
 #include <forge/common/log.h>
 
-frg_status_t _frg_config_commands_callback_help(
-    int* exit_status,
+int _frg_config_commands_callback_help(
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -30,22 +29,23 @@ frg_status_t _frg_config_commands_callback_help(
     frg_config_cli_program_banner();
 
     if (pos_args == NULL) {
-        return frg_cli_program_print_help((frg_cli_program_t*)program, NULL);
+        if (!frg_cli_program_print_help((frg_cli_program_t*)program, NULL)) {
+            return 1;
+        }
     } else {
-        return frg_cli_program_print_help((frg_cli_program_t*)program, (const char*)pos_args->data);
+        if (!frg_cli_program_print_help((frg_cli_program_t*)program, (const char*)pos_args->data)) {
+            return 1;
+        }
     }
+
+    return 0;
 }
 
-frg_status_t frg_config_commands_new_help(frg_cli_command_t** command) {
-    frg_check(
-        frg_cli_command_new(
-            command,
-            "help",
-            NULL,
-            "Display help information. Use 'help <command>' for help with that command.",
-            _frg_config_commands_callback_help
-        )
+frg_cli_command_t* frg_config_commands_new_help() {
+    return frg_cli_command_new(
+        "help",
+        NULL,
+        "Display help information. Use 'help <command>' for help with that command.",
+        _frg_config_commands_callback_help
     );
-
-    return FRG_STATUS_OK;
 }

@@ -15,6 +15,14 @@
 
 #include <forge/ast/type_resolution.h>
 
+frg_status_t frg_ast_resolve_decl_type(
+    frg_ast_t** type,
+    frg_ast_scope_t* scope,
+    frg_ast_t* decl
+) {
+    
+}
+
 frg_status_t frg_ast_resolve_value_type(
     frg_ast_t** type,
     frg_ast_scope_t* scope,

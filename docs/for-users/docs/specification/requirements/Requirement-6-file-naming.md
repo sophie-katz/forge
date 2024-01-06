@@ -15,9 +15,12 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# FR-6: File naming
+# Requirement-6: File naming
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**Fully supported as of Forge version:** In progress
 
 ## Description
 

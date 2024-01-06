@@ -20,8 +20,7 @@
 
 struct frg_cli_program_t;
 
-typedef frg_status_t (*frg_cli_command_callback_t)(
-    int* exit_status,
+typedef int (*frg_cli_command_callback_t)(
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -35,18 +34,17 @@ typedef struct {
     frg_cli_command_callback_t callback;
 } frg_cli_command_t;
 
-frg_status_t frg_cli_command_new(
-    frg_cli_command_t** command,
+frg_cli_command_t* frg_cli_command_new(
     const char* name,
     const char* pos_args_name,
     const char* help,
     frg_cli_command_callback_t callback
 );
 
-frg_status_t frg_cli_command_destroy(
+void frg_cli_command_destroy(
     frg_cli_command_t** command
 );
 
-frg_status_t frg_cli_command_print_help(
+void frg_cli_command_print_help(
     const frg_cli_command_t* command
 );

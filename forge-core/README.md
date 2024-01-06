@@ -22,11 +22,17 @@ This is the reference implementation of Forge. It follows the specification in t
 - [Getting started](#getting-started)
 - [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)
 
-## Getting started
+## System setup
+
+### VS Code dockerized development environment (recommended)
+
+Follow [these instructions](../docs/for-developers/guides/vscode-dockerized-development-environment.md) to get the Dockerized development environment up and running in VS Code. This will automatically have all the dependencies installed.
+
+### Manual setup
 
 To build the Forge compiler you need these installed on your system:
 
-- [Meson](https://mesonbuild.com/)
+- [Python 3](https://www.python.org/)
 - [CMake](https://cmake.org/)
 - [Glib 2.0](https://docs.gtk.org/glib/)
 - [LLVM](https://llvm.org/)
@@ -34,7 +40,7 @@ To build the Forge compiler you need these installed on your system:
     - [macOS package](https://formulae.brew.sh/formula/llvm)
 - [Doxygen](https://www.doxygen.nl/index.html) (only needed for building API documentation)
 
-Once these are all installed, run:
+## Building
 
 ```shell
 # Clone this repository
@@ -44,6 +50,11 @@ git clone https://github.com/sophie-katz/forge.git
 cd forge
 git submodule update --init
 
+# Install Python dependencies
+python3 -m venv .venv
+. .venv/bin/activate
+pip3 install -r requirements.txt
+
 # Build the Core
 cd forge-core
 meson setup build
@@ -52,14 +63,8 @@ meson compile -C build
 # Run tests
 meson test -C build
 
-# Run the compiler
-./build/forge-compiler --help
-
-# Run the interpreter
-./build/forge-interpreter --help
-
-# Build the documentation (to build/doxygen)
-doxygen
+# Run Forge
+./build/forge --help
 ```
 
 ## Building in watch mode

@@ -21,19 +21,19 @@ void setUp(void) {}
 void tearDown(void) {}
 
 void test_stdout(void) {
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_validate_console_stream(stdout));
+    TEST_ASSERT_TRUE(frg_is_console_stream(stdout));
 }
 
 void test_stderr(void) {
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, frg_validate_console_stream(stderr));
+    TEST_ASSERT_TRUE(frg_is_console_stream(stderr));
 }
 
 void test_stdin(void) {
-    TEST_ASSERT_EQUAL(FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE, frg_validate_console_stream(stdin));
+    TEST_ASSERT_FALSE(frg_is_console_stream(stdin));
 }
 
 void test_null(void) {
-    TEST_ASSERT_EQUAL(FRG_STATUS_ERROR_NULL_ARGUMENT, frg_validate_console_stream(NULL));
+    TEST_ASSERT_FALSE(frg_is_console_stream(NULL));
 }
 
 int main(void) {

@@ -33,45 +33,31 @@ struct frg_llvm_module_t {
 
 extern "C" {
 #include <forge/codegen/codegen.h>
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
 
-frg_status_t frg_codegen(frg_llvm_module_t** module, frg_ast_t* ast) {
-    if (module == NULL || ast == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*module != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
+    frg_assert_pointer_non_null(ast);
 
-    frg_check(
-        frg_safe_malloc(
-            (void**) module,
-            sizeof(frg_llvm_module_t)
-        )
+    frg_llvm_module_t* llvm_module = (frg_llvm_module_t*)frg_safe_malloc(
+        sizeof(frg_llvm_module_t)
     );
 
-    (*module)->llvm_ctx = new llvm::LLVMContext();
-    (*module)->llvm_builder = new llvm::IRBuilder<>(*(*module)->llvm_ctx);
-    (*module)->llvm_module = new llvm::Module("forge", *(*module)->llvm_ctx);
+    llvm_module->llvm_ctx = new llvm::LLVMContext();
+    llvm_module->llvm_builder = new llvm::IRBuilder<>(*llvm_module->llvm_ctx);
+    llvm_module->llvm_module = new llvm::Module("forge", *llvm_module->llvm_ctx);
 
-    frg_ast_decl_block_t* decl_block = frg_ast_try_cast_decl_block(ast);
+    frg_ast_decl_block_t* decl_block = frg_ast_try_cast_decl_block((frg_ast_t*)ast);
     if (decl_block == NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+        frg_die("can only generate machine code from a declaration block");
     }
 
-    frg_ast_scope_t* scope = NULL;
-    frg_check(
-        frg_ast_scope_new(
-            &scope
-        )
-    );
+    frg_ast_scope_t* scope = frg_ast_scope_new();
 
-    frg_check(
-        frg_ast_scope_load_decl_block(
-            scope,
-            decl_block
-        )
+    frg_ast_scope_load_decl_block(
+        scope,
+        decl_block
     );
 
     for (GList* it = decl_block->decls; it != NULL; it = it->next) {
@@ -79,35 +65,32 @@ frg_status_t frg_codegen(frg_llvm_module_t** module, frg_ast_t* ast) {
 
         switch (decl->id) {
             case FRG_AST_ID_DECL_FN:
-                frg_check(
-                    _frg_generate_decl_fn(
-                        *(*module)->llvm_builder,
-                        *(*module)->llvm_ctx,
-                        *(*module)->llvm_module,
-                        scope,
-                        decl
-                    )
+                _frg_generate_decl_fn(
+                    *llvm_module->llvm_builder,
+                    *llvm_module->llvm_ctx,
+                    *llvm_module->llvm_module,
+                    scope,
+                    decl
                 );
                 break;
             default:
-                return FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE;
+                frg_die_unexpected_enum_value(decl->id);
         }
     }
 
-    return FRG_STATUS_OK;
+    return llvm_module;
 }
 
-frg_status_t frg_codegen_call_function(
-    void* returned_value,
-    frg_llvm_module_t* module,
+void* frg_codegen_call_function(
+    const frg_llvm_module_t* module,
     const char* name,
-    GList* pos_args
+    const GList* pos_args
 ) {
-    return FRG_STATUS_OK;
+    return NULL;
 }
 
-frg_status_t frg_codegen_write_object_file(
-    frg_llvm_module_t* module,
+frg_recoverable_status_t frg_codegen_write_object_file(
+    const frg_llvm_module_t* llvm_module,
     const char* path
 ) {
     std::string target_triple = llvm::sys::getDefaultTargetTriple();
@@ -132,7 +115,7 @@ frg_status_t frg_codegen_write_object_file(
             target_triple.c_str(),
             error_message.c_str()
         );
-        return FRG_STATUS_OK;
+        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
 
     llvm::TargetOptions target_options;
@@ -144,8 +127,8 @@ frg_status_t frg_codegen_write_object_file(
         llvm::Reloc::PIC_
     );
 
-    module->llvm_module->setDataLayout(target_machine->createDataLayout());
-    module->llvm_module->setTargetTriple(target_triple);
+    llvm_module->llvm_module->setDataLayout(target_machine->createDataLayout());
+    llvm_module->llvm_module->setTargetTriple(target_triple);
 
     std::error_code error_code;
     llvm::raw_fd_ostream stream(
@@ -160,7 +143,7 @@ frg_status_t frg_codegen_write_object_file(
             path,
             error_code.message().c_str()
         );
-        return FRG_STATUS_OK;
+        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
 
     llvm::legacy::PassManager pass;
@@ -173,38 +156,29 @@ frg_status_t frg_codegen_write_object_file(
         frg_log_fatal_error(
             "target machine cannot emit an object file"
         );
-        return FRG_STATUS_OK;
+        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
-    
-    pass.run(*module->llvm_module);
+
+    pass.run(*llvm_module->llvm_module);
     stream.flush();
 
-    return FRG_STATUS_OK;
+    return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_status_t frg_codegen_destroy_module(frg_llvm_module_t** module) {
-    if (module == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*module == NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module) {
+    frg_assert_pointer_non_null(llvm_module);
+    frg_assert_pointer_non_null(*llvm_module);
 
-    delete (*module)->llvm_module;
-    delete (*module)->llvm_builder;
-    delete (*module)->llvm_ctx;
+    delete (*llvm_module)->llvm_module;
+    delete (*llvm_module)->llvm_builder;
+    delete (*llvm_module)->llvm_ctx;
 
-    frg_safe_free((void**) module);
-
-    return FRG_STATUS_OK;
+    frg_safe_free((void**) llvm_module);
 }
 
-frg_status_t frg_codegen_print_module(frg_llvm_module_t* module) {
-    if (module == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+void frg_codegen_print_module(const frg_llvm_module_t* llvm_module) {
+    frg_assert_pointer_non_null(llvm_module);
 
-    module->llvm_module->print(llvm::outs(), nullptr);
-
-    return FRG_STATUS_OK;
+    llvm_module->llvm_module->print(llvm::outs(), nullptr);
 }
 }

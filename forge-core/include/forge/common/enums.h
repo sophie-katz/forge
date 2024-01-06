@@ -19,37 +19,19 @@
 #include <stdio.h>
 #include <forge/common/types.h>
 
-/// A status result to be returned by functions in Forge
+/// \brief A status result to be returned by functions in Forge to help handle recoverable
+///        errors.
 typedef enum {
-    /// Function completed successfully
-    FRG_STATUS_OK,
-    /// An unexpected null argument was passed into the function
-    FRG_STATUS_ERROR_NULL_ARGUMENT,
-    /// An unexpected value was passed into the function
-    FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE,
-    /// An unexpected enum variant was used
-    FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE,
-    /// A string was unexpectedly empty
-    FRG_STATUS_ERROR_EMPTY_STRING,
-    /// \brief A file is being accessed which has its error bit set
-    ///
-    /// This is detected with \c ferror
-    FRG_STATUS_ERROR_FILE_ERROR_BIT_SET,
-    /// A memory allocation failed
-    FRG_STATUS_ERROR_OUT_OF_MEMORY,
-    /// Parsing reached out of text unexpectedly
-    FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
-    /// An unexpected character was encountered while parsing text
-    FRG_STATUS_ERROR_UNEXPECTED_CHARACTER,
-    /// A duplicate entry or object was found
-    FRG_STATUS_ERROR_DUPLICATE,
-    FRG_STATUS_ERROR_KEY_NOT_FOUND,
-    FRG_STATUS_CLI_NO_MORE_ARGUMENTS,
-    FRG_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT,
-    FRG_STATUS_CLI_ERROR
-} frg_status_t;
+    FRG_RECOVERABLE_STATUS_OK,
+    FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED,
+    FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
+    FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER,
+    FRG_RECOVERABLE_STATUS_CLI_NO_MORE_ARGUMENTS,
+    FRG_RECOVERABLE_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT,
+    FRG_RECOVERABLE_STATUS_CLI_DID_NOT_PARSE_ARGUMENT,
+} frg_recoverable_status_t;
 
-const char* frg_status_to_string(frg_status_t status);
+const char* frg_recoverable_status_to_string(frg_recoverable_status_t status);
 
 /// A mode for whether or not to use color for console output
 typedef enum {
@@ -104,6 +86,7 @@ typedef enum {
     FRG_EXEC_TYPE_ID_BOOL,
 } frg_exec_type_id_t;
 
+/// @brief The list of possible types of AST nodes.
 typedef enum {
     FRG_AST_ID_TY_BOOL,
     FRG_AST_ID_TY_U8,

@@ -19,9 +19,24 @@ not, see <https://www.gnu.org/licenses/>.
 Follow any instructions prefixed with 'CHANGE:' and then remove the comments (including this one).
 -->
 
-# FR-4: String literals
+# Requirement-4: String literals
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**Fully supported as of Forge version:** In progress
+
+## Subitems
+
+This requirement contains subitems:
+
+1. Escape codes
+2. Hex byte escape codes
+3. Unicode codepoint escape codes
+
+See below for details on what these subitems are. They are used to help describe the progress of implementation.
+
+## Summary
 
 String literals which represent all possible string values.
 
@@ -59,7 +74,7 @@ String literals are prefixed and suffixed by `"` characters. All characters in t
 - Printable UTF-8 characters
 - `\` followed by any ASCII character, including `\` and `"`
 
-### Escape codes
+### Escape codes (subitem 1)
 
 The following escape codes are supported:
 
@@ -81,9 +96,9 @@ The following escape codes are supported:
 
 - `\0` for a null byte (decimal 0)
 
-- `\xHH` where `H` represents a hexadecimal digit (exactly 2 digits must be used)
+- `\xHH` where `H` represents a hexadecimal digit (subitem 2, exactly 2 digits must be used)
 
-- `\u{HHHHHH}` where `H` represents a hexadecimal digit (1-6 digits may be used)
+- `\u{HHHHHH}` where `H` represents a hexadecimal digit (subitem 3, 1-6 digits may be used)
 
 `\` followed by any other character simply has the value of that character. For example, `\"` is a string literal with the value `"`.
 
@@ -131,4 +146,4 @@ These are examples of invalid usage of this feature and should cause compilation
 
 ## Related
 
-- [FR-5: Character literals](FR-5-character-literals.md)
+- [Requirement-5: Character literals](Requirement-5-character-literals.md)

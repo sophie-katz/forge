@@ -15,35 +15,20 @@
 
 #include <forge/common/enums.h>
 #include <forge/common/log.h>
+#include <forge/common/error.h>
 
-const char* frg_status_to_string(frg_status_t status) {
+const char* frg_recoverable_status_to_string(frg_recoverable_status_t status) {
     switch (status) {
-        case FRG_STATUS_OK:
+        case FRG_RECOVERABLE_STATUS_OK:
             return "ok";
-        case FRG_STATUS_ERROR_NULL_ARGUMENT:
-            return "null argument";
-        case FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE:
-            return "unexpected argument value";
-        case FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE:
-            return "unexpected enum value";
-        case FRG_STATUS_ERROR_EMPTY_STRING:
-            return "empty string";
-        case FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT:
-            return "unexpected end of text";
-        case FRG_STATUS_ERROR_UNEXPECTED_CHARACTER:
-            return "unexpected character";
-        case FRG_STATUS_ERROR_DUPLICATE:
-            return "duplicate";
-        case FRG_STATUS_ERROR_KEY_NOT_FOUND:
-            return "key not found";
-        case FRG_STATUS_CLI_NO_MORE_ARGUMENTS:
+        case FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED:
+            return "error has already been logged";
+        case FRG_RECOVERABLE_STATUS_CLI_NO_MORE_ARGUMENTS:
             return "no more command line arguments";
-        case FRG_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT:
+        case FRG_RECOVERABLE_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT:
             return "reached a positional command line arguments";
-        case FRG_STATUS_CLI_ERROR:
-            return "unable to parse command line arguments";
         default:
-            return "(unknown value for frg_status_t)";
+            frg_die("unexpected value for 'status': %i", status);
     }
 }
 

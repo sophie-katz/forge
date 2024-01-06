@@ -22,17 +22,23 @@ This is intended to be the source of truth for how the Forge language is suppose
 It contains the following sections:
 
 - [Requirements](#requirements)
+- [Proposals](#proposals)
 - [Templates](#templates)
+
+There should be a clear distinction between what is a requirement and what is a proposal:
+
+- *A requirement* says "this is how the language is defined." They should be explicit and should be written from the perspective of someone implementing a compiler for the language.
+- *A proposal* says "this is how the language could be changed." Ideally, when a proposal is accepted it should cause an update to the requirements and to the compiler.
 
 ## Requirements
 
-These are parts of the language specification. One requirement is supposed to define a single language feature or a behavior for how language features fit together. They use the `requirement-v*` templates.
+These are parts of the language specification. One requirement is supposed to define a single language feature or a behavior for how language features fit together. They use the `Requirement-v*` templates.
 
 Some helpful tools are *(tools valid as of 2023-12-24)*:
 - [regex101](https://regex101.com/) for testing regular expressions.
 - [EBNF Evaluator](https://mdkrajnak.github.io/ebnftest/) for testing EBNF notation.
 
-### EBNF naming
+### EBNF formatting
 
 EBNF rules should follow snake case naming convention. Rules should be indented like this:
 
@@ -41,6 +47,36 @@ rule_name ::= ...
             | ...
             ;
 ```
+
+## Proposals
+
+These are proposals for how the language could be changed or improved. They use the `Proposal-v*` templates.
+
+Proposal status can be any of:
+
+- **Draft**: The proposal is still being written and is not ready for review.
+
+- **In review**: The proposal is being reviewed and is not ready for implementation.
+
+- **Accepted**: The proposal has been accepted and is ready for implementation.
+
+- **Rejected**: The proposal has been rejected and will not be implemented.
+
+- **In progress**: The proposal has been accepted and is being implemented.
+
+- **Implemented**: The proposal has been implemented.
+
+- **Withdrawn**: The proposal has been withdrawn and will not be implemented.
+
+- **Deferred**: The proposal has been deferred and may be re-reviewed at a later date.
+
+- **Superseded**: The proposal has been superseded by another proposal and will not be implemented.
+
+## Subitems
+
+Requirements and proposals both have subitems, which are parts of the proposal which can be implemented independently. There is a section at the top of the template for listing subitems.
+
+In the requirement or proposal, subitems should be referenced like `(subitem 1)`. Outside of the document, subitems should be referenced like `Requirement-2.1`.
 
 ## Templates
 

@@ -16,22 +16,16 @@
 #include <forge/config/commands/common.h>
 #include <forge/common/log.h>
 
-frg_status_t frg_config_commands_get_single_source_file(
-    const char** path,
-    GList* pos_args
+const char* frg_config_commands_get_single_source_file(
+    const GList* pos_args
 ) {
-    if (path == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*path != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    } else if (pos_args == NULL) {
-        frg_log_fatal_error("command compile expects a source file as an argument");
-        return FRG_STATUS_CLI_ERROR;
+    if (pos_args == NULL) {
+        frg_log_fatal_error("command expects a source file as an argument");
+        return NULL;
     } else if (pos_args->next != NULL) {
-        frg_log_fatal_error("command compile expects only one source file as an argument");
-        return FRG_STATUS_CLI_ERROR;
+        frg_log_fatal_error("command expects only one source file as an argument");
+        return NULL;
     } else {
-        *path = (const char*)pos_args->data;
-        return FRG_STATUS_OK;
+        return (const char*)pos_args->data;
     }
 }

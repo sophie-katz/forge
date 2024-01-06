@@ -25,37 +25,33 @@ typedef struct {
     GHashTable* options_by_long_name;
 } frg_cli_option_set_t;
 
-frg_status_t frg_cli_option_set_new(
+frg_cli_option_set_t* frg_cli_option_set_new();
+
+void frg_cli_option_set_destroy(
     frg_cli_option_set_t** option_set
 );
 
-frg_status_t frg_cli_option_set_destroy(
-    frg_cli_option_set_t** option_set
-);
-
-frg_status_t frg_cli_option_set_add_option(
+void frg_cli_option_set_add_option(
     frg_cli_option_set_t* option_set,
     frg_cli_option_t* option
 );
 
-frg_status_t frg_cli_option_set_get_option_by_long_name(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_set_get_option_by_long_name(
     frg_cli_option_set_t* option_set,
     const char* name
 );
 
-frg_status_t frg_cli_option_set_get_option_by_short_name(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_set_get_option_by_short_name(
     frg_cli_option_set_t* option_set,
     char name
 );
 
-frg_status_t frg_cli_option_set_print_help(
+void frg_cli_option_set_print_help(
     const frg_cli_option_set_t* option_set
 );
 
-frg_status_t frg_cli_option_set_parse_next(
-    frg_cli_option_set_t* option_set,
+bool frg_cli_option_set_parse_next(
+    const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
     const char** argv,

@@ -7,5 +7,23 @@
 		"source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
 	],
 	"workspaceFolder": "/workspace",
-	"remoteUser": "dev"
+	"remoteUser": "dev",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"github.vscode-github-actions",
+				"ms-vscode.cpptools",
+				"mesonbuild.mesonbuild",
+				"sophiekatz.forge",
+				"eamodio.gitlens",
+				"streetsidesoftware.code-spell-checker",
+				"bierner.markdown-checkbox",
+				"bierner.markdown-emoji",
+				"bierner.markdown-preview-github-styles",
+				"bierner.markdown-mermaid",
+				"daohong-emilio.yash",
+				"ms-python.python"
+			]
+		}
+	}
 }

@@ -29,16 +29,15 @@ typedef struct {
     const char* help;
 } frg_cli_choice_t;
 
-frg_status_t frg_cli_choice_new(
-    frg_cli_choice_t** choice,
+frg_cli_choice_t* frg_cli_choice_new(
     const char* name,
     const char* help
 );
 
-frg_status_t frg_cli_choice_destroy(
+void frg_cli_choice_destroy(
     frg_cli_choice_t** choice
 );
 
-frg_status_t frg_cli_choice_print_help(
+void frg_cli_choice_print_help(
     const frg_cli_choice_t* choice
 );

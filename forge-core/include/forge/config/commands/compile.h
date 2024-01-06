@@ -17,4 +17,4 @@
 
 #include <forge/cli/command.h>
 
-frg_status_t frg_config_commands_new_compile(frg_cli_command_t** command);
+frg_cli_command_t* frg_config_commands_new_compile();

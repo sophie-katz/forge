@@ -23,14 +23,13 @@ extern "C" {
 #include <forge/ast/ast.h>
 #include <forge/ast/scope.h>
 
-frg_status_t _frg_generate_type(
-    llvm::Type** ir,
+llvm::Type* _frg_generate_type(
     llvm::LLVMContext& ctx,
     frg_ast_scope_t* scope,
     frg_ast_t* ast
 );
 
-frg_status_t _frg_generate_decl_fn(
+void _frg_generate_decl_fn(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
     llvm::Module& module,
@@ -38,15 +37,14 @@ frg_status_t _frg_generate_decl_fn(
     frg_ast_t* ast
 );
 
-frg_status_t _frg_generate_stmt(
+void _frg_generate_stmt(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
     frg_ast_scope_t* scope,
     frg_ast_t* ast
 );
 
-frg_status_t _frg_generate_value(
-    llvm::Value** ir,
+llvm::Value* _frg_generate_value(
     llvm::LLVMContext& ctx,
     frg_ast_scope_t* scope,
     frg_ast_t* ast

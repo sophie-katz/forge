@@ -34,7 +34,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 #define YY_USER_ACTION yycolumnno += yyleng;
 
-extern const char* _frg_current_filename;
+extern const char* _frg_current_path;
 
 frg_columnno_t yycolumnno = 1;
 %}
@@ -207,9 +207,9 @@ false {
 }
 
 [0-9][0-9a-zA-Z_]* {
-    frg_status_t result = frg_str_to_uint(&yylval.value_int, yytext);
-    if (result != FRG_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid integer literal \"%s\"", yytext);
+    frg_recoverable_status_t result = frg_str_to_uint(&yylval.value_int, yytext);
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
+        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid integer literal \"%s\"", yytext);
         yylval.value_int = 0;
     }
 
@@ -217,21 +217,21 @@ false {
 }
 
 [0-9][0-9a-zA-Z_]*\.[0-9a-zA-Z_]* {
-    frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
-    if (result != FRG_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
-        yylval.value_float = 0.0;
-    }
+    // frg_recoverable_status_t result = frg_str_to_float(&yylval.value_float, yytext);
+    // if (result != FRG_STATUS_OK) {
+    //     frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
+    yylval.value_float = 0.0;
+    // }
 
     return FLOAT;
 }
 
 ([0-9][0-9a-zA-Z_]*)?\.[0-9][0-9a-zA-Z_]* {
-    frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
-    if (result != FRG_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
-        yylval.value_float = 0.0;
-    }
+    // frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
+    // if (result != FRG_STATUS_OK) {
+    //     frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
+    yylval.value_float = 0.0;
+    // }
 
     return FLOAT;
 }
@@ -241,9 +241,9 @@ false {
     // Taken from https://gist.github.com/codebrainz/2933703
 
     yylval.value_str = NULL;
-    frg_status_t result = frg_unescape_str(&yylval.value_str, yytext);
-    if (result != FRG_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid string literal %s", yytext);
+    frg_recoverable_status_t result = frg_unescape_str(&yylval.value_str, yytext);
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
+        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid string literal %s", yytext);
         yylval.value_str = g_string_new(NULL);
     }
 
@@ -253,9 +253,9 @@ false {
 '(\\.|[^'\n])*' {
     // Taken from https://gist.github.com/codebrainz/2933703
     
-    frg_status_t result = frg_unescape_char(&yylval.value_char, yytext);
-    if (result != FRG_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "invalid character literal %s", yytext);
+    frg_recoverable_status_t result = frg_unescape_char(&yylval.value_char, yytext);
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
+        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid character literal %s", yytext);
         yylval.value_char = 0;
     }
 
@@ -426,9 +426,9 @@ false {
     char as_char = yytext[0];
     int as_int = ((int)as_char) & 0xff;
     if (isprint(yytext[0])) {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "unexpected character '%c' (0x%2x)", as_char, as_int);
+        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "unexpected character '%c' (0x%2x)", as_char, as_int);
     } else {
-        frg_log_error_at_source_char(_frg_current_filename, yylineno, yycolumnno, "unexpected byte 0x%2x", as_int);
+        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "unexpected byte 0x%2x", as_int);
     }
 }
 

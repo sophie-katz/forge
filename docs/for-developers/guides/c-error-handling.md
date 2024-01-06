@@ -15,26 +15,14 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# Compiler flow
+# C error handling guidelines
 
-## Syntax
+## Die with internal error
 
-```mermaid
-flowchart LR
-    source_code["Source code"] --> lexer
-    lexer(["Lexer (flex)"]) --> parser
-    parser(["Parser (bison)"]) --> ast
-    ast[AST]
-```
+## Log message
 
-## Semantics
+Messages can be emitted using the `frg_log_*~ functions. `
 
-```mermaid
-flowchart LR
-    ast[AST] --> simplifier
-    simplifier([Simplifier]) --> simplified_ast
-    simplified_ast["AST (Simplified)"] --> interpreter
-    interpreter([Interpreter])
-    simplified_ast --> code_generator
-    code_generator(["Code generator (LLVM)"])
-```
+## Recovery
+
+Functions that get into recoverable bad states can return statuses that describe their state. This is where the `frg_recoverable_status_t` enumerator comes into play.

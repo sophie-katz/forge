@@ -14,33 +14,26 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/memory.h>
+#include <forge/common/error.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-frg_status_t frg_safe_malloc(void** ptr, size_t size) {
+void* frg_safe_malloc(size_t size) {
+    void* ptr = malloc(size);
+
     if (ptr == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (size == 0) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+        // We avoid using the error system here, because it may try to allocate memory.
+        fputs("internal error: out of memory\n", stderr);
+        abort();
     }
 
-    *ptr = malloc(size);
-
-    if (*ptr == NULL) {
-        return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-    }
-
-    return FRG_STATUS_OK;
+    return ptr;
 }
 
-frg_status_t frg_safe_free(void** ptr) {
-    if (ptr == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+void frg_safe_free(void** ptr) {
+    frg_assert_pointer_non_null(ptr);
+    frg_assert_pointer_non_null(*ptr);
 
-    if (*ptr != NULL) {
-        free(*ptr);
-        *ptr = NULL;
-    }
-
-    return FRG_STATUS_OK;
+    free(*ptr);
+    *ptr = NULL;
 }

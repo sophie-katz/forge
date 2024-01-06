@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/common/color.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
@@ -29,235 +29,188 @@ bool frg_cli_is_valid_short_name(char short_name) {
     }
 }
 
-frg_status_t frg_cli_option_new_flag(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_flag(
     const char* long_name,
     const char* help,
     frg_cli_option_callback_t callback
 ) {
-    if (option == NULL || long_name == NULL || help == NULL || callback == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*long_name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (*option != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_string_non_empty(long_name);
+    frg_assert_string_non_empty(help);
+    frg_assert_pointer_non_null(callback);
 
-    frg_check(
-        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
-    );
+    frg_cli_option_t* option = frg_safe_malloc(sizeof(frg_cli_option_t));
 
-    (*option)->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
-    (*option)->long_name = long_name;
-    (*option)->value_name = NULL;
-    (*option)->help = help;
-    (*option)->choices = NULL;
-    (*option)->callback = callback;
+    option->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
+    option->long_name = long_name;
+    option->value_name = NULL;
+    option->help = help;
+    option->choices = NULL;
+    option->callback = callback;
 
-    return FRG_STATUS_OK;
+    return option;
 }
 
-frg_status_t frg_cli_option_new_flag_short(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_flag_short(
     char short_name,
     const char* long_name,
     const char* help,
     frg_cli_option_callback_t callback
 ) {
-    if (option == NULL || long_name == NULL || help == NULL || callback == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*long_name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (*option != NULL || !frg_cli_is_valid_short_name(short_name)) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert(frg_cli_is_valid_short_name(short_name));
+    frg_assert_string_non_empty(long_name);
+    frg_assert_string_non_empty(help);
+    frg_assert_pointer_non_null(callback);
 
-    frg_check(
-        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
-    );
+    frg_cli_option_t* option = frg_safe_malloc(sizeof(frg_cli_option_t));
 
-    (*option)->short_name = short_name;
-    (*option)->long_name = long_name;
-    (*option)->value_name = NULL;
-    (*option)->help = help;
-    (*option)->choices = NULL;
-    (*option)->callback = callback;
+    option->short_name = short_name;
+    option->long_name = long_name;
+    option->value_name = NULL;
+    option->help = help;
+    option->choices = NULL;
+    option->callback = callback;
 
-    return FRG_STATUS_OK;
+    return option;
 }
 
-frg_status_t frg_cli_option_new_argument(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_argument(
     const char* long_name,
     const char* value_name,
     const char* help,
     frg_cli_option_callback_t callback
 ) {
-    if (option == NULL || long_name == NULL || value_name == NULL || help == NULL
-        || callback == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*long_name == 0 || *value_name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (*option != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_string_non_empty(long_name);
+    frg_assert_string_non_empty(value_name);
+    frg_assert_string_non_empty(help);
+    frg_assert_pointer_non_null(callback);
 
-    frg_check(
-        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
-    );
+    frg_cli_option_t* option = frg_safe_malloc(sizeof(frg_cli_option_t));
 
-    (*option)->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
-    (*option)->long_name = long_name;
-    (*option)->value_name = value_name;
-    (*option)->help = help;
-    (*option)->choices = NULL;
-    (*option)->callback = callback;
+    option->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
+    option->long_name = long_name;
+    option->value_name = value_name;
+    option->help = help;
+    option->choices = NULL;
+    option->callback = callback;
 
-    return FRG_STATUS_OK;
+    return option;
 }
 
-frg_status_t frg_cli_option_new_argument_short(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_argument_short(
     char short_name,
     const char* long_name,
     const char* value_name,
     const char* help,
     frg_cli_option_callback_t callback
 ) {
-    if (option == NULL || long_name == NULL || value_name == NULL || help == NULL
-        || callback == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*long_name == 0 || *value_name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (*option != NULL || !frg_cli_is_valid_short_name(short_name)) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert(frg_cli_is_valid_short_name(short_name));
+    frg_assert_string_non_empty(long_name);
+    frg_assert_string_non_empty(value_name);
+    frg_assert_string_non_empty(help);
+    frg_assert_pointer_non_null(callback);
 
-    frg_check(
-        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
-    );
+    frg_cli_option_t* option = frg_safe_malloc(sizeof(frg_cli_option_t));
 
-    (*option)->short_name = short_name;
-    (*option)->long_name = long_name;
-    (*option)->value_name = value_name;
-    (*option)->help = help;
-    (*option)->choices = NULL;
-    (*option)->callback = callback;
+    option->short_name = short_name;
+    option->long_name = long_name;
+    option->value_name = value_name;
+    option->help = help;
+    option->choices = NULL;
+    option->callback = callback;
 
-    return FRG_STATUS_OK;
+    return option;
 }
 
-frg_status_t frg_cli_option_new_choice(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_choice(
     const char* long_name,
     const char* value_name,
     const char* help,
     frg_cli_option_callback_t callback
 ) {
-    if (option == NULL || long_name == NULL || value_name == NULL || help == NULL
-        || callback == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*long_name == 0 || *value_name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (*option != NULL) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_string_non_empty(long_name);
+    frg_assert_string_non_empty(value_name);
+    frg_assert_string_non_empty(help);
+    frg_assert_pointer_non_null(callback);
 
-    frg_check(
-        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
-    );
+    frg_cli_option_t* option = frg_safe_malloc(sizeof(frg_cli_option_t));
 
-    (*option)->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
-    (*option)->long_name = long_name;
-    (*option)->value_name = value_name;
-    (*option)->help = help;
-    (*option)->choices = NULL;
-    (*option)->callback = callback;
+    option->short_name = FRG_CLI_OPTION_SHORT_NAME_NULL;
+    option->long_name = long_name;
+    option->value_name = value_name;
+    option->help = help;
+    option->choices = NULL;
+    option->callback = callback;
 
-    return FRG_STATUS_OK;
+    return option;
 }
 
-frg_status_t frg_cli_option_new_choice_short(
-    frg_cli_option_t** option,
+frg_cli_option_t* frg_cli_option_new_choice_short(
     char short_name,
     const char* long_name,
     const char* value_name,
     const char* help,
     frg_cli_option_callback_t callback
 ) {
-    if (option == NULL || long_name == NULL || value_name == NULL || help == NULL
-        || callback == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*long_name == 0 || *value_name == 0 || *help == 0) {
-        return FRG_STATUS_ERROR_EMPTY_STRING;
-    } else if (*option != NULL || !frg_cli_is_valid_short_name(short_name)) {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert(frg_cli_is_valid_short_name(short_name));
+    frg_assert_string_non_empty(long_name);
+    frg_assert_string_non_empty(value_name);
+    frg_assert_string_non_empty(help);
+    frg_assert_pointer_non_null(callback);
 
-    frg_check(
-        frg_safe_malloc((void**)option, sizeof(frg_cli_option_t))
-    );
+    frg_cli_option_t* option = frg_safe_malloc(sizeof(frg_cli_option_t));
 
-    (*option)->short_name = short_name;
-    (*option)->long_name = long_name;
-    (*option)->value_name = value_name;
-    (*option)->help = help;
-    (*option)->choices = NULL;
-    (*option)->callback = callback;
+    option->short_name = short_name;
+    option->long_name = long_name;
+    option->value_name = value_name;
+    option->help = help;
+    option->choices = NULL;
+    option->callback = callback;
 
-    return FRG_STATUS_OK;
+    return option;
 }
 
-frg_status_t frg_cli_option_destroy(
+void frg_cli_option_destroy(
     frg_cli_option_t** option
 ) {
-    if (option == NULL || *option == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option);
+    frg_assert_pointer_non_null(*option);
 
     for (GList* choice = (*option)->choices; choice != NULL; choice = choice->next) {
-        frg_check(
-            frg_cli_choice_destroy((frg_cli_choice_t**)&choice->data)
-        );
+        frg_cli_choice_destroy((frg_cli_choice_t**)&choice->data);
     }
 
     g_list_free((*option)->choices);
 
-    return frg_safe_free((void**)option);
+    frg_safe_free((void**)option);
 }
 
-frg_status_t frg_cli_option_add_choice(
+void frg_cli_option_add_choice(
     frg_cli_option_t* option,
     frg_cli_choice_t* choice
 ) {
-    if (option == NULL || choice == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option);
+    frg_assert_pointer_non_null(choice);
 
     option->choices = g_list_append(option->choices, choice);
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t frg_cli_option_print_help(
+void frg_cli_option_print_help(
     const frg_cli_option_t* option
 ) {
-    if (option == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    }
+    frg_assert_pointer_non_null(option);
 
     printf("  ");
 
     if (option->short_name != FRG_CLI_OPTION_SHORT_NAME_NULL) {
-        frg_set_color(stdout, FRG_COLOR_ID_BOLD);
+        frg_color_set(stdout, FRG_COLOR_ID_BOLD);
         printf("-%c", option->short_name);
-        frg_set_color(stdout, FRG_COLOR_ID_RESET);
+        frg_color_set(stdout, FRG_COLOR_ID_RESET);
         printf(", ");
     }
 
-    frg_set_color(stdout, FRG_COLOR_ID_BOLD);
+    frg_color_set(stdout, FRG_COLOR_ID_BOLD);
     printf("--%s", option->long_name);
-    frg_set_color(stdout, FRG_COLOR_ID_RESET);
+    frg_color_set(stdout, FRG_COLOR_ID_RESET);
 
     if (option->value_name != NULL) {
         printf(" <%s>", option->value_name);
@@ -267,55 +220,34 @@ frg_status_t frg_cli_option_print_help(
 
     if (option->choices != NULL) {
         printf("    ");
-        frg_set_color(stdout, FRG_COLOR_ID_UNDERLINE);
+        frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
         printf("Choices:");
-        frg_set_color(stdout, FRG_COLOR_ID_RESET);
+        frg_color_set(stdout, FRG_COLOR_ID_RESET);
         printf("\n");
 
-        frg_set_color(stdout, FRG_COLOR_ID_RESET);
+        frg_color_set(stdout, FRG_COLOR_ID_RESET);
         for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
-            frg_check(
-                frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data)
-            );
+            frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data);
         }
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t _frg_cli_option_ensure_matches_argument(
+bool _frg_cli_option_check_matches_argument(
     const frg_cli_option_t* option,
     const char* arg
 ) {
-    if (option == NULL || arg == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (arg[0] != '-') {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
+    frg_assert_pointer_non_null(option);
+    frg_assert_string_non_empty(arg);
+    frg_assert_int_eq(arg[0], '-');
 
     if (arg[1] == '-') {
-        // It is a long argument
-
-        // Confirm that the current argument in 'argv' matches 'option'
-        if (strcmp(arg + 2, option->long_name) != 0) {
-            return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-        }
+        return strcmp(arg + 2, option->long_name) != 0;
     } else {
-        // It is a short argument
-        if (arg[1] != option->short_name) {
-            return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-        }
-
-        // Confirm that the current argument in 'argv' matches 'option'
-        if (arg[1] != option->short_name) {
-            return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-        }
+        return arg[1] == option->short_name;
     }
-
-    return FRG_STATUS_OK;
 }
 
-frg_status_t frg_cli_option_parse_next(
+bool frg_cli_option_parse_next(
     const frg_cli_option_t* option,
     int* argi,
     int argc,
@@ -323,19 +255,15 @@ frg_status_t frg_cli_option_parse_next(
     void* user_data
 ) {
     // Error checking
-    if (option == NULL || argi == NULL || argv == NULL) {
-        return FRG_STATUS_ERROR_NULL_ARGUMENT;
-    } else if (*argi < 0 || argc <= 0 || *argi >= argc || argv[*argi] == NULL || argv[*argi][0] != '-') {
-        return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-    }
-
-    // Make sure the argument being parsed actually matches 'option'
-    frg_check(
-        _frg_cli_option_ensure_matches_argument(
-            option,
-            argv[*argi]
-        )
-    );
+    frg_assert_pointer_non_null(option);
+    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(argv);
+    frg_assert_int_ge(*argi, 0);
+    frg_assert_int_gt(argc, 0);
+    frg_assert_int_lt(*argi, argc);
+    frg_assert_string_non_empty(argv[*argi]);
+    frg_assert_int_eq(argv[*argi][0], '-');
+    frg_assert(_frg_cli_option_check_matches_argument(option, argv[*argi]));
 
     // Increment argument index
     (*argi)++;
@@ -345,12 +273,11 @@ frg_status_t frg_cli_option_parse_next(
         return option->callback(user_data, NULL);
     } else {
         // If the argument does take a value, make sure there is a value to parse
+        frg_assert_string_non_empty(argv[*argi]);
 
         if (*argi >= argc) {
             frg_log_fatal_error("argument '%s' expects a value", argv[*argi - 1]);
-            return FRG_STATUS_CLI_ERROR;
-        } else if (argv[*argi] == NULL) {
-            return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
+            return false;
         }
 
         // If the argument has a set of choices, make sure the value matches one of them
@@ -372,18 +299,16 @@ frg_status_t frg_cli_option_parse_next(
                     frg_log_note(&result, "  '%s' - %s", choice_casted->name, choice_casted->help);
                 }
 
-                return FRG_STATUS_CLI_ERROR;
+                return false;
             }
         }
 
         // Call the callback with the value
-        frg_check(
-            option->callback(user_data, argv[*argi])
-        );
+        bool result = option->callback(user_data, argv[*argi]);
 
         // Increment argument index
         (*argi)++;
 
-        return FRG_STATUS_OK;
+        return result;
     }
 }

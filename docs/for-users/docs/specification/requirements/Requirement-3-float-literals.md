@@ -15,9 +15,27 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# FR-3: Float literals
+# Requirement-3: Float literals
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**Fully supported as of Forge version:** In progress
+
+## Subitems
+
+This requirement contains subitems:
+
+1. Binary literals
+2. Octal literals
+3. Hexadecimal literals
+4. Type suffixes
+5. Underscores
+6. Scientific notation
+
+See below for details on what these subitems are. They are used to help describe the progress of implementation.
+
+## Summary
 
 Float literals represent floating-point values.
 
@@ -41,15 +59,15 @@ Regular expression above is specified using the [PCRE2 syntax](https://www.pcre.
 
 Float literals can have the following prefixes:
 
-- `0b` for base 2 literals
+- `0b` for base 2 literals (subitem 1)
 
-- `0o` for base 8 literals
+- `0o` for base 8 literals (subitem 2)
 
-- `0x` for base 16 literals
+- `0x` for base 16 literals (subitem 3)
 
 Float literals with none of the above prefixes are base 10 literals. The integral part can be `0` but cannot start with a `0` character followed by other digits.
 
-### Suffixes
+### Suffixes (subitem 4)
 
 Float literals can have the following suffixes:
 
@@ -59,11 +77,11 @@ Float literals can have the following suffixes:
 
 The float literal will always be put into a value of this type. The value will be truncated if needed.
 
-### Scientific notation
+### Scientific notation (subitem 6)
 
 Float literals can have a scientific notation suffix. This is specified using the `e` character followed by an optional `-` character and then another floating point literal.
 
-### Underscores
+### Underscores (subitem 5)
 
 Float literals can have underscores (`_`) in them. These are ignored by the compiler and are only used to make the literal easier to read. They cannot appear at the beginning or end of string literals.
 
@@ -109,4 +127,4 @@ _1.0 # This is invalid because underscores cannot appear at the beginning of a l
 
 ## Related
 
-- [FR-2: Integer literals](FR-2-integer-literals.md)
+- [Requirement-2: Integer literals](Requirement-2-integer-literals.md)

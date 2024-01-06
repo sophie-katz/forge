@@ -19,9 +19,22 @@ not, see <https://www.gnu.org/licenses/>.
 Follow any instructions prefixed with 'CHANGE:' and then remove the comments (including this one).
 -->
 
-# FR-<CHANGE: number the requirement>: <CHANGE: add a title>
+# Requirement-<CHANGE: number the requirement>: <CHANGE: add a title>
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** <CHANGE: add the start date of the requirement using YYYY-MM-DD notation>
+**Fully supported as of Forge version:** <CHANGE: list the first version of Forge that supported this requirement, use "Not applicable" or "In progress" if needed>
+
+## Subitems (CHANGE: remove if not needed)
+
+This requirement contains subitems:
+
+1. <CHANGE: describe a subitem here>
+
+See below for details on what these subitems are. They are used to help describe the progress of implementation.
+
+## Summary
 
 <!-- CHANGE: add a short 1-2 sentence summary here! -->
 
@@ -76,3 +89,5 @@ These are examples of invalid usage of this feature and should cause compilation
 ## Related (CHANGE: remove this section if not applicable)
 
 <!-- CHANGE: list any requirements that are associated with this one -->
+
+<!-- CHANGE: list any proposals that are associated with this requirement -->

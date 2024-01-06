@@ -15,9 +15,26 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# FR-2: Integer literals
+# Requirement-2: Integer literals
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**Fully supported as of Forge version:** In progress
+
+## Subitems
+
+It contains subitems:
+
+1. Binary literals
+2. Octal literals
+3. Hexadecimal literals
+4. Type suffixes
+5. Underscores
+
+See below for details on what these subitems are. They are used to help describe the progress of implementation.
+
+## Summary
 
 Integer literals represent integer values.
 
@@ -41,15 +58,15 @@ Regular expression above is specified using the [PCRE2 syntax](https://www.pcre.
 
 Integer literals can have the following prefixes:
 
-- `0b` for base 2 literals
+- `0b` for base 2 literals (subitem 1)
 
-- `0o` for base 8 literals
+- `0o` for base 8 literals (subitem 2)
 
-- `0x` for base 16 literals
+- `0x` for base 16 literals (subitem 3)
 
 Integer literals with none of the above prefixes are base 10 literals. These can be `0` but cannot start with a `0` character followed by other digits.
 
-### Suffixes
+### Suffixes (subitem 4)
 
 Integer literals can have the following suffixes:
 
@@ -71,7 +88,7 @@ Integer literals can have the following suffixes:
 
 The integer literal will always be put into a value of this type. If the value cannot be properly represented without truncation, an error will be thrown. For example, `128i8` is invalid because 8-bit signed integers can only represent values from `-128` to `127`.
 
-### Underscores
+### Underscores (subitem 5)
 
 Integer literals can have underscores (`_`) in them. These are ignored by the compiler and are only used to make the literal easier to read. They cannot appear at the beginning or end of string literals.
 
@@ -133,4 +150,4 @@ _10 # This is invalid because underscores cannot be at the beginning of integer 
 
 ## Related
 
-- [FR-3: Float literals](FR-3-float-literals.md)
+- [Requirement-3: Float literals](Requirement-3-float-literals.md)

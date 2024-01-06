@@ -28,32 +28,32 @@ void frg_debug_print_newline(frg_indent_t indent) {
 }
 
 void frg_debug_print_node(const char* format, ...) {
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
     fprintf(FRG_STREAM_DEFAULT, "[");
 
     va_list args;
     va_start(args, format);
 
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_GREEN);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_GREEN);
     vfprintf(FRG_STREAM_DEFAULT, format, args);
 
     va_end(args);
 
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
     fprintf(FRG_STREAM_DEFAULT, "]");
 
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
 }
 
 void frg_debug_print_property(const char* label, const char* format, ...) {
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_CYAN);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_CYAN);
     fprintf(FRG_STREAM_DEFAULT, "%s = ", label);
     
     if (format != NULL) {
-        frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+        frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
 
         va_list args;
         va_start(args, format);
@@ -70,16 +70,16 @@ void frg_debug_print_property_with_index(
     const char* format,
     ...
 ) {
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_CYAN);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_CYAN);
     fprintf(FRG_STREAM_DEFAULT, "%s", label);
 
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
-    frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+    frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
     fprintf(FRG_STREAM_DEFAULT, "[%lu] = ", index);
     
     if (format != NULL) {
-        frg_set_color(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+        frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
 
         va_list args;
         va_start(args, format);

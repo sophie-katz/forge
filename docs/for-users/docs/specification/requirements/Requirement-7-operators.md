@@ -15,9 +15,12 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# FR-7: Operators
+# Requirement-7: Operators
 
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
+
+**Start date:** 2024-01-05
+**Fully supported as of Forge version:** In progress
 
 It provides an exhaustive list of operators in the language and their behavior.
 
@@ -237,4 +240,4 @@ These are the operators in the language:
 
 ## Related
 
-- [FR-8: Operator precedence](./FR-8-operator-precedence.md)
+- [Requirement-8: Operator precedence](./Requirement-8-operator-precedence.md)

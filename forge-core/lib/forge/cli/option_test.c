@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/check.h>
+#include <forge/common/error.h>
 #include <forge/cli/option.h>
 #include <unity.h>
 
@@ -30,48 +30,46 @@ typedef struct {
     const char* choice_short;
 } config;
 
-frg_status_t callback_flag(void* user_data, const char* value) {
+bool callback_flag(void* user_data, const char* value) {
     ((config*)user_data)->flag = true;
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t callback_flag_short(void* user_data, const char* value) {
+bool callback_flag_short(void* user_data, const char* value) {
     ((config*)user_data)->flag_short = true;
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t callback_argument(void* user_data, const char* value) {
+bool callback_argument(void* user_data, const char* value) {
     ((config*)user_data)->argument = value;
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t callback_argument_short(void* user_data, const char* value) {
+bool callback_argument_short(void* user_data, const char* value) {
     ((config*)user_data)->argument_short = value;
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t callback_choice(void* user_data, const char* value) {
+bool callback_choice(void* user_data, const char* value) {
     ((config*)user_data)->choice = value;
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t callback_choice_short(void* user_data, const char* value) {
+bool callback_choice_short(void* user_data, const char* value) {
     ((config*)user_data)->choice_short = value;
-    return FRG_STATUS_OK;
+    return true;
 }
 
-frg_status_t create_option_flag(frg_cli_option_t** option) {
+frg_cli_option_t* create_option_flag() {
     return frg_cli_option_new_flag(
-        option,
         "long-flag",
         "A long-only flag.",
         callback_flag
     );
 }
 
-frg_status_t create_option_flag_short(frg_cli_option_t** option) {
+frg_cli_option_t* create_option_flag_short() {
     return frg_cli_option_new_flag_short(
-        option,
         'f',
         "short-flag",
         "A long and short flag.",
@@ -79,9 +77,8 @@ frg_status_t create_option_flag_short(frg_cli_option_t** option) {
     );
 }
 
-frg_status_t create_option_argument(frg_cli_option_t** option) {
+frg_cli_option_t* create_option_argument() {
     return frg_cli_option_new_argument(
-        option,
         "long-argument",
         "value",
         "A long-only argument.",
@@ -89,9 +86,8 @@ frg_status_t create_option_argument(frg_cli_option_t** option) {
     );
 }
 
-frg_status_t create_option_argument_short(frg_cli_option_t** option) {
+frg_cli_option_t* create_option_argument_short() {
     return frg_cli_option_new_argument_short(
-        option,
         'a',
         "short-argument",
         "value",
@@ -100,50 +96,31 @@ frg_status_t create_option_argument_short(frg_cli_option_t** option) {
     );
 }
 
-frg_status_t create_option_choice(frg_cli_option_t** option) {
-    frg_check(
-        frg_cli_option_new_choice(
-            option,
-            "long-choice",
-            "value",
-            "A long-only choice.",
-            callback_choice
-        )
+frg_cli_option_t* create_option_choice() {
+    frg_cli_option_t* option = frg_cli_option_new_choice(
+        "long-choice",
+        "value",
+        "A long-only choice.",
+        callback_choice
     );
 
-    frg_cli_choice_t* choice = NULL;
-    frg_check(
+    frg_cli_option_add_choice(
+        option,
         frg_cli_choice_new(
-            &choice,
             "option-1",
             "A choice."
         )
     );
 
-    frg_check(
-        frg_cli_option_add_choice(
-            *option,
-            choice
-        )
-    );
-
-    choice = NULL;
-    frg_check(
+    frg_cli_option_add_choice(
+        option,
         frg_cli_choice_new(
-            &choice,
             "option-2",
             "Another choice."
         )
     );
 
-    frg_check(
-        frg_cli_option_add_choice(
-            *option,
-            choice
-        )
-    );
-
-    return FRG_STATUS_OK;
+    return option;
 }
 
 frg_status_t create_option_choice_short(frg_cli_option_t** option) {
@@ -215,7 +192,6 @@ void test_flag_long(void) {
     init_config(&c);
 
     frg_status_t result = frg_cli_option_parse_next(
-        option,
         &argi,
         argc,
         argv,

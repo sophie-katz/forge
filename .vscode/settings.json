@@ -27,5 +27,6 @@
         "stream.h": "c",
         "common.h": "c",
         "error.h": "c"
-    }
+    },
+    "C_Cpp.doxygen.generateOnType": false
 }

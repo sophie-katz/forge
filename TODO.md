@@ -8,7 +8,15 @@
 - [x] Add code coverage metrics.
 - [x] Do a unit test review to see where the most risk of failure is that needs to be tested.
 - [x] Write at least one parser integration test.
-- [ ] Write at least one AST algorithm integration test.
+- [x] Write at least one AST algorithm integration test.
+- [ ] Add in token reader for lexical casts with locations.
+- [ ] Add in a message buffer so we can test for errors.
+- [ ] Add in token ranges
+- [ ] Add in line printing for errors
+- [ ] Add in token ranges for AST nodes
+- [ ] When printing errors for AST nodes
+    - [ ] Print the token range if possible
+    - [ ] Otherwise, print the token tree up until the first token range if one exists
 - [ ] Write at least one code generator integration test.
 - [ ] Add in memory leak detection into automated tests.
 - [ ] Add in verification logic

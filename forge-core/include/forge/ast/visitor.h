@@ -26,6 +26,17 @@ typedef frg_ast_visitor_status_t (*frg_ast_visitor_callback_t)(
 typedef struct {
     frg_ast_visitor_callback_t callback_pre;
     frg_ast_visitor_callback_t callback_post;
+} frg_ast_visitor_entry_item_t;
+
+frg_ast_visitor_entry_item_t* frg_ast_visitor_entry_item_new(
+    frg_ast_visitor_callback_t callback_pre,
+    frg_ast_visitor_callback_t callback_post
+);
+
+void frg_ast_visitor_entry_item_destroy(frg_ast_visitor_entry_item_t** item);
+
+typedef struct {
+    GList* items;
 } frg_ast_visitor_entry_t;
 
 typedef struct {

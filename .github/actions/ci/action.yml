@@ -29,4 +29,4 @@ runs:
       shell: bash
       run: |
         . ../.venv/bin/activate 
-        meson test -C build
+        meson test -v -C build

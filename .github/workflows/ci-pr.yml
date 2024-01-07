@@ -27,8 +27,5 @@ jobs:
     container:
       image: sophiekatz/forge-development:latest
     steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-
       - name: Run CI
         uses: ./.github/actions/ci

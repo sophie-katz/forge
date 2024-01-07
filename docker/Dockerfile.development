@@ -31,6 +31,7 @@ RUN apt-get update -y && \
         libglib2.0-dev \
         lsb-release \
         man \
+        ninja-build \
         python3-pip \
         python3.11 \
         python3.11-venv \

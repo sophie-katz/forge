@@ -228,6 +228,7 @@ forge_core_lib = static_library(
     'lib/forge/config/commands/version.c',
     'lib/forge/config/config.c',
     'lib/forge/parsing/parsing.c',
+    'lib/forge/parsing/token_reader.c',
     'lib/forge/verification/supported_language_features.c',
     'lib/forge/verification/verifier.c',
     forge_generated_files_flex,

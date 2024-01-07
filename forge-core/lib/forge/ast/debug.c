@@ -56,13 +56,13 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
 
     frg_debug_print_node(frg_ast_id_to_string(ast->id));
 
-    GString* escaped = NULL;
+    GString* formatted = NULL;
 
     switch (ast->id) {
         case FRG_AST_ID_TY_SYMBOL:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_ty_symbol_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_ty_symbol_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
             break;
         case FRG_AST_ID_TY_POINTER:
             frg_debug_print_newline(indent);
@@ -95,8 +95,8 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_DECL_UNION:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_decl_union_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_decl_union_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             _frg_ast_print_debug_list(
                 ((frg_ast_decl_union_t*)ast)->props,
@@ -107,8 +107,8 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_DECL_STRUCT:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_decl_struct_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_decl_struct_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             _frg_ast_print_debug_list(
                 ((frg_ast_decl_struct_t*)ast)->decls,
@@ -126,8 +126,8 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_decl_prop_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_decl_prop_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("type", NULL);
@@ -143,8 +143,8 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_decl_iface_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_decl_iface_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             _frg_ast_print_debug_list(
                 ((frg_ast_decl_iface_t*)ast)->extends,
@@ -185,8 +185,8 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             );
 
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_decl_fn_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_decl_fn_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("ty", NULL);
@@ -319,26 +319,26 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
             break;
         case FRG_AST_ID_VALUE_CHAR:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_char(((frg_ast_value_char_t*)ast)->value);
-            frg_debug_print_property("value", "%s", escaped->str);
+            formatted = frg_format_char(((frg_ast_value_char_t*)ast)->value);
+            frg_debug_print_property("value", "%s", formatted->str);
 
             break;
         case FRG_AST_ID_VALUE_STR:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_value_str_t*)ast)->value->str);
-            frg_debug_print_property("value", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_value_str_t*)ast)->value->str);
+            frg_debug_print_property("value", "%s", formatted->str);
 
             break;
         case FRG_AST_ID_VALUE_SYMBOL:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_value_symbol_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_value_symbol_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             break;
         case FRG_AST_ID_VALUE_CALL_KW_ARG:
             frg_debug_print_newline(indent);
-            escaped = frg_escape_str(((frg_ast_value_call_kw_arg_t*)ast)->name->str);
-            frg_debug_print_property("name", "%s", escaped->str);
+            formatted = frg_format_str(((frg_ast_value_call_kw_arg_t*)ast)->name->str);
+            frg_debug_print_property("name", "%s", formatted->str);
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("value", NULL);

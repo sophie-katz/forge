@@ -31,14 +31,14 @@ extern int yylineno;
 extern frg_columnno_t yycolumnno;
 extern int yylex();
 
-extern const char* _frg_current_path;
+extern const char* _frg_parsing_current_path;
 
 int yywrap() {
     return 1;
 }
 
 void yyerror(frg_ast_t**ast, const char* message) {
-    frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "[%s]", message);
+    frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "[%s]", message);
 }
 %}
 

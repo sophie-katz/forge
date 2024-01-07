@@ -38,251 +38,309 @@ bool _frg_is_char_printable(frg_char_t value) {
     }
 }
 
-void _frg_escape_char_unquoted(GString* escaped, frg_char_t value, char quote) {
-    frg_assert_pointer_non_null(escaped);
+void _frg_format_char_unquoted(GString* formatted, frg_char_t value, char quote) {
+    frg_assert_pointer_non_null(formatted);
     frg_assert(quote == '"' || quote == '\'');
 
     if (value == quote) {
-        g_string_append_printf(escaped, "\\%c", quote);
+        g_string_append_printf(formatted, "\\%c", quote);
     } else if (value == 0) {
-        g_string_append(escaped, "\\0");
+        g_string_append(formatted, "\\0");
     } else if (value == '\a') {
-        g_string_append(escaped, "\\a");
+        g_string_append(formatted, "\\a");
     } else if (value == '\b') {
-        g_string_append(escaped, "\\b");
+        g_string_append(formatted, "\\b");
     } else if (value == '\033') {
-        g_string_append(escaped, "\\e");
+        g_string_append(formatted, "\\e");
     } else if (value == '\f') {
-        g_string_append(escaped, "\\f");
+        g_string_append(formatted, "\\f");
     } else if (value == '\n') {
-        g_string_append(escaped, "\\n");
+        g_string_append(formatted, "\\n");
     } else if (value == '\r') {
-        g_string_append(escaped, "\\r");
+        g_string_append(formatted, "\\r");
     } else if (value == '\t') {
-        g_string_append(escaped, "\\t");
+        g_string_append(formatted, "\\t");
     } else if (value == '\v') {
-        g_string_append(escaped, "\\v");
+        g_string_append(formatted, "\\v");
     } else if (value == '\\') {
-        g_string_append(escaped, "\\\\");
+        g_string_append(formatted, "\\\\");
     } else if (_frg_is_char_printable(value)) {
         if (value < 0x80) {
-            g_string_append_c(escaped, value);
+            g_string_append_c(formatted, value);
         } else {
             utf8proc_uint8_t buffer[4];
             utf8proc_ssize_t width = utf8proc_encode_char((utf8proc_int32_t)value, buffer);
-            g_string_append_len(escaped, (const gchar*)buffer, width);
+            g_string_append_len(formatted, (const gchar*)buffer, width);
         }
     } else {
         if (value < 0x80) {
-            g_string_append_printf(escaped, "\\x%02x", value & 0xff);
+            g_string_append_printf(formatted, "\\x%02x", value & 0xff);
         } else if (value <= 0xff) {
-            g_string_append_printf(escaped, "\\u{%02x}", value & 0xff);
+            g_string_append_printf(formatted, "\\u{%02x}", value & 0xff);
         } else if (value <= 0xffff) {
-            g_string_append_printf(escaped, "\\u{%04x}", value & 0xffff);
+            g_string_append_printf(formatted, "\\u{%04x}", value & 0xffff);
         } else {
-            g_string_append_printf(escaped, "\\u{%06x}", value);
+            g_string_append_printf(formatted, "\\u{%06x}", value);
         }
     }
 }
 
-GString* frg_escape_char(frg_char_t value) {
-    GString* escaped = g_string_new("'");
+GString* frg_format_char(frg_char_t value) {
+    GString* formatted = g_string_new("'");
 
-    _frg_escape_char_unquoted(escaped, value, '\'');
+    _frg_format_char_unquoted(formatted, value, '\'');
 
-    g_string_append_c(escaped, '\'');
+    g_string_append_c(formatted, '\'');
 
-    return escaped;
+    return formatted;
 }
 
-frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const char** escaped, char quote) {
+frg_recoverable_status_t _frg_parse_char_unquoted(
+    frg_char_t *value,
+    frg_parsing_token_reader_t* reader,
+    char quote
+) {
     frg_assert_pointer_non_null(value);
-    frg_assert_pointer_non_null(escaped);
-    frg_assert_string_non_empty(*escaped);
+    frg_assert_pointer_non_null(reader);
     frg_assert(quote == '"' || quote == '\'');
 
-    if (**escaped == '\\') {
-        (*escaped)++;
+    if (frg_parsing_token_reader_get_current_char(reader) == '\\') {
+        frg_parsing_token_reader_step(reader);
 
-        if (**escaped == 0) {
-            frg_log_error("'\\' in string expects at least one character afterwards");
+        if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+            frg_log_error_at_source_char(
+                frg_parsing_token_reader_get_current_location(reader)->path,
+                frg_parsing_token_reader_get_current_location(reader)->lineno,
+                frg_parsing_token_reader_get_current_location(reader)->columnno,
+                "'\\' in string expects at least one character afterwards"
+            );
             return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-        } else if (**escaped == 'a') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'a') {
             *value = '\a';
-        } else if (**escaped == 'b') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'b') {
             *value = '\b';
-        } else if (**escaped == 'e') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'e') {
             *value = '\033';
-        } else if (**escaped == 'f') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'f') {
             *value = '\f';
-        } else if (**escaped == 'n') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'n') {
             *value = '\n';
-        } else if (**escaped == 'r') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'r') {
             *value = '\r';
-        } else if (**escaped == 't') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 't') {
             *value = '\t';
-        } else if (**escaped == 'v') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'v') {
             *value = '\v';
-        } else if (**escaped == '0') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == '0') {
             *value = '\0';
-        } else if (**escaped == 'x') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'x') {
             *value = 0;
 
             for (int digit = 0; digit < 2; digit++) {
-                (*escaped)++;
+                frg_parsing_token_reader_step(reader);
 
-                if (**escaped == 0) {
-                    frg_log_error("'\\x' in string expects two hexadecimal digits afterwards");
+                if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+                    frg_log_error_at_source_char(
+                        frg_parsing_token_reader_get_current_location(reader)->path,
+                        frg_parsing_token_reader_get_current_location(reader)->lineno,
+                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                        "'\\x' in string expects two hexadecimal digits afterwards"
+                    );
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-                } else if (**escaped >= '0' && **escaped <= '9') {
-                    *value = (*value << 4) | (**escaped - '0');
-                } else if (**escaped >= 'a' && **escaped <= 'f') {
-                    *value = (*value << 4) | (**escaped - 'a' + 10);
-                } else if (**escaped >= 'A' && **escaped <= 'F') {
-                    *value = (*value << 4) | (**escaped - 'A' + 10);
+                } else if (frg_parsing_token_reader_get_current_char(reader) >= '0' && frg_parsing_token_reader_get_current_char(reader) <= '9') {
+                    *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - '0');
+                } else if (frg_parsing_token_reader_get_current_char(reader) >= 'a' && frg_parsing_token_reader_get_current_char(reader) <= 'f') {
+                    *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - 'a' + 10);
+                } else if (frg_parsing_token_reader_get_current_char(reader) >= 'A' && frg_parsing_token_reader_get_current_char(reader) <= 'F') {
+                    *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - 'A' + 10);
                 } else {
                     // TODO: Make error handling better here
-                    frg_log_error("'%c' (%i) is not a valid hexadecimal digit to come after '\\x'", **escaped, **escaped);
+                    frg_log_error_at_source_char(
+                        frg_parsing_token_reader_get_current_location(reader)->path,
+                        frg_parsing_token_reader_get_current_location(reader)->lineno,
+                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                        "character is not a valid hexadecimal digit to come after '\\x'"
+                    );
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
-        } else if (**escaped == 'u') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'u') {
             *value = 0;
 
-            (*escaped)++;
+            frg_parsing_token_reader_step(reader);
 
-            if (**escaped == 0) {
-                frg_log_error("'\\u' in string expects '{' afterwards, not end of string");
+            if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+                frg_log_error_at_source_char(
+                    frg_parsing_token_reader_get_current_location(reader)->path,
+                    frg_parsing_token_reader_get_current_location(reader)->lineno,
+                    frg_parsing_token_reader_get_current_location(reader)->columnno,
+                    "'\\u' in string expects '{' afterwards, not end of string"
+                );
                 return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-            } else if (**escaped != '{') {
+            } else if (frg_parsing_token_reader_get_current_char(reader) != '{') {
                 // TODO: Make error handling better here
-                frg_log_error("'\\u' in string expects '{' afterwards, not '%c' (%i)", **escaped, **escaped);
+                frg_log_error_at_source_char(
+                    frg_parsing_token_reader_get_current_location(reader)->path,
+                    frg_parsing_token_reader_get_current_location(reader)->lineno,
+                    frg_parsing_token_reader_get_current_location(reader)->columnno,
+                    "'\\u' in string expects '{' afterwards"
+                );
                 return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
             }
 
             for (int digit = 0; digit < 6; digit++) {
-                (*escaped)++;
+                frg_parsing_token_reader_step(reader);
 
-                if (**escaped == 0) {
-                    frg_log_error("'\\u{' in string expects closing '}', not end of string");
+                if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+                    frg_log_error_at_source_char(
+                        frg_parsing_token_reader_get_current_location(reader)->path,
+                        frg_parsing_token_reader_get_current_location(reader)->lineno,
+                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                        "'\\u{' in string expects closing '}', not end of string"
+                    );
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-                } else if (**escaped == '}') {
+                } else if (frg_parsing_token_reader_get_current_char(reader) == '}') {
                     break;
-                } else if (**escaped >= '0' && **escaped <= '9') {
-                    *value = (*value << 4) | (**escaped - '0');
-                } else if (**escaped >= 'a' && **escaped <= 'f') {
-                    *value = (*value << 4) | (**escaped - 'a' + 10);
-                } else if (**escaped >= 'A' && **escaped <= 'F') {
-                    *value = (*value << 4) | (**escaped - 'A' + 10);
+                } else if (frg_parsing_token_reader_get_current_char(reader) >= '0' && frg_parsing_token_reader_get_current_char(reader) <= '9') {
+                    *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - '0');
+                } else if (frg_parsing_token_reader_get_current_char(reader) >= 'a' && frg_parsing_token_reader_get_current_char(reader) <= 'f') {
+                    *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - 'a' + 10);
+                } else if (frg_parsing_token_reader_get_current_char(reader) >= 'A' && frg_parsing_token_reader_get_current_char(reader) <= 'F') {
+                    *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - 'A' + 10);
                 } else {
                     // TODO: Make error handling better here
-                    frg_log_error("'%c' (%i) is not a valid hexadecimal digit to come after '\\u{'", **escaped, **escaped);
+                    frg_log_error_at_source_char(
+                        frg_parsing_token_reader_get_current_location(reader)->path,
+                        frg_parsing_token_reader_get_current_location(reader)->lineno,
+                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                        "character is not a valid hexadecimal digit to come after '\\u{'"
+                    );
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
         } else {
-            *value = **escaped;
+            *value = frg_parsing_token_reader_get_current_char(reader);
         }
 
         return FRG_RECOVERABLE_STATUS_OK;
-    } else if (**escaped == quote) {
+    } else if (frg_parsing_token_reader_get_current_char(reader) == quote) {
         return FRG_RECOVERABLE_STATUS_OK;
     } else {
-        *value = **escaped;
+        *value = frg_parsing_token_reader_get_current_char(reader);
         return FRG_RECOVERABLE_STATUS_OK;
     }
 }
 
-frg_recoverable_status_t frg_unescape_char(frg_char_t* value, const char* escaped) {
+frg_recoverable_status_t frg_parse_char(frg_char_t* value, frg_parsing_token_reader_t* reader) {
     frg_assert_pointer_non_null(value);
-    frg_assert_string_non_empty(escaped);
+    frg_assert_pointer_non_null(reader);
 
-    if (*escaped != '\'') {
+    if (frg_parsing_token_reader_get_current_char(reader) != '\'') {
         // TODO: Make error handling better here
-        frg_log_error("character literal must start with single quote");
+        frg_log_error_at_source_char(
+            frg_parsing_token_reader_get_current_location(reader)->path,
+            frg_parsing_token_reader_get_current_location(reader)->lineno,
+            frg_parsing_token_reader_get_current_location(reader)->columnno,
+            "character literal must start with single quote"
+        );
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
-    escaped++;
+    frg_parsing_token_reader_step(reader);
 
-    if (*escaped == 0) {
-        frg_log_error("' expects closing '");
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+        frg_log_error_at_source_char(
+            frg_parsing_token_reader_get_current_location(reader)->path,
+            frg_parsing_token_reader_get_current_location(reader)->lineno,
+            frg_parsing_token_reader_get_current_location(reader)->columnno,
+            "single quote expects literal character afterwards, not end of string"
+        );
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    frg_recoverable_status_t result = _frg_unescape_char_unquoted(value, &escaped, '\'');
+    frg_recoverable_status_t result = _frg_parse_char_unquoted(value, reader, '\'');
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         return result;
     }
 
-    escaped++;
+    frg_parsing_token_reader_step(reader);
 
-    if (*escaped == 0) {
-        frg_log_error("' expects closing '");
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+        frg_log_error_at_source_char(
+            frg_parsing_token_reader_get_current_location(reader)->path,
+            frg_parsing_token_reader_get_current_location(reader)->lineno,
+            frg_parsing_token_reader_get_current_location(reader)->columnno,
+            "single quote expects closing single quote, not end of string"
+        );
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    } else if (*escaped != '\'') {
+    } else if (frg_parsing_token_reader_get_current_char(reader) != '\'') {
         // TODO: Make error handling better here
-        frg_log_error("character literal must end with single quote");
+        frg_log_error_at_source_char(
+            frg_parsing_token_reader_get_current_location(reader)->path,
+            frg_parsing_token_reader_get_current_location(reader)->lineno,
+            frg_parsing_token_reader_get_current_location(reader)->columnno,
+            "character literal must end with single quote"
+        );
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     return FRG_RECOVERABLE_STATUS_OK;
 }
 
-GString* frg_escape_str(const char* value) {
+GString* frg_format_str(const char* value) {
     frg_assert_pointer_non_null(value);
 
-    GString* escaped = g_string_new("\"");
+    GString* formatted = g_string_new("\"");
 
     for (const char* iter = value; *iter != 0; iter++) {
-        _frg_escape_char_unquoted(escaped, *iter, '"');
+        _frg_format_char_unquoted(formatted, *iter, '"');
     }
 
-    g_string_append_c(escaped, '\"');
+    g_string_append_c(formatted, '\"');
 
-    return escaped;
+    return formatted;
 }
 
-frg_recoverable_status_t frg_unescape_str(GString** value, const char* escaped) {
+frg_recoverable_status_t frg_parse_str(GString** value, frg_parsing_token_reader_t* reader) {
     frg_assert_pointer_non_null(value);
-    frg_assert_pointer_non_null(escaped);
+    frg_assert_pointer_non_null(reader);
 
-    if (*escaped == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    if (*escaped != '"') {
+    if (frg_parsing_token_reader_get_current_char(reader) != '"') {
         // TODO: Make error handling better here
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
-    escaped++;
+    frg_parsing_token_reader_step(reader);
 
-    if (*escaped == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
     *value = g_string_new(NULL);
 
-    while (*escaped != 0) {
-        if (*escaped == '"') {
+    while (frg_parsing_token_reader_get_current_char(reader) != 0) {
+        if (frg_parsing_token_reader_get_current_char(reader) == '"') {
             break;
         }
 
         frg_char_t current_character;
-        frg_recoverable_status_t result = _frg_unescape_char_unquoted(&current_character, &escaped, '"');
+        frg_recoverable_status_t result = _frg_parse_char_unquoted(&current_character, reader, '"');
         if (result != FRG_RECOVERABLE_STATUS_OK) {
             return result;
         }
 
         g_string_append_c(*value, current_character);
 
-        escaped++;
+        frg_parsing_token_reader_step(reader);
     }
 
-    if (*escaped == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-    } else if (*escaped != '"') {
+    } else if (frg_parsing_token_reader_get_current_char(reader) != '"') {
         // TODO: Make error handling better here
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
@@ -290,7 +348,7 @@ frg_recoverable_status_t frg_unescape_str(GString** value, const char* escaped) 
     return FRG_RECOVERABLE_STATUS_OK;
 }
 
-GString* frg_uint_to_str(
+GString* frg_format_uint(
     uint64_t value,
     uint32_t base
 ) {
@@ -329,35 +387,35 @@ GString* frg_uint_to_str(
     return str;
 }
 
-frg_recoverable_status_t _frg_get_base_prefix(
+frg_recoverable_status_t _frg_parse_base_prefix(
     frg_int_base_t* base,
-    const char** iter
+    frg_parsing_token_reader_t* reader
 ) {
     frg_assert_pointer_non_null(base);
-    frg_assert_pointer_non_null(iter);
+    frg_assert_pointer_non_null(reader);
 
-    if (**iter == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    const char* iter_original = *iter;
+    frg_parsing_token_reader_t* state = frg_parsing_token_reader_save(reader);
 
-    if (**iter == '0') {
-        (*iter)++;
+    if (frg_parsing_token_reader_get_current_char(reader) == '0') {
+        frg_parsing_token_reader_step(reader);
 
-        if (**iter == 0) {
+        if (frg_parsing_token_reader_get_current_char(reader) == 0) {
             *base = 10;
-            *iter = iter_original;
+            frg_parsing_token_reader_restore(reader, &state);
             return FRG_RECOVERABLE_STATUS_OK;
-        } else if (**iter == 'b') {
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'b') {
             *base = 2;
-            (*iter)++;
-        } else if (**iter == 'o') {
+            frg_parsing_token_reader_step(reader);
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'o') {
             *base = 8;
-            (*iter)++;
-        } else if (**iter == 'x') {
+            frg_parsing_token_reader_step(reader);
+        } else if (frg_parsing_token_reader_get_current_char(reader) == 'x') {
             *base = 16;
-            (*iter)++;
+            frg_parsing_token_reader_step(reader);
         } else {
             *base = 10;
         }
@@ -371,27 +429,26 @@ frg_recoverable_status_t _frg_get_base_prefix(
 frg_recoverable_status_t _frg_get_next_digit(
     uint32_t* value,
     frg_int_base_t base,
-    const char** iter
+    frg_parsing_token_reader_t* reader
 ) {
     frg_assert_pointer_non_null(value);
     frg_assert(base == 2 || base == 8 || base == 10 || base == 16);
-    frg_assert_pointer_non_null(iter);
-    frg_assert_pointer_non_null(*iter);
+    frg_assert_pointer_non_null(reader);
 
-    while (**iter != 0 && **iter == '_') {
-        (*iter)++;
+    while (frg_parsing_token_reader_get_current_char(reader) != 0 && frg_parsing_token_reader_get_current_char(reader) == '_') {
+        frg_parsing_token_reader_step(reader);
     }
 
-    if (**iter == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    if (**iter >= '0' && **iter <= '9') {
-        *value = **iter - '0';
-    } else if (**iter >= 'a' && **iter <= 'z') {
-        *value = **iter - 'a' + 10;
-    } else if (**iter >= 'A' && **iter <= 'Z') {
-        *value = **iter - 'A' + 10;
+    if (frg_parsing_token_reader_get_current_char(reader) >= '0' && frg_parsing_token_reader_get_current_char(reader) <= '9') {
+        *value = frg_parsing_token_reader_get_current_char(reader) - '0';
+    } else if (frg_parsing_token_reader_get_current_char(reader) >= 'a' && frg_parsing_token_reader_get_current_char(reader) <= 'z') {
+        *value = frg_parsing_token_reader_get_current_char(reader) - 'a' + 10;
+    } else if (frg_parsing_token_reader_get_current_char(reader) >= 'A' && frg_parsing_token_reader_get_current_char(reader) <= 'Z') {
+        *value = frg_parsing_token_reader_get_current_char(reader) - 'A' + 10;
     } else {
         // TODO: Make error handling better here
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
@@ -402,19 +459,19 @@ frg_recoverable_status_t _frg_get_next_digit(
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
-    (*iter)++;
+    frg_parsing_token_reader_step(reader);
 
     return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_recoverable_status_t frg_str_to_uint(
+frg_recoverable_status_t frg_parse_uint(
     uint64_t* value,
-    const char* str
+    frg_parsing_token_reader_t* reader
 ) {
     frg_assert_pointer_non_null(value);
-    frg_assert_pointer_non_null(str);
+    frg_assert_pointer_non_null(reader);
 
-    if (*str == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
@@ -422,18 +479,18 @@ frg_recoverable_status_t frg_str_to_uint(
 
     uint32_t base = 10;
 
-    frg_recoverable_status_t result = _frg_get_base_prefix(&base, &str);
+    frg_recoverable_status_t result = _frg_parse_base_prefix(&base, reader);
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         return result;
     }
 
-    if (*str == 0) {
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    while (*str != 0) {
+    while (frg_parsing_token_reader_get_current_char(reader) != 0) {
         uint32_t digit;
-        frg_recoverable_status_t result = _frg_get_next_digit(&digit, base, &str);
+        frg_recoverable_status_t result = _frg_get_next_digit(&digit, base, reader);
         if (result != FRG_RECOVERABLE_STATUS_OK) {
             return result;
         }
@@ -527,7 +584,7 @@ frg_recoverable_status_t frg_str_to_uint(
 //     uint32_t base = 10;
 
 //     frg_check(
-//         _frg_get_base_prefix(&base, &str)
+//         _frg_parse_base_prefix(&base, &str)
 //     );
 
 //     if (*str == 0) {

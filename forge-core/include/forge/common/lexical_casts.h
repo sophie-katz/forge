@@ -18,23 +18,24 @@
 #include <forge/common/enums.h>
 #include <forge/common/types.h>
 #include <glib.h>
+#include <forge/parsing/token_reader.h>
 
-GString* frg_escape_char(frg_char_t value);
+GString* frg_format_char(frg_char_t value);
 
-frg_recoverable_status_t frg_unescape_char(frg_char_t* value, const char* escaped);
+frg_recoverable_status_t frg_parse_char(frg_char_t* value, frg_parsing_token_reader_t* reader);
 
-GString* frg_escape_str(const char* value);
+GString* frg_format_str(const char* value);
 
-frg_recoverable_status_t frg_unescape_str(GString** value, const char* escaped);
+frg_recoverable_status_t frg_parse_str(GString** value, frg_parsing_token_reader_t* reader);
 
-GString* frg_uint_to_str(
+GString* frg_format_uint(
     uint64_t value,
     frg_int_base_t base
 );
 
-frg_recoverable_status_t frg_str_to_uint(
+frg_recoverable_status_t frg_parse_uint(
     uint64_t* value,
-    const char* str
+    frg_parsing_token_reader_t* reader
 );
 
 // GString* frg_float_to_str(

@@ -22,14 +22,16 @@ extern FILE* yyin;
 extern int yyparse(frg_ast_t** ast);
 extern int yy_scan_buffer(char* base, size_t size);
 
-const char* _frg_current_path = NULL;
+const char* _frg_parsing_current_path = NULL;
+size_t _frg_parsing_current_offset = 0;
 
 frg_ast_t* frg_parse_file(FILE* file, const char* path) {
     frg_assert_pointer_non_null(file);
     frg_assert(!ferror(file));
     frg_assert_string_non_empty(path);
 
-    _frg_current_path = path;
+    _frg_parsing_current_path = path;
+    _frg_parsing_current_offset = 0;
     yyin = file;
 
     frg_ast_t* ast = NULL;
@@ -37,7 +39,8 @@ frg_ast_t* frg_parse_file(FILE* file, const char* path) {
         frg_ast_destroy(&ast);
     }
 
-    _frg_current_path = NULL;
+    _frg_parsing_current_path = NULL;
+    _frg_parsing_current_offset = 0;
 
     return ast;
 }
@@ -68,7 +71,8 @@ frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* path) {
     frg_assert_int_eq(buffer[length - 1], 0);
     frg_assert_string_non_empty(path);
 
-    _frg_current_path = path;
+    _frg_parsing_current_path = path;
+    _frg_parsing_current_offset = 0;
 
     yy_scan_buffer(buffer, length);
     
@@ -77,7 +81,8 @@ frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* path) {
         frg_ast_destroy(&ast);
     }
 
-    _frg_current_path = NULL;
+    _frg_parsing_current_path = NULL;
+    _frg_parsing_current_offset = 0;
 
     return ast;
 }

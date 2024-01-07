@@ -32,9 +32,11 @@ not, see <https://www.gnu.org/licenses/>.
 
 #include "forge.tab.h"
 
-#define YY_USER_ACTION yycolumnno += yyleng;
+#define YY_USER_ACTION yycolumnno += yyleng; \
+    _frg_parsing_current_offset += yyleng;
 
-extern const char* _frg_current_path;
+extern const char* _frg_parsing_current_path;
+extern size_t _frg_parsing_current_offset;
 
 frg_columnno_t yycolumnno = 1;
 %}
@@ -207,11 +209,24 @@ false {
 }
 
 [0-9][0-9a-zA-Z_]* {
-    frg_recoverable_status_t result = frg_str_to_uint(&yylval.value_int, yytext);
+    frg_parsing_location_t location = {
+        .path = _frg_parsing_current_path,
+        .offset = _frg_parsing_current_offset,
+        .lineno = yylineno,
+        .columnno = yycolumnno,
+    };
+
+    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
+        location,
+        yytext
+    );
+
+    frg_recoverable_status_t result = frg_parse_uint(&yylval.value_int, reader);
     if (result != FRG_RECOVERABLE_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid integer literal \"%s\"", yytext);
         yylval.value_int = 0;
     }
+
+    frg_parsing_token_reader_destroy(&reader);
 
     return INT;
 }
@@ -219,7 +234,7 @@ false {
 [0-9][0-9a-zA-Z_]*\.[0-9a-zA-Z_]* {
     // frg_recoverable_status_t result = frg_str_to_float(&yylval.value_float, yytext);
     // if (result != FRG_STATUS_OK) {
-    //     frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
+    //     frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
     yylval.value_float = 0.0;
     // }
 
@@ -229,7 +244,7 @@ false {
 ([0-9][0-9a-zA-Z_]*)?\.[0-9][0-9a-zA-Z_]* {
     // frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
     // if (result != FRG_STATUS_OK) {
-    //     frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
+    //     frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
     yylval.value_float = 0.0;
     // }
 
@@ -240,12 +255,24 @@ false {
 \"(\\.|[^\\"\n])*\" {
     // Taken from https://gist.github.com/codebrainz/2933703
 
-    yylval.value_str = NULL;
-    frg_recoverable_status_t result = frg_unescape_str(&yylval.value_str, yytext);
+    frg_parsing_location_t location = {
+        .path = _frg_parsing_current_path,
+        .offset = _frg_parsing_current_offset,
+        .lineno = yylineno,
+        .columnno = yycolumnno,
+    };
+
+    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
+        location,
+        yytext
+    );
+
+    frg_recoverable_status_t result = frg_parse_str(&yylval.value_str, reader);
     if (result != FRG_RECOVERABLE_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid string literal %s", yytext);
         yylval.value_str = g_string_new(NULL);
     }
+
+    frg_parsing_token_reader_destroy(&reader);
 
     return STR;
 }
@@ -253,11 +280,24 @@ false {
 '(\\.|[^'\n])*' {
     // Taken from https://gist.github.com/codebrainz/2933703
     
-    frg_recoverable_status_t result = frg_unescape_char(&yylval.value_char, yytext);
+    frg_parsing_location_t location = {
+        .path = _frg_parsing_current_path,
+        .offset = _frg_parsing_current_offset,
+        .lineno = yylineno,
+        .columnno = yycolumnno,
+    };
+
+    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
+        location,
+        yytext
+    );
+
+    frg_recoverable_status_t result = frg_parse_char(&yylval.value_char, reader);
     if (result != FRG_RECOVERABLE_STATUS_OK) {
-        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "invalid character literal %s", yytext);
         yylval.value_char = 0;
     }
+
+    frg_parsing_token_reader_destroy(&reader);
 
     return CHAR;
 }
@@ -426,9 +466,9 @@ false {
     char as_char = yytext[0];
     int as_int = ((int)as_char) & 0xff;
     if (isprint(yytext[0])) {
-        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "unexpected character '%c' (0x%2x)", as_char, as_int);
+        frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "unexpected character '%c' (0x%2x)", as_char, as_int);
     } else {
-        frg_log_error_at_source_char(_frg_current_path, yylineno, yycolumnno, "unexpected byte 0x%2x", as_int);
+        frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "unexpected byte 0x%2x", as_int);
     }
 }
 

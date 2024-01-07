@@ -35,6 +35,7 @@ RUN apt-get update -y && \
         python3.11 \
         python3.11-venv \
         software-properties-common \
+        valgrind \
         wget \
     ;
 

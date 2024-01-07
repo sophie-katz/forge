@@ -59,7 +59,7 @@ typedef struct {
     frg_ast_t base;
     frg_ast_decl_prop_flags_t flags;
     GString* name;
-    frg_ast_t* type;
+    frg_ast_t* ty;
 } frg_ast_decl_prop_t;
 
 typedef struct {
@@ -214,7 +214,7 @@ frg_ast_decl_struct_t* frg_ast_new_decl_struct(
 frg_ast_decl_prop_t* frg_ast_new_decl_prop(
     frg_ast_decl_prop_flags_t flags,
     GString* name,
-    frg_ast_t* type
+    frg_ast_t* ty
 );
 
 frg_ast_decl_iface_t* frg_ast_new_decl_iface(

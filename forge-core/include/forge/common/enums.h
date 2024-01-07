@@ -163,7 +163,12 @@ typedef enum {
     FRG_AST_ID_VALUE_EXP_ASSIGN,
     FRG_AST_ID_VALUE_LOG_AND_ASSIGN,
     FRG_AST_ID_VALUE_LOG_OR_ASSIGN,
+
+    FRG_AST_ID_FIRST = FRG_AST_ID_TY_BOOL,
+    FRG_AST_ID_LAST = FRG_AST_ID_VALUE_LOG_OR_ASSIGN,
 } frg_ast_id_t;
+
+#define FRG_AST_ID_COUNT (FRG_AST_ID_LAST - FRG_AST_ID_FIRST + 1)
 
 const char* frg_ast_id_to_string(frg_ast_id_t id);
 bool frg_ast_id_is_ty_primary(frg_ast_id_t id);
@@ -201,3 +206,9 @@ typedef enum {
 } frg_ast_decl_fn_flags_t;
 
 void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags);
+
+typedef enum {
+    FRG_AST_VISITOR_STATUS_OK,
+    FRG_AST_VISITOR_STATUS_SKIP,
+    FRG_AST_VISITOR_STATUS_STOP,
+} frg_ast_visitor_status_t;

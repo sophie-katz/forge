@@ -25,7 +25,7 @@
 #include <forge/cli/program.h>
 #include <forge/config/config.h>
 #include <forge/config/cli_program.h>
-#include <forge/parse/parse.h>
+#include <forge/parsing/parsing.h>
 
 frg_config_t* frg_config_new_default() {
     frg_config_t* config = frg_safe_malloc(sizeof(frg_config_t));

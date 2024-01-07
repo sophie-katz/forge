@@ -23,7 +23,6 @@ project(
         'c_std=gnu18',
         'cpp_std=c++20',
         'werror=true'
-        # 'b_coverage=true'
     ],
     license: 'LGPL-3.0-only',
     meson_version: '>=1.1',
@@ -191,9 +190,9 @@ message('LLVM version: ' + program_llvm_config.version())
 # Generated files
 # --------------------------------------------------------------------------------------
 
-forge_generated_files_flex = generator_flex.process('lib/forge/parse/forge.l')
+forge_generated_files_flex = generator_flex.process('lib/forge/parsing/forge.l')
 
-forge_generated_files_bison = generator_bison.process('lib/forge/parse/forge.y')
+forge_generated_files_bison = generator_bison.process('lib/forge/parsing/forge.y')
 
 # Forge libraries
 # --------------------------------------------------------------------------------------
@@ -204,6 +203,7 @@ forge_core_lib = static_library(
     'lib/forge/ast/ast.c',
     'lib/forge/ast/debug.c',
     'lib/forge/ast/scope.c',
+    'lib/forge/ast/visitor.c',
     'lib/forge/cli/choice.c',
     'lib/forge/cli/command.c',
     'lib/forge/cli/option_set.c',
@@ -227,7 +227,7 @@ forge_core_lib = static_library(
     'lib/forge/config/commands/link.c',
     'lib/forge/config/commands/version.c',
     'lib/forge/config/config.c',
-    'lib/forge/parse/parse.c',
+    'lib/forge/parsing/parsing.c',
     forge_generated_files_flex,
     forge_generated_files_bison,
     include_directories: forge_include_directories,
@@ -250,6 +250,7 @@ executable(
 # --------------------------------------------------------------------------------------
 
 if should_build_tests
+    # Unit
     forge_test_ast_ast = executable(
         'test-ast-ast',
         'lib/forge/ast/ast_test.c',
@@ -273,6 +274,18 @@ if should_build_tests
     )
 
     test('ast/scope_test.c', forge_test_ast_scope)
+
+    forge_test_ast_visitor = executable(
+        'test-ast-visitor',
+        'lib/forge/ast/visitor_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('ast/visitor_test.c', forge_test_ast_visitor)
 
     forge_test_common_stream = executable(
         'test-common-stream',
@@ -369,6 +382,20 @@ if should_build_tests
     )
 
     test('config/cli/program_test.c', forge_test_cli_program)
+
+    # Integration
+
+    forge_test_parsing_basic = executable(
+        'test-parsing-basic',
+        'tests/parsing/basic.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('tests/parsing/basic.c', forge_test_parsing_basic)
 endif
 
 # Demos

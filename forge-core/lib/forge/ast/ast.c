@@ -108,7 +108,7 @@ frg_ast_decl_struct_t* frg_ast_new_decl_struct(
 frg_ast_decl_prop_t* frg_ast_new_decl_prop(
     frg_ast_decl_prop_flags_t flags,
     GString* name,
-    frg_ast_t* type
+    frg_ast_t* ty
 ) {
     frg_assert_gstring_non_empty(name);
 
@@ -117,7 +117,7 @@ frg_ast_decl_prop_t* frg_ast_new_decl_prop(
     ast->base.id = FRG_AST_ID_DECL_PROP;
     ast->flags = flags;
     ast->name = name;
-    ast->type = type;
+    ast->ty = ty;
 
     return ast;
 }
@@ -541,8 +541,8 @@ void frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_DECL_PROP:
             g_string_free(((frg_ast_decl_prop_t*)*ast)->name, TRUE);
 
-            if (((frg_ast_decl_prop_t*)*ast)->type != NULL) {
-                frg_ast_destroy(&((frg_ast_decl_prop_t*)*ast)->type);
+            if (((frg_ast_decl_prop_t*)*ast)->ty != NULL) {
+                frg_ast_destroy(&((frg_ast_decl_prop_t*)*ast)->ty);
             }
 
             break;

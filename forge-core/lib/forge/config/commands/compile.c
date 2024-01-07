@@ -17,7 +17,7 @@
 #include <forge/ast/debug.h>
 #include <forge/config/commands/compile.h>
 #include <forge/config/config.h>
-#include <forge/parse/parse.h>
+#include <forge/parsing/parsing.h>
 #include <forge/common/error.h>
 #include <forge/common/log.h>
 #include <forge/codegen/codegen.h>

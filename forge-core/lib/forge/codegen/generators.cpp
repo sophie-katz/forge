@@ -98,7 +98,7 @@ void _frg_generate_decl_fn(
         llvm::Type* arg_ty = _frg_generate_type(
             ctx,
             scope,
-            ((frg_ast_decl_prop_t*)((frg_ast_decl_fn_arg_t*)it->data)->prop)->type
+            ((frg_ast_decl_prop_t*)((frg_ast_decl_fn_arg_t*)it->data)->prop)->ty
         );
 
         arg_types.push_back(arg_ty);

@@ -55,8 +55,8 @@ The generators are defined in [`forge/codegen/generators.hpp`](../../../forge-co
 
 ### Lexer
 
-The lexer is defined in [`forge/parse/forge.l`](../../../forge-core/lib/forge/parse/forge.l).
+The lexer is defined in [`forge/parsing/forge.l`](../../../forge-core/lib/forge/parsing/forge.l).
 
 ### Parser
 
-The parser is defined in [`forge/parse/forge.y`](../../../forge-core/lib/forge/parse/forge.y).
+The parser is defined in [`forge/parsing/forge.y`](../../../forge-core/lib/forge/parsing/forge.y).

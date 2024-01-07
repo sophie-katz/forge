@@ -16,7 +16,7 @@
 #include <forge/common/error.h>
 #include <forge/common/log.h>
 #include <forge/common/memory.h>
-#include <forge/parse/parse.h>
+#include <forge/parsing/parsing.h>
 
 extern FILE* yyin;
 extern int yyparse(frg_ast_t** ast);
@@ -83,7 +83,7 @@ frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* path) {
 }
 
 frg_ast_t* frg_parse_string(const char* text, const char* path) {
-    frg_assert_string_non_empty(text);
+    frg_assert_pointer_non_null(text);
     frg_assert_string_non_empty(path);
 
     size_t length = strlen(text);

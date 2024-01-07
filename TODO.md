@@ -7,7 +7,7 @@
     - [ ] Ideally reference a documentation URL
 - [x] Add code coverage metrics.
 - [x] Do a unit test review to see where the most risk of failure is that needs to be tested.
-- [ ] Write at least one parser integration test.
+- [x] Write at least one parser integration test.
 - [ ] Write at least one AST algorithm integration test.
 - [ ] Write at least one code generator integration test.
 - [ ] Add in memory leak detection into automated tests.

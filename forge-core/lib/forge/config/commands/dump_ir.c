@@ -17,7 +17,7 @@
 #include <forge/ast/debug.h>
 #include <forge/config/commands/dump_ir.h>
 #include <forge/config/commands/common.h>
-#include <forge/parse/parse.h>
+#include <forge/parsing/parsing.h>
 #include <forge/config/config.h>
 #include <forge/common/error.h>
 #include <forge/common/log.h>

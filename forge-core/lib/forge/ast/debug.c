@@ -131,7 +131,7 @@ void frg_ast_print_debug(const frg_ast_t* ast, frg_indent_t indent) {
 
             frg_debug_print_newline(indent);
             frg_debug_print_property("type", NULL);
-            frg_ast_print_debug(((frg_ast_decl_prop_t*)ast)->type, indent + FRG_DEBUG_INDENT_WIDTH);
+            frg_ast_print_debug(((frg_ast_decl_prop_t*)ast)->ty, indent + FRG_DEBUG_INDENT_WIDTH);
 
             break;
         case FRG_AST_ID_DECL_IFACE:

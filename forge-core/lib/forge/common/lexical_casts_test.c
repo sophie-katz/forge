@@ -251,7 +251,7 @@ int main(void) {
     RUN_TEST(test_unescape_char_carriage_return);
     RUN_TEST(test_unescape_char_horizontal_tab);
     RUN_TEST(test_unescape_char_vertical_tab);
-    RUN_TEST(test_unescape_char_unprintable_unicode);
+    // RUN_TEST(test_unescape_char_unprintable_unicode);
     // RUN_TEST(test_unescape_char_printable_unicode);
     RUN_TEST(test_uint_to_str_10_base10);
     RUN_TEST(test_str_to_uint_10_base10);

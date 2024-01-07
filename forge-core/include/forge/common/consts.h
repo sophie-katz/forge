@@ -1,4 +1,0 @@
-#pragma once
-
-#define FRG_DEFAULT_INT_BYTE_WIDTH 4
-#define FRG_DEFAULT_FLOAT_BYTE_WIDTH 8

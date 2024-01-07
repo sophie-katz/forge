@@ -17,13 +17,6 @@
 
 #include <forge/common/enums.h>
 
-/// \brief The maximum number of option short names possible.
-///
-/// There are 26 for lowercase ASCII letters and 26 more for uppercase.
-#define FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT 52
-
-#define FRG_CLI_OPTION_SHORT_NAME_NULL 0
-
 typedef struct {
     const char* name;
     const char* help;

@@ -28,7 +28,7 @@ frg_llvm_module_t* frg_codegen(const frg_ast_t* ast);
 void* frg_codegen_call_function(
     const frg_llvm_module_t* llvm_module,
     const char* name,
-    const GList* pos_args
+    GList* pos_args
 );
 
 frg_recoverable_status_t frg_codegen_write_object_file(

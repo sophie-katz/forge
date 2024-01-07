@@ -18,6 +18,7 @@
 #include <forge/common/types.h>
 #include <stddef.h>
 
+#define FRG_DEBUG_DEFAULT_STREAM stdout
 #define FRG_DEBUG_INDENT_WIDTH 2
 
 void frg_debug_print_newline(frg_indent_t indent);

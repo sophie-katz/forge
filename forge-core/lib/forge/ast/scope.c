@@ -40,7 +40,7 @@ void frg_ast_scope_frame_add_ast(frg_ast_scope_frame_t* scope_frame, frg_ast_t* 
     frg_assert_pointer_non_null(scope_frame);
     frg_assert_pointer_non_null(ast);
 
-    const char* name = frg_ast_get_name(ast);
+    const char* name = frg_ast_decl_get_name(ast);
     
     frg_assert_string_non_empty(name);
 
@@ -98,7 +98,7 @@ void frg_ast_scope_frame_load_decl_block(
     }
 }
 
-void frg_ast_scope_frame_load_fn_args(
+void frg_ast_scope_frame_load_decl_fn_args(
     frg_ast_scope_frame_t* scope_frame,
     frg_ast_decl_fn_t* fn
 ) {
@@ -199,14 +199,24 @@ frg_ast_t* frg_ast_scope_get_ast(
     frg_assert_pointer_non_null(scope);
     frg_assert_string_non_empty(name);
 
-    frg_ast_scope_frame_t* scope_frame = frg_ast_scope_get_current_frame(
-        scope
-    );
+    for (
+        GList* it = g_list_first(scope->frames);
+        it != NULL;
+        it = g_list_next(it)
+    ) {
+        frg_ast_scope_frame_t* scope_frame = (frg_ast_scope_frame_t*)it->data;
 
-    return frg_ast_scope_frame_get_ast(
-        scope_frame,
-        name
-    );
+        frg_ast_t* ast = frg_ast_scope_frame_get_ast(
+            scope_frame,
+            name
+        );
+
+        if (ast != NULL) {
+            return ast;
+        }
+    }
+
+    return NULL;
 }
 
 void frg_ast_scope_add_ir(
@@ -233,14 +243,27 @@ void* frg_ast_scope_get_ir(
     frg_ast_scope_t* scope,
     const char* name
 ) {
-    frg_ast_scope_frame_t* scope_frame = frg_ast_scope_get_current_frame(
-        scope
-    );
+    frg_assert_pointer_non_null(scope);
+    frg_assert_string_non_empty(name);
 
-    return frg_ast_scope_frame_get_ir(
-        scope_frame,
-        name
-    );
+    for (
+        GList* it = g_list_first(scope->frames);
+        it != NULL;
+        it = g_list_next(it)
+    ) {
+        frg_ast_scope_frame_t* scope_frame = (frg_ast_scope_frame_t*)it->data;
+
+        void* ir = frg_ast_scope_frame_get_ir(
+            scope_frame,
+            name
+        );
+
+        if (ir != NULL) {
+            return ir;
+        }
+    }
+
+    return NULL;
 }
 
 void frg_ast_scope_load_decl_block(
@@ -260,7 +283,7 @@ void frg_ast_scope_load_decl_block(
     );
 }
 
-void frg_ast_scope_load_fn_args(
+void frg_ast_scope_load_decl_fn_args(
     frg_ast_scope_t* scope,
     frg_ast_decl_fn_t* fn
 ) {
@@ -271,7 +294,7 @@ void frg_ast_scope_load_fn_args(
         scope
     );
 
-    frg_ast_scope_frame_load_fn_args(
+    frg_ast_scope_frame_load_decl_fn_args(
         scope_frame,
         fn
     );

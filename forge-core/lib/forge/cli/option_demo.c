@@ -16,226 +16,133 @@
 #include <forge/cli/option.h>
 #include <forge/common/log.h>
 
-frg_status_t callback(void* user_data, const char* value) {
-    return FRG_STATUS_OK;
+bool callback(void* user_data, const char* value) {
+    return true;
 }
 
 void flag(void) {
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_new_flag(
-        &option,
+    frg_cli_option_t* option = frg_cli_option_new_flag(
         "long-name",
         "A description of the option",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-    }
 
-    result = frg_cli_option_print_help(option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_print_help(option);
 
-    result = frg_cli_option_destroy(&option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_destroy(&option);
 }
 
 void flag_short(void) {
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_new_flag_short(
-        &option,
+    frg_cli_option_t* option = frg_cli_option_new_flag_short(
         'l',
         "long-name",
         "A description of the option",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-    }
 
-    result = frg_cli_option_print_help(option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_print_help(option);
 
-    result = frg_cli_option_destroy(&option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_destroy(&option);
 }
 
 void argument(void) {
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_new_argument(
-        &option,
+    frg_cli_option_t* option = frg_cli_option_new_argument(
         "long-name",
         "value",
         "A description of the option",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-    }
 
-    result = frg_cli_option_print_help(option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_print_help(option);
 
-    result = frg_cli_option_destroy(&option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_destroy(&option);
 }
 
 void argument_short(void) {
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_new_argument_short(
-        &option,
+    frg_cli_option_t* option = frg_cli_option_new_argument_short(
         'l',
         "long-name",
         "value",
         "A description of the option",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-    }
 
-    result = frg_cli_option_print_help(option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_print_help(option);
 
-    result = frg_cli_option_destroy(&option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_destroy(&option);
 }
 
 void choice(void) {
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_new_choice(
-        &option,
+    frg_cli_option_t* option = frg_cli_option_new_choice(
         "long-name",
         "value",
         "A description of the option",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-    }
 
-    frg_cli_choice_t* choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-1",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-    }
-
-    result = frg_cli_option_add_choice(
+    frg_cli_option_add_choice(
         option,
-        choice
+        frg_cli_choice_new(
+            "option-1",
+            "A description of the choice"
+        )
     );
 
-    choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-2",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-    }
-
-    result = frg_cli_option_add_choice(
+    frg_cli_option_add_choice(
         option,
-        choice
+        frg_cli_choice_new(
+            "option-2",
+            "A description of the choice"
+        )
     );
 
-    result = frg_cli_option_print_help(option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_print_help(option);
 
-    result = frg_cli_option_destroy(&option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_destroy(&option);
 }
 
 void choice_short(void) {
-    frg_cli_option_t* option = NULL;
-    frg_status_t result = frg_cli_option_new_choice_short(
-        &option,
+    frg_cli_option_t* option = frg_cli_option_new_choice_short(
         'l',
         "long-name",
         "value",
         "A description of the option",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-    }
 
-    frg_cli_choice_t* choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-1",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-    }
-
-    result = frg_cli_option_add_choice(
+    frg_cli_option_add_choice(
         option,
-        choice
+        frg_cli_choice_new(
+            "option-1",
+            "A description of the choice"
+        )
     );
 
-    choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-2",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-    }
-
-    result = frg_cli_option_add_choice(
+    frg_cli_option_add_choice(
         option,
-        choice
+        frg_cli_choice_new(
+            "option-2",
+            "A description of the choice"
+        )
     );
 
-    result = frg_cli_option_print_help(option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option help: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_print_help(option);
 
-    result = frg_cli_option_destroy(&option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy option: %s", frg_status_to_string(result));
-    }
+    frg_cli_option_destroy(&option);
 }
 
 int main(void) {
+    printf("== FLAG ==\n\n");
     flag();
-    printf("\n");
+    printf("\n== FLAG (SHORT) ==\n\n");
     flag_short();
-    printf("\n");
+    printf("\n== ARGUMENT ==\n\n");
     argument();
-    printf("\n");
+    printf("\n== ARGUMENT (SHORT) ==\n\n");
     argument_short();
-    printf("\n");
+    printf("\n== CHOICE ==\n\n");
     choice();
-    printf("\n");
+    printf("\n== CHOICE (SHORT) ==\n\n");
     choice_short();
 
     return 0;

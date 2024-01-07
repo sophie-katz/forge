@@ -105,6 +105,7 @@ frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const ch
         (*escaped)++;
 
         if (**escaped == 0) {
+            frg_log_error("'\\' in string expects at least one character afterwards");
             return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
         } else if (**escaped == 'a') {
             *value = '\a';
@@ -131,6 +132,7 @@ frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const ch
                 (*escaped)++;
 
                 if (**escaped == 0) {
+                    frg_log_error("'\\x' in string expects two hexadecimal digits afterwards");
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
                 } else if (**escaped >= '0' && **escaped <= '9') {
                     *value = (*value << 4) | (**escaped - '0');
@@ -140,6 +142,7 @@ frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const ch
                     *value = (*value << 4) | (**escaped - 'A' + 10);
                 } else {
                     // TODO: Make error handling better here
+                    frg_log_error("'%c' (%i) is not a valid hexadecimal digit to come after '\\x'", **escaped, **escaped);
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
@@ -149,9 +152,11 @@ frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const ch
             (*escaped)++;
 
             if (**escaped == 0) {
+                frg_log_error("'\\u' in string expects '{' afterwards, not end of string");
                 return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-            } else if (**escaped == '{') {
+            } else if (**escaped != '{') {
                 // TODO: Make error handling better here
+                frg_log_error("'\\u' in string expects '{' afterwards, not '%c' (%i)", **escaped, **escaped);
                 return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
             }
 
@@ -159,6 +164,7 @@ frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const ch
                 (*escaped)++;
 
                 if (**escaped == 0) {
+                    frg_log_error("'\\u{' in string expects closing '}', not end of string");
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
                 } else if (**escaped == '}') {
                     break;
@@ -170,9 +176,12 @@ frg_recoverable_status_t _frg_unescape_char_unquoted(frg_char_t *value, const ch
                     *value = (*value << 4) | (**escaped - 'A' + 10);
                 } else {
                     // TODO: Make error handling better here
+                    frg_log_error("'%c' (%i) is not a valid hexadecimal digit to come after '\\u{'", **escaped, **escaped);
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
+        } else {
+            *value = **escaped;
         }
 
         return FRG_RECOVERABLE_STATUS_OK;
@@ -190,12 +199,14 @@ frg_recoverable_status_t frg_unescape_char(frg_char_t* value, const char* escape
 
     if (*escaped != '\'') {
         // TODO: Make error handling better here
+        frg_log_error("character literal must start with single quote");
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     escaped++;
 
     if (*escaped == 0) {
+        frg_log_error("' expects closing '");
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
@@ -207,9 +218,11 @@ frg_recoverable_status_t frg_unescape_char(frg_char_t* value, const char* escape
     escaped++;
 
     if (*escaped == 0) {
+        frg_log_error("' expects closing '");
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     } else if (*escaped != '\'') {
         // TODO: Make error handling better here
+        frg_log_error("character literal must end with single quote");
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 

@@ -17,28 +17,14 @@
 #include <forge/common/log.h>
 
 int main(void) {
-    frg_cli_choice_t* choice = NULL;
-    frg_status_t result = frg_cli_choice_new(
-        &choice,
+    frg_cli_choice_t* choice = frg_cli_choice_new(
         "option-name",
         "A description of the choice"
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-        return 1;
-    }
+    
+    frg_cli_choice_print_help(choice);
 
-    result = frg_cli_choice_print_help(choice);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print choice help: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    result = frg_cli_choice_destroy(&choice);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy choice: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_choice_destroy(&choice);
 
     return 0;
 }

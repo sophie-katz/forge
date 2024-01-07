@@ -23,6 +23,7 @@ project(
         'c_std=gnu18',
         'cpp_std=c++20',
         'werror=true'
+        # 'b_coverage=true'
     ],
     license: 'LGPL-3.0-only',
     meson_version: '>=1.1',
@@ -261,6 +262,18 @@ if should_build_tests
 
     test('ast/ast_test.c', forge_test_ast_ast)
 
+    forge_test_ast_scope = executable(
+        'test-ast-scope',
+        'lib/forge/ast/scope_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('ast/scope_test.c', forge_test_ast_scope)
+
     forge_test_common_stream = executable(
         'test-common-stream',
         'lib/forge/common/stream_test.c',
@@ -309,96 +322,141 @@ if should_build_tests
 
     test('common/lexical_casts_test.c', forge_test_common_lexical_casts)
 
-    # forge_test_config_cli_option = executable(
-    #     'test-config-cli-option',
-    #     'lib/forge/cli/option_test.c',
-    #     include_directories: forge_include_directories,
-    #     link_with: [forge_core_lib],
-    #     dependencies: forge_dependencies + [
-    #         forge_dependency_unity
-    #     ]
-    # )
+    forge_test_common_log = executable(
+        'test-common-log',
+        'lib/forge/common/log_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
 
-    # test('config/cli/option_test.c', forge_test_config_cli_option)
+    test('common/log_test.c', forge_test_common_log)
 
-#     forge_test_config_cli_option_set = executable(
-#         'test-config-cli-option-set',
-#         'lib/forge/cli/option_set_test.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies + [
-#             forge_dependency_unity
-#         ]
-#     )
+    forge_test_cli_option = executable(
+        'test-cli-option',
+        'lib/forge/cli/option_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
 
-#     test('config/cli/option_set_test.c', forge_test_config_cli_option_set)
+    test('config/cli/option_test.c', forge_test_cli_option)
+
+    forge_test_cli_option_set = executable(
+        'test-cli-option-set',
+        'lib/forge/cli/option_set_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('config/cli/option_set_test.c', forge_test_cli_option_set)
+
+    forge_test_cli_program = executable(
+        'test-cli-program',
+        'lib/forge/cli/program_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('config/cli/program_test.c', forge_test_cli_program)
 endif
 
 # Demos
 # --------------------------------------------------------------------------------------
 
-# if should_build_tests
-#     executable(
-#         'demo-common-color',
-#         'lib/forge/common/color_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+if should_build_tests
+    forge_demo_common_color = executable(
+        'demo-common-color',
+        'lib/forge/common/color_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
 
-#     executable(
-#         'demo-common-log',
-#         'lib/forge/common/log_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+    test('common/color_demo.c', forge_demo_common_color)
 
-#     executable(
-#         'demo-common-debug',
-#         'lib/forge/common/debug_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+    forge_demo_common_log = executable(
+        'demo-common-log',
+        'lib/forge/common/log_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
 
-#     executable(
-#         'demo-config-cli-choice',
-#         'lib/forge/cli/choice_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+    test('common/log_demo.c (mode=none)', forge_demo_common_log, args: ['none'])
+    test('common/log_demo.c (mode=only-errors-single)', forge_demo_common_log, args: ['only-errors-single'], should_fail: true)
+    test('common/log_demo.c (mode=only-errors-multiple)', forge_demo_common_log, args: ['only-errors-multiple'], should_fail: true)
+    test('common/log_demo.c (mode=only-warnings-single)', forge_demo_common_log, args: ['only-warnings-single'])
+    test('common/log_demo.c (mode=only-warnings-multiple)', forge_demo_common_log, args: ['only-warnings-multiple'])
+    test('common/log_demo.c (mode=both)', forge_demo_common_log, args: ['both'], should_fail: true)
 
-#     executable(
-#         'demo-config-cli-option',
-#         'lib/forge/cli/option_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+    forge_demo_common_debug = executable(
+        'demo-common-debug',
+        'lib/forge/common/debug_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
 
-#     executable(
-#         'demo-config-cli-option-set',
-#         'lib/forge/cli/option_set_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+    test('common/debug_demo.c', forge_demo_common_debug)
 
-#     executable(
-#         'demo-config-cli-command',
-#         'lib/forge/cli/command_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
+    forge_demo_cli_choice = executable(
+        'demo-cli-choice',
+        'lib/forge/cli/choice_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
 
-#     executable(
-#         'demo-config-cli-program',
-#         'lib/forge/cli/program_demo.c',
-#         include_directories: forge_include_directories,
-#         link_with: [forge_core_lib],
-#         dependencies: forge_dependencies
-#     )
-# endif
+    test('cli/choice_demo.c', forge_demo_cli_choice)
+
+    forge_demo_cli_option = executable(
+        'demo-cli-option',
+        'lib/forge/cli/option_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
+
+    test('cli/option_demo.c', forge_demo_cli_option)
+
+    forge_demo_cli_option_set = executable(
+        'demo-cli-option-set',
+        'lib/forge/cli/option_set_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
+
+    test('cli/option_set_demo.c', forge_demo_cli_option_set)
+
+    forge_demo_cli_command = executable(
+        'demo-cli-command',
+        'lib/forge/cli/command_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
+
+    test('cli/command_demo.c', forge_demo_cli_command)
+
+    forge_demo_cli_program = executable(
+        'demo-cli-program',
+        'lib/forge/cli/program_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
+
+    test('cli/program_demo.c', forge_demo_cli_program)
+endif

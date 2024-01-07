@@ -17,7 +17,7 @@
 #include <forge/common/log.h>
 
 const char* frg_config_commands_get_single_source_file(
-    const GList* pos_args
+    GList* pos_args
 ) {
     if (pos_args == NULL) {
         frg_log_fatal_error("command expects a source file as an argument");

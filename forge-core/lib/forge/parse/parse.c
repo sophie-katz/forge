@@ -33,7 +33,7 @@ frg_ast_t* frg_parse_file(FILE* file, const char* path) {
     yyin = file;
 
     frg_ast_t* ast = NULL;
-    if (yyparse(&ast) != 0) {
+    if (yyparse(&ast) != 0 && ast != NULL) {
         frg_ast_destroy(&ast);
     }
 
@@ -73,7 +73,7 @@ frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* path) {
     yy_scan_buffer(buffer, length);
     
     frg_ast_t* ast = NULL;
-    if (yyparse(&ast) != 0) {
+    if (yyparse(&ast) != 0 && ast != NULL) {
         frg_ast_destroy(&ast);
     }
 

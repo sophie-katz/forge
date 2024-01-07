@@ -23,12 +23,12 @@ const char* frg_recoverable_status_to_string(frg_recoverable_status_t status) {
             return "ok";
         case FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED:
             return "error has already been logged";
-        case FRG_RECOVERABLE_STATUS_CLI_NO_MORE_ARGUMENTS:
-            return "no more command line arguments";
-        case FRG_RECOVERABLE_STATUS_CLI_REACHED_POSITIONAL_ARGUMENT:
-            return "reached a positional command line arguments";
+        case FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT:
+            return "unexpected end of text";
+        case FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER:
+            return "unexpected character";
         default:
-            frg_die("unexpected value for 'status': %i", status);
+            frg_die_unexpected_enum_value(status);
     }
 }
 

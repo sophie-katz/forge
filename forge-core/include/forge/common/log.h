@@ -197,6 +197,118 @@ frg_log_result_t _frg_log_internal_error(
     ...
 );
 
+frg_log_result_t frg_log_error_requirement_not_implemented(
+    frg_requirement_id_t requirement_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_in_source_file_requirement_not_implemented(
+    const char* source_path,
+    frg_requirement_id_t requirement_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_on_source_line_requirement_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_requirement_id_t requirement_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_at_source_char_requirement_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_requirement_id_t requirement_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_requirement_subitem_not_implemented(
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_in_source_file_requirement_subitem_not_implemented(
+    const char* source_path,
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_on_source_line_requirement_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_at_source_char_requirement_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_proposal_not_implemented(
+    frg_proposal_id_t proposal_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_in_source_file_proposal_not_implemented(
+    const char* source_path,
+    frg_proposal_id_t proposal_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_on_source_line_proposal_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_proposal_id_t proposal_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_at_source_char_proposal_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_proposal_id_t proposal_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_proposal_subitem_not_implemented(
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_in_source_file_proposal_subitem_not_implemented(
+    const char* source_path,
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_on_source_line_proposal_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
+frg_log_result_t frg_log_error_at_source_char_proposal_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+);
+
 #define frg_log_internal_error(format, ...) \
     _frg_log_internal_error(__FILE__, __LINE__, (format), ##__VA_ARGS__)
 

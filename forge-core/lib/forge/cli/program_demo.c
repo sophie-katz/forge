@@ -16,23 +16,20 @@
 #include <forge/cli/program.h>
 #include <forge/common/log.h>
 
-frg_status_t callback_command(
-    int* exit_status,
+int callback_command(
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {
-    return FRG_STATUS_OK;
+    return 0;
 }
 
-frg_status_t callback_option(void* user_data, const char* value) {
-    return FRG_STATUS_OK;
+bool callback_option(void* user_data, const char* value) {
+    return true;
 }
 
 int no_commands(void) {
-    frg_cli_program_t* program = NULL;
-    frg_status_t result = frg_cli_program_new(
-        &program,
+    frg_cli_program_t* program = frg_cli_program_new(
         "Forge",
         "forge",
         "source files",
@@ -43,43 +40,20 @@ int no_commands(void) {
         g_string_new("Some more version\ninformation"),
         NULL
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create program: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    frg_cli_option_t* option = NULL;
-    result = frg_cli_option_new_flag(&option, "debug", "Enable debug mode", callback_option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_t* option = frg_cli_option_new_flag("debug", "Enable debug mode", callback_option);
 
-    result = frg_cli_option_set_add_option(program->global_options, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to global option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_add_option(program->global_options, option);
 
-    result = frg_cli_program_print_help(program, NULL);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print program help: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_print_help(program, NULL);
 
-    result = frg_cli_program_destroy(&program);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy program: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_destroy(&program);
 
     return 0;
 }
 
 int one_command_global(void) {
-    frg_cli_program_t* program = NULL;
-    frg_status_t result = frg_cli_program_new(
-        &program,
+    frg_cli_program_t* program = frg_cli_program_new(
         "Forge",
         "forge",
         NULL,
@@ -90,75 +64,33 @@ int one_command_global(void) {
         g_string_new("Some more version\ninformation"),
         NULL
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create program: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    frg_cli_option_t* option = NULL;
-    result = frg_cli_option_new_flag(&option, "debug", "Enable debug mode", callback_option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_t* option = frg_cli_option_new_flag("debug", "Enable debug mode", callback_option);
 
-    result = frg_cli_option_set_add_option(program->global_options, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to global option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_add_option(program->global_options, option);
 
-    frg_cli_command_t* command = NULL;
-    result = frg_cli_command_new(
-        &command,
+    frg_cli_command_t* command = frg_cli_command_new(
         "command",
         NULL,
         "A command",
         callback_command
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create command: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    option = NULL;
-    result = frg_cli_option_new_flag(&option, "option", "An option", callback_option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
+    option = frg_cli_option_new_flag("option", "An option", callback_option);
 
-    result = frg_cli_option_set_add_option(command->option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_add_option(command->option_set, option);
 
-    result = frg_cli_program_add_command(program, command);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add command to program: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_add_command(program, command);
 
-    result = frg_cli_program_print_help(program, NULL);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print program help: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_print_help(program, NULL);
 
-    result = frg_cli_program_destroy(&program);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy program: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_destroy(&program);
 
     return 0;
 }
 
 int one_command_command(void) {
-    frg_cli_program_t* program = NULL;
-    frg_status_t result = frg_cli_program_new(
-        &program,
+    frg_cli_program_t* program = frg_cli_program_new(
         "Forge",
         "forge",
         NULL,
@@ -169,67 +101,27 @@ int one_command_command(void) {
         g_string_new("Some more version\ninformation"),
         NULL
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create program: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    frg_cli_option_t* option = NULL;
-    result = frg_cli_option_new_flag(&option, "debug", "Enable debug mode", callback_option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_t* option = frg_cli_option_new_flag("debug", "Enable debug mode", callback_option);
 
-    result = frg_cli_option_set_add_option(program->global_options, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to global option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_add_option(program->global_options, option);
 
-    frg_cli_command_t* command = NULL;
-    result = frg_cli_command_new(
-        &command,
+    frg_cli_command_t* command = frg_cli_command_new(
         "command",
         "positional argument",
         "A command",
         callback_command
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create command: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    option = NULL;
-    result = frg_cli_option_new_flag(&option, "option", "An option", callback_option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
+    option = frg_cli_option_new_flag("option", "An option", callback_option);
 
-    result = frg_cli_option_set_add_option(command->option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_add_option(command->option_set, option);
 
-    result = frg_cli_program_add_command(program, command);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add command to program: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_add_command(program, command);
 
-    result = frg_cli_program_print_help(program, "command");
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print program help: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_print_help(program, "command");
 
-    result = frg_cli_program_destroy(&program);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to destroy program: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_program_destroy(&program);
 
     return 0;
 }

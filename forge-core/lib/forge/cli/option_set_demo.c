@@ -16,212 +16,113 @@
 #include <forge/cli/option_set.h>
 #include <forge/common/log.h>
 
-frg_status_t callback(void* user_data, const char* value) {
-    return FRG_STATUS_OK;
+bool callback(void* user_data, const char* value) {
+    return true;
 }
 
 int main(void) {
-    frg_cli_option_set_t* option_set = NULL;
-    frg_status_t result = frg_cli_option_set_new(
-        &option_set
+    frg_cli_option_set_t* option_set = frg_cli_option_set_new();
+
+    frg_cli_option_set_add_option(
+        option_set,
+        frg_cli_option_new_flag(
+            "long-flag",
+            "A long-only flag.",
+            callback
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option set: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    frg_cli_option_t* option = NULL;
-    result = frg_cli_option_new_flag(
-        &option,
-        "long-name-1",
-        "A description of the option",
-        callback
+    frg_cli_option_set_add_option(
+        option_set,
+        frg_cli_option_new_flag_short(
+            'f',
+            "short-flag",
+            "A long and short flag.",
+            callback
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    result = frg_cli_option_set_add_option(option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    option = NULL;
-    result = frg_cli_option_new_flag_short(
-        &option,
-        'a',
-        "long-name-2",
-        "A description of the option",
-        callback
+    frg_cli_option_set_add_option(
+        option_set,
+        frg_cli_option_new_argument(
+            "long-argument",
+            "value",
+            "A long-only argument.",
+            callback
+        )
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    result = frg_cli_option_set_add_option(option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_add_option(
+        option_set,
+        frg_cli_option_new_argument_short(
+            'a',
+            "short-argument",
+            "value",
+            "A long and short argument.",
+            callback
+        )
+    );
 
-    option = NULL;
-    result = frg_cli_option_new_argument(
-        &option,
-        "long-name-3",
+    frg_cli_option_t* option = frg_cli_option_new_choice(
+        "long-choice",
         "value",
-        "A description of the option",
+        "A long-only choice.",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    result = frg_cli_option_set_add_option(option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_add_choice(
+        option,
+        frg_cli_choice_new(
+            "option-1",
+            "A choice."
+        )
+    );
 
-    option = NULL;
-    result = frg_cli_option_new_argument_short(
-        &option,
-        'b',
-        "long-name-4",
+    frg_cli_option_add_choice(
+        option,
+        frg_cli_choice_new(
+            "option-2",
+            "Another choice."
+        )
+    );
+
+    frg_cli_option_set_add_option(
+        option_set,
+        option
+    );
+
+    option = frg_cli_option_new_choice_short(
+        'g',
+        "short-choice",
         "value",
-        "A description of the option",
+        "A long and short choice.",
         callback
     );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
 
-    result = frg_cli_option_set_add_option(option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    option = NULL;
-    result = frg_cli_option_new_choice(
-        &option,
-        "long-name-5",
-        "value",
-        "A description of the option",
-        callback
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    frg_cli_choice_t* choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-1",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    result = frg_cli_option_add_choice(
+    frg_cli_option_add_choice(
         option,
-        choice
+        frg_cli_choice_new(
+            "option-1",
+            "A choice."
+        )
     );
 
-    choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-2",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    result = frg_cli_option_add_choice(
+    frg_cli_option_add_choice(
         option,
-        choice
+        frg_cli_choice_new(
+            "option-2",
+            "Another choice."
+        )
     );
 
-    result = frg_cli_option_set_add_option(option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    option = NULL;
-    result = frg_cli_option_new_choice_short(
-        &option,
-        'c',
-        "long-name-6",
-        "value",
-        "A description of the option",
-        callback
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create option: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-1",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    result = frg_cli_option_add_choice(
-        option,
-        choice
+    frg_cli_option_set_add_option(
+        option_set,
+        option
     );
 
-    choice = NULL;
-    result = frg_cli_choice_new(
-        &choice,
-        "option-2",
-        "A description of the choice"
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to create choice: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_print_help(option_set);
 
-    result = frg_cli_option_add_choice(
-        option,
-        choice
-    );
-
-    result = frg_cli_option_set_add_option(option_set, option);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to add option to option set: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    result = frg_cli_option_set_print_help(
-        option_set
-    );
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable to print option set help: %s", frg_status_to_string(result));
-        return 1;
-    }
-
-    result = frg_cli_option_set_destroy(&option_set);
-    if (result != FRG_STATUS_OK) {
-        frg_log_internal_error("unable destroy option set: %s", frg_status_to_string(result));
-        return 1;
-    }
+    frg_cli_option_set_destroy(&option_set);
 
     return 0;
 }

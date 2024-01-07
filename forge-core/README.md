@@ -82,3 +82,15 @@ You can also run this to watch a dump of the AST:
 ```shell
 fswatch -o .. | xargs -n1 -I{} bash -c "clear && ./build/forge dump-ast ../example.frg"
 ```
+
+## Generating code coverage
+
+> [!WARNING]  
+> Code coverage isn't really configured correctly yet. It's not correct and is thus basically useless.
+
+Run these commands:
+
+```shell
+meson test -C build
+ninja coverage -C build
+```

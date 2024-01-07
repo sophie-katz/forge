@@ -19,6 +19,11 @@
 #include <forge/common/enums.h>
 #include <forge/cli/option.h>
 
+/// \brief The maximum number of option short names possible.
+///
+/// There are 26 for lowercase ASCII letters and 26 more for uppercase.
+#define FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT 52
+
 typedef struct {
     GList* options;
     frg_cli_option_t* options_by_short_name[FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT];

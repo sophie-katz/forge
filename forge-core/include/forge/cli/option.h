@@ -19,11 +19,6 @@
 #include <forge/cli/choice.h>
 #include <glib.h>
 
-/// \brief The maximum number of option short names possible.
-///
-/// There are 26 for lowercase ASCII letters and 26 more for uppercase.
-#define FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT 52
-
 #define FRG_CLI_OPTION_SHORT_NAME_NULL 0
 
 bool frg_cli_is_valid_short_name(char short_name);

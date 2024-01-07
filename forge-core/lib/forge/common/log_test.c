@@ -13,30 +13,35 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/memory.h>
+#include <forge/common/log.h>
 #include <unity.h>
 
 void setUp(void) {}
 
 void tearDown(void) {}
 
-void test_1_byte(void) {
-    void* ptr = frg_safe_malloc(1);
-    TEST_ASSERT_NOT_NULL(ptr);
-    frg_safe_free(&ptr);
-    TEST_ASSERT_NULL(ptr);
+void test_debug_not_emitted(void) {
+    frg_log_set_minimum_severity(FRG_LOG_SEVERITY_NOTE);
+    frg_log_result_t result = frg_log_debug("hello, world");
+    TEST_ASSERT_FALSE(result.emitted);
 }
 
-void test_10_bytes(void) {
-    void* ptr = frg_safe_malloc(10);
-    TEST_ASSERT_NOT_NULL(ptr);
-    frg_safe_free(&ptr);
-    TEST_ASSERT_NULL(ptr);
+void test_debug_emitted(void) {
+    frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
+    frg_log_result_t result = frg_log_debug("hello, world");
+    TEST_ASSERT_TRUE(result.emitted);
+}
+
+void test_log_summary_if_errors(void) {
+    TEST_ASSERT_FALSE(frg_log_summary_if_errors());
+    frg_log_error("hello, world");
+    TEST_ASSERT_TRUE(frg_log_summary_if_errors());
 }
 
 int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_1_byte);
-    RUN_TEST(test_10_bytes);
+    RUN_TEST(test_debug_not_emitted);
+    RUN_TEST(test_debug_emitted);
+    RUN_TEST(test_log_summary_if_errors);
     return UNITY_END();
 }

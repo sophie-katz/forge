@@ -123,51 +123,32 @@ frg_cli_option_t* create_option_choice() {
     return option;
 }
 
-frg_status_t create_option_choice_short(frg_cli_option_t** option) {
-    frg_check(
-        frg_cli_option_new_choice_short(
-            option,
-            'c',
-            "long-choice",
-            "value",
-            "A long-only choice.",
-            callback_choice
-        )
+frg_cli_option_t* create_option_choice_short() {
+    frg_cli_option_t* option = frg_cli_option_new_choice_short(
+        'c',
+        "long-choice",
+        "value",
+        "A long-only choice.",
+        callback_choice
     );
 
-    frg_cli_choice_t* choice = NULL;
-    frg_check(
+    frg_cli_option_add_choice(
+        option,
         frg_cli_choice_new(
-            &choice,
             "option-1",
             "A choice."
         )
     );
 
-    frg_check(
-        frg_cli_option_add_choice(
-            *option,
-            choice
-        )
-    );
-
-    choice = NULL;
-    frg_check(
+    frg_cli_option_add_choice(
+        option,
         frg_cli_choice_new(
-            &choice,
             "option-2",
             "Another choice."
         )
     );
 
-    frg_check(
-        frg_cli_option_add_choice(
-            *option,
-            choice
-        )
-    );
-
-    return FRG_STATUS_OK;
+    return option;
 }
 
 void init_config(config* c) {
@@ -180,9 +161,7 @@ void init_config(config* c) {
 }
 
 void test_flag_long(void) {
-    frg_cli_option_t* option = NULL;
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, create_option_flag(&option));
-    TEST_ASSERT_NOT_NULL(option);
+    frg_cli_option_t* option = create_option_flag();
 
     int argi = 1;
     int argc = 2;
@@ -191,14 +170,15 @@ void test_flag_long(void) {
     config c;
     init_config(&c);
 
-    frg_status_t result = frg_cli_option_parse_next(
+    bool result = frg_cli_option_parse_next(
+        option,
         &argi,
         argc,
         argv,
         &c
     );
 
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, result);
+    TEST_ASSERT_TRUE(result);
 
     TEST_ASSERT_TRUE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
@@ -209,9 +189,7 @@ void test_flag_long(void) {
 }
 
 void test_flag_short_long(void) {
-    frg_cli_option_t* option = NULL;
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, create_option_flag_short(&option));
-    TEST_ASSERT_NOT_NULL(option);
+    frg_cli_option_t* option = create_option_flag_short();
 
     int argi = 1;
     int argc = 2;
@@ -220,7 +198,7 @@ void test_flag_short_long(void) {
     config c;
     init_config(&c);
 
-    frg_status_t result = frg_cli_option_parse_next(
+    bool result = frg_cli_option_parse_next(
         option,
         &argi,
         argc,
@@ -228,7 +206,7 @@ void test_flag_short_long(void) {
         &c
     );
 
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, result);
+    TEST_ASSERT_TRUE(result);
 
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_TRUE(c.flag_short);
@@ -239,9 +217,7 @@ void test_flag_short_long(void) {
 }
 
 void test_flag_short_short(void) {
-    frg_cli_option_t* option = NULL;
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, create_option_flag_short(&option));
-    TEST_ASSERT_NOT_NULL(option);
+    frg_cli_option_t* option = create_option_flag_short();
 
     int argi = 1;
     int argc = 2;
@@ -250,7 +226,7 @@ void test_flag_short_short(void) {
     config c;
     init_config(&c);
 
-    frg_status_t result = frg_cli_option_parse_next(
+    bool result = frg_cli_option_parse_next(
         option,
         &argi,
         argc,
@@ -258,7 +234,7 @@ void test_flag_short_short(void) {
         &c
     );
 
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, result);
+    TEST_ASSERT_TRUE(result);
 
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_TRUE(c.flag_short);
@@ -269,9 +245,7 @@ void test_flag_short_short(void) {
 }
 
 void test_argument_long(void) {
-    frg_cli_option_t* option = NULL;
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, create_option_argument(&option));
-    TEST_ASSERT_NOT_NULL(option);
+    frg_cli_option_t* option = create_option_argument();
 
     int argi = 1;
     int argc = 3;
@@ -280,7 +254,7 @@ void test_argument_long(void) {
     config c;
     init_config(&c);
 
-    frg_status_t result = frg_cli_option_parse_next(
+    bool result = frg_cli_option_parse_next(
         option,
         &argi,
         argc,
@@ -288,7 +262,7 @@ void test_argument_long(void) {
         &c
     );
 
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, result);
+    TEST_ASSERT_TRUE(result);
 
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
@@ -298,10 +272,50 @@ void test_argument_long(void) {
     TEST_ASSERT_NULL(c.choice_short);
 }
 
+void test_argument_long_without_value(void) {
+    frg_cli_option_t* option = create_option_argument();
+
+    int argi = 1;
+    int argc = 2;
+    const char* argv[] = { "forge", "--long-argument", NULL };
+
+    config c;
+    init_config(&c);
+
+    bool result = frg_cli_option_parse_next(
+        option,
+        &argi,
+        argc,
+        argv,
+        &c
+    );
+
+    TEST_ASSERT_FALSE(result);
+}
+
+void test_argument_long_with_argument_instead_of_value(void) {
+    frg_cli_option_t* option = create_option_argument();
+
+    int argi = 1;
+    int argc = 3;
+    const char* argv[] = { "forge", "--long-argument", "-a", NULL };
+
+    config c;
+    init_config(&c);
+
+    bool result = frg_cli_option_parse_next(
+        option,
+        &argi,
+        argc,
+        argv,
+        &c
+    );
+
+    TEST_ASSERT_FALSE(result);
+}
+
 void test_argument_short_long(void) {
-    frg_cli_option_t* option = NULL;
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, create_option_argument_short(&option));
-    TEST_ASSERT_NOT_NULL(option);
+    frg_cli_option_t* option = create_option_argument_short();
 
     int argi = 1;
     int argc = 3;
@@ -310,7 +324,7 @@ void test_argument_short_long(void) {
     config c;
     init_config(&c);
 
-    frg_status_t result = frg_cli_option_parse_next(
+    bool result = frg_cli_option_parse_next(
         option,
         &argi,
         argc,
@@ -318,7 +332,7 @@ void test_argument_short_long(void) {
         &c
     );
 
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, result);
+    TEST_ASSERT_TRUE(result);
 
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
@@ -329,9 +343,7 @@ void test_argument_short_long(void) {
 }
 
 void test_argument_short_short(void) {
-    frg_cli_option_t* option = NULL;
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, create_option_argument_short(&option));
-    TEST_ASSERT_NOT_NULL(option);
+    frg_cli_option_t* option = create_option_argument_short();
 
     int argi = 1;
     int argc = 3;
@@ -340,7 +352,7 @@ void test_argument_short_short(void) {
     config c;
     init_config(&c);
 
-    frg_status_t result = frg_cli_option_parse_next(
+    bool result = frg_cli_option_parse_next(
         option,
         &argi,
         argc,
@@ -348,7 +360,7 @@ void test_argument_short_short(void) {
         &c
     );
 
-    TEST_ASSERT_EQUAL(FRG_STATUS_OK, result);
+    TEST_ASSERT_TRUE(result);
 
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
@@ -364,6 +376,8 @@ int main(void) {
     RUN_TEST(test_flag_short_long);
     RUN_TEST(test_flag_short_short);
     RUN_TEST(test_argument_long);
+    RUN_TEST(test_argument_long_without_value);
+    RUN_TEST(test_argument_long_with_argument_instead_of_value);
     RUN_TEST(test_argument_short_long);
     RUN_TEST(test_argument_short_short);
     return UNITY_END();

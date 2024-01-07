@@ -186,82 +186,82 @@ frg_ast_t* frg_ast_new_ty_primary(
     frg_ast_id_t id
 );
 
-frg_ast_t* frg_ast_new_ty_symbol(
+frg_ast_ty_symbol_t* frg_ast_new_ty_symbol(
     GString* name
 );
 
-frg_ast_t* frg_ast_new_ty_pointer(
+frg_ast_ty_pointer_t* frg_ast_new_ty_pointer(
     frg_ast_t* value
 );
 
-frg_ast_t* frg_ast_new_ty_fn(
+frg_ast_ty_fn_t* frg_ast_new_ty_fn(
     GList* args,
     GList* var_pos_args,
     GList* var_kw_args,
     frg_ast_t* return_ty
 );
 
-frg_ast_t* frg_ast_new_decl_union(
+frg_ast_decl_union_t* frg_ast_new_decl_union(
     GString* name,
     GList* props
 );
 
-frg_ast_t* frg_ast_new_decl_struct(
+frg_ast_decl_struct_t* frg_ast_new_decl_struct(
     GString* name,
     GList* decls
 );
 
-frg_ast_t* frg_ast_new_decl_prop(
+frg_ast_decl_prop_t* frg_ast_new_decl_prop(
     frg_ast_decl_prop_flags_t flags,
     GString* name,
     frg_ast_t* type
 );
 
-frg_ast_t* frg_ast_new_decl_iface(
+frg_ast_decl_iface_t* frg_ast_new_decl_iface(
     frg_ast_decl_iface_flags_t flags,
     GString* name,
     GList* extends,
     GList* decls
 );
 
-frg_ast_t* frg_ast_new_decl_fn_arg(
+frg_ast_decl_fn_arg_t* frg_ast_new_decl_fn_arg(
     frg_ast_decl_fn_arg_flags_t flags,
     frg_ast_decl_prop_t* prop,
     frg_ast_t* default_value
 );
 
-frg_ast_t* frg_ast_new_decl_fn(
+frg_ast_decl_fn_t* frg_ast_new_decl_fn(
     frg_ast_decl_fn_flags_t flags,
     GString* name,
     frg_ast_ty_fn_t* ty,
     frg_ast_t* body
 );
 
-frg_ast_t* frg_ast_new_decl_var(
+frg_ast_decl_var_t* frg_ast_new_decl_var(
     frg_ast_decl_prop_t* prop,
     frg_ast_t* initial_value
 );
 
-frg_ast_t* frg_ast_new_decl_block(
+frg_ast_decl_block_t* frg_ast_new_decl_block(
     GList* decls
 );
 
-frg_ast_t* frg_ast_new_stmt_return(
+frg_ast_stmt_return_t* frg_ast_new_stmt_return(
     frg_ast_t* value
 );
 
-frg_ast_t* frg_ast_new_stmt_if(
+frg_ast_stmt_if_t* frg_ast_new_stmt_if(
     frg_ast_t* condition,
     frg_ast_t* then_clause,
     frg_ast_t* else_clause
 );
 
-frg_ast_t* frg_ast_new_stmt_while(
+frg_ast_stmt_while_t* frg_ast_new_stmt_while(
     frg_ast_t* condition,
     frg_ast_t* body
 );
 
-frg_ast_t* frg_ast_new_stmt_block(
+frg_ast_stmt_block_t* frg_ast_new_stmt_block(
     GList* stmts
 );
 
@@ -269,75 +269,75 @@ frg_ast_t* frg_ast_new_value_primary(
     frg_ast_id_t id
 );
 
-frg_ast_t* frg_ast_new_value_i8(
+frg_ast_value_int_t* frg_ast_new_value_i8(
     int8_t value
 );
 
-frg_ast_t* frg_ast_new_value_i16(
+frg_ast_value_int_t* frg_ast_new_value_i16(
     int16_t value
 );
 
-frg_ast_t* frg_ast_new_value_i32(
+frg_ast_value_int_t* frg_ast_new_value_i32(
     int32_t value
 );
 
-frg_ast_t* frg_ast_new_value_i64(
+frg_ast_value_int_t* frg_ast_new_value_i64(
     int64_t value
 );
 
-frg_ast_t* frg_ast_new_value_u8(
+frg_ast_value_int_t* frg_ast_new_value_u8(
     uint8_t value
 );
 
-frg_ast_t* frg_ast_new_value_u16(
+frg_ast_value_int_t* frg_ast_new_value_u16(
     uint16_t value
 );
 
-frg_ast_t* frg_ast_new_value_u32(
+frg_ast_value_int_t* frg_ast_new_value_u32(
     uint32_t value
 );
 
-frg_ast_t* frg_ast_new_value_u64(
+frg_ast_value_int_t* frg_ast_new_value_u64(
     uint64_t value
 );
 
-frg_ast_t* frg_ast_new_value_f32(
+frg_ast_value_float_t* frg_ast_new_value_f32(
     frg_f32_t value
 );
 
-frg_ast_t* frg_ast_new_value_f64(
+frg_ast_value_float_t* frg_ast_new_value_f64(
     frg_f64_t value
 );
 
-frg_ast_t* frg_ast_new_value_char(
+frg_ast_value_char_t* frg_ast_new_value_char(
     frg_char_t value
 );
 
-frg_ast_t* frg_ast_new_value_str(
+frg_ast_value_str_t* frg_ast_new_value_str(
     GString* value
 );
 
-frg_ast_t* frg_ast_new_value_symbol(
+frg_ast_value_symbol_t* frg_ast_new_value_symbol(
     GString* name
 );
 
-frg_ast_t* frg_ast_new_value_call_kw_arg(
+frg_ast_value_call_kw_arg_t* frg_ast_new_value_call_kw_arg(
     GString* name,
     frg_ast_t* value
 );
 
-frg_ast_t* frg_ast_new_value_call(
+frg_ast_value_call_t* frg_ast_new_value_call(
     frg_ast_t* callee,
     GList* args,
     GList* kw_args
 );
 
-frg_ast_t* frg_ast_new_value_unary(
+frg_ast_value_unary_t* frg_ast_new_value_unary(
     frg_ast_id_t id,
     frg_ast_t* operand
 );
 
-frg_ast_t* frg_ast_new_value_binary(
+frg_ast_value_binary_t* frg_ast_new_value_binary(
     frg_ast_id_t id,
     frg_ast_t* left,
     frg_ast_t* right
@@ -389,4 +389,4 @@ frg_ast_value_unary_t* frg_ast_try_cast_value_unary(frg_ast_t* ast);
 
 frg_ast_value_binary_t* frg_ast_try_cast_value_binary(frg_ast_t* ast);
 
-const char* frg_ast_get_name(const frg_ast_t* ast);
+const char* frg_ast_decl_get_name(const frg_ast_t* ast);

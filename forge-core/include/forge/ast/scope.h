@@ -52,7 +52,7 @@ void frg_ast_scope_frame_load_decl_block(
     frg_ast_decl_block_t* block
 );
 
-void frg_ast_scope_frame_load_fn_args(
+void frg_ast_scope_frame_load_decl_fn_args(
     frg_ast_scope_frame_t* scope_frame,
     frg_ast_decl_fn_t* fn
 );
@@ -99,7 +99,7 @@ void frg_ast_scope_load_decl_block(
     frg_ast_decl_block_t* block
 );
 
-void frg_ast_scope_load_fn_args(
+void frg_ast_scope_load_decl_fn_args(
     frg_ast_scope_t* scope,
     frg_ast_decl_fn_t* fn
 );

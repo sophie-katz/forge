@@ -3,11 +3,17 @@
 - [x] Create a plan for how to introduce more advanced testing to the compiler
 - [x] Create a plan for how to handle feature flagging **(skipped)**
 - [x] Do a review of error handling
-- [ ] Add formatter and linter if possible
-- [ ] Add in a feature not yet implemented error and a specific error message to indicate that a requirement or proposal is not yet implemented
+- [x] Add in a feature not yet implemented error and a specific error message to indicate that a requirement or proposal is not yet implemented
     - [ ] Ideally reference a documentation URL
-- [ ] Look over LLVM codegen and see if there's anything there that should be added to the language
+- [x] Add code coverage metrics.
+- [x] Do a unit test review to see where the most risk of failure is that needs to be tested.
+- [ ] Write at least one parser integration test.
+- [ ] Write at least one AST algorithm integration test.
+- [ ] Write at least one code generator integration test.
+- [ ] Add in memory leak detection into automated tests.
 - [ ] Add in verification logic
 - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
+- [ ] Look over LLVM codegen and see if there's anything there that should be added to the language
 - [ ] Use `elif` instead of `else if`
 - [ ] Have AST constructors return their specific type
+- [ ] Add formatter and linter if possible

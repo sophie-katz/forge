@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <build_config.h>
 
 static frg_log_severity_t _frg_log_minimum_severity = FRG_LOG_SEVERITY_NOTE;
 static size_t _frg_log_count_error = 0;
@@ -36,26 +37,31 @@ void _frg_log_prefix_severity(frg_log_severity_t severity) {
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "trace: ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         case FRG_LOG_SEVERITY_DEBUG:
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_MAGENTA);
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "debug: ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         case FRG_LOG_SEVERITY_NOTE:
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_BLACK);
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "note: ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         case FRG_LOG_SEVERITY_WARNING:
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_YELLOW);
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "warning: ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         case FRG_LOG_SEVERITY_ERROR:
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RED);
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "error: ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         case FRG_LOG_SEVERITY_FATAL_ERROR:
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BRIGHT_RED);
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
@@ -66,11 +72,13 @@ void _frg_log_prefix_severity(frg_log_severity_t severity) {
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, ": ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         case FRG_LOG_SEVERITY_INTERNAL_ERROR:
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_CYAN);
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_BOLD);
             fprintf(FRG_STREAM_DEFAULT, "internal error: ");
             frg_color_set(FRG_STREAM_DEFAULT, FRG_COLOR_ID_RESET);
+            break;
         default:
             fprintf(stderr, "internal logging error: unexpected value for 'severity': %i\n", severity);
             abort();
@@ -764,6 +772,294 @@ frg_log_result_t _frg_log_internal_error(
     va_end(args);
 
     return result;
+}
+
+frg_log_result_t frg_log_error_requirement_not_implemented(
+    frg_requirement_id_t requirement_id,
+    const char* title
+) {
+    return frg_log_error(
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id
+    );
+}
+
+frg_log_result_t frg_log_error_in_source_file_requirement_not_implemented(
+    const char* source_path,
+    frg_requirement_id_t requirement_id,
+    const char* title
+) {
+    return frg_log_error_in_source_file(
+        source_path,
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id
+    );
+}
+
+frg_log_result_t frg_log_error_on_source_line_requirement_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_requirement_id_t requirement_id,
+    const char* title
+) {
+    return frg_log_error_on_source_line(
+        source_path,
+        source_lineno,
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id
+    );
+}
+
+frg_log_result_t frg_log_error_at_source_char_requirement_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_requirement_id_t requirement_id,
+    const char* title
+) {
+    return frg_log_error_at_source_char(
+        source_path,
+        source_lineno,
+        source_columnno,
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id
+    );
+}
+
+frg_log_result_t frg_log_error_requirement_subitem_not_implemented(
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error(
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_in_source_file_requirement_subitem_not_implemented(
+    const char* source_path,
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error_in_source_file(
+        source_path,
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_on_source_line_requirement_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error_on_source_line(
+        source_path,
+        source_lineno,
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_at_source_char_requirement_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_requirement_id_t requirement_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error_at_source_char(
+        source_path,
+        source_lineno,
+        source_columnno,
+        "%s not yet implemented in Forge %i.%i.%i (Requirement-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        requirement_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_proposal_not_implemented(
+    frg_proposal_id_t proposal_id,
+    const char* title
+) {
+    return frg_log_error(
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id
+    );
+}
+
+frg_log_result_t frg_log_error_in_source_file_proposal_not_implemented(
+    const char* source_path,
+    frg_proposal_id_t proposal_id,
+    const char* title
+) {
+    return frg_log_error_in_source_file(
+        source_path,
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id
+    );
+}
+
+frg_log_result_t frg_log_error_on_source_line_proposal_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_proposal_id_t proposal_id,
+    const char* title
+) {
+    return frg_log_error_on_source_line(
+        source_path,
+        source_lineno,
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id
+    );
+}
+
+frg_log_result_t frg_log_error_at_source_char_proposal_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_proposal_id_t proposal_id,
+    const char* title
+) {
+    return frg_log_error_at_source_char(
+        source_path,
+        source_lineno,
+        source_columnno,
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id
+    );
+}
+
+frg_log_result_t frg_log_error_proposal_subitem_not_implemented(
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error(
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_in_source_file_proposal_subitem_not_implemented(
+    const char* source_path,
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error_in_source_file(
+        source_path,
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_on_source_line_proposal_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error_on_source_line(
+        source_path,
+        source_lineno,
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id,
+        subitem_id
+    );
+}
+
+frg_log_result_t frg_log_error_at_source_char_proposal_subitem_not_implemented(
+    const char* source_path,
+    frg_lineno_t source_lineno,
+    frg_columnno_t source_columnno,
+    frg_proposal_id_t proposal_id,
+    frg_subitem_id_t subitem_id,
+    const char* title
+) {
+    return frg_log_error_at_source_char(
+        source_path,
+        source_lineno,
+        source_columnno,
+        "%s not yet implemented in Forge %i.%i.%i (Proposal-%i.%i)",
+        title,
+        FRG_VERSION_MAJOR,
+        FRG_VERSION_MINOR,
+        FRG_VERSION_PATCH,
+        proposal_id,
+        subitem_id
+    );
 }
 
 bool frg_log_summary_if_errors(void) {

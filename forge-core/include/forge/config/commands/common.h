@@ -19,5 +19,5 @@
 #include <glib.h>
 
 const char* frg_config_commands_get_single_source_file(
-    const GList* pos_args
+    GList* pos_args
 );

@@ -241,7 +241,7 @@ bool _frg_cli_option_check_matches_argument(
     frg_assert_int_eq(arg[0], '-');
 
     if (arg[1] == '-') {
-        return strcmp(arg + 2, option->long_name) != 0;
+        return strcmp(arg + 2, option->long_name) == 0;
     } else {
         return arg[1] == option->short_name;
     }
@@ -273,10 +273,15 @@ bool frg_cli_option_parse_next(
         return option->callback(user_data, NULL);
     } else {
         // If the argument does take a value, make sure there is a value to parse
-        frg_assert_string_non_empty(argv[*argi]);
-
         if (*argi >= argc) {
             frg_log_fatal_error("argument '%s' expects a value", argv[*argi - 1]);
+            return false;
+        }
+
+        frg_assert_string_non_empty(argv[*argi]);
+
+        if (argv[*argi][0] == '-') {
+            frg_log_fatal_error("argument '%s' expects a value, '%s' is an argument", argv[*argi - 1], argv[*argi]);
             return false;
         }
 

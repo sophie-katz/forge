@@ -31,7 +31,7 @@ frg_ast_t* frg_ast_new_ty_primary(
     return ast;
 }
 
-frg_ast_t* frg_ast_new_ty_symbol(
+frg_ast_ty_symbol_t* frg_ast_new_ty_symbol(
     GString* name
 ) {
     frg_assert_gstring_non_empty(name);
@@ -41,10 +41,10 @@ frg_ast_t* frg_ast_new_ty_symbol(
     ast->base.id = FRG_AST_ID_TY_SYMBOL;
     ast->name = name;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_ty_pointer(
+frg_ast_ty_pointer_t* frg_ast_new_ty_pointer(
     frg_ast_t* value
 ) {
     frg_assert_pointer_non_null(value);
@@ -54,17 +54,15 @@ frg_ast_t* frg_ast_new_ty_pointer(
     ast->base.id = FRG_AST_ID_TY_POINTER;
     ast->value = value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_ty_fn(
+frg_ast_ty_fn_t* frg_ast_new_ty_fn(
     GList* args,
     GList* var_pos_args,
     GList* var_kw_args,
     frg_ast_t* return_ty
 ) {
-    frg_assert_pointer_non_null(return_ty);
-
     frg_ast_ty_fn_t* ast = frg_safe_malloc(sizeof(frg_ast_ty_fn_t));
 
     ast->base.id = FRG_AST_ID_TY_FN;
@@ -73,10 +71,10 @@ frg_ast_t* frg_ast_new_ty_fn(
     ast->var_kw_args = var_kw_args;
     ast->return_ty = return_ty;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_union(
+frg_ast_decl_union_t* frg_ast_new_decl_union(
     GString* name,
     GList* props
 ) {
@@ -89,10 +87,10 @@ frg_ast_t* frg_ast_new_decl_union(
     ast->name = name;
     ast->props = props;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_struct(
+frg_ast_decl_struct_t* frg_ast_new_decl_struct(
     GString* name,
     GList* decls
 ) {
@@ -104,10 +102,10 @@ frg_ast_t* frg_ast_new_decl_struct(
     ast->name = name;
     ast->decls = decls;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_prop(
+frg_ast_decl_prop_t* frg_ast_new_decl_prop(
     frg_ast_decl_prop_flags_t flags,
     GString* name,
     frg_ast_t* type
@@ -121,10 +119,10 @@ frg_ast_t* frg_ast_new_decl_prop(
     ast->name = name;
     ast->type = type;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_iface(
+frg_ast_decl_iface_t* frg_ast_new_decl_iface(
     frg_ast_decl_iface_flags_t flags,
     GString* name,
     GList* extends,
@@ -140,10 +138,10 @@ frg_ast_t* frg_ast_new_decl_iface(
     ast->extends = extends;
     ast->decls = decls;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_fn_arg(
+frg_ast_decl_fn_arg_t* frg_ast_new_decl_fn_arg(
     frg_ast_decl_fn_arg_flags_t flags,
     frg_ast_decl_prop_t* prop,
     frg_ast_t* default_value
@@ -157,10 +155,10 @@ frg_ast_t* frg_ast_new_decl_fn_arg(
     ast->prop = prop;
     ast->default_value = default_value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_fn(
+frg_ast_decl_fn_t* frg_ast_new_decl_fn(
     frg_ast_decl_fn_flags_t flags,
     GString* name,
     frg_ast_ty_fn_t* ty,
@@ -177,10 +175,10 @@ frg_ast_t* frg_ast_new_decl_fn(
     ast->ty = ty;
     ast->body = body;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_var(
+frg_ast_decl_var_t* frg_ast_new_decl_var(
     frg_ast_decl_prop_t* prop,
     frg_ast_t* initial_value
 ) {
@@ -192,10 +190,10 @@ frg_ast_t* frg_ast_new_decl_var(
     ast->prop = prop;
     ast->initial_value = initial_value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_decl_block(
+frg_ast_decl_block_t* frg_ast_new_decl_block(
     GList* decls
 ) {
     frg_ast_decl_block_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_block_t));
@@ -203,10 +201,10 @@ frg_ast_t* frg_ast_new_decl_block(
     ast->base.id = FRG_AST_ID_DECL_BLOCK;
     ast->decls = decls;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_stmt_return(
+frg_ast_stmt_return_t* frg_ast_new_stmt_return(
     frg_ast_t* value
 ) {
     frg_ast_stmt_return_t* ast = frg_safe_malloc(sizeof(frg_ast_stmt_return_t));
@@ -214,10 +212,10 @@ frg_ast_t* frg_ast_new_stmt_return(
     ast->base.id = FRG_AST_ID_STMT_RETURN;
     ast->value = value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_stmt_if(
+frg_ast_stmt_if_t* frg_ast_new_stmt_if(
     frg_ast_t* condition,
     frg_ast_t* then_clause,
     frg_ast_t* else_clause
@@ -232,10 +230,10 @@ frg_ast_t* frg_ast_new_stmt_if(
     ast->then_clause = then_clause;
     ast->else_clause = else_clause;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_stmt_while(
+frg_ast_stmt_while_t* frg_ast_new_stmt_while(
     frg_ast_t* condition,
     frg_ast_t* body
 ) {
@@ -247,10 +245,10 @@ frg_ast_t* frg_ast_new_stmt_while(
     ast->condition = condition;
     ast->body = body;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_stmt_block(
+frg_ast_stmt_block_t* frg_ast_new_stmt_block(
     GList* stmts
 ) {
     frg_ast_stmt_block_t* ast = frg_safe_malloc(sizeof(frg_ast_stmt_block_t));
@@ -258,7 +256,7 @@ frg_ast_t* frg_ast_new_stmt_block(
     ast->base.id = FRG_AST_ID_STMT_BLOCK;
     ast->stmts = stmts;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
 frg_ast_t* frg_ast_new_value_primary(
@@ -273,7 +271,7 @@ frg_ast_t* frg_ast_new_value_primary(
     return ast;
 }
 
-frg_ast_t* frg_ast_new_value_i8(
+frg_ast_value_int_t* frg_ast_new_value_i8(
     int8_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -282,10 +280,10 @@ frg_ast_t* frg_ast_new_value_i8(
     ast->value.i8 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I8);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_i16(
+frg_ast_value_int_t* frg_ast_new_value_i16(
     int16_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -294,10 +292,10 @@ frg_ast_t* frg_ast_new_value_i16(
     ast->value.i16 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I16);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_i32(
+frg_ast_value_int_t* frg_ast_new_value_i32(
     int32_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -306,10 +304,10 @@ frg_ast_t* frg_ast_new_value_i32(
     ast->value.i32 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I32);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_i64(
+frg_ast_value_int_t* frg_ast_new_value_i64(
     int64_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -318,10 +316,10 @@ frg_ast_t* frg_ast_new_value_i64(
     ast->value.i64 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I64);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_u8(
+frg_ast_value_int_t* frg_ast_new_value_u8(
     uint8_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -330,10 +328,10 @@ frg_ast_t* frg_ast_new_value_u8(
     ast->value.u8 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U8);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_u16(
+frg_ast_value_int_t* frg_ast_new_value_u16(
     uint16_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -342,10 +340,10 @@ frg_ast_t* frg_ast_new_value_u16(
     ast->value.u16 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U16);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_u32(
+frg_ast_value_int_t* frg_ast_new_value_u32(
     uint32_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -354,10 +352,10 @@ frg_ast_t* frg_ast_new_value_u32(
     ast->value.u32 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U32);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_u64(
+frg_ast_value_int_t* frg_ast_new_value_u64(
     uint64_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
@@ -366,10 +364,10 @@ frg_ast_t* frg_ast_new_value_u64(
     ast->value.u64 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U64);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_f32(
+frg_ast_value_float_t* frg_ast_new_value_f32(
     frg_f32_t value
 ) {
     frg_ast_value_float_t* ast = frg_safe_malloc(sizeof(frg_ast_value_float_t));
@@ -378,10 +376,10 @@ frg_ast_t* frg_ast_new_value_f32(
     ast->value.f32 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_F32);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_f64(
+frg_ast_value_float_t* frg_ast_new_value_f64(
     frg_f64_t value
 ) {
     frg_ast_value_float_t* ast = frg_safe_malloc(sizeof(frg_ast_value_float_t));
@@ -390,10 +388,10 @@ frg_ast_t* frg_ast_new_value_f64(
     ast->value.f64 = value;
     ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_F64);
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_char(
+frg_ast_value_char_t* frg_ast_new_value_char(
     frg_char_t value
 ) {
     frg_ast_value_char_t* ast = frg_safe_malloc(sizeof(frg_ast_value_char_t));
@@ -401,10 +399,10 @@ frg_ast_t* frg_ast_new_value_char(
     ast->base.id = FRG_AST_ID_VALUE_CHAR;
     ast->value = value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_str(
+frg_ast_value_str_t* frg_ast_new_value_str(
     GString* value
 ) {
     frg_assert_pointer_non_null(value);
@@ -414,10 +412,10 @@ frg_ast_t* frg_ast_new_value_str(
     ast->base.id = FRG_AST_ID_VALUE_STR;
     ast->value = value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_symbol(
+frg_ast_value_symbol_t* frg_ast_new_value_symbol(
     GString* name
 ) {
     frg_assert_gstring_non_empty(name);
@@ -427,10 +425,10 @@ frg_ast_t* frg_ast_new_value_symbol(
     ast->base.id = FRG_AST_ID_VALUE_SYMBOL;
     ast->name = name;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_call_kw_arg(
+frg_ast_value_call_kw_arg_t* frg_ast_new_value_call_kw_arg(
     GString* name,
     frg_ast_t* value
 ) {
@@ -443,10 +441,10 @@ frg_ast_t* frg_ast_new_value_call_kw_arg(
     ast->name = name;
     ast->value = value;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_call(
+frg_ast_value_call_t* frg_ast_new_value_call(
     frg_ast_t* callee,
     GList* args,
     GList* kw_args
@@ -460,10 +458,10 @@ frg_ast_t* frg_ast_new_value_call(
     ast->args = args;
     ast->kw_args = kw_args;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_unary(
+frg_ast_value_unary_t* frg_ast_new_value_unary(
     frg_ast_id_t id,
     frg_ast_t* operand
 ) {
@@ -475,10 +473,10 @@ frg_ast_t* frg_ast_new_value_unary(
     ast->base.id = id;
     ast->operand = operand;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
-frg_ast_t* frg_ast_new_value_binary(
+frg_ast_value_binary_t* frg_ast_new_value_binary(
     frg_ast_id_t id,
     frg_ast_t* left,
     frg_ast_t* right
@@ -493,11 +491,13 @@ frg_ast_t* frg_ast_new_value_binary(
     ast->left = left;
     ast->right = right;
 
-    return (frg_ast_t*)ast;
+    return ast;
 }
 
 void _frg_ast_destroy_gfunc(gpointer data, gpointer user_data) {
-    frg_ast_destroy((frg_ast_t**)&data);
+    if (data != NULL) {
+        frg_ast_destroy((frg_ast_t**)&data);
+    }
 }
 
 void _frg_asts_free_glist(GList* list) {
@@ -521,7 +521,9 @@ void frg_ast_destroy(frg_ast_t** ast) {
 
             _frg_asts_free_glist(((frg_ast_ty_fn_t*)*ast)->var_kw_args);
 
-            frg_ast_destroy(&((frg_ast_ty_fn_t*)*ast)->return_ty);
+            if (((frg_ast_ty_fn_t*)*ast)->return_ty != NULL) {
+                frg_ast_destroy(&((frg_ast_ty_fn_t*)*ast)->return_ty);
+            }
 
             break;
         case FRG_AST_ID_DECL_UNION:
@@ -539,7 +541,9 @@ void frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_DECL_PROP:
             g_string_free(((frg_ast_decl_prop_t*)*ast)->name, TRUE);
 
-            frg_ast_destroy(&((frg_ast_decl_prop_t*)*ast)->type);
+            if (((frg_ast_decl_prop_t*)*ast)->type != NULL) {
+                frg_ast_destroy(&((frg_ast_decl_prop_t*)*ast)->type);
+            }
 
             break;
         case FRG_AST_ID_DECL_IFACE:
@@ -551,23 +555,35 @@ void frg_ast_destroy(frg_ast_t** ast) {
 
             break;
         case FRG_AST_ID_DECL_FN_ARG:
-            frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_fn_arg_t*)*ast)->prop);
+            if (((frg_ast_decl_fn_arg_t*)*ast)->prop != NULL) {
+                frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_fn_arg_t*)*ast)->prop);
+            }
 
-            frg_ast_destroy(&((frg_ast_decl_fn_arg_t*)*ast)->default_value);
+            if (((frg_ast_decl_fn_arg_t*)*ast)->default_value != NULL) {
+                frg_ast_destroy(&((frg_ast_decl_fn_arg_t*)*ast)->default_value);
+            }
 
             break;
         case FRG_AST_ID_DECL_FN:
             g_string_free(((frg_ast_decl_fn_t*)*ast)->name, TRUE);
 
-            frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_fn_t*)*ast)->ty);
+            if (((frg_ast_decl_fn_t*)*ast)->ty != NULL) {
+                frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_fn_t*)*ast)->ty);
+            }
 
-            frg_ast_destroy(&((frg_ast_decl_fn_t*)*ast)->body);
+            if (((frg_ast_decl_fn_t*)*ast)->body != NULL) {
+                frg_ast_destroy(&((frg_ast_decl_fn_t*)*ast)->body);
+            }
 
             break;
         case FRG_AST_ID_DECL_VAR:
-            frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_var_t*)*ast)->prop);
+            if (((frg_ast_decl_var_t*)*ast)->prop != NULL) {
+                frg_ast_destroy((frg_ast_t**)&((frg_ast_decl_var_t*)*ast)->prop);
+            }
 
-            frg_ast_destroy(&((frg_ast_decl_var_t*)*ast)->initial_value);
+            if (((frg_ast_decl_var_t*)*ast)->initial_value != NULL) {
+                frg_ast_destroy(&((frg_ast_decl_var_t*)*ast)->initial_value);
+            }
 
             break;
         case FRG_AST_ID_DECL_BLOCK:
@@ -575,21 +591,33 @@ void frg_ast_destroy(frg_ast_t** ast) {
 
             break;
         case FRG_AST_ID_STMT_RETURN:
-            frg_ast_destroy(&((frg_ast_stmt_return_t*)*ast)->value);
+            if (((frg_ast_stmt_return_t*)*ast)->value != NULL) {
+                frg_ast_destroy(&((frg_ast_stmt_return_t*)*ast)->value);
+            }
 
             break;
         case FRG_AST_ID_STMT_IF:
-            frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->condition);
+            if (((frg_ast_stmt_if_t*)*ast)->condition != NULL) {
+                frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->condition);
+            }
 
-            frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->then_clause);
+            if (((frg_ast_stmt_if_t*)*ast)->then_clause != NULL) {
+                frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->then_clause);
+            }
 
-            frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->else_clause);
+            if (((frg_ast_stmt_if_t*)*ast)->else_clause != NULL) {
+                frg_ast_destroy(&((frg_ast_stmt_if_t*)*ast)->else_clause);
+            }
 
             break;
         case FRG_AST_ID_STMT_WHILE:
-            frg_ast_destroy(&((frg_ast_stmt_while_t*)*ast)->condition);
+            if (((frg_ast_stmt_while_t*)*ast)->condition != NULL) {
+                frg_ast_destroy(&((frg_ast_stmt_while_t*)*ast)->condition);
+            }
 
-            frg_ast_destroy(&((frg_ast_stmt_while_t*)*ast)->body);
+            if (((frg_ast_stmt_while_t*)*ast)->body != NULL) {
+                frg_ast_destroy(&((frg_ast_stmt_while_t*)*ast)->body);
+            }
 
             break;
         case FRG_AST_ID_STMT_BLOCK:
@@ -597,11 +625,15 @@ void frg_ast_destroy(frg_ast_t** ast) {
 
             break;
         case FRG_AST_ID_VALUE_INT:
-            frg_ast_destroy(&((frg_ast_value_int_t*)*ast)->ty);
+            if (((frg_ast_value_int_t*)*ast)->ty != NULL) {
+                frg_ast_destroy(&((frg_ast_value_int_t*)*ast)->ty);
+            }
 
             break;
         case FRG_AST_ID_VALUE_FLOAT:
-            frg_ast_destroy(&((frg_ast_value_float_t*)*ast)->ty);
+            if (((frg_ast_value_float_t*)*ast)->ty != NULL) {
+                frg_ast_destroy(&((frg_ast_value_float_t*)*ast)->ty);
+            }
 
             break;
         case FRG_AST_ID_VALUE_STR:
@@ -615,11 +647,15 @@ void frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_CALL_KW_ARG:
             g_string_free(((frg_ast_value_call_kw_arg_t*)*ast)->name, TRUE);
 
-            frg_ast_destroy(&((frg_ast_value_call_kw_arg_t*)*ast)->value);
+            if (((frg_ast_value_call_kw_arg_t*)*ast)->value != NULL) {
+                frg_ast_destroy(&((frg_ast_value_call_kw_arg_t*)*ast)->value);
+            }
 
             break;
         case FRG_AST_ID_VALUE_CALL:
-            frg_ast_destroy(&((frg_ast_value_call_t*)*ast)->callee);
+            if (((frg_ast_value_call_t*)*ast)->callee != NULL) {
+                frg_ast_destroy(&((frg_ast_value_call_t*)*ast)->callee);
+            }
 
             _frg_asts_free_glist(((frg_ast_value_call_t*)*ast)->args);
 
@@ -631,7 +667,9 @@ void frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_LOG_NOT:
         case FRG_AST_ID_VALUE_INC:
         case FRG_AST_ID_VALUE_DEC:
-            frg_ast_destroy(&((frg_ast_value_unary_t*)*ast)->operand);
+            if (((frg_ast_value_unary_t*)*ast)->operand != NULL) {
+                frg_ast_destroy(&((frg_ast_value_unary_t*)*ast)->operand);
+            }
 
             break;
         case FRG_AST_ID_VALUE_ACCESS:
@@ -670,9 +708,13 @@ void frg_ast_destroy(frg_ast_t** ast) {
         case FRG_AST_ID_VALUE_EXP_ASSIGN:
         case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
         case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
-            frg_ast_destroy(&((frg_ast_value_binary_t*)*ast)->left);
+            if (((frg_ast_value_binary_t*)*ast)->left != NULL) {
+                frg_ast_destroy(&((frg_ast_value_binary_t*)*ast)->left);
+            }
 
-            frg_ast_destroy(&((frg_ast_value_binary_t*)*ast)->right);
+            if (((frg_ast_value_binary_t*)*ast)->right != NULL) {
+                frg_ast_destroy(&((frg_ast_value_binary_t*)*ast)->right);
+            }
 
             break;
         default:
@@ -900,7 +942,7 @@ frg_ast_value_binary_t* frg_ast_try_cast_value_binary(frg_ast_t* ast) {
     }
 }
 
-const char* frg_ast_get_name(const frg_ast_t* ast) {
+const char* frg_ast_decl_get_name(const frg_ast_t* ast) {
     frg_assert_pointer_non_null(ast);
 
     switch (ast->id) {

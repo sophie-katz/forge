@@ -28,4 +28,5 @@ runs:
       working-directory: forge-core
       shell: bash
       run: |
+        . ../.venv/bin/activate 
         meson test -C build

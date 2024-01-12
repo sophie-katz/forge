@@ -27,5 +27,5 @@ typedef struct {
 
 typedef struct {
     frg_parsing_location_t start;
-    frg_parsing_location_t end;
+    frg_columnno_t length;
 } frg_parsing_range_t;

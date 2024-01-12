@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/parsing/parsing.h>
 
@@ -24,83 +23,49 @@ extern int yy_scan_buffer(char* base, size_t size);
 
 const char* _frg_parsing_current_path = NULL;
 size_t _frg_parsing_current_offset = 0;
+frg_message_buffer_t* _frg_parsing_current_message_buffer = NULL;
 
-frg_ast_t* frg_parse_file(FILE* file, const char* path) {
-    frg_assert_pointer_non_null(file);
-    frg_assert(!ferror(file));
-    frg_assert_string_non_empty(path);
+frg_ast_t* frg_parse(
+    frg_message_buffer_t* message_buffer,
+    frg_parsing_source_t* source
+) {
+    // Error checking
+    frg_assert_pointer_non_null(source);
+    frg_assert_string_non_empty(source->path);
 
-    _frg_parsing_current_path = path;
+    // Set globals
+    _frg_parsing_current_path = source->path;
     _frg_parsing_current_offset = 0;
-    yyin = file;
+    _frg_parsing_current_message_buffer = message_buffer;
 
+    if (source->text != NULL) {
+        // We are parsing a buffer
+        frg_assert_int_ge(source->length, 2);
+        frg_assert_int_eq(source->text[source->length - 2], 0);
+        frg_assert_int_eq(source->text[source->length - 1], 0);
+
+        // Set the scan buffer
+        yy_scan_buffer(source->text, source->length);
+    } else {
+        // We are parsing a file
+        frg_assert_pointer_non_null(source->file);
+        frg_assert(!ferror(source->file));
+
+        // Set the input file handle
+        yyin = source->file;
+    }
+
+    // Actually parse the text
     frg_ast_t* ast = NULL;
     if (yyparse(&ast) != 0 && ast != NULL) {
         frg_ast_destroy(&ast);
     }
 
+    // Unset globals
     _frg_parsing_current_path = NULL;
     _frg_parsing_current_offset = 0;
+    _frg_parsing_current_message_buffer = NULL;
 
-    return ast;
-}
-
-frg_ast_t* frg_parse_file_at_path(const char* path) {
-    frg_assert_string_non_empty(path);
-
-    FILE *file = fopen(path, "r");
-    if (file == NULL) {
-        frg_log_fatal_error("unable to open source file: %s (%s)", path, strerror(errno));
-        return NULL;
-    }
-
-    frg_ast_t* ast = frg_parse_file(
-        file,
-        path
-    );
-
-    fclose(file);
-
-    return ast;
-}
-
-frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* path) {
-    frg_assert_pointer_non_null(buffer);
-    frg_assert_int_ge(length, 2);
-    frg_assert_int_eq(buffer[length - 2], 0);
-    frg_assert_int_eq(buffer[length - 1], 0);
-    frg_assert_string_non_empty(path);
-
-    _frg_parsing_current_path = path;
-    _frg_parsing_current_offset = 0;
-
-    yy_scan_buffer(buffer, length);
-    
-    frg_ast_t* ast = NULL;
-    if (yyparse(&ast) != 0 && ast != NULL) {
-        frg_ast_destroy(&ast);
-    }
-
-    _frg_parsing_current_path = NULL;
-    _frg_parsing_current_offset = 0;
-
-    return ast;
-}
-
-frg_ast_t* frg_parse_string(const char* text, const char* path) {
-    frg_assert_pointer_non_null(text);
-    frg_assert_string_non_empty(path);
-
-    size_t length = strlen(text);
-
-    char* buffer = (char*)frg_safe_malloc(length + 2);
-
-    memcpy(buffer, text, length);
-    buffer[length] = buffer[length + 1] = 0;
-
-    frg_ast_t* ast = frg_parse_buffer(buffer, length + 2, path);
-
-    frg_safe_free((void**)&buffer);
-
+    // Return AST
     return ast;
 }

@@ -14,9 +14,8 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/cli/option_set.h>
-#include <forge/common/log.h>
 
-bool callback(void* user_data, const char* value) {
+bool callback(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     return true;
 }
 

@@ -19,7 +19,6 @@
 #include <forge/codegen/codegen.h>
 #include <forge/common/error.h>
 #include <forge/common/color.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/common/stream.h>
 #include <forge/cli/program.h>
@@ -40,7 +39,12 @@ void frg_config_destroy(frg_config_t** config) {
     frg_safe_free((void**)config);
 }
 
-int frg_config_parse_cli(frg_config_t* config, int argc, const char** argv) {
+int frg_config_parse_cli(
+    frg_message_buffer_t* message_buffer,
+    frg_config_t* config,
+    int argc,
+    const char** argv
+) {
     frg_assert_pointer_non_null(config);
     frg_assert_int_gt(argc, 0);
     frg_assert_pointer_non_null(argv);
@@ -48,6 +52,7 @@ int frg_config_parse_cli(frg_config_t* config, int argc, const char** argv) {
     frg_cli_program_t* program = frg_config_cli_program_new();
 
     int result = frg_cli_program_parse(
+        message_buffer,
         program,
         argc,
         argv,
@@ -59,7 +64,12 @@ int frg_config_parse_cli(frg_config_t* config, int argc, const char** argv) {
     return result;
 }
 
-frg_recoverable_status_t _frg_parse_env_bool(bool* result, const char* key, const char* text) {
+frg_recoverable_status_t _frg_parse_env_bool(
+    frg_message_buffer_t* message_buffer,
+    bool* result,
+    const char* key,
+    const char* text
+) {
     frg_assert_pointer_non_null(result);
     frg_assert_string_non_empty(key);
     frg_assert_pointer_non_null(text);
@@ -71,31 +81,42 @@ frg_recoverable_status_t _frg_parse_env_bool(bool* result, const char* key, cons
         *result = false;
         return FRG_RECOVERABLE_STATUS_OK;
     } else {
-        frg_log_fatal_error("invalid boolean value for environment variable '%s': %s (expected either 'true' or 'false')", key, text);
+        // frg_log_fatal_error("invalid boolean value for environment variable '%s': %s (expected either 'true' or 'false')", key, text);
         return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
 }
 
-frg_recoverable_status_t _frg_config_parse_env_debug(frg_config_t* config) {
+frg_recoverable_status_t _frg_config_parse_env_debug(
+    frg_message_buffer_t* message_buffer,
+    frg_config_t* config
+) {
     frg_assert_pointer_non_null(config);
 
     const char* debug_text = getenv("FORGE_DEBUG");
     if (debug_text != NULL && *debug_text != 0) {
         bool debug_value = false;
-        frg_recoverable_status_t result = _frg_parse_env_bool(&debug_value, "FORGE_DEBUG", debug_text);
+        frg_recoverable_status_t result = _frg_parse_env_bool(
+            message_buffer,
+            &debug_value,
+            "FORGE_DEBUG",
+            debug_text
+        );
         if (result != FRG_RECOVERABLE_STATUS_OK) {
             return result;
         }
 
         if (debug_value) {
-            frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
+            config->minimum_message_severity = FRG_MESSAGE_SEVERITY_DEBUG;
         }
     }
 
     return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_recoverable_status_t _frg_config_parse_env_color_mode(frg_config_t* config) {
+frg_recoverable_status_t _frg_config_parse_env_color_mode(
+    frg_message_buffer_t* message_buffer,
+    frg_config_t* config
+) {
     frg_assert_pointer_non_null(config);
 
     const char* color_mode_text = getenv("FORGE_COLOR_MODE");
@@ -107,7 +128,13 @@ frg_recoverable_status_t _frg_config_parse_env_color_mode(frg_config_t* config) 
         } else if (strcmp(color_mode_text, "enabled") == 0) {
             frg_color_mode_set(FRG_COLOR_MODE_ENABLED);
         } else {
-            frg_log_fatal_error("unknown color mode: %s", color_mode_text);
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "unknown color mode: %s",
+                color_mode_text
+            );
+
             return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
         }
     }
@@ -115,15 +142,24 @@ frg_recoverable_status_t _frg_config_parse_env_color_mode(frg_config_t* config) 
     return FRG_RECOVERABLE_STATUS_OK;
 }
 
-frg_recoverable_status_t frg_config_parse_env(frg_config_t* config) {
+frg_recoverable_status_t frg_config_parse_env(
+    frg_message_buffer_t* message_buffer,
+    frg_config_t* config
+) {
     frg_assert_pointer_non_null(config);
     
-    frg_recoverable_status_t result = _frg_config_parse_env_debug(config);
+    frg_recoverable_status_t result = _frg_config_parse_env_debug(
+        message_buffer,
+        config
+    );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         return result;
     }
 
-    result = _frg_config_parse_env_color_mode(config);
+    result = _frg_config_parse_env_color_mode(
+        message_buffer,
+        config
+    );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         return result;
     }
@@ -131,9 +167,39 @@ frg_recoverable_status_t frg_config_parse_env(frg_config_t* config) {
     return FRG_RECOVERABLE_STATUS_OK;
 }
 
-void frg_config_log_debug(const frg_config_t* config) {
+void frg_config_log_debug(
+    frg_message_buffer_t* message_buffer,
+    const frg_config_t* config
+) {
     frg_assert_pointer_non_null(config);
 
-    frg_log_result_t result = frg_log_debug("Configuration: %s");
-    frg_log_note(&result, "config.version_short == %s", config->version_short ? "true" : "false");
+    frg_message_t* message = frg_message_emit(
+        message_buffer,
+        FRG_MESSAGE_SEVERITY_DEBUG,
+        "Configuration:"
+    );
+
+    frg_message_emit_child(
+        message_buffer,
+        message,
+        FRG_MESSAGE_SEVERITY_NOTE,
+        "config.version_short == %s",
+        config->version_short ? "true" : "false"
+    );
+
+    frg_message_emit_child(
+        message_buffer,
+        message,
+        FRG_MESSAGE_SEVERITY_NOTE,
+        "config.compile_output_path == \"%s\"",
+        config->compile_output_path
+    );
+
+    frg_message_emit_child(
+        message_buffer,
+        message,
+        FRG_MESSAGE_SEVERITY_NOTE,
+        "config.minimum_message_severity == %i",
+        config->minimum_message_severity
+    );
 }

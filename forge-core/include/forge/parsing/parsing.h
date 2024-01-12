@@ -17,18 +17,14 @@
 
 #include <forge/ast/ast.h>
 #include <forge/common/enums.h>
+#include <forge/parsing/source.h>
+#include <forge/messages/message_buffer.h>
 #include <stdio.h>
 
-/// Parse from a file
-frg_ast_t* frg_parse_file(FILE* file, const char* path);
-
-frg_ast_t* frg_parse_file_at_path(const char* path);
-
-/// Parse from a pre-allocated buffer
-frg_ast_t* frg_parse_buffer(char* buffer, size_t length, const char* path);
-
-/// \brief Parse from a string
+/// Parse code from \a source.
 ///
-/// Note that this will copy the string. Use \c frg_parse_buffer if you want to avoid
-/// this.
-frg_ast_t* frg_parse_string(const char* text, const char* path);
+/// Note that this is not thread safe!
+frg_ast_t* frg_parse(
+    frg_message_buffer_t* message_buffer,
+    frg_parsing_source_t* source
+);

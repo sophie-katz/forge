@@ -26,7 +26,4 @@ This is the user documentation for the Forge programming language.
 - [Guide](./guide/hello-world.md)
 - [Language specification](./specification/how-to-use.md)
 - [**Core**](https://github.com/sophie-katz/forge/tree/main/forge-core)
-    - [**Compiler**](https://github.com/sophie-katz/forge/tree/main/forge-core/src/forge-compiler)
-    - [**Interpreter**](https://github.com/sophie-katz/forge/tree/main/forge-core/src/forge-interpreter)
-    - [**Shared library**](https://github.com/sophie-katz/forge/tree/main/forge-core/include)
     - [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)

@@ -17,14 +17,16 @@
 
 #include <forge/common/types.h>
 #include <stddef.h>
+#include <stdio.h>
 
 #define FRG_DEBUG_DEFAULT_STREAM stdout
 #define FRG_DEBUG_INDENT_WIDTH 2
 
-void frg_debug_print_newline(frg_indent_t indent);
-void frg_debug_print_node(const char* format, ...);
-void frg_debug_print_property(const char* label, const char* format, ...);
+void frg_debug_print_newline(FILE* file, frg_indent_t indent);
+void frg_debug_print_node(FILE* file, const char* format, ...);
+void frg_debug_print_property(FILE* file, const char* label, const char* format, ...);
 void frg_debug_print_property_with_index(
+    FILE* file,
     const char* label,
     size_t index,
     const char* format,

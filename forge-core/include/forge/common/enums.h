@@ -68,15 +68,15 @@ typedef enum {
     FRG_COLOR_ID_BRIGHT_WHITE,
 } frg_color_id_t;
 
+// TODO: Add suggestion or fix severity
 typedef enum {
-    FRG_LOG_SEVERITY_TRACE,
-    FRG_LOG_SEVERITY_DEBUG,
-    FRG_LOG_SEVERITY_NOTE,
-    FRG_LOG_SEVERITY_WARNING,
-    FRG_LOG_SEVERITY_ERROR,
-    FRG_LOG_SEVERITY_FATAL_ERROR,
-    FRG_LOG_SEVERITY_INTERNAL_ERROR,
-} frg_log_severity_t;
+    FRG_MESSAGE_SEVERITY_DEBUG,
+    FRG_MESSAGE_SEVERITY_NOTE,
+    FRG_MESSAGE_SEVERITY_WARNING,
+    FRG_MESSAGE_SEVERITY_ERROR,
+    FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+    FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+} frg_message_severity_t;
 
 /// Different types of values according to the interpreter
 typedef enum {
@@ -212,3 +212,9 @@ typedef enum {
     FRG_AST_VISITOR_STATUS_SKIP,
     FRG_AST_VISITOR_STATUS_STOP,
 } frg_ast_visitor_status_t;
+
+typedef enum {
+    FRG_PARSING_SOURCE_FLAG_NONE = 0x0,
+    FRG_PARSING_SOURCE_FLAG_OWNED_FILE = 0x1,
+    FRG_PARSING_SOURCE_FLAG_OWNED_TEXT = 0x2,
+} frg_parsing_source_flags_t;

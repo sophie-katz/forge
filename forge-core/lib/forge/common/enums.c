@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/enums.h>
-#include <forge/common/log.h>
 #include <forge/common/error.h>
 
 const char* frg_recoverable_status_to_string(frg_recoverable_status_t status) {

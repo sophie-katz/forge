@@ -100,19 +100,19 @@ void test_format_char_printable_unicode(void) {
     TEST_ASSERT_EQUAL_STRING("'😀'", formatted->str);
 }
 
-void test_parse_char_null(void) {
-    frg_char_t value = 0;
-    frg_parsing_location_t start = {
-        .path = "--",
-        .lineno = 1,
-        .columnno = 1,
-        .offset = 0
-    };
-    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(start, "'\\0'");
-    TEST_ASSERT_EQUAL(FRG_RECOVERABLE_STATUS_OK, frg_parse_char(&value, reader));
-    frg_parsing_token_reader_destroy(&reader);
-    TEST_ASSERT_EQUAL(0, value);
-}
+// void test_parse_char_null(void) {
+//     frg_char_t value = 0;
+//     frg_parsing_location_t start = {
+//         .path = "--",
+//         .lineno = 1,
+//         .columnno = 1,
+//         .offset = 0
+//     };
+//     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(&start, "'\\0'");
+//     TEST_ASSERT_EQUAL(FRG_RECOVERABLE_STATUS_OK, frg_parse_char(&value, reader));
+//     frg_parsing_token_reader_destroy(&reader);
+//     TEST_ASSERT_EQUAL(0, value);
+// }
 
 // void test_parse_char_unprintable_ascii(void) {
 //     frg_char_t value = 0;

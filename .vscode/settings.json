@@ -26,7 +26,20 @@
         "check.h": "c",
         "stream.h": "c",
         "common.h": "c",
-        "error.h": "c"
+        "error.h": "c",
+        "array": "c",
+        "deque": "c",
+        "list": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "iterator": "c",
+        "string_view": "c",
+        "__bit_reference": "c",
+        "__hash_table": "c",
+        "__split_buffer": "c",
+        "stddef.h": "c",
+        "memory.h": "c",
+        "message.h": "c"
     },
     "C_Cpp.doxygen.generateOnType": false
 }

@@ -18,6 +18,4 @@
 #include <forge/common/enums.h>
 #include <stdio.h>
 
-#define FRG_STREAM_DEFAULT stderr
-
 bool frg_is_console_stream(FILE* stream);

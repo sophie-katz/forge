@@ -15,7 +15,6 @@
 
 #include <forge/common/error.h>
 #include <forge/common/color.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/command.h>
 

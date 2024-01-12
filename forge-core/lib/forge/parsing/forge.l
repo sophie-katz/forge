@@ -25,8 +25,8 @@ not, see <https://www.gnu.org/licenses/>.
 #include <forge/ast/ast.h>
 #include <forge/common/enums.h>
 #include <forge/common/lexical_casts.h>
-#include <forge/common/log.h>
 #include <forge/common/types.h>
+#include <forge/messages/message_buffer.h>
 #include <glib.h>
 #include <stdbool.h>
 
@@ -37,6 +37,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 extern const char* _frg_parsing_current_path;
 extern size_t _frg_parsing_current_offset;
+extern frg_message_buffer_t* _frg_parsing_current_message_buffer;
 
 frg_columnno_t yycolumnno = 1;
 %}
@@ -217,11 +218,15 @@ false {
     };
 
     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        location,
+        &location,
         yytext
     );
 
-    frg_recoverable_status_t result = frg_parse_uint(&yylval.value_int, reader);
+    frg_recoverable_status_t result = frg_parse_uint(
+        _frg_parsing_current_message_buffer,
+        &yylval.value_int,
+        reader
+    );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         yylval.value_int = 0;
     }
@@ -263,11 +268,15 @@ false {
     };
 
     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        location,
+        &location,
         yytext
     );
 
-    frg_recoverable_status_t result = frg_parse_str(&yylval.value_str, reader);
+    frg_recoverable_status_t result = frg_parse_str(
+        _frg_parsing_current_message_buffer,
+        &yylval.value_str,
+        reader
+    );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         yylval.value_str = g_string_new(NULL);
     }
@@ -288,11 +297,15 @@ false {
     };
 
     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        location,
+        &location,
         yytext
     );
 
-    frg_recoverable_status_t result = frg_parse_char(&yylval.value_char, reader);
+    frg_recoverable_status_t result = frg_parse_char(
+        _frg_parsing_current_message_buffer,
+        &yylval.value_char,
+        reader
+    );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         yylval.value_char = 0;
     }
@@ -464,11 +477,36 @@ false {
 
 . {
     char as_char = yytext[0];
+
     int as_int = ((int)as_char) & 0xff;
+
+    frg_parsing_range_t source_range = {
+        .start = {
+            .path = _frg_parsing_current_path,
+            .offset = _frg_parsing_current_offset,
+            .lineno = yylineno,
+            .columnno = yycolumnno,
+        },
+        .length = 1
+    };
+
     if (isprint(yytext[0])) {
-        frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "unexpected character '%c' (0x%2x)", as_char, as_int);
+        frg_message_emit_from_source_range(
+            _frg_parsing_current_message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
+            "unexpected character '%c' (0x%2x)",
+            as_char,
+            as_int
+        );
     } else {
-        frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "unexpected byte 0x%2x", as_int);
+        frg_message_emit_from_source_range(
+            _frg_parsing_current_message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
+            "unexpected byte 0x%2x",
+            as_int
+        );
     }
 }
 

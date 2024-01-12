@@ -14,9 +14,9 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/cli/command.h>
-#include <forge/common/log.h>
 
 int callback_command(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -24,7 +24,7 @@ int callback_command(
     return 0;
 }
 
-bool callback_option(void* user_data, const char* value) {
+bool callback_option(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     return true;
 }
 

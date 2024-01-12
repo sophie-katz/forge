@@ -15,7 +15,6 @@
 
 #include <forge/common/error.h>
 #include <forge/common/color.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/choice.h>
 
@@ -47,11 +46,7 @@ void frg_cli_choice_print_help(
 ) {
     frg_assert_pointer_non_null(choice);
 
-    if (frg_color_mode_get() == FRG_COLOR_MODE_ENABLED) {
-        printf("      • ");
-    } else {
-        printf("      - ");
-    }
+    printf("      - ");
 
     frg_color_set(stdout, FRG_COLOR_ID_BOLD);
     printf("%s", choice->name);

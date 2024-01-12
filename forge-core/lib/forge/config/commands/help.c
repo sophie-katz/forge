@@ -19,9 +19,9 @@
 #include <forge/config/cli_program.h>
 #include <forge/common/error.h>
 #include <forge/config/config.h>
-#include <forge/common/log.h>
 
 int _frg_config_commands_callback_help(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -29,11 +29,19 @@ int _frg_config_commands_callback_help(
     frg_config_cli_program_banner();
 
     if (pos_args == NULL) {
-        if (!frg_cli_program_print_help((frg_cli_program_t*)program, NULL)) {
+        if (!frg_cli_program_try_print_help(
+            message_buffer,
+            (frg_cli_program_t*)program,
+            NULL
+        )) {
             return 1;
         }
     } else {
-        if (!frg_cli_program_print_help((frg_cli_program_t*)program, (const char*)pos_args->data)) {
+        if (!frg_cli_program_try_print_help(
+            message_buffer,
+            (frg_cli_program_t*)program,
+            (const char*)pos_args->data
+        )) {
             return 1;
         }
     }

@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/ast.h>
-#include <forge/common/log.h>
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 #include <stddef.h>

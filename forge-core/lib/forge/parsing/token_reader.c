@@ -18,17 +18,17 @@
 #include <forge/common/error.h>
 #include <string.h>
 
-frg_parsing_token_reader_t* frg_parsing_token_reader_new(frg_parsing_location_t start, const char* text) {
-    frg_assert_string_non_empty(start.path);
-    frg_assert_int_ge(start.lineno, 1);
-    frg_assert_int_ge(start.columnno, 1);
+frg_parsing_token_reader_t* frg_parsing_token_reader_new(const frg_parsing_location_t* start, const char* text) {
+    frg_assert_string_non_empty(start->path);
+    frg_assert_int_ge(start->lineno, 1);
+    frg_assert_int_ge(start->columnno, 1);
     frg_assert_string_non_empty(text);
 
     frg_parsing_token_reader_t* reader = frg_safe_malloc(sizeof(frg_parsing_token_reader_t));
 
-    reader->start = start;
+    reader->start = *start;
     reader->text = text;
-    reader->current_location = start;
+    reader->current_location = *start;
     reader->current_char = text;
 
     return reader;
@@ -72,7 +72,7 @@ void frg_parsing_token_reader_step(frg_parsing_token_reader_t* reader) {
 frg_parsing_token_reader_t* frg_parsing_token_reader_save(const frg_parsing_token_reader_t* reader) {
     frg_assert_pointer_non_null(reader);
 
-    frg_parsing_token_reader_t* state = frg_parsing_token_reader_new(reader->start, reader->text);
+    frg_parsing_token_reader_t* state = frg_parsing_token_reader_new(&reader->start, reader->text);
     state->current_location = reader->current_location;
     state->current_char = reader->current_char;
 

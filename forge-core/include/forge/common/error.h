@@ -15,30 +15,21 @@
 
 #pragma once
 
-#include <forge/common/log.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <build_config.h>
 
 #define frg_die(format, ...) { \
-    frg_log_internal_error((format), ##__VA_ARGS__); \
+    fprintf(stderr, "%s:%i: forge internal error: ", __FILE__, __LINE__); \
+    fprintf(stderr, (format), ##__VA_ARGS__); \
+    fprintf(stderr, "\n"); \
     abort(); \
 }
 
 #define frg_die_unexpected_enum_value(enum_value) \
-    frg_die("unexpected enum value for '%s': %i", #enum_value, (int)(enum_value))
+    frg_die("unexpected enum value for '%s', %i", #enum_value, (int)(enum_value))
 
-#ifdef NDEBUG
-#define frg_assert(condition)
-#define frg_assert_pointer_non_null(pointer)
-#define frg_assert_string_non_empty(string)
-#define frg_assert_int_positive(value)
-#define frg_assert_int_non_negative(value)
-#define frg_assert_int_lt(lhs, rhs)
-#define frg_assert_int_le(lhs, rhs)
-#define frg_assert_int_gt(lhs, rhs)
-#define frg_assert_int_ge(lhs, rhs)
-#define frg_assert_int_ne(lhs, rhs)
-#define frg_assert_int_eq(lhs, rhs)
-#else
+#ifdef FRG_SHOULD_BUILD_ASSERTS
 #define frg_assert(condition) { \
     if (!(condition)) { \
         frg_die("assertion must be met: %s", #condition); \
@@ -48,6 +39,12 @@
 #define frg_assert_pointer_non_null(pointer) { \
     if ((pointer) == NULL) { \
         frg_die("'%s' must not be NULL", #pointer); \
+    } \
+}
+
+#define frg_assert_pointer_null(pointer) { \
+    if ((pointer) != NULL) { \
+        frg_die("'%s' must be NULL", #pointer); \
     } \
 }
 
@@ -69,49 +66,111 @@
 
 #define frg_assert_int_positive(value) { \
     if ((value) <= 0) { \
-        frg_die("'%s' must be positive, not %Li", #value, (value)); \
+        frg_die("'%s' must be positive, not %li", #value, (int64_t)(value)); \
     } \
 }
 
 #define frg_assert_int_non_negative(value) { \
     if ((value) < 0) { \
-        frg_die("'%s' must be non-negative, not %Li", #value, (value)); \
+        frg_die("'%s' must be non-negative, not %li", #value, (int64_t)(value)); \
     } \
 }
 
 #define frg_assert_int_lt(lhs, rhs) { \
     if (!((lhs) < (rhs))) { \
-        frg_die("'lhs' must be less than 'rhs'\n  lhs: %s\n    == %Li\n  rhs: %s\n    == %Li", #lhs, (lhs), #rhs, (rhs)); \
+        frg_die("'lhs' must be less than 'rhs'\n  lhs: %s\n    == %li\n  rhs: %s\n    == %li", #lhs, (int64_t)(lhs), #rhs, (int64_t)(rhs)); \
     } \
 }
 
 #define frg_assert_int_le(lhs, rhs) { \
     if (!((lhs) <= (rhs))) { \
-        frg_die("'lhs' must be less than or equal to 'rhs'\n  lhs: %s\n    == %Li\n  rhs: %s\n    == %Li", #lhs, (lhs), #rhs, (rhs)); \
+        frg_die("'lhs' must be less than or equal to 'rhs'\n  lhs: %s\n    == %li\n  rhs: %s\n    == %li", #lhs, (int64_t)(lhs), #rhs, (int64_t)(rhs)); \
     } \
 }
 
 #define frg_assert_int_gt(lhs, rhs) { \
     if (!((lhs) > (rhs))) { \
-        frg_die("'lhs' must be greater than 'rhs'\n  lhs: %s\n    == %Li\n  rhs: %s\n    == %Li", #lhs, (lhs), #rhs, (rhs)); \
+        frg_die("'lhs' must be greater than 'rhs'\n  lhs: %s\n    == %li\n  rhs: %s\n    == %li", #lhs, (int64_t)(lhs), #rhs, (int64_t)(rhs)); \
     } \
 }
 
 #define frg_assert_int_ge(lhs, rhs) { \
     if (!((lhs) >= (rhs))) { \
-        frg_die("'lhs' must be greater than or equal to 'rhs'\n  lhs: %s\n    == %Li\n  rhs: %s\n    == %Li", #lhs, (lhs), #rhs, (rhs)); \
+        frg_die("'lhs' must be greater than or equal to 'rhs'\n  lhs: %s\n    == %li\n  rhs: %s\n    == %li", #lhs, (int64_t)(lhs), #rhs, (int64_t)(rhs)); \
     } \
 }
 
 #define frg_assert_int_ne(lhs, rhs) { \
     if (!((lhs) != (rhs))) { \
-        frg_die("'lhs' must not be equal to 'rhs'\n  lhs: %s\n    == %Li\n  rhs: %s\n    == %Li", #lhs, (lhs), #rhs, (rhs)); \
+        frg_die("'lhs' must not be equal to 'rhs'\n  lhs: %s\n    == %li\n  rhs: %s\n    == %li", #lhs, (int64_t)(lhs), #rhs, (int64_t)(rhs)); \
     } \
 }
 
 #define frg_assert_int_eq(lhs, rhs) { \
     if (!((lhs) == (rhs))) { \
-        frg_die("'lhs' must be equal to 'rhs'\n  lhs: %s\n    == %Li\n  rhs: %s\n    == %Li", #lhs, (lhs), #rhs, (rhs)); \
+        frg_die("'lhs' must be equal to 'rhs'\n  lhs: %s\n    == %li\n  rhs: %s\n    == %li", #lhs, (int64_t)(lhs), #rhs, (int64_t)(rhs)); \
     } \
 }
+
+#define frg_assert_uint_positive(value) { \
+    if ((value) <= 0) { \
+        frg_die("'%s' must be positive, not %Lu", #value, (uint64_t)(value)); \
+    } \
+}
+
+#define frg_assert_uint_lt(lhs, rhs) { \
+    if (!((lhs) < (rhs))) { \
+        frg_die("'lhs' must be less than 'rhs'\n  lhs: %s\n    == %Lu\n  rhs: %s\n    == %Lu", #lhs, (uint64_t)(lhs), #rhs, (uint64_t)(rhs)); \
+    } \
+}
+
+#define frg_assert_uint_le(lhs, rhs) { \
+    if (!((lhs) <= (rhs))) { \
+        frg_die("'lhs' must be less than or equal to 'rhs'\n  lhs: %s\n    == %Lu\n  rhs: %s\n    == %Lu", #lhs, (uint64_t)(lhs), #rhs, (uint64_t)(rhs)); \
+    } \
+}
+
+#define frg_assert_uint_gt(lhs, rhs) { \
+    if (!((lhs) > (rhs))) { \
+        frg_die("'lhs' must be greater than 'rhs'\n  lhs: %s\n    == %Lu\n  rhs: %s\n    == %Lu", #lhs, (uint64_t)(lhs), #rhs, (uint64_t)(rhs)); \
+    } \
+}
+
+#define frg_assert_uint_ge(lhs, rhs) { \
+    if (!((lhs) >= (rhs))) { \
+        frg_die("'lhs' must be greater than or equal to 'rhs'\n  lhs: %s\n    == %Lu\n  rhs: %s\n    == %Lu", #lhs, (uint64_t)(lhs), #rhs, (uint64_t)(rhs)); \
+    } \
+}
+
+#define frg_assert_uint_ne(lhs, rhs) { \
+    if (!((lhs) != (rhs))) { \
+        frg_die("'lhs' must not be equal to 'rhs'\n  lhs: %s\n    == %Lu\n  rhs: %s\n    == %Lu", #lhs, (uint64_t)(lhs), #rhs, (uint64_t)(rhs)); \
+    } \
+}
+
+#define frg_assert_uint_eq(lhs, rhs) { \
+    if (!((lhs) == (rhs))) { \
+        frg_die("'lhs' must be equal to 'rhs'\n  lhs: %s\n    == %Lu\n  rhs: %s\n    == %Lu", #lhs, (uint64_t)(lhs), #rhs, (uint64_t)(rhs)); \
+    } \
+}
+#else
+#define frg_assert(condition)
+#define frg_assert_pointer_non_null(pointer)
+#define frg_assert_pointer_null(pointer)
+#define frg_assert_string_non_empty(string)
+#define frg_assert_int_positive(value)
+#define frg_assert_int_non_negative(value)
+#define frg_assert_int_lt(lhs, rhs)
+#define frg_assert_int_le(lhs, rhs)
+#define frg_assert_int_gt(lhs, rhs)
+#define frg_assert_int_ge(lhs, rhs)
+#define frg_assert_int_ne(lhs, rhs)
+#define frg_assert_int_eq(lhs, rhs)
+#define frg_assert_uint_positive(value)
+#define frg_assert_uint_lt(lhs, rhs)
+#define frg_assert_uint_le(lhs, rhs)
+#define frg_assert_uint_gt(lhs, rhs)
+#define frg_assert_uint_ge(lhs, rhs)
+#define frg_assert_uint_ne(lhs, rhs)
+#define frg_assert_uint_eq(lhs, rhs)
 #endif

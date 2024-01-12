@@ -34,7 +34,6 @@ struct frg_llvm_module_t {
 extern "C" {
 #include <forge/codegen/codegen.h>
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 
 frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
@@ -90,12 +89,18 @@ void* frg_codegen_call_function(
 }
 
 frg_recoverable_status_t frg_codegen_write_object_file(
+    frg_message_buffer_t* message_buffer,
     const frg_llvm_module_t* llvm_module,
     const char* path
 ) {
     std::string target_triple = llvm::sys::getDefaultTargetTriple();
 
-    frg_log_debug("Using target triple: %s", target_triple.c_str());
+    frg_message_emit(
+        message_buffer,
+        FRG_MESSAGE_SEVERITY_DEBUG,
+        "Using target triple: %s",
+        target_triple.c_str()
+    );
 
     llvm::InitializeAllTargetInfos();
     llvm::InitializeAllTargets();
@@ -110,11 +115,14 @@ frg_recoverable_status_t frg_codegen_write_object_file(
     );
 
     if (target == NULL) {
-        frg_log_fatal_error(
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
             "unable to get target for %s (%s)",
             target_triple.c_str(),
             error_message.c_str()
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
 
@@ -138,11 +146,14 @@ frg_recoverable_status_t frg_codegen_write_object_file(
     );
 
     if (error_code) {
-        frg_log_fatal_error(
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
             "unable ot open output file for writing %s (%s)",
             path,
             error_code.message().c_str()
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
 
@@ -153,9 +164,12 @@ frg_recoverable_status_t frg_codegen_write_object_file(
         nullptr,
         llvm::CodeGenFileType::CGFT_ObjectFile
     )) {
-        frg_log_fatal_error(
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
             "target machine cannot emit an object file"
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
     }
 

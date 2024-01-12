@@ -24,7 +24,7 @@ typedef struct {
     const char* current_char;
 } frg_parsing_token_reader_t;
 
-frg_parsing_token_reader_t* frg_parsing_token_reader_new(frg_parsing_location_t start, const char* text);
+frg_parsing_token_reader_t* frg_parsing_token_reader_new(const frg_parsing_location_t* start, const char* text);
 void frg_parsing_token_reader_destroy(frg_parsing_token_reader_t** reader);
 
 const frg_parsing_location_t* frg_parsing_token_reader_get_current_location(const frg_parsing_token_reader_t* reader);

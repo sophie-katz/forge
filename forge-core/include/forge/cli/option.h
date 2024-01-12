@@ -17,13 +17,18 @@
 
 #include <forge/common/enums.h>
 #include <forge/cli/choice.h>
+#include <forge/messages/message_buffer.h>
 #include <glib.h>
 
 #define FRG_CLI_OPTION_SHORT_NAME_NULL 0
 
 bool frg_cli_is_valid_short_name(char short_name);
 
-typedef bool (*frg_cli_option_callback_t)(void* user_data, const char* value);
+typedef bool (*frg_cli_option_callback_t)(
+    frg_message_buffer_t* message_buffer,
+    void* user_data,
+    const char* value
+);
 
 typedef struct {
     char short_name;
@@ -91,6 +96,7 @@ void frg_cli_option_print_help(
 );
 
 bool frg_cli_option_parse_next(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_option_t* option,
     int* argi,
     int argc,

@@ -17,7 +17,7 @@
 #include <forge/cli/program.h>
 #include <unity.h>
 
-int callback_command(const struct frg_cli_program_t* program,
+int callback_command(frg_message_buffer_t* message_buffer, const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {

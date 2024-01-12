@@ -21,8 +21,8 @@ not, see <https://www.gnu.org/licenses/>.
 
 %{
 #include <forge/ast/ast.h>
-#include <forge/common/log.h>
 #include <forge/common/types.h>
+#include <forge/messages/message_buffer.h>
 #include <stdio.h>
 
 #define YYERROR_VERBOSE 1
@@ -32,13 +32,26 @@ extern frg_columnno_t yycolumnno;
 extern int yylex();
 
 extern const char* _frg_parsing_current_path;
+extern size_t _frg_parsing_current_offset;
+extern frg_message_buffer_t* _frg_parsing_current_message_buffer;
 
 int yywrap() {
     return 1;
 }
 
 void yyerror(frg_ast_t**ast, const char* message) {
-    frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "[%s]", message);
+    // frg_parsing_range_t source_range = {
+    //     .start = {
+    //         .path = _frg_parsing_current_path,
+    //         .offset = _frg_parsing_current_offset,
+    //         .lineno = yylineno,
+    //         .columnno = yycolumnno,
+    //     },
+    //     .length = 1
+    // };
+
+    // frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "[%s]", message);
+    printf("YYERROR: %s\n", message);
 }
 %}
 

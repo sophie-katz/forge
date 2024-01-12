@@ -17,6 +17,7 @@
 
 #include <glib.h>
 #include <forge/common/enums.h>
+#include <forge/messages/message_buffer.h>
 #include <forge/cli/option.h>
 
 /// \brief The maximum number of option short names possible.
@@ -56,6 +57,7 @@ void frg_cli_option_set_print_help(
 );
 
 bool frg_cli_option_set_parse_next(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,

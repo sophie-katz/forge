@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/cli/choice.h>
-#include <forge/common/log.h>
 
 int main(void) {
     frg_cli_choice_t* choice = frg_cli_choice_new(

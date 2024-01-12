@@ -9,10 +9,13 @@
 - [x] Do a unit test review to see where the most risk of failure is that needs to be tested.
 - [x] Write at least one parser integration test.
 - [x] Write at least one AST algorithm integration test.
-- [ ] Add in token reader for lexical casts with locations.
-- [ ] Add in a message buffer so we can test for errors.
-- [ ] Add in token ranges
-- [ ] Add in line printing for errors
+- [x] Add in token reader for lexical casts with locations.
+- [x] Add in a message buffer so we can test for errors.
+- [x] Add in token ranges
+- [ ] Add a debug buffer to help with testing
+- [ ] See if we can do LLVM IR comparison easier to help with testing
+    - [ ] Maybe parse LLVM IR from text?
+- [x] Add in line printing for errors
 - [ ] Add in token ranges for AST nodes
 - [ ] When printing errors for AST nodes
     - [ ] Print the token range if possible
@@ -25,3 +28,14 @@
 - [ ] Use `elif` instead of `else if`
 - [ ] Have AST constructors return their specific type
 - [ ] Add formatter and linter if possible
+- [x] Make errors look like they do in the error message plan
+- [ ] Enforce all errors start with a capital letter and do not end with punctuation
+- [ ] Add in test matrix to dockerfile so we can get better arch/OS support
+- [ ] Make sure all paths are absolute so we don't accidentally open a file twice
+- [ ] Use GLib 2.0 destructs better
+- [ ] Reorganize cli and config to be better
+- [ ] Use `G_GNUC_WARN_UNUSED_RESULT`
+    - [ ] Look into other attributes to use
+- [ ] Add in "operator overloading" for values being passed into functions
+- [ ] Add opt-out unicode support to CLI
+- [ ] Create stream for better testing

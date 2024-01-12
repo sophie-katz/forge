@@ -19,22 +19,28 @@
 #include <forge/config/config.h>
 #include <forge/parsing/parsing.h>
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 #include <forge/codegen/codegen.h>
 #include <forge/config/commands/common.h>
 
 int _frg_config_commands_callback_compile(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {
     const frg_config_t* config = (const frg_config_t*)user_data;
     if (config->compile_output_path == NULL) {
-        frg_log_fatal_error("no output path specified with -o or --output-path");
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "no output path specified with -o or --output-path"
+        );
+
         return 1;
     }
 
     const char* path = frg_config_commands_get_single_source_file(
+        message_buffer,
         pos_args
     );
 
@@ -42,11 +48,35 @@ int _frg_config_commands_callback_compile(
         return 1;
     }
 
-    frg_ast_t* ast = frg_parse_file_at_path(
-        path
+    FILE* file = fopen(path, "r");
+    if (file == NULL) {
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "unable to open source file: %s (%s)",
+            path,
+            strerror(errno)
+        );
+
+        return 1;
+    }
+
+    frg_parsing_source_t* source = frg_parsing_source_new_file(
+        file,
+        path,
+        false
+    );
+
+    frg_ast_t* ast = frg_parse(
+        message_buffer,
+        source
     );
 
     if (ast == NULL) {
+        frg_parsing_source_destroy(&source);
+
+        fclose(file);
+
         return 1;
     }
 
@@ -54,28 +84,38 @@ int _frg_config_commands_callback_compile(
         ast
     );
 
+    frg_ast_destroy(&ast);
+
+    frg_parsing_source_destroy(&source);
+
+    fclose(file);
+
     if (llvm_module == NULL) {
         return 1;
     }
 
     frg_recoverable_status_t result = frg_codegen_write_object_file(
+        message_buffer,
         llvm_module,
         config->compile_output_path
     );
+    
+    frg_codegen_destroy_module(&llvm_module);
+
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         return 1;
     }
-
-    frg_codegen_destroy_module(&llvm_module);
 
     return 0;
 }
 
 bool _frg_config_commands_option_callback_output_path(
+    frg_message_buffer_t* message_buffer,
     void* user_data,
     const char* value
 ) {
     frg_config_t* config = (frg_config_t*)user_data;
+
     config->compile_output_path = value;
 
     return true;

@@ -15,7 +15,6 @@
 
 #include <forge/common/error.h>
 #include <forge/common/color.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/program.h>
 
@@ -115,7 +114,8 @@ frg_cli_command_t* frg_cli_program_get_command_by_name(
     return (frg_cli_command_t*)g_hash_table_lookup(program->commands_by_name, name);
 }
 
-bool frg_cli_program_print_help(
+bool frg_cli_program_try_print_help(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     const char* command_name
 ) {
@@ -190,7 +190,12 @@ bool frg_cli_program_print_help(
         frg_cli_command_t* command = (frg_cli_command_t*)g_hash_table_lookup(program->commands_by_name, command_name);
         
         if (command == NULL) {
-            frg_log_fatal_error("unknown command '%s'", command_name);
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "unknown command '%s'",
+                command_name
+            );
             return false;
         }
 
@@ -265,6 +270,7 @@ void frg_cli_program_print_version_short(
 }
 
 int frg_cli_program_parse(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     int argc,
     const char** argv,
@@ -283,6 +289,7 @@ int frg_cli_program_parse(
         
         if (argv[argi][0] == '-') {
             if (!frg_cli_option_set_parse_next(
+                message_buffer,
                 program->global_options,
                 &argi,
                 argc,
@@ -305,12 +312,17 @@ int frg_cli_program_parse(
         frg_assert_pointer_non_null(program->callback);
 
         return ((frg_cli_program_callback_t)(program->callback))(
+            message_buffer,
             program,
             user_data,
             pos_args
         );
     } else if (argi >= argc) {
-        frg_log_fatal_error("expected command");
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "expected command"
+        );
         return 1;
     } {
         frg_cli_command_t* command = frg_cli_program_get_command_by_name(
@@ -319,7 +331,12 @@ int frg_cli_program_parse(
         );
 
         if (command == NULL) {
-            frg_log_fatal_error("unknown command '%s'", argv[argi]);
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "unknown command '%s'",
+                argv[argi]
+            );
             return 1;
         }
 
@@ -329,6 +346,7 @@ int frg_cli_program_parse(
             frg_assert_string_non_empty(argv[argi]);
             if (argv[argi][0] == '-') {
                 if (!frg_cli_option_set_parse_next(
+                    message_buffer,
                     command->option_set,
                     &argi,
                     argc,
@@ -346,6 +364,7 @@ int frg_cli_program_parse(
         frg_assert_pointer_non_null(command->callback);
 
         return ((frg_cli_command_callback_t)(command->callback))(
+            message_buffer,
             (const struct frg_cli_program_t*)program,
             user_data,
             pos_args

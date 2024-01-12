@@ -20,9 +20,9 @@
 #include <forge/parsing/parsing.h>
 #include <forge/config/config.h>
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 
 int _frg_config_commands_callback_dump_ast(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -30,6 +30,7 @@ int _frg_config_commands_callback_dump_ast(
     frg_assert_pointer_non_null(program);
 
     const char* path = frg_config_commands_get_single_source_file(
+        message_buffer,
         pos_args
     );
 
@@ -37,17 +38,47 @@ int _frg_config_commands_callback_dump_ast(
         return 1;
     }
 
-    frg_ast_t* ast = frg_parse_file_at_path(
-        path
-    );
+    FILE* file = fopen(path, "r");
+    if (file == NULL) {
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "unable to open source file: %s (%s)",
+            path,
+            strerror(errno)
+        );
 
-    if (ast == NULL) {
         return 1;
     }
 
-    frg_ast_print_debug(ast, 0);
+    frg_parsing_source_t* source = frg_parsing_source_new_file(
+        file,
+        path,
+        false
+    );
+
+    frg_ast_t* ast = frg_parse(
+        message_buffer,
+        source
+    );
+
+    if (ast == NULL) {
+        frg_parsing_source_destroy(&source);
+
+        fclose(file);
+
+        return 1;
+    }
+
+    frg_ast_print_debug(stdout, ast, 0);
 
     printf("\n");
+
+    frg_ast_destroy(&ast);
+
+    frg_parsing_source_destroy(&source);
+
+    fclose(file);
 
     return 0;
 }

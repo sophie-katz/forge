@@ -17,10 +17,10 @@
 #include <forge/cli/program.h>
 #include <forge/config/commands/link.h>
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 #include <forge/config/config.h>
 
 int _frg_config_commands_callback_version(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -37,10 +37,12 @@ int _frg_config_commands_callback_version(
 }
 
 bool _frg_config_commands_option_callback_version_short(
+    frg_message_buffer_t* message_buffer,
     void* user_data,
     const char* value
 ) {
     frg_config_t* config = (frg_config_t*)user_data;
+
     config->version_short = true;
 
     return true;

@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option_set.h>
 
@@ -121,6 +120,7 @@ void frg_cli_option_set_print_help(
 }
 
 bool _frg_cli_option_set_parse_next_long(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
@@ -141,7 +141,11 @@ bool _frg_cli_option_set_parse_next_long(
     frg_assert_pointer_non_null(name);
 
     if (name[0] == 0) {
-        frg_log_fatal_error("invalid argument '--'");
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "invalid argument '--'"
+        );
         return false;
     }
 
@@ -151,11 +155,17 @@ bool _frg_cli_option_set_parse_next_long(
     );
 
     if (option == NULL) {
-        frg_log_fatal_error("unknown argument '--%s'", name);
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "unknown argument '--%s'",
+            name
+        );
         return false;
     }
 
     return frg_cli_option_parse_next(
+        message_buffer,
         option,
         argi,
         argc,
@@ -165,6 +175,7 @@ bool _frg_cli_option_set_parse_next_long(
 }
 
 bool _frg_cli_option_set_parse_next_short(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
@@ -188,11 +199,17 @@ bool _frg_cli_option_set_parse_next_short(
     );
 
     if (option == NULL) {
-        frg_log_fatal_error("unknown argument '--%s'", name);
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "unknown argument '--%s'",
+            name
+        );
         return false;
     }
 
     return frg_cli_option_parse_next(
+        message_buffer,
         option,
         argi,
         argc,
@@ -202,6 +219,7 @@ bool _frg_cli_option_set_parse_next_short(
 }
 
 bool frg_cli_option_set_parse_next(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_option_set_t* option_set,
     int* argi,
     int argc,
@@ -222,6 +240,7 @@ bool frg_cli_option_set_parse_next(
     if (argv[*argi][1] == '-') {
         // It is a long argument like --argument
         return _frg_cli_option_set_parse_next_long(
+            message_buffer,
             option_set,
             argi,
             argc,
@@ -232,12 +251,17 @@ bool frg_cli_option_set_parse_next(
     } else {
         if (argv[*argi][2] != 0) {
             // It is a short argument like -abc
-            frg_log_fatal_error("short arguments cannot be combined");
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "long arguments must be prefixed with '--', not '-'"
+            );
             return false;
         }
 
         // It is a short argument like -a
         return _frg_cli_option_set_parse_next_short(
+            message_buffer,
             option_set,
             argi,
             argc,

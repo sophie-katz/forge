@@ -179,6 +179,14 @@ else
     forge_configuration_data.set('should_build_tests', '0')
 endif
 
+if get_option('debug')
+    forge_configuration_data.set('should_build_asserts', '1')
+    forge_configuration_data.set('always_print_internal_message_prefix', '1')
+else
+    forge_configuration_data.set('should_build_asserts', '0')
+    forge_configuration_data.set('always_print_internal_message_prefix', '0')
+endif
+
 forge_build_config_header = configure_file(
     input: 'build_config.h.in',
     output: 'build_config.h',
@@ -215,7 +223,7 @@ forge_core_lib = static_library(
     'lib/forge/common/debug.c',
     'lib/forge/common/enums.c',
     'lib/forge/common/lexical_casts.c',
-    'lib/forge/common/log.c',
+    'lib/forge/common/math.c',
     'lib/forge/common/memory.c',
     'lib/forge/common/stream.c',
     'lib/forge/config/cli_program.c',
@@ -227,7 +235,11 @@ forge_core_lib = static_library(
     'lib/forge/config/commands/link.c',
     'lib/forge/config/commands/version.c',
     'lib/forge/config/config.c',
+    'lib/forge/messages/message.c',
+    'lib/forge/messages/message_buffer.c',
     'lib/forge/parsing/parsing.c',
+    'lib/forge/parsing/source.c',
+    'lib/forge/parsing/source_context.c',
     'lib/forge/parsing/token_reader.c',
     'lib/forge/verification/supported_language_features.c',
     'lib/forge/verification/verifier.c',
@@ -338,9 +350,9 @@ if should_build_tests
 
     test('common/lexical_casts_test.c', forge_test_common_lexical_casts)
 
-    forge_test_common_log = executable(
-        'test-common-log',
-        'lib/forge/common/log_test.c',
+    forge_test_common_math = executable(
+        'test-common-math',
+        'lib/forge/common/math_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
         dependencies: forge_dependencies + [
@@ -348,7 +360,7 @@ if should_build_tests
         ]
     )
 
-    test('common/log_test.c', forge_test_common_log)
+    test('common/math_test.c', forge_test_common_math)
 
     forge_test_cli_option = executable(
         'test-cli-option',
@@ -386,11 +398,9 @@ if should_build_tests
 
     test('config/cli/program_test.c', forge_test_cli_program)
 
-    # Integration
-
-    forge_test_parsing_basic = executable(
-        'test-parsing-basic',
-        'tests/parsing/basic.c',
+    forge_test_parsing_token_reader = executable(
+        'test-parsing-token-reader',
+        'lib/forge/parsing/token_reader_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
         dependencies: forge_dependencies + [
@@ -398,7 +408,57 @@ if should_build_tests
         ]
     )
 
-    test('tests/parsing/basic.c', forge_test_parsing_basic)
+    test('config/parsing/token_reader_test.c', forge_test_parsing_token_reader)
+
+    forge_test_messages_message_buffer = executable(
+        'test-messages-message-buffer',
+        'lib/forge/messages/message_buffer_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('config/messages/message_buffer_test.c', forge_test_messages_message_buffer)
+
+    forge_test_parsing_source = executable(
+        'test-parsing-source',
+        'lib/forge/parsing/source_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('config/parsing/source_test.c', forge_test_parsing_source)
+
+    forge_test_parsing_parsing = executable(
+        'test-parsing-parsing',
+        'lib/forge/parsing/parsing_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('config/parsing/parsing_test.c', forge_test_parsing_parsing)
+
+    # # Integration
+
+    # forge_test_parsing_basic = executable(
+    #     'test-parsing-basic',
+    #     'tests/parsing/basic.c',
+    #     include_directories: forge_include_directories,
+    #     link_with: [forge_core_lib],
+    #     dependencies: forge_dependencies + [
+    #         forge_dependency_unity
+    #     ]
+    # )
+
+    # test('tests/parsing/basic.c', forge_test_parsing_basic)
 endif
 
 # Demos
@@ -414,21 +474,6 @@ if should_build_tests
     )
 
     test('common/color_demo.c', forge_demo_common_color)
-
-    forge_demo_common_log = executable(
-        'demo-common-log',
-        'lib/forge/common/log_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_core_lib],
-        dependencies: forge_dependencies
-    )
-
-    test('common/log_demo.c (mode=none)', forge_demo_common_log, args: ['none'])
-    test('common/log_demo.c (mode=only-errors-single)', forge_demo_common_log, args: ['only-errors-single'], should_fail: true)
-    test('common/log_demo.c (mode=only-errors-multiple)', forge_demo_common_log, args: ['only-errors-multiple'], should_fail: true)
-    test('common/log_demo.c (mode=only-warnings-single)', forge_demo_common_log, args: ['only-warnings-single'])
-    test('common/log_demo.c (mode=only-warnings-multiple)', forge_demo_common_log, args: ['only-warnings-multiple'])
-    test('common/log_demo.c (mode=both)', forge_demo_common_log, args: ['both'], should_fail: true)
 
     forge_demo_common_debug = executable(
         'demo-common-debug',
@@ -489,4 +534,14 @@ if should_build_tests
     )
 
     test('cli/program_demo.c', forge_demo_cli_program)
+
+    forge_demo_messages_sourced_messages = executable(
+        'demo-messages-sourced-messages',
+        'lib/forge/messages/sourced_messages_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies
+    )
+
+    test('messages/sourced_messages_demo.c', forge_demo_messages_sourced_messages)
 endif

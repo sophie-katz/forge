@@ -18,7 +18,6 @@
 #include <build_config.h>
 #include <forge/common/error.h>
 #include <forge/common/color.h>
-#include <forge/common/log.h>
 #include <forge/config/commands/compile.h>
 #include <forge/config/commands/dump_ast.h>
 #include <forge/config/commands/dump_ir.h>
@@ -39,32 +38,37 @@ void frg_config_cli_program_banner(void) {
 }
 
 int _frg_config_cli_program_callback(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
 ) {
     frg_config_cli_program_banner();
 
-    if (!frg_cli_program_print_help(program, NULL)) {
+    if (!frg_cli_program_try_print_help(message_buffer, program, NULL)) {
         return 1;
     }
 
     return 0;
 }
 
-bool _frg_config_cli_option_callback_debug(void* user_data, const char* value) {
-    frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
+bool _frg_config_cli_option_callback_debug(
+    frg_message_buffer_t* message_buffer,
+    void* user_data,
+    const char* value
+) {
+    frg_config_t* config = (frg_config_t*)user_data;
+
+    config->minimum_message_severity = FRG_MESSAGE_SEVERITY_DEBUG;
 
     return true;
 }
 
-bool _frg_config_cli_option_callback_trace(void* user_data, const char* value) {
-    frg_log_set_minimum_severity(FRG_LOG_SEVERITY_TRACE);
-
-    return true;
-}
-
-bool _frg_config_cli_option_callback_color_mode(void* user_data, const char* value) {
+bool _frg_config_cli_option_callback_color_mode(
+    frg_message_buffer_t* message_buffer,
+    void* user_data,
+    const char* value
+) {
     if (strcmp(value, "disabled") == 0) {
         frg_color_mode_set(FRG_COLOR_MODE_DISABLED);
     } else if (strcmp(value, "auto") == 0) {
@@ -72,7 +76,13 @@ bool _frg_config_cli_option_callback_color_mode(void* user_data, const char* val
     } else if (strcmp(value, "enabled") == 0) {
         frg_color_mode_set(FRG_COLOR_MODE_ENABLED);
     } else {
-        frg_log_fatal_error("unknown color mode: %s", value);
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "unknown color mode: %s",
+            value
+        );
+
         return false;
     }
 
@@ -141,15 +151,6 @@ frg_cli_program_t* frg_config_cli_program_new() {
             "debug",
             "Enable debug logging",
             _frg_config_cli_option_callback_debug
-        )
-    );
-
-    frg_cli_option_set_add_option(
-        program->global_options,
-        frg_cli_option_new_flag(
-            "trace",
-            "Enable trace logging",
-            _frg_config_cli_option_callback_trace
         )
     );
 

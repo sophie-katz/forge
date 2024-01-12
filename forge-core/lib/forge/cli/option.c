@@ -15,7 +15,6 @@
 
 #include <forge/common/error.h>
 #include <forge/common/color.h>
-#include <forge/common/log.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option.h>
 
@@ -248,6 +247,7 @@ bool _frg_cli_option_check_matches_argument(
 }
 
 bool frg_cli_option_parse_next(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_option_t* option,
     int* argi,
     int argc,
@@ -270,18 +270,29 @@ bool frg_cli_option_parse_next(
 
     if (option->value_name == NULL) {
         // If the argument does not take a value, call the callback with NULL
-        return option->callback(user_data, NULL);
+        return option->callback(message_buffer, user_data, NULL);
     } else {
         // If the argument does take a value, make sure there is a value to parse
         if (*argi >= argc) {
-            frg_log_fatal_error("argument '%s' expects a value", argv[*argi - 1]);
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "argument '%s' expects a value",
+                argv[*argi - 1]
+            );
             return false;
         }
 
         frg_assert_string_non_empty(argv[*argi]);
 
         if (argv[*argi][0] == '-') {
-            frg_log_fatal_error("argument '%s' expects a value, '%s' is an argument", argv[*argi - 1], argv[*argi]);
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "argument '%s' expects a value, but '%s' is an argument",
+                argv[*argi - 1],
+                argv[*argi]
+            );
             return false;
         }
 
@@ -297,11 +308,22 @@ bool frg_cli_option_parse_next(
             }
 
             if (!found) {
-                frg_log_result_t result = frg_log_fatal_error("unexpected value for argument '%s', allowed values are:");
+                frg_message_t* message = frg_message_emit(
+                    message_buffer,
+                    FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                    "unexpected value for argument '%s', allowed values are:"
+                );
 
                 for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
                     const frg_cli_choice_t* choice_casted = (const frg_cli_choice_t*)choice->data;
-                    frg_log_note(&result, "  '%s' - %s", choice_casted->name, choice_casted->help);
+                    frg_message_emit_child(
+                        message_buffer,
+                        message,
+                        FRG_MESSAGE_SEVERITY_NOTE,
+                        "  '%s' - %s",
+                        choice_casted->name,
+                        choice_casted->help
+                    );
                 }
 
                 return false;
@@ -309,7 +331,7 @@ bool frg_cli_option_parse_next(
         }
 
         // Call the callback with the value
-        bool result = option->callback(user_data, argv[*argi]);
+        bool result = option->callback(message_buffer, user_data, argv[*argi]);
 
         // Increment argument index
         (*argi)++;

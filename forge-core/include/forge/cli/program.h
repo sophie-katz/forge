@@ -35,6 +35,7 @@ typedef struct {
 } frg_cli_program_t;
 
 typedef int (*frg_cli_program_callback_t)(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -64,7 +65,8 @@ frg_cli_command_t* frg_cli_program_get_command_by_name(
     const char* name
 );
 
-bool frg_cli_program_print_help(
+bool frg_cli_program_try_print_help(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     const char* command_name
 );
@@ -78,6 +80,7 @@ void frg_cli_program_print_version_short(
 );
 
 int frg_cli_program_parse(
+    frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     int argc,
     const char** argv,

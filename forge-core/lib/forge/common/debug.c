@@ -19,72 +19,73 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-void frg_debug_print_newline(frg_indent_t indent) {
-    fputc('\n', FRG_DEBUG_DEFAULT_STREAM);
+void frg_debug_print_newline(FILE* file, frg_indent_t indent) {
+    fputc('\n', file);
 
     for (size_t i = 0; i < indent; i++) {
-        fputc(' ', FRG_DEBUG_DEFAULT_STREAM);
+        fputc(' ', file);
     }
 }
 
-void frg_debug_print_node(const char* format, ...) {
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(FRG_DEBUG_DEFAULT_STREAM, "[");
+void frg_debug_print_node(FILE* file, const char* format, ...) {
+    frg_color_set(file, FRG_COLOR_ID_BRIGHT_BLACK);
+    fprintf(file, "[");
 
     va_list args;
     va_start(args, format);
 
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_BOLD);
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_GREEN);
-    vfprintf(FRG_DEBUG_DEFAULT_STREAM, format, args);
+    frg_color_set(file, FRG_COLOR_ID_BOLD);
+    frg_color_set(file, FRG_COLOR_ID_GREEN);
+    vfprintf(file, format, args);
 
     va_end(args);
 
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_RESET);
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(FRG_DEBUG_DEFAULT_STREAM, "]");
+    frg_color_set(file, FRG_COLOR_ID_RESET);
+    frg_color_set(file, FRG_COLOR_ID_BRIGHT_BLACK);
+    fprintf(file, "]");
 
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_RESET);
+    frg_color_set(file, FRG_COLOR_ID_RESET);
 }
 
-void frg_debug_print_property(const char* label, const char* format, ...) {
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_BOLD);
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_CYAN);
-    fprintf(FRG_DEBUG_DEFAULT_STREAM, "%s = ", label);
+void frg_debug_print_property(FILE* file, const char* label, const char* format, ...) {
+    frg_color_set(file, FRG_COLOR_ID_BOLD);
+    frg_color_set(file, FRG_COLOR_ID_CYAN);
+    fprintf(file, "%s = ", label);
     
     if (format != NULL) {
-        frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_RESET);
+        frg_color_set(file, FRG_COLOR_ID_RESET);
 
         va_list args;
         va_start(args, format);
 
-        vfprintf(FRG_DEBUG_DEFAULT_STREAM, format, args);
+        vfprintf(file, format, args);
 
         va_end(args);
     }
 }
 
 void frg_debug_print_property_with_index(
+    FILE* file,
     const char* label,
     size_t index,
     const char* format,
     ...
 ) {
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_BOLD);
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_CYAN);
-    fprintf(FRG_DEBUG_DEFAULT_STREAM, "%s", label);
+    frg_color_set(file, FRG_COLOR_ID_BOLD);
+    frg_color_set(file, FRG_COLOR_ID_CYAN);
+    fprintf(file, "%s", label);
 
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_RESET);
-    frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(FRG_DEBUG_DEFAULT_STREAM, "[%lu] = ", index);
+    frg_color_set(file, FRG_COLOR_ID_RESET);
+    frg_color_set(file, FRG_COLOR_ID_BRIGHT_BLACK);
+    fprintf(file, "[%lu] = ", index);
     
     if (format != NULL) {
-        frg_color_set(FRG_DEBUG_DEFAULT_STREAM, FRG_COLOR_ID_RESET);
+        frg_color_set(file, FRG_COLOR_ID_RESET);
 
         va_list args;
         va_start(args, format);
 
-        vfprintf(FRG_DEBUG_DEFAULT_STREAM, format, args);
+        vfprintf(file, format, args);
 
         va_end(args);
     }

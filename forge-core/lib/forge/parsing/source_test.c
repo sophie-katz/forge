@@ -13,35 +13,48 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/log.h>
+#include <forge/parsing/source.h>
 #include <unity.h>
 
 void setUp(void) {}
 
 void tearDown(void) {}
 
-void test_debug_not_emitted(void) {
-    frg_log_set_minimum_severity(FRG_LOG_SEVERITY_NOTE);
-    frg_log_result_t result = frg_log_debug("hello, world");
-    TEST_ASSERT_FALSE(result.emitted);
+void test_buffer_load_at_beginning_of_first_line(void) {
+    char buffer[] = "hello, world";
+
+    frg_parsing_source_t* source = frg_parsing_source_new_buffer(
+        buffer,
+        12,
+        "--",
+        false
+    );
+
+    frg_parsing_range_t range = {
+        .length = 5,
+        .start = {
+            .path = "--",
+            .offset = 0,
+            .lineno = 1,
+            .columnno = 1
+        }
+    };
+
+    GString* loaded = frg_parsing_source_load_range(
+        source,
+        &range
+    );
+
+    TEST_ASSERT_EQUAL_STRING("hello, world", loaded->str);
+    
+    frg_parsing_source_destroy(&source);
+    g_string_free(loaded, TRUE);
 }
 
-void test_debug_emitted(void) {
-    frg_log_set_minimum_severity(FRG_LOG_SEVERITY_DEBUG);
-    frg_log_result_t result = frg_log_debug("hello, world");
-    TEST_ASSERT_TRUE(result.emitted);
-}
-
-void test_log_summary_if_errors(void) {
-    TEST_ASSERT_FALSE(frg_log_summary_if_errors());
-    frg_log_error("hello, world");
-    TEST_ASSERT_TRUE(frg_log_summary_if_errors());
-}
+// TODO: This needs more testing, but since it's not critical whatevs
 
 int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_debug_not_emitted);
-    RUN_TEST(test_debug_emitted);
-    RUN_TEST(test_log_summary_if_errors);
+    RUN_TEST(test_buffer_load_at_beginning_of_first_line);
     return UNITY_END();
 }

@@ -17,9 +17,9 @@
 #include <forge/config/commands/link.h>
 #include <forge/config/config.h>
 #include <forge/common/error.h>
-#include <forge/common/log.h>
 
 int _frg_config_commands_callback_link(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args

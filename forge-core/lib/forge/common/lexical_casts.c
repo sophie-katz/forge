@@ -19,6 +19,8 @@
 #include <math.h>
 #include <utf8proc.h>
 
+// TODO: Not all error handling is done the same way in this file
+
 bool _frg_is_char_printable(frg_char_t value) {
     if (value < 0x80) {
         return isprint(value);
@@ -96,6 +98,7 @@ GString* frg_format_char(frg_char_t value) {
 }
 
 frg_recoverable_status_t _frg_parse_char_unquoted(
+    frg_message_buffer_t* message_buffer,
     frg_char_t *value,
     frg_parsing_token_reader_t* reader,
     char quote
@@ -108,12 +111,18 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
         frg_parsing_token_reader_step(reader);
 
         if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-            frg_log_error_at_source_char(
-                frg_parsing_token_reader_get_current_location(reader)->path,
-                frg_parsing_token_reader_get_current_location(reader)->lineno,
-                frg_parsing_token_reader_get_current_location(reader)->columnno,
+            frg_parsing_range_t source_range = {
+                .start = *frg_parsing_token_reader_get_current_location(reader),
+                .length = 1
+            };
+
+            frg_message_emit_from_source_range(
+                message_buffer,
+                &source_range,
+                FRG_MESSAGE_SEVERITY_ERROR,
                 "'\\' in string expects at least one character afterwards"
             );
+
             return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
         } else if (frg_parsing_token_reader_get_current_char(reader) == 'a') {
             *value = '\a';
@@ -140,12 +149,18 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
                 frg_parsing_token_reader_step(reader);
 
                 if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-                    frg_log_error_at_source_char(
-                        frg_parsing_token_reader_get_current_location(reader)->path,
-                        frg_parsing_token_reader_get_current_location(reader)->lineno,
-                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                    frg_parsing_range_t source_range = {
+                        .start = *frg_parsing_token_reader_get_current_location(reader),
+                        .length = 1
+                    };
+
+                    frg_message_emit_from_source_range(
+                        message_buffer,
+                        &source_range,
+                        FRG_MESSAGE_SEVERITY_ERROR,
                         "'\\x' in string expects two hexadecimal digits afterwards"
                     );
+                    
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
                 } else if (frg_parsing_token_reader_get_current_char(reader) >= '0' && frg_parsing_token_reader_get_current_char(reader) <= '9') {
                     *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - '0');
@@ -154,13 +169,18 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
                 } else if (frg_parsing_token_reader_get_current_char(reader) >= 'A' && frg_parsing_token_reader_get_current_char(reader) <= 'F') {
                     *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - 'A' + 10);
                 } else {
-                    // TODO: Make error handling better here
-                    frg_log_error_at_source_char(
-                        frg_parsing_token_reader_get_current_location(reader)->path,
-                        frg_parsing_token_reader_get_current_location(reader)->lineno,
-                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                    frg_parsing_range_t source_range = {
+                        .start = *frg_parsing_token_reader_get_current_location(reader),
+                        .length = 1
+                    };
+
+                    frg_message_emit_from_source_range(
+                        message_buffer,
+                        &source_range,
+                        FRG_MESSAGE_SEVERITY_ERROR,
                         "character is not a valid hexadecimal digit to come after '\\x'"
                     );
+
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
@@ -170,21 +190,33 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
             frg_parsing_token_reader_step(reader);
 
             if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-                frg_log_error_at_source_char(
-                    frg_parsing_token_reader_get_current_location(reader)->path,
-                    frg_parsing_token_reader_get_current_location(reader)->lineno,
-                    frg_parsing_token_reader_get_current_location(reader)->columnno,
+                frg_parsing_range_t source_range = {
+                    .start = *frg_parsing_token_reader_get_current_location(reader),
+                    .length = 1
+                };
+
+                frg_message_emit_from_source_range(
+                    message_buffer,
+                    &source_range,
+                    FRG_MESSAGE_SEVERITY_ERROR,
                     "'\\u' in string expects '{' afterwards, not end of string"
                 );
+
                 return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
             } else if (frg_parsing_token_reader_get_current_char(reader) != '{') {
                 // TODO: Make error handling better here
-                frg_log_error_at_source_char(
-                    frg_parsing_token_reader_get_current_location(reader)->path,
-                    frg_parsing_token_reader_get_current_location(reader)->lineno,
-                    frg_parsing_token_reader_get_current_location(reader)->columnno,
+                frg_parsing_range_t source_range = {
+                    .start = *frg_parsing_token_reader_get_current_location(reader),
+                    .length = 1
+                };
+
+                frg_message_emit_from_source_range(
+                    message_buffer,
+                    &source_range,
+                    FRG_MESSAGE_SEVERITY_ERROR,
                     "'\\u' in string expects '{' afterwards"
                 );
+
                 return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
             }
 
@@ -192,12 +224,18 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
                 frg_parsing_token_reader_step(reader);
 
                 if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-                    frg_log_error_at_source_char(
-                        frg_parsing_token_reader_get_current_location(reader)->path,
-                        frg_parsing_token_reader_get_current_location(reader)->lineno,
-                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                    frg_parsing_range_t source_range = {
+                        .start = *frg_parsing_token_reader_get_current_location(reader),
+                        .length = 1
+                    };
+
+                    frg_message_emit_from_source_range(
+                        message_buffer,
+                        &source_range,
+                        FRG_MESSAGE_SEVERITY_ERROR,
                         "'\\u{' in string expects closing '}', not end of string"
                     );
+
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
                 } else if (frg_parsing_token_reader_get_current_char(reader) == '}') {
                     break;
@@ -209,12 +247,18 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
                     *value = (*value << 4) | (frg_parsing_token_reader_get_current_char(reader) - 'A' + 10);
                 } else {
                     // TODO: Make error handling better here
-                    frg_log_error_at_source_char(
-                        frg_parsing_token_reader_get_current_location(reader)->path,
-                        frg_parsing_token_reader_get_current_location(reader)->lineno,
-                        frg_parsing_token_reader_get_current_location(reader)->columnno,
+                    frg_parsing_range_t source_range = {
+                        .start = *frg_parsing_token_reader_get_current_location(reader),
+                        .length = 1
+                    };
+
+                    frg_message_emit_from_source_range(
+                        message_buffer,
+                        &source_range,
+                        FRG_MESSAGE_SEVERITY_ERROR,
                         "character is not a valid hexadecimal digit to come after '\\u{'"
                     );
+
                     return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
                 }
             }
@@ -231,34 +275,55 @@ frg_recoverable_status_t _frg_parse_char_unquoted(
     }
 }
 
-frg_recoverable_status_t frg_parse_char(frg_char_t* value, frg_parsing_token_reader_t* reader) {
+frg_recoverable_status_t frg_parse_char(
+    frg_message_buffer_t* message_buffer,
+    frg_char_t* value,
+    frg_parsing_token_reader_t* reader
+) {
     frg_assert_pointer_non_null(value);
     frg_assert_pointer_non_null(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) != '\'') {
         // TODO: Make error handling better here
-        frg_log_error_at_source_char(
-            frg_parsing_token_reader_get_current_location(reader)->path,
-            frg_parsing_token_reader_get_current_location(reader)->lineno,
-            frg_parsing_token_reader_get_current_location(reader)->columnno,
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
             "character literal must start with single quote"
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
     frg_parsing_token_reader_step(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-        frg_log_error_at_source_char(
-            frg_parsing_token_reader_get_current_location(reader)->path,
-            frg_parsing_token_reader_get_current_location(reader)->lineno,
-            frg_parsing_token_reader_get_current_location(reader)->columnno,
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
             "single quote expects literal character afterwards, not end of string"
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    frg_recoverable_status_t result = _frg_parse_char_unquoted(value, reader, '\'');
+    frg_recoverable_status_t result = _frg_parse_char_unquoted(
+        message_buffer,
+        value,
+        reader,
+        '\''
+    );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
         return result;
     }
@@ -266,21 +331,33 @@ frg_recoverable_status_t frg_parse_char(frg_char_t* value, frg_parsing_token_rea
     frg_parsing_token_reader_step(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-        frg_log_error_at_source_char(
-            frg_parsing_token_reader_get_current_location(reader)->path,
-            frg_parsing_token_reader_get_current_location(reader)->lineno,
-            frg_parsing_token_reader_get_current_location(reader)->columnno,
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
             "single quote expects closing single quote, not end of string"
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     } else if (frg_parsing_token_reader_get_current_char(reader) != '\'') {
         // TODO: Make error handling better here
-        frg_log_error_at_source_char(
-            frg_parsing_token_reader_get_current_location(reader)->path,
-            frg_parsing_token_reader_get_current_location(reader)->lineno,
-            frg_parsing_token_reader_get_current_location(reader)->columnno,
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
             "character literal must end with single quote"
         );
+
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER;
     }
 
@@ -301,7 +378,11 @@ GString* frg_format_str(const char* value) {
     return formatted;
 }
 
-frg_recoverable_status_t frg_parse_str(GString** value, frg_parsing_token_reader_t* reader) {
+frg_recoverable_status_t frg_parse_str(
+    frg_message_buffer_t* message_buffer,
+    GString** value,
+    frg_parsing_token_reader_t* reader
+) {
     frg_assert_pointer_non_null(value);
     frg_assert_pointer_non_null(reader);
 
@@ -328,7 +409,12 @@ frg_recoverable_status_t frg_parse_str(GString** value, frg_parsing_token_reader
         }
 
         frg_char_t current_character;
-        frg_recoverable_status_t result = _frg_parse_char_unquoted(&current_character, reader, '"');
+        frg_recoverable_status_t result = _frg_parse_char_unquoted(
+            message_buffer,
+            &current_character,
+            reader,
+            '"'
+        );
         if (result != FRG_RECOVERABLE_STATUS_OK) {
             return result;
         }
@@ -465,6 +551,7 @@ frg_recoverable_status_t _frg_get_next_digit(
 }
 
 frg_recoverable_status_t frg_parse_uint(
+    frg_message_buffer_t* message_buffer,
     uint64_t* value,
     frg_parsing_token_reader_t* reader
 ) {

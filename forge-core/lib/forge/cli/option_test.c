@@ -30,32 +30,32 @@ typedef struct {
     const char* choice_short;
 } config;
 
-bool callback_flag(void* user_data, const char* value) {
+bool callback_flag(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     ((config*)user_data)->flag = true;
     return true;
 }
 
-bool callback_flag_short(void* user_data, const char* value) {
+bool callback_flag_short(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     ((config*)user_data)->flag_short = true;
     return true;
 }
 
-bool callback_argument(void* user_data, const char* value) {
+bool callback_argument(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     ((config*)user_data)->argument = value;
     return true;
 }
 
-bool callback_argument_short(void* user_data, const char* value) {
+bool callback_argument_short(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     ((config*)user_data)->argument_short = value;
     return true;
 }
 
-bool callback_choice(void* user_data, const char* value) {
+bool callback_choice(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     ((config*)user_data)->choice = value;
     return true;
 }
 
-bool callback_choice_short(void* user_data, const char* value) {
+bool callback_choice_short(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     ((config*)user_data)->choice_short = value;
     return true;
 }
@@ -161,6 +161,8 @@ void init_config(config* c) {
 }
 
 void test_flag_long(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_flag();
 
     int argi = 1;
@@ -171,6 +173,7 @@ void test_flag_long(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -180,15 +183,22 @@ void test_flag_long(void) {
 
     TEST_ASSERT_TRUE(result);
 
+    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
+
     TEST_ASSERT_TRUE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
     TEST_ASSERT_NULL(c.argument);
     TEST_ASSERT_NULL(c.argument_short);
     TEST_ASSERT_NULL(c.choice);
     TEST_ASSERT_NULL(c.choice_short);
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_flag_short_long(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_flag_short();
 
     int argi = 1;
@@ -199,6 +209,7 @@ void test_flag_short_long(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -208,15 +219,22 @@ void test_flag_short_long(void) {
 
     TEST_ASSERT_TRUE(result);
 
+    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
+
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_TRUE(c.flag_short);
     TEST_ASSERT_NULL(c.argument);
     TEST_ASSERT_NULL(c.argument_short);
     TEST_ASSERT_NULL(c.choice);
     TEST_ASSERT_NULL(c.choice_short);
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_flag_short_short(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_flag_short();
 
     int argi = 1;
@@ -227,6 +245,7 @@ void test_flag_short_short(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -236,15 +255,22 @@ void test_flag_short_short(void) {
 
     TEST_ASSERT_TRUE(result);
 
+    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
+
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_TRUE(c.flag_short);
     TEST_ASSERT_NULL(c.argument);
     TEST_ASSERT_NULL(c.argument_short);
     TEST_ASSERT_NULL(c.choice);
     TEST_ASSERT_NULL(c.choice_short);
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_argument_long(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_argument();
 
     int argi = 1;
@@ -255,6 +281,7 @@ void test_argument_long(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -264,15 +291,22 @@ void test_argument_long(void) {
 
     TEST_ASSERT_TRUE(result);
 
+    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
+
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
     TEST_ASSERT_EQUAL_STRING("asdf", c.argument);
     TEST_ASSERT_NULL(c.argument_short);
     TEST_ASSERT_NULL(c.choice);
     TEST_ASSERT_NULL(c.choice_short);
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_argument_long_without_value(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_argument();
 
     int argi = 1;
@@ -283,6 +317,7 @@ void test_argument_long_without_value(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -291,9 +326,18 @@ void test_argument_long_without_value(void) {
     );
 
     TEST_ASSERT_FALSE(result);
+
+    TEST_ASSERT_GREATER_THAN(0, frg_message_buffer_get_error_count(message_buffer));
+
+    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "argument '--long-argument' expects a value"));
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_argument_long_with_argument_instead_of_value(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_argument();
 
     int argi = 1;
@@ -304,6 +348,7 @@ void test_argument_long_with_argument_instead_of_value(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -312,9 +357,18 @@ void test_argument_long_with_argument_instead_of_value(void) {
     );
 
     TEST_ASSERT_FALSE(result);
+
+    TEST_ASSERT_GREATER_THAN(0, frg_message_buffer_get_error_count(message_buffer));
+
+    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "argument '--long-argument' expects a value, but '-a' is an argument"));
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_argument_short_long(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_argument_short();
 
     int argi = 1;
@@ -325,6 +379,7 @@ void test_argument_short_long(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -334,15 +389,22 @@ void test_argument_short_long(void) {
 
     TEST_ASSERT_TRUE(result);
 
+    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
+
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
     TEST_ASSERT_NULL(c.argument);
     TEST_ASSERT_EQUAL_STRING("asdf", c.argument_short);
     TEST_ASSERT_NULL(c.choice);
     TEST_ASSERT_NULL(c.choice_short);
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 void test_argument_short_short(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_option_t* option = create_option_argument_short();
 
     int argi = 1;
@@ -353,6 +415,7 @@ void test_argument_short_short(void) {
     init_config(&c);
 
     bool result = frg_cli_option_parse_next(
+        message_buffer,
         option,
         &argi,
         argc,
@@ -362,12 +425,17 @@ void test_argument_short_short(void) {
 
     TEST_ASSERT_TRUE(result);
 
+    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
+
     TEST_ASSERT_FALSE(c.flag);
     TEST_ASSERT_FALSE(c.flag_short);
     TEST_ASSERT_NULL(c.argument);
     TEST_ASSERT_EQUAL_STRING("asdf", c.argument_short);
     TEST_ASSERT_NULL(c.choice);
     TEST_ASSERT_NULL(c.choice_short);
+
+    frg_cli_option_destroy(&option);
+    frg_message_buffer_destroy(&message_buffer);
 }
 
 int main(void) {

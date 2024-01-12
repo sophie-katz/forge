@@ -16,8 +16,10 @@
 #pragma once
 
 #include <forge/common/enums.h>
+#include <forge/messages/message_buffer.h>
 #include <glib.h>
 
 const char* frg_config_commands_get_single_source_file(
+    frg_message_buffer_t* message_buffer,
     GList* pos_args
 );

@@ -14,16 +14,26 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/config/commands/common.h>
-#include <forge/common/log.h>
 
 const char* frg_config_commands_get_single_source_file(
+    frg_message_buffer_t* message_buffer,
     GList* pos_args
 ) {
     if (pos_args == NULL) {
-        frg_log_fatal_error("command expects a source file as an argument");
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "command expects a source file as an argument"
+        );
+
         return NULL;
     } else if (pos_args->next != NULL) {
-        frg_log_fatal_error("command expects only one source file as an argument");
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "command expects only one source file as an argument"
+        );
+
         return NULL;
     } else {
         return (const char*)pos_args->data;

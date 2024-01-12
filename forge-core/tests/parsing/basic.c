@@ -21,7 +21,15 @@ void setUp(void) {}
 void tearDown(void) {}
 
 void test_empty(void) {
-    frg_ast_t* ast = frg_parse_string("", "--");
+    char buffer[] = "\0";
+    
+    frg_parsing_source_t* source = frg_parsing_source_new_buffer(
+        buffer,
+        2,
+        "--"
+    );
+
+    frg_ast_t* ast = frg_parse(source);
 
     TEST_ASSERT_NOT_NULL(ast);
     TEST_ASSERT_EQUAL(FRG_AST_ID_DECL_BLOCK, ast->id);
@@ -29,6 +37,8 @@ void test_empty(void) {
     frg_ast_decl_block_t* decl_block = (frg_ast_decl_block_t*)ast;
 
     TEST_ASSERT_NULL(decl_block->decls);
+
+    frg_parsing_source_destroy(&source);
 }
 
 int main(void) {

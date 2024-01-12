@@ -19,14 +19,23 @@
 #include <forge/common/types.h>
 #include <glib.h>
 #include <forge/parsing/token_reader.h>
+#include <forge/messages/message_buffer.h>
 
 GString* frg_format_char(frg_char_t value);
 
-frg_recoverable_status_t frg_parse_char(frg_char_t* value, frg_parsing_token_reader_t* reader);
+frg_recoverable_status_t frg_parse_char(
+    frg_message_buffer_t* message_buffer,
+    frg_char_t* value,
+    frg_parsing_token_reader_t* reader
+);
 
 GString* frg_format_str(const char* value);
 
-frg_recoverable_status_t frg_parse_str(GString** value, frg_parsing_token_reader_t* reader);
+frg_recoverable_status_t frg_parse_str(
+    frg_message_buffer_t* message_buffer,
+    GString** value,
+    frg_parsing_token_reader_t* reader
+);
 
 GString* frg_format_uint(
     uint64_t value,
@@ -34,6 +43,7 @@ GString* frg_format_uint(
 );
 
 frg_recoverable_status_t frg_parse_uint(
+    frg_message_buffer_t* message_buffer,
     uint64_t* value,
     frg_parsing_token_reader_t* reader
 );

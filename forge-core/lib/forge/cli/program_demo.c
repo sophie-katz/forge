@@ -14,9 +14,9 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/cli/program.h>
-#include <forge/common/log.h>
 
 int callback_command(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args
@@ -24,11 +24,13 @@ int callback_command(
     return 0;
 }
 
-bool callback_option(void* user_data, const char* value) {
+bool callback_option(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
     return true;
 }
 
 int no_commands(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_program_t* program = frg_cli_program_new(
         "Forge",
         "forge",
@@ -45,14 +47,17 @@ int no_commands(void) {
 
     frg_cli_option_set_add_option(program->global_options, option);
 
-    frg_cli_program_print_help(program, NULL);
+    frg_cli_program_try_print_help(message_buffer, program, NULL);
 
     frg_cli_program_destroy(&program);
+    frg_message_buffer_destroy(&message_buffer);
 
     return 0;
 }
 
 int one_command_global(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_program_t* program = frg_cli_program_new(
         "Forge",
         "forge",
@@ -82,14 +87,17 @@ int one_command_global(void) {
 
     frg_cli_program_add_command(program, command);
 
-    frg_cli_program_print_help(program, NULL);
+    frg_cli_program_try_print_help(message_buffer, program, NULL);
 
     frg_cli_program_destroy(&program);
+    frg_message_buffer_destroy(&message_buffer);
 
     return 0;
 }
 
 int one_command_command(void) {
+    frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+
     frg_cli_program_t* program = frg_cli_program_new(
         "Forge",
         "forge",
@@ -119,9 +127,10 @@ int one_command_command(void) {
 
     frg_cli_program_add_command(program, command);
 
-    frg_cli_program_print_help(program, "command");
+    frg_cli_program_try_print_help(message_buffer, program, "command");
 
     frg_cli_program_destroy(&program);
+    frg_message_buffer_destroy(&message_buffer);
 
     return 0;
 }

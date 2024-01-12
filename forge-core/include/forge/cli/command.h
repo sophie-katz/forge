@@ -21,6 +21,7 @@
 struct frg_cli_program_t;
 
 typedef int (*frg_cli_command_callback_t)(
+    frg_message_buffer_t* message_buffer,
     const struct frg_cli_program_t* program,
     void* user_data,
     GList* pos_args

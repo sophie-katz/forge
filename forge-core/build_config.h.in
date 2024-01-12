@@ -32,3 +32,11 @@
 #if @should_build_tests@ == 1
     #define FRG_SHOULD_BUILD_TESTS 1
 #endif
+
+#if @should_build_asserts@ == 1
+    #define FRG_SHOULD_BUILD_ASSERTS 1
+#endif
+
+#if @always_print_internal_message_prefix@ == 1
+    #define FRG_ALWAYS_PRINT_INTERNAL_MESSAGE_PREFIX 1
+#endif

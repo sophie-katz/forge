@@ -17,9 +17,12 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [ ] Write at least one code generator integration test.
-    - [ ] See if we can do LLVM IR comparison easier to help with testing
-    - [ ] Maybe parse LLVM IR from text?
+- [x] Write at least one code generator integration test.
+    - [x] See if we can do LLVM IR comparison easier to help with testing
+    - [x] Maybe parse LLVM IR from text?
+- [ ] Implement integer literals of all sizes and signednesses
+- [ ] Implement boolean literals
+- [ ] Implement floating point literals of all sizes and signednesses
 - [ ] Add in verification logic
 - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
 

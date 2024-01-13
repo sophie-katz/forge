@@ -190,7 +190,6 @@ void frg_ast_print_debug(frg_stream_output_t* stream, const frg_ast_t* ast, frg_
             break;
         case FRG_AST_ID_DECL_FN:
             frg_debug_print_newline(stream, indent);
-            
             flags_string = frg_ast_decl_fn_flags_to_string(
                 ((frg_ast_decl_fn_t*)ast)->flags
             );
@@ -264,7 +263,7 @@ void frg_ast_print_debug(frg_stream_output_t* stream, const frg_ast_t* ast, frg_
                 stream,
                 ((frg_ast_stmt_block_t*)ast)->stmts,
                 "stmts",
-                indent + FRG_DEBUG_INDENT_WIDTH
+                indent
             );
 
             break;

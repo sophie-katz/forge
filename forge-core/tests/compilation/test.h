@@ -15,31 +15,22 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <forge/codegen/codegen.h>
 
-#include <forge/ast/ast.h>
-#include <forge/messages/message_buffer.h>
-#include <forge/streams/output.h>
-
-typedef struct frg_llvm_module_t frg_llvm_module_t;
-
-frg_llvm_module_t* frg_codegen(const frg_ast_t* ast);
-
-frg_recoverable_status_t frg_codegen_write_object_file(
-    frg_message_buffer_t* message_buffer,
-    const frg_llvm_module_t* llvm_module,
-    const char* path
+typedef void (*frg_test_compilation_callback)(
+    const frg_message_buffer_t* message_buffer,
+    void* shared_library
 );
 
-void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module);
-
-void frg_codegen_print_module(
-    frg_stream_output_t* stream,
-    const frg_llvm_module_t* llvm_module
+void frg_test_compilation(
+    const char* name,
+    const char* source_text,
+    const char* ast_debug,
+    const char* llvm_ir,
+    frg_test_compilation_callback callback
 );
 
-#ifdef __cplusplus
-}
-#endif
+void* frg_test_compilation_get_function(
+    void* shared_library,
+    const char* name
+);

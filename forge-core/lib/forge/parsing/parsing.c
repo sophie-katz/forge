@@ -20,6 +20,8 @@
 extern FILE* yyin;
 extern int yyparse(frg_ast_t** ast);
 extern int yy_scan_buffer(char* base, size_t size);
+extern void yypop_buffer_state(void);
+extern void yyrestart(FILE* file);
 
 const char* _frg_parsing_current_path = NULL;
 size_t _frg_parsing_current_offset = 0;
@@ -59,13 +61,18 @@ frg_ast_t* frg_parse(
         frg_assert(!frg_stream_input_has_error(source->stream));
 
         // Set the input file handle
-        yyin = frg_stream_get_file(source->stream);
+        yyrestart(frg_stream_get_file(source->stream));
     }
 
     // Actually parse the text
     frg_ast_t* ast = NULL;
     if (yyparse(&ast) != 0 && ast != NULL) {
         frg_ast_destroy(&ast);
+    }
+
+    // Clean up after parsing
+    if (frg_stream_input_is_buffer(source->stream)) {
+        yypop_buffer_state();
     }
 
     // Unset globals

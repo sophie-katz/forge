@@ -38,6 +38,19 @@ else
     should_build_tests = get_option('testing').enabled()
 endif
 
+# C arguments
+# --------------------------------------------------------------------------------------
+
+add_project_arguments(
+    '-gdwarf-4',
+    language: ['c', 'cpp']
+)
+
+add_project_link_arguments(
+    '-gdwarf-4',
+    language: ['c', 'cpp']
+)
+
 # External programs
 # --------------------------------------------------------------------------------------
 
@@ -233,6 +246,8 @@ forge_core_lib = static_library(
     'lib/forge/config/commands/link.c',
     'lib/forge/config/commands/version.c',
     'lib/forge/config/config.c',
+    'lib/forge/linking/linker_config.c',
+    'lib/forge/linking/linker.c',
     'lib/forge/messages/message.c',
     'lib/forge/messages/message_buffer.c',
     'lib/forge/parsing/parsing.c',
@@ -266,8 +281,8 @@ executable(
 
 if should_build_tests
     # Unit
-    forge_test_ast_ast = executable(
-        'test-ast-ast',
+    forge_unit_test_ast_ast = executable(
+        'test-unit-ast-ast',
         'lib/forge/ast/ast_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -276,10 +291,10 @@ if should_build_tests
         ]
     )
 
-    test('ast/ast_test.c', forge_test_ast_ast)
+    test('ast/ast_test.c', forge_unit_test_ast_ast)
 
-    forge_test_ast_scope = executable(
-        'test-ast-scope',
+    forge_unit_test_ast_scope = executable(
+        'test-unit-ast-scope',
         'lib/forge/ast/scope_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -288,10 +303,10 @@ if should_build_tests
         ]
     )
 
-    test('ast/scope_test.c', forge_test_ast_scope)
+    test('ast/scope_test.c', forge_unit_test_ast_scope)
 
-    forge_test_ast_visitor = executable(
-        'test-ast-visitor',
+    forge_unit_test_ast_visitor = executable(
+        'test-unit-ast-visitor',
         'lib/forge/ast/visitor_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -300,11 +315,11 @@ if should_build_tests
         ]
     )
 
-    test('ast/visitor_test.c', forge_test_ast_visitor)
+    test('ast/visitor_test.c', forge_unit_test_ast_visitor)
 
     # TODO: Fix this test
-    # forge_test_common_color = executable(
-    #     'test-common-color',
+    # forge_unit_test_common_color = executable(
+    #     'test-unit-common-color',
     #     'lib/forge/common/color_test.c',
     #     include_directories: forge_include_directories,
     #     link_with: [forge_core_lib],
@@ -313,10 +328,10 @@ if should_build_tests
     #     ]
     # )
 
-    # test('common/color_test.c', forge_test_common_color)
+    # test('common/color_test.c', forge_unit_test_common_color)
 
-    forge_test_common_memory = executable(
-        'test-common-memory',
+    forge_unit_test_common_memory = executable(
+        'test-unit-common-memory',
         'lib/forge/common/memory_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -325,10 +340,10 @@ if should_build_tests
         ]
     )
 
-    test('common/memory_test.c', forge_test_common_memory)
+    test('common/memory_test.c', forge_unit_test_common_memory)
 
-    forge_test_common_lexical_casts = executable(
-        'test-common-lexical-casts',
+    forge_unit_test_common_lexical_casts = executable(
+        'test-unit-common-lexical-casts',
         'lib/forge/common/lexical_casts_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -337,10 +352,10 @@ if should_build_tests
         ]
     )
 
-    test('common/lexical_casts_test.c', forge_test_common_lexical_casts)
+    test('common/lexical_casts_test.c', forge_unit_test_common_lexical_casts)
 
-    forge_test_common_math = executable(
-        'test-common-math',
+    forge_unit_test_common_math = executable(
+        'test-unit-common-math',
         'lib/forge/common/math_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -349,10 +364,10 @@ if should_build_tests
         ]
     )
 
-    test('common/math_test.c', forge_test_common_math)
+    test('common/math_test.c', forge_unit_test_common_math)
 
-    forge_test_cli_option = executable(
-        'test-cli-option',
+    forge_unit_test_cli_option = executable(
+        'test-unit-cli-option',
         'lib/forge/cli/option_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -361,10 +376,10 @@ if should_build_tests
         ]
     )
 
-    test('config/cli/option_test.c', forge_test_cli_option)
+    test('config/cli/option_test.c', forge_unit_test_cli_option)
 
-    forge_test_cli_option_set = executable(
-        'test-cli-option-set',
+    forge_unit_test_cli_option_set = executable(
+        'test-unit-cli-option-set',
         'lib/forge/cli/option_set_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -373,10 +388,10 @@ if should_build_tests
         ]
     )
 
-    test('config/cli/option_set_test.c', forge_test_cli_option_set)
+    test('config/cli/option_set_test.c', forge_unit_test_cli_option_set)
 
-    forge_test_cli_program = executable(
-        'test-cli-program',
+    forge_unit_test_cli_program = executable(
+        'test-unit-cli-program',
         'lib/forge/cli/program_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -385,10 +400,10 @@ if should_build_tests
         ]
     )
 
-    test('config/cli/program_test.c', forge_test_cli_program)
+    test('config/cli/program_test.c', forge_unit_test_cli_program)
 
-    forge_test_parsing_token_reader = executable(
-        'test-parsing-token-reader',
+    forge_unit_test_parsing_token_reader = executable(
+        'test-unit-parsing-token-reader',
         'lib/forge/parsing/token_reader_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -397,10 +412,10 @@ if should_build_tests
         ]
     )
 
-    test('config/parsing/token_reader_test.c', forge_test_parsing_token_reader)
+    test('config/parsing/token_reader_test.c', forge_unit_test_parsing_token_reader)
 
-    forge_test_messages_message_buffer = executable(
-        'test-messages-message-buffer',
+    forge_unit_test_messages_message_buffer = executable(
+        'test-unit-messages-message-buffer',
         'lib/forge/messages/message_buffer_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -409,10 +424,10 @@ if should_build_tests
         ]
     )
 
-    test('config/messages/message_buffer_test.c', forge_test_messages_message_buffer)
+    test('config/messages/message_buffer_test.c', forge_unit_test_messages_message_buffer)
 
-    forge_test_parsing_source = executable(
-        'test-parsing-source',
+    forge_unit_test_parsing_source = executable(
+        'test-unit-parsing-source',
         'lib/forge/parsing/source_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -421,10 +436,10 @@ if should_build_tests
         ]
     )
 
-    test('config/parsing/source_test.c', forge_test_parsing_source)
+    test('config/parsing/source_test.c', forge_unit_test_parsing_source)
 
-    forge_test_parsing_parsing = executable(
-        'test-parsing-parsing',
+    forge_unit_test_parsing_parsing = executable(
+        'test-unit-parsing-parsing',
         'lib/forge/parsing/parsing_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -433,10 +448,10 @@ if should_build_tests
         ]
     )
 
-    test('config/parsing/parsing_test.c', forge_test_parsing_parsing)
+    test('config/parsing/parsing_test.c', forge_unit_test_parsing_parsing)
 
-    forge_test_streams_input = executable(
-        'test-streams-input',
+    forge_unit_test_streams_input = executable(
+        'test-unit-streams-input',
         'lib/forge/streams/input_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -445,10 +460,10 @@ if should_build_tests
         ]
     )
 
-    test('config/streams/input_test.c', forge_test_streams_input)
+    test('config/streams/input_test.c', forge_unit_test_streams_input)
 
-    forge_test_streams_output = executable(
-        'test-streams-output',
+    forge_unit_test_streams_output = executable(
+        'test-unit-streams-output',
         'lib/forge/streams/output_test.c',
         include_directories: forge_include_directories,
         link_with: [forge_core_lib],
@@ -457,21 +472,35 @@ if should_build_tests
         ]
     )
 
-    test('config/streams/output_test.c', forge_test_streams_output)
+    test('config/streams/output_test.c', forge_unit_test_streams_output)
 
-    # # Integration
+    # Integration
 
-    # forge_test_parsing_basic = executable(
-    #     'test-parsing-basic',
-    #     'tests/parsing/basic.c',
-    #     include_directories: forge_include_directories,
-    #     link_with: [forge_core_lib],
-    #     dependencies: forge_dependencies + [
-    #         forge_dependency_unity
-    #     ]
-    # )
+    forge_integration_test_compilation_empty = executable(
+        'test-integration-compilation-empty',
+        'tests/compilation/empty.c',
+        'tests/compilation/test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
 
-    # test('tests/parsing/basic.c', forge_test_parsing_basic)
+    test('tests/compilation/empty.c', forge_integration_test_compilation_empty)
+
+    forge_integration_test_compilation_literals_int = executable(
+        'test-integration-compilation-literals-int',
+        'tests/compilation/literals_int.c',
+        'tests/compilation/test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('tests/compilation/literals_int.c', forge_integration_test_compilation_literals_int)
 endif
 
 # Demos

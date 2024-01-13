@@ -90,7 +90,7 @@ frg_recoverable_status_t _frg_config_parse_env_debug(
 ) {
     frg_assert_pointer_non_null(config);
 
-    const char* debug_text = getenv("FORGE_DEBUG");
+    const char* debug_text = g_getenv("FORGE_DEBUG");
     if (debug_text != NULL && *debug_text != 0) {
         bool debug_value = false;
         frg_recoverable_status_t result = _frg_parse_env_bool(
@@ -117,7 +117,7 @@ frg_recoverable_status_t _frg_config_parse_env_color_mode(
 ) {
     frg_assert_pointer_non_null(config);
 
-    const char* color_mode_text = getenv("FORGE_COLOR_MODE");
+    const char* color_mode_text = g_getenv("FORGE_COLOR_MODE");
     if (color_mode_text != NULL && *color_mode_text != 0) {
         if (strcmp(color_mode_text, "disabled") == 0) {
             frg_stream_output_set_console_color(false);
@@ -146,7 +146,7 @@ frg_recoverable_status_t _frg_config_parse_env_unicode_mode(
 ) {
     frg_assert_pointer_non_null(config);
 
-    const char* unicode_mode_text = getenv("FORGE_UNICODE_MODE");
+    const char* unicode_mode_text = g_getenv("FORGE_UNICODE_MODE");
     if (unicode_mode_text != NULL && *unicode_mode_text != 0) {
         if (strcmp(unicode_mode_text, "disabled") == 0) {
             frg_stream_output_set_console_unicode(false);

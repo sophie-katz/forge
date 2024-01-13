@@ -229,3 +229,16 @@ typedef enum {
     FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_CYAN,
     FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_WHITE,
 } frg_stream_output_color_id_t;
+
+typedef enum {
+    FRG_LINKER_ID_NONE,
+    FRG_LINKER_ID_LD_LLD,
+    FRG_LINKER_ID_LD64_LLD,
+    FRG_LINKER_ID_LLD_LINK,
+} frg_linker_id_t;
+
+typedef enum {
+    FRG_LINKER_MODE_EXECUTABLE,
+    FRG_LINKER_MODE_SHARED_LIBRARY,
+    FRG_LINKER_MODE_STATIC_LIBRARY,
+} frg_linker_mode_t;

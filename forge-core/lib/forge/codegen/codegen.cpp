@@ -80,14 +80,6 @@ frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
     return llvm_module;
 }
 
-void* frg_codegen_call_function(
-    const frg_llvm_module_t* module,
-    const char* name,
-    GList* pos_args
-) {
-    return NULL;
-}
-
 frg_recoverable_status_t frg_codegen_write_object_file(
     frg_message_buffer_t* message_buffer,
     const frg_llvm_module_t* llvm_module,
@@ -190,9 +182,21 @@ void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module) {
     frg_safe_free((void**) llvm_module);
 }
 
-void frg_codegen_print_module(const frg_llvm_module_t* llvm_module) {
+void frg_codegen_print_module(
+    frg_stream_output_t* stream,
+    const frg_llvm_module_t* llvm_module
+) {
+    frg_assert_pointer_non_null(stream);
     frg_assert_pointer_non_null(llvm_module);
 
-    llvm_module->llvm_module->print(llvm::outs(), nullptr);
+    std::string llvm_ir_string;
+    llvm::raw_string_ostream llvm_stream(llvm_ir_string);
+
+    llvm_module->llvm_module->print(llvm_stream, nullptr);
+
+    frg_stream_output_write_string(
+        stream,
+        llvm_ir_string.c_str()
+    );
 }
 }

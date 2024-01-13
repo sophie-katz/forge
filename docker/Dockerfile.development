@@ -60,8 +60,6 @@ RUN echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-17 main" > /
         libpolly-17-dev \
         libunwind-17-dev \
         lld-17 \
-        lld-17 \
-        lldb-17 \
         lldb-17 \
         llvm-17-dev \
         llvm-17-tools \
@@ -72,7 +70,9 @@ RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 100 && 
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100 && \
     update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-17 100 && \
     update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-17 100 && \
-    update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-17 100
+    update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-17 100 \
+    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-17 100 \
+    update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-17 100
 
 # Create non-root user
 RUN useradd -m -s /bin/bash dev && \

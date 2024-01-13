@@ -13,36 +13,31 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <unity.h>
-#include <forge/parsing/parsing.h>
+#pragma once
 
-void setUp(void) {}
+#include <forge/common/enums.h>
 
-void tearDown(void) {}
+typedef struct {
+    frg_linker_id_t linker_id;
+    GString* ld_lld_path;
+    GString* ld64_lld_path;
+    GString* lld_link_path;
+} frg_linker_config_t;
 
-void test_empty(void) {
-    char buffer[] = "\0";
-    
-    frg_parsing_source_t* source = frg_parsing_source_new_buffer(
-        buffer,
-        2,
-        "--"
-    );
+frg_linker_config_t* frg_linker_config_new_default(void);
+void frg_linker_config_destroy(frg_linker_config_t** config);
 
-    frg_ast_t* ast = frg_parse(source);
+void frg_linker_config_set_linker_id(
+    frg_linker_config_t* config,
+    frg_linker_id_t linker_id
+);
 
-    TEST_ASSERT_NOT_NULL(ast);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_DECL_BLOCK, ast->id);
+void frg_linker_config_set_linker_path(
+    frg_linker_config_t* config,
+    frg_linker_id_t linker_id,
+    const char* linker_path
+);
 
-    frg_ast_decl_block_t* decl_block = (frg_ast_decl_block_t*)ast;
-
-    TEST_ASSERT_NULL(decl_block->decls);
-
-    frg_parsing_source_destroy(&source);
-}
-
-int main(void) {
-    UNITY_BEGIN();
-    RUN_TEST(test_empty);
-    return UNITY_END();
-}
+const char* frg_linker_config_get_linker_path(
+    const frg_linker_config_t* config
+);

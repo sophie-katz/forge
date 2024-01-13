@@ -36,43 +36,43 @@ bool _frg_stream_output_detect_unicode() {
     const char* value;
 
 #ifdef G_OS_WIN32
-    value = getenv("WT_SESSION");
+    value = g_getenv("WT_SESSION");
     if (value != NULL && *value != 0) {
         return true;
     }
 
-    value = getenv("TERMINUS_SUBLIME");
+    value = g_getenv("TERMINUS_SUBLIME");
     if (value != NULL && *value != 0) {
         return true;
     }
 
-    value = getenv("ConEmuTask");
+    value = g_getenv("ConEmuTask");
     if (value != NULL && strcmp(value, "{cmd::Cmder}") == 0) {
         return true;
     }
 
-    value = getenv("TERM_PROGRAM");
+    value = g_getenv("TERM_PROGRAM");
     if (value != NULL && strcmp(value, "Terminus-Sublime") == 0) {
         return true;
     } else if (value != NULL && strcmp(value, "vscode") == 0) {
         return true;
     }
 
-    value = getenv("TERM");
+    value = g_getenv("TERM");
     if (value != NULL && strcmp(value, "xterm-256color") == 0) {
         return true;
     } else if (value != NULL && strcmp(value, "alacritty") == 0) {
         return true;
     }
 
-    value = getenv("TERMINAL_EMULATOR");
+    value = g_getenv("TERMINAL_EMULATOR");
     if (value != NULL && strcmp(value, "JetBrains-JediTerm") == 0) {
         return true;
     }
 
     return false;
 #else
-    value = getenv("TERM");
+    value = g_getenv("TERM");
     if (value != NULL && strcmp(value, "linux") == 0) {
         // Linux console (kernel)
         return false;

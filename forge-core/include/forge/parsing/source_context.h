@@ -25,32 +25,9 @@ typedef struct {
 frg_parsing_source_context_t* frg_parsing_source_context_new();
 void frg_parsing_source_context_destroy(frg_parsing_source_context_t** source_context);
 
-frg_parsing_source_t* frg_parsing_source_context_open_file(
+frg_parsing_source_t* frg_parsing_source_context_add(
     frg_parsing_source_context_t* source_context,
-    FILE* file,
-    const char* path,
-    bool owned
-);
-
-frg_parsing_source_t* frg_parsing_source_context_open_path(
-    void* message_buffer,
-    frg_parsing_source_context_t* source_context,
-    const char* path
-);
-
-frg_parsing_source_t* frg_parsing_source_context_open_buffer(
-    frg_parsing_source_context_t* source_context,
-    char* text,
-    ssize_t length,
-    const char* path,
-    bool owned
-);
-
-frg_parsing_source_t* frg_parsing_source_context_open_string(
-    frg_parsing_source_context_t* source_context,
-    const char* text,
-    ssize_t length,
-    const char* path
+    frg_parsing_source_t* source
 );
 
 frg_parsing_source_t* frg_parsing_source_context_get_source_by_path(

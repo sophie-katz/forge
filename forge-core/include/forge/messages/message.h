@@ -19,6 +19,7 @@
 #include <forge/common/types.h>
 #include <forge/parsing/domain.h>
 #include <forge/parsing/source_context.h>
+#include <forge/streams/output.h>
 #include <glib.h>
 
 typedef struct frg_message_t {
@@ -43,7 +44,7 @@ void frg_message_destroy(frg_message_t** message);
 void frg_message_add_child(frg_message_t* message, frg_message_t* child);
 
 void frg_message_print(
-    FILE* file,
+    frg_stream_output_t* stream,
     const frg_message_t* message,
     frg_columnno_t lineno_pad_to_width,
     frg_parsing_source_context_t* source_context

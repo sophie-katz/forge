@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/common/memory.h>
 #include <forge/cli/choice.h>
 
@@ -42,14 +41,23 @@ void frg_cli_choice_destroy(
 }
 
 void frg_cli_choice_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_choice_t* choice
 ) {
     frg_assert_pointer_non_null(choice);
 
-    printf("      - ");
+    frg_stream_output_write_printf(
+        stream,
+        "      %s ",
+        frg_stream_output_choose_unicode(
+            stream,
+            "-",
+            "•"
+        )
+    );
 
-    frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-    printf("%s", choice->name);
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
-    printf(" (%s)\n", choice->help);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_write_printf(stream, "%s", choice->name);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+    frg_stream_output_write_printf(stream, " (%s)\n", choice->help);
 }

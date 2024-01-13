@@ -21,7 +21,7 @@ int main(void) {
         "A description of the choice"
     );
     
-    frg_cli_choice_print_help(choice);
+    frg_cli_choice_print_help(frg_stream_output_get_stdout(), choice);
 
     frg_cli_choice_destroy(&choice);
 

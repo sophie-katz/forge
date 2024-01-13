@@ -23,11 +23,14 @@ void tearDown(void) {}
 void test_buffer_load_at_beginning_of_first_line(void) {
     char buffer[] = "hello, world";
 
-    frg_parsing_source_t* source = frg_parsing_source_new_buffer(
+    frg_stream_input_t* stream = frg_stream_input_new_buffer(
         buffer,
-        12,
-        "--",
         false
+    );
+
+    frg_parsing_source_t* source = frg_parsing_source_new(
+        "--",
+        stream
     );
 
     frg_parsing_range_t range = {

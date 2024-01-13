@@ -119,7 +119,7 @@ int main(void) {
         option
     );
 
-    frg_cli_option_set_print_help(option_set);
+    frg_cli_option_set_print_help(frg_stream_output_get_stdout(), option_set);
 
     frg_cli_option_set_destroy(&option_set);
 

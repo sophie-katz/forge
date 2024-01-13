@@ -39,7 +39,8 @@
         "__split_buffer": "c",
         "stddef.h": "c",
         "memory.h": "c",
-        "message.h": "c"
+        "message.h": "c",
+        "output.h": "c"
     },
     "C_Cpp.doxygen.generateOnType": false
 }

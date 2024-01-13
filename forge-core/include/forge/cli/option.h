@@ -18,6 +18,7 @@
 #include <forge/common/enums.h>
 #include <forge/cli/choice.h>
 #include <forge/messages/message_buffer.h>
+#include <forge/streams/output.h>
 #include <glib.h>
 
 #define FRG_CLI_OPTION_SHORT_NAME_NULL 0
@@ -92,6 +93,7 @@ void frg_cli_option_add_choice(
 );
 
 void frg_cli_option_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_option_t* option
 );
 

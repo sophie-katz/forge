@@ -47,7 +47,7 @@ int no_commands(void) {
 
     frg_cli_option_set_add_option(program->global_options, option);
 
-    frg_cli_program_try_print_help(message_buffer, program, NULL);
+    frg_cli_program_try_print_help(frg_stream_output_get_stdout(), message_buffer, program, NULL);
 
     frg_cli_program_destroy(&program);
     frg_message_buffer_destroy(&message_buffer);
@@ -87,7 +87,7 @@ int one_command_global(void) {
 
     frg_cli_program_add_command(program, command);
 
-    frg_cli_program_try_print_help(message_buffer, program, NULL);
+    frg_cli_program_try_print_help(frg_stream_output_get_stdout(), message_buffer, program, NULL);
 
     frg_cli_program_destroy(&program);
     frg_message_buffer_destroy(&message_buffer);
@@ -127,7 +127,7 @@ int one_command_command(void) {
 
     frg_cli_program_add_command(program, command);
 
-    frg_cli_program_try_print_help(message_buffer, program, "command");
+    frg_cli_program_try_print_help(frg_stream_output_get_stdout(), message_buffer, program, "command");
 
     frg_cli_program_destroy(&program);
     frg_message_buffer_destroy(&message_buffer);

@@ -38,21 +38,28 @@ frg_ast_t* frg_parse(
     _frg_parsing_current_offset = 0;
     _frg_parsing_current_message_buffer = message_buffer;
 
-    if (source->text != NULL) {
-        // We are parsing a buffer
-        frg_assert_int_ge(source->length, 2);
-        frg_assert_int_eq(source->text[source->length - 2], 0);
-        frg_assert_int_eq(source->text[source->length - 1], 0);
+    if (frg_stream_input_is_buffer(source->stream)) {
+        frg_assert_int_ge(frg_stream_get_length(source->stream), 2);
+        frg_assert_int_eq(
+            frg_stream_get_buffer(source->stream)[frg_stream_get_length(source->stream) - 2],
+            0
+        );
+        frg_assert_int_eq(
+            frg_stream_get_buffer(source->stream)[frg_stream_get_length(source->stream) - 1],
+            0
+        );
 
         // Set the scan buffer
-        yy_scan_buffer(source->text, source->length);
+        yy_scan_buffer(
+            frg_stream_get_buffer(source->stream),
+            frg_stream_get_length(source->stream)
+        );
     } else {
-        // We are parsing a file
-        frg_assert_pointer_non_null(source->file);
-        frg_assert(!ferror(source->file));
+        frg_assert(frg_stream_input_is_file(source->stream));
+        frg_assert(!frg_stream_input_has_error(source->stream));
 
         // Set the input file handle
-        yyin = source->file;
+        yyin = frg_stream_get_file(source->stream);
     }
 
     // Actually parse the text

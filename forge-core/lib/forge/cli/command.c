@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/common/memory.h>
 #include <forge/cli/command.h>
 
@@ -59,7 +58,8 @@ void frg_cli_command_destroy(
 }
 
 void frg_cli_command_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_command_t* command
 ) {
-    printf("%s\n", command->help);
+    frg_stream_output_write_printf(stream, "%s\n", command->help);
 }

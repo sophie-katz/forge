@@ -18,9 +18,7 @@
 #include <forge/ast/debug.h>
 #include <forge/codegen/codegen.h>
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/common/memory.h>
-#include <forge/common/stream.h>
 #include <forge/cli/program.h>
 #include <forge/config/config.h>
 #include <forge/config/cli_program.h>
@@ -122,17 +120,46 @@ frg_recoverable_status_t _frg_config_parse_env_color_mode(
     const char* color_mode_text = getenv("FORGE_COLOR_MODE");
     if (color_mode_text != NULL && *color_mode_text != 0) {
         if (strcmp(color_mode_text, "disabled") == 0) {
-            frg_color_mode_set(FRG_COLOR_MODE_DISABLED);
+            frg_stream_output_set_console_color(false);
         } else if (strcmp(color_mode_text, "auto") == 0) {
-            frg_color_mode_set(FRG_COLOR_MODE_AUTO);
+            // Do nothing
         } else if (strcmp(color_mode_text, "enabled") == 0) {
-            frg_color_mode_set(FRG_COLOR_MODE_ENABLED);
+            frg_stream_output_set_console_color(true);
         } else {
             frg_message_emit(
                 message_buffer,
                 FRG_MESSAGE_SEVERITY_FATAL_ERROR,
                 "unknown color mode: %s",
                 color_mode_text
+            );
+
+            return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+        }
+    }
+
+    return FRG_RECOVERABLE_STATUS_OK;
+}
+
+frg_recoverable_status_t _frg_config_parse_env_unicode_mode(
+    frg_message_buffer_t* message_buffer,
+    frg_config_t* config
+) {
+    frg_assert_pointer_non_null(config);
+
+    const char* unicode_mode_text = getenv("FORGE_UNICODE_MODE");
+    if (unicode_mode_text != NULL && *unicode_mode_text != 0) {
+        if (strcmp(unicode_mode_text, "disabled") == 0) {
+            frg_stream_output_set_console_unicode(false);
+        } else if (strcmp(unicode_mode_text, "auto") == 0) {
+            // Do nothing
+        } else if (strcmp(unicode_mode_text, "enabled") == 0) {
+            frg_stream_output_set_console_unicode(true);
+        } else {
+            frg_message_emit(
+                message_buffer,
+                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+                "unknown unicode mode: %s",
+                unicode_mode_text
             );
 
             return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
@@ -157,6 +184,14 @@ frg_recoverable_status_t frg_config_parse_env(
     }
 
     result = _frg_config_parse_env_color_mode(
+        message_buffer,
+        config
+    );
+    if (result != FRG_RECOVERABLE_STATUS_OK) {
+        return result;
+    }
+
+    result = _frg_config_parse_env_unicode_mode(
         message_buffer,
         config
     );

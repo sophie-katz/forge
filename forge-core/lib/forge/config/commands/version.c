@@ -28,9 +28,15 @@ int _frg_config_commands_callback_version(
     const frg_config_t* config = (const frg_config_t*)user_data;
 
     if (config->version_short) {
-        frg_cli_program_print_version_short((frg_cli_program_t*)program);
+        frg_cli_program_print_version_short(
+            frg_stream_output_get_stdout(),
+            (frg_cli_program_t*)program
+        );
     } else {
-        frg_cli_program_print_version_long((frg_cli_program_t*)program);
+        frg_cli_program_print_version_long(
+            frg_stream_output_get_stdout(),
+            (frg_cli_program_t*)program
+        );
     }
 
     return 0;

@@ -12,7 +12,7 @@
 - [x] Add in token reader for lexical casts with locations.
 - [x] Add in a message buffer so we can test for errors.
 - [x] Add in token ranges
-- [ ] Add a debug buffer to help with testing
+- [x] Add a debug buffer to help with testing
 - [ ] See if we can do LLVM IR comparison easier to help with testing
     - [ ] Maybe parse LLVM IR from text?
 - [x] Add in line printing for errors
@@ -37,5 +37,6 @@
 - [ ] Use `G_GNUC_WARN_UNUSED_RESULT`
     - [ ] Look into other attributes to use
 - [ ] Add in "operator overloading" for values being passed into functions
-- [ ] Add opt-out unicode support to CLI
-- [ ] Create stream for better testing
+- [x] Add opt-out unicode support to CLI
+- [x] Create stream for better testing
+- [x] Move `stream.h` into `streams/utilities.h`

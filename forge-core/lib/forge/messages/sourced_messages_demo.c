@@ -17,27 +17,46 @@
 #include <forge/parsing/source_context.h>
 
 void open_sources(frg_parsing_source_context_t* source_context) {
-    static char buffer[] =
+    static char buffer_file[] =
         "fn add(a: i32, b: i32) -> i32 {\n"
         "  return a + b;\n"
         "}\n";
 
-    FILE* file = fmemopen(buffer, sizeof(buffer), "r");
+    FILE* file = fmemopen(buffer_file, sizeof(buffer_file), "r");
 
-    frg_parsing_source_context_open_file(
-        source_context,
+    frg_stream_input_t* stream_file = frg_stream_input_new_file(
         file,
-        "lib.frg",
         true
     );
 
-    frg_parsing_source_context_open_string(
+    frg_parsing_source_t* source_file = frg_parsing_source_new(
+        "lib.frg",
+        stream_file
+    );
+
+    frg_parsing_source_context_add(
         source_context,
+        source_file
+    );
+
+    static char buffer_buffer[] =
         "fn main() {\n"
         "  print(\"hello, world\\n\");\n"
-        "}\n",
-        -1,
-        "main.frg"
+        "}\n";
+
+    frg_stream_input_t* stream_buffer = frg_stream_input_new_buffer(
+        buffer_buffer,
+        false
+    );
+
+    frg_parsing_source_t* source_buffer = frg_parsing_source_new(
+        "main.frg",
+        stream_buffer
+    );
+
+    frg_parsing_source_context_add(
+        source_context,
+        source_buffer
     );
 }
 
@@ -149,8 +168,8 @@ int main(void) {
     frg_message_emit_from_source_range(
         message_buffer,
         &range_single_line,
-        FRG_MESSAGE_SEVERITY_ERROR,
-        "This is an error message for multiple characters on a single line"
+        FRG_MESSAGE_SEVERITY_WARNING,
+        "This is a warning message for multiple characters on a single line"
     );
 
     frg_parsing_range_t range_multi_line = {
@@ -171,7 +190,7 @@ int main(void) {
     );
 
     frg_message_buffer_print(
-        stdout,
+        frg_stream_output_get_stdout(),
         message_buffer,
         source_context,
         FRG_MESSAGE_SEVERITY_DEBUG,

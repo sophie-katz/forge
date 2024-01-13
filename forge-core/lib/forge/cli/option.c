@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option.h>
 
@@ -194,39 +193,40 @@ void frg_cli_option_add_choice(
 }
 
 void frg_cli_option_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_option_t* option
 ) {
     frg_assert_pointer_non_null(option);
 
-    printf("  ");
+    frg_stream_output_write_string(stream, "  ");
 
     if (option->short_name != FRG_CLI_OPTION_SHORT_NAME_NULL) {
-        frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-        printf("-%c", option->short_name);
-        frg_color_set(stdout, FRG_COLOR_ID_RESET);
-        printf(", ");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+        frg_stream_output_write_printf(stream, "-%c", option->short_name);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_write_printf(stream, ", ");
     }
 
-    frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-    printf("--%s", option->long_name);
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_write_printf(stream, "--%s", option->long_name);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
 
     if (option->value_name != NULL) {
-        printf(" <%s>", option->value_name);
+        frg_stream_output_write_printf(stream, " <%s>", option->value_name);
     }
 
-    printf("\n    %s\n", option->help);
+    frg_stream_output_write_printf(stream, "\n    %s\n", option->help);
 
     if (option->choices != NULL) {
-        printf("    ");
-        frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
-        printf("Choices:");
-        frg_color_set(stdout, FRG_COLOR_ID_RESET);
-        printf("\n");
+        frg_stream_output_write_printf(stream, "    ");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+        frg_stream_output_write_printf(stream, "Choices:");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_write_printf(stream, "\n");
 
-        frg_color_set(stdout, FRG_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
         for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
-            frg_cli_choice_print_help((const frg_cli_choice_t*)choice->data);
+            frg_cli_choice_print_help(stream, (const frg_cli_choice_t*)choice->data);
         }
     }
 }

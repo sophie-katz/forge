@@ -30,6 +30,7 @@ int _frg_config_commands_callback_help(
 
     if (pos_args == NULL) {
         if (!frg_cli_program_try_print_help(
+            frg_stream_output_get_stdout(),
             message_buffer,
             (frg_cli_program_t*)program,
             NULL
@@ -38,6 +39,7 @@ int _frg_config_commands_callback_help(
         }
     } else {
         if (!frg_cli_program_try_print_help(
+            frg_stream_output_get_stdout(),
             message_buffer,
             (frg_cli_program_t*)program,
             (const char*)pos_args->data

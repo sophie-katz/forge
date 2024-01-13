@@ -25,11 +25,14 @@ void test_buffer(void) {
 
     char buffer[] = "fn main();\0";
 
-    frg_parsing_source_t* source = frg_parsing_source_new_buffer(
+    frg_stream_input_t* stream = frg_stream_input_new_buffer(
         buffer,
-        12,
+        FRG_STREAM_INPUT_FLAG_EXTRA_NULL_BYTE
+    );
+
+    frg_parsing_source_t* source = frg_parsing_source_new(
         "--",
-        false
+        stream
     );
 
     frg_ast_t* ast = frg_parse(message_buffer, source);
@@ -49,10 +52,14 @@ void test_file(void) {
 
     FILE* file = fmemopen(buffer, 11, "r");
 
-    frg_parsing_source_t* source = frg_parsing_source_new_file(
+    frg_stream_input_t* stream = frg_stream_input_new_file(
         file,
+        true
+    );
+
+    frg_parsing_source_t* source = frg_parsing_source_new(
         "--",
-        false
+        stream
     );
 
     frg_ast_t* ast = frg_parse(message_buffer, source);
@@ -63,8 +70,6 @@ void test_file(void) {
     frg_ast_destroy(&ast);
     frg_parsing_source_destroy(&source);
     frg_message_buffer_destroy(&message_buffer);
-
-    fclose(file);
 }
 
 int main(void) {

@@ -18,6 +18,7 @@
 #include <glib.h>
 #include <forge/common/enums.h>
 #include <forge/cli/command.h>
+#include <forge/streams/output.h>
 
 typedef struct {
     const char* name;
@@ -66,16 +67,19 @@ frg_cli_command_t* frg_cli_program_get_command_by_name(
 );
 
 bool frg_cli_program_try_print_help(
+    frg_stream_output_t* stream,
     frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     const char* command_name
 );
 
 void frg_cli_program_print_version_long(
+    frg_stream_output_t* stream,
     const frg_cli_program_t* program
 );
 
 void frg_cli_program_print_version_short(
+    frg_stream_output_t* stream,
     const frg_cli_program_t* program
 );
 

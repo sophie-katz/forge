@@ -17,7 +17,6 @@
 #include <forge/config/config.h>
 #include <build_config.h>
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/config/commands/compile.h>
 #include <forge/config/commands/dump_ast.h>
 #include <forge/config/commands/dump_ir.h>
@@ -26,15 +25,15 @@
 #include <forge/config/commands/version.h>
 
 void frg_config_cli_program_banner(void) {
-    frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_YELLOW);
-    printf("\n       \\ | / ,\n");
-    printf("     `\n");
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_RED);
-    printf("---------------\n");
-    printf("  ----.      /\n");
-    printf("      /___^__\\\n\n");
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW);
+    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "\n       \\ | / ,\n");
+    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "     `\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_RED);
+    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "---------------\n");
+    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "  ----.      /\n");
+    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "      /___^__\\\n\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_RESET);
 }
 
 int _frg_config_cli_program_callback(
@@ -45,7 +44,12 @@ int _frg_config_cli_program_callback(
 ) {
     frg_config_cli_program_banner();
 
-    if (!frg_cli_program_try_print_help(message_buffer, program, NULL)) {
+    if (!frg_cli_program_try_print_help(
+        frg_stream_output_get_stdout(),
+        message_buffer,
+        program,
+        NULL
+    )) {
         return 1;
     }
 
@@ -70,16 +74,41 @@ bool _frg_config_cli_option_callback_color_mode(
     const char* value
 ) {
     if (strcmp(value, "disabled") == 0) {
-        frg_color_mode_set(FRG_COLOR_MODE_DISABLED);
+        frg_stream_output_set_console_color(false);
     } else if (strcmp(value, "auto") == 0) {
-        frg_color_mode_set(FRG_COLOR_MODE_AUTO);
+        // Do nothing
     } else if (strcmp(value, "enabled") == 0) {
-        frg_color_mode_set(FRG_COLOR_MODE_ENABLED);
+        frg_stream_output_set_console_color(true);
     } else {
         frg_message_emit(
             message_buffer,
             FRG_MESSAGE_SEVERITY_FATAL_ERROR,
             "unknown color mode: %s",
+            value
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+bool _frg_config_cli_option_callback_unicode_mode(
+    frg_message_buffer_t* message_buffer,
+    void* user_data,
+    const char* value
+) {
+    if (strcmp(value, "disabled") == 0) {
+        frg_stream_output_set_console_unicode(false);
+    } else if (strcmp(value, "auto") == 0) {
+        // Do nothing
+    } else if (strcmp(value, "enabled") == 0) {
+        frg_stream_output_set_console_unicode(true);
+    } else {
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "unknown unicode mode: %s",
             value
         );
 
@@ -152,6 +181,42 @@ frg_cli_program_t* frg_config_cli_program_new() {
             "Enable debug logging",
             _frg_config_cli_option_callback_debug
         )
+    );
+
+    option = frg_cli_option_new_choice(
+        "unicode-mode",
+        "mode",
+        "Set the unicode mode",
+        _frg_config_cli_option_callback_unicode_mode
+    );
+
+    frg_cli_option_add_choice(
+        option,
+        frg_cli_choice_new(
+            "disabled",
+            "Disable unicode characters and use ASCII instead"
+        )
+    );
+
+    frg_cli_option_add_choice(
+        option,
+        frg_cli_choice_new(
+            "auto",
+            "Automatically detect whether or not to use unicode characters"
+        )
+    );
+
+    frg_cli_option_add_choice(
+        option,
+        frg_cli_choice_new(
+            "enabled",
+            "Force unicode characters to be used when available"
+        )
+    );
+
+    frg_cli_option_set_add_option(
+        program->global_options,
+        option
     );
 
     frg_cli_program_add_command(

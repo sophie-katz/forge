@@ -102,6 +102,7 @@ frg_cli_option_t* frg_cli_option_set_get_option_by_short_name(
 }
 
 void frg_cli_option_set_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_option_set_t* option_set
 ) {
     frg_assert_pointer_non_null(option_set);
@@ -112,10 +113,10 @@ void frg_cli_option_set_print_help(
         if (first) {
             first = false;
         } else {
-            printf("\n");
+            frg_stream_output_write_char(stream, '\n');
         }
 
-        frg_cli_option_print_help((const frg_cli_option_t*)option->data);
+        frg_cli_option_print_help(stream, (const frg_cli_option_t*)option->data);
     }
 }
 

@@ -13,79 +13,77 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/color.h>
 #include <forge/common/debug.h>
-#include <forge/common/stream.h>
 #include <stdarg.h>
 #include <stdio.h>
 
-void frg_debug_print_newline(FILE* file, frg_indent_t indent) {
-    fputc('\n', file);
+void frg_debug_print_newline(frg_stream_output_t* stream, frg_indent_t indent) {
+    frg_stream_output_write_char(stream, '\n');
 
     for (size_t i = 0; i < indent; i++) {
-        fputc(' ', file);
+        frg_stream_output_write_char(stream, ' ');
     }
 }
 
-void frg_debug_print_node(FILE* file, const char* format, ...) {
-    frg_color_set(file, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(file, "[");
+void frg_debug_print_node(frg_stream_output_t* stream, const char* format, ...) {
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
+    frg_stream_output_write_printf(stream, "[");
 
     va_list args;
     va_start(args, format);
 
-    frg_color_set(file, FRG_COLOR_ID_BOLD);
-    frg_color_set(file, FRG_COLOR_ID_GREEN);
-    vfprintf(file, format, args);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_GREEN);
+    frg_stream_output_write_vprintf(stream, format, args);
 
     va_end(args);
 
-    frg_color_set(file, FRG_COLOR_ID_RESET);
-    frg_color_set(file, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(file, "]");
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
+    frg_stream_output_write_printf(stream, "]");
 
-    frg_color_set(file, FRG_COLOR_ID_RESET);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
 }
 
-void frg_debug_print_property(FILE* file, const char* label, const char* format, ...) {
-    frg_color_set(file, FRG_COLOR_ID_BOLD);
-    frg_color_set(file, FRG_COLOR_ID_CYAN);
-    fprintf(file, "%s = ", label);
+void frg_debug_print_property(frg_stream_output_t* stream, const char* label, const char* format, ...) {
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_CYAN);
+    frg_stream_output_write_printf(stream, "%s = ", label);
     
     if (format != NULL) {
-        frg_color_set(file, FRG_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
 
         va_list args;
         va_start(args, format);
 
-        vfprintf(file, format, args);
+        frg_stream_output_write_vprintf(stream, format, args);
 
         va_end(args);
     }
 }
 
 void frg_debug_print_property_with_index(
-    FILE* file,
+    frg_stream_output_t* stream,
     const char* label,
     size_t index,
     const char* format,
     ...
 ) {
-    frg_color_set(file, FRG_COLOR_ID_BOLD);
-    frg_color_set(file, FRG_COLOR_ID_CYAN);
-    fprintf(file, "%s", label);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_CYAN);
+    frg_stream_output_write_printf(stream, "%s", label);
 
-    frg_color_set(file, FRG_COLOR_ID_RESET);
-    frg_color_set(file, FRG_COLOR_ID_BRIGHT_BLACK);
-    fprintf(file, "[%lu] = ", index);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
+    frg_stream_output_write_printf(stream, "[%lu] = ", index);
     
     if (format != NULL) {
-        frg_color_set(file, FRG_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
 
         va_list args;
         va_start(args, format);
 
-        vfprintf(file, format, args);
+        frg_stream_output_write_vprintf(stream, format, args);
 
         va_end(args);
     }

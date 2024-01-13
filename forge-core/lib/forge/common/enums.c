@@ -282,104 +282,116 @@ bool frg_ast_id_is_value_binary(frg_ast_id_t id) {
     }
 }
 
-void frg_ast_decl_prop_flags_print(FILE* file, frg_ast_decl_prop_flags_t flags) {
+GString* frg_ast_decl_prop_flags_to_string(frg_ast_decl_prop_flags_t flags) {
+    GString* result = g_string_new(NULL);
     bool first = true;
 
     if (flags & FRG_AST_DECL_PROP_FLAG_OPTIONAL) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "optional");
+        g_string_append_printf(result, "optional");
 
         first = false;
     }
 
     if (flags & FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "non-optional");
+        g_string_append_printf(result, "non-optional");
 
         first = false;
     }
 
     if (flags & FRG_AST_DECL_PROP_FLAG_SPREAD) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "spread");
+        g_string_append_printf(result, "spread");
 
         first = false;
     }
 
     if (first) {
-        fprintf(file, "none");
+        g_string_append_printf(result, "none");
     }
+
+    return result;
 }
 
-void frg_ast_decl_iface_flags_print(FILE* file, frg_ast_decl_iface_flags_t flags) {
+GString* frg_ast_decl_iface_flags_to_string(frg_ast_decl_iface_flags_t flags) {
+    GString* result = g_string_new(NULL);
     bool first = true;
 
     if (flags & FRG_AST_DECL_IFACE_FLAG_ABSTRACT) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "abstract");
+        g_string_append_printf(result, "abstract");
 
         first = false;
     }
 
     if (first) {
-        fprintf(file, "none");
+        g_string_append_printf(result, "none");
     }
+
+    return result;
 }
 
-void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t flags) {
+GString* frg_ast_decl_fn_arg_flags_to_string(frg_ast_decl_fn_arg_flags_t flags) {
+    GString* result = g_string_new(NULL);
     bool first = true;
 
     if (flags & FRG_AST_DECL_FN_ARG_FLAG_KW) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "kw");
+        g_string_append_printf(result, "kw");
 
         first = false;
     }
 
     if (first) {
-        fprintf(file, "none");
+        g_string_append_printf(result, "none");
     }
+
+    return result;
 }
 
-void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags) {
+GString* frg_ast_decl_fn_flags_to_string(frg_ast_decl_fn_flags_t flags) {
+    GString* result = g_string_new(NULL);
     bool first = true;
 
     if (flags & FRG_AST_DECL_FN_FLAG_MUT) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "mut");
+        g_string_append_printf(result, "mut");
 
         first = false;
     }
 
     if (flags & FRG_AST_DECL_FN_FLAG_OVERRIDE) {
         if (!first) {
-            fprintf(file, ",");
+            g_string_append_printf(result, ",");
         }
 
-        fprintf(file, "override");
+        g_string_append_printf(result, "override");
 
         first = false;
     }
 
     if (first) {
-        fprintf(file, "none");
+        g_string_append_printf(result, "none");
     }
+
+    return result;
 }

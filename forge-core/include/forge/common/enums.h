@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <forge/common/types.h>
+#include <glib.h>
 
 /// \brief A status result to be returned by functions in Forge to help handle recoverable
 ///        errors.
@@ -39,34 +40,6 @@ typedef enum {
     /// Force color output no matter what
     FRG_COLOR_MODE_ENABLED,
 } frg_color_mode_t;
-
-/// An identifier for which color code to output
-///
-/// Codes are a subset of https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-/// that will actually get used by the Forge compiler.
-typedef enum {
-    FRG_COLOR_ID_RESET,
-    FRG_COLOR_ID_BOLD,
-    FRG_COLOR_ID_DIM,
-    FRG_COLOR_ID_ITALIC,
-    FRG_COLOR_ID_UNDERLINE,
-    FRG_COLOR_ID_BLACK,
-    FRG_COLOR_ID_RED,
-    FRG_COLOR_ID_GREEN,
-    FRG_COLOR_ID_YELLOW,
-    FRG_COLOR_ID_BLUE,
-    FRG_COLOR_ID_MAGENTA,
-    FRG_COLOR_ID_CYAN,
-    FRG_COLOR_ID_WHITE,
-    FRG_COLOR_ID_BRIGHT_BLACK,
-    FRG_COLOR_ID_BRIGHT_RED,
-    FRG_COLOR_ID_BRIGHT_GREEN,
-    FRG_COLOR_ID_BRIGHT_YELLOW,
-    FRG_COLOR_ID_BRIGHT_BLUE,
-    FRG_COLOR_ID_BRIGHT_MAGENTA,
-    FRG_COLOR_ID_BRIGHT_CYAN,
-    FRG_COLOR_ID_BRIGHT_WHITE,
-} frg_color_id_t;
 
 // TODO: Add suggestion or fix severity
 typedef enum {
@@ -183,21 +156,21 @@ typedef enum {
     FRG_AST_DECL_PROP_FLAG_SPREAD = 0x4
 } frg_ast_decl_prop_flags_t;
 
-void frg_ast_decl_prop_flags_print(FILE* file, frg_ast_decl_prop_flags_t flags);
+GString* frg_ast_decl_prop_flags_to_string(frg_ast_decl_prop_flags_t flags);
 
 typedef enum {
     FRG_AST_DECL_IFACE_FLAG_NONE = 0x0,
     FRG_AST_DECL_IFACE_FLAG_ABSTRACT = 0x1,
 } frg_ast_decl_iface_flags_t;
 
-void frg_ast_decl_iface_flags_print(FILE* file, frg_ast_decl_iface_flags_t flags);
+GString* frg_ast_decl_iface_flags_to_string(frg_ast_decl_iface_flags_t flags);
 
 typedef enum {
     FRG_AST_DECL_FN_ARG_FLAG_NONE = 0x0,
     FRG_AST_DECL_FN_ARG_FLAG_KW = 0x1,
 } frg_ast_decl_fn_arg_flags_t;
 
-void frg_ast_decl_fn_arg_flags_print(FILE* file, frg_ast_decl_fn_arg_flags_t flags);
+GString* frg_ast_decl_fn_arg_flags_to_string(frg_ast_decl_fn_arg_flags_t flags);
 
 typedef enum {
     FRG_AST_DECL_FN_FLAG_NONE = 0x0,
@@ -205,7 +178,7 @@ typedef enum {
     FRG_AST_DECL_FN_FLAG_OVERRIDE = 0x2,
 } frg_ast_decl_fn_flags_t;
 
-void frg_ast_decl_fn_flags_print(FILE* file, frg_ast_decl_fn_flags_t flags);
+GString* frg_ast_decl_fn_flags_to_string(frg_ast_decl_fn_flags_t flags);
 
 typedef enum {
     FRG_AST_VISITOR_STATUS_OK,
@@ -214,7 +187,45 @@ typedef enum {
 } frg_ast_visitor_status_t;
 
 typedef enum {
-    FRG_PARSING_SOURCE_FLAG_NONE = 0x0,
-    FRG_PARSING_SOURCE_FLAG_OWNED_FILE = 0x1,
-    FRG_PARSING_SOURCE_FLAG_OWNED_TEXT = 0x2,
-} frg_parsing_source_flags_t;
+    FRG_STREAM_INPUT_FLAG_NONE = 0x0,
+    FRG_STREAM_INPUT_FLAG_OWNED = 0x1,
+    FRG_STREAM_INPUT_FLAG_LENGTH_SET = 0x2,
+    FRG_STREAM_INPUT_FLAG_EXTRA_NULL_BYTE = 0x4,
+} frg_stream_input_flags_t;
+
+typedef enum {
+    FRG_STREAM_OUTPUT_FLAG_NONE = 0x0,
+    FRG_STREAM_OUTPUT_FLAG_OWNED = 0x1,
+    FRG_STREAM_OUTPUT_FLAG_COLOR = 0x2,
+    FRG_STREAM_OUTPUT_FLAG_DETECT_COLOR = 0x4,
+    FRG_STREAM_OUTPUT_FLAG_UNICODE = 0x8,
+    FRG_STREAM_OUTPUT_FLAG_DETECT_UNICODE = 0x10,
+} frg_stream_output_flags_t;
+
+/// An identifier for which color code to output
+///
+/// Codes are a subset of https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+/// that will actually get used by the Forge compiler.
+typedef enum {
+    FRG_STREAM_OUTPUT_COLOR_ID_RESET,
+    FRG_STREAM_OUTPUT_COLOR_ID_BOLD,
+    FRG_STREAM_OUTPUT_COLOR_ID_DIM,
+    FRG_STREAM_OUTPUT_COLOR_ID_ITALIC,
+    FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE,
+    FRG_STREAM_OUTPUT_COLOR_ID_BLACK,
+    FRG_STREAM_OUTPUT_COLOR_ID_RED,
+    FRG_STREAM_OUTPUT_COLOR_ID_GREEN,
+    FRG_STREAM_OUTPUT_COLOR_ID_YELLOW,
+    FRG_STREAM_OUTPUT_COLOR_ID_BLUE,
+    FRG_STREAM_OUTPUT_COLOR_ID_MAGENTA,
+    FRG_STREAM_OUTPUT_COLOR_ID_CYAN,
+    FRG_STREAM_OUTPUT_COLOR_ID_WHITE,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_RED,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_GREEN,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLUE,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_MAGENTA,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_CYAN,
+    FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_WHITE,
+} frg_stream_output_color_id_t;

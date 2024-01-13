@@ -17,6 +17,7 @@
 
 #include <glib.h>
 #include <forge/cli/option_set.h>
+#include <forge/streams/output.h>
 
 struct frg_cli_program_t;
 
@@ -47,5 +48,6 @@ void frg_cli_command_destroy(
 );
 
 void frg_cli_command_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_command_t* command
 );

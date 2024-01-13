@@ -14,7 +14,6 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/common/memory.h>
 #include <forge/cli/program.h>
 
@@ -115,6 +114,7 @@ frg_cli_command_t* frg_cli_program_get_command_by_name(
 }
 
 bool frg_cli_program_try_print_help(
+    frg_stream_output_t* stream,
     frg_message_buffer_t* message_buffer,
     const frg_cli_program_t* program,
     const char* command_name
@@ -125,15 +125,15 @@ bool frg_cli_program_try_print_help(
         frg_assert_string_non_empty(command_name);
     }
 
-    frg_cli_program_print_version_long(program);
+    frg_cli_program_print_version_long(stream, program);
 
-    printf("\n");
+    frg_stream_output_write_printf(stream, "\n");
 
     if (command_name == NULL) {
         if (program->commands == NULL) {
-            printf("Usage: ");
-            frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-            printf(
+            frg_stream_output_write_printf(stream, "Usage: ");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+            frg_stream_output_write_printf(stream, 
                 "%s [options]%s%s%s\n",
                 program->binary_name,
                 program->pos_args_name == NULL
@@ -144,47 +144,48 @@ bool frg_cli_program_try_print_help(
                     ? ""
                     : ">"
             );
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("\n");
-            frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
-            printf("Options:");
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("\n");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "\n");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+            frg_stream_output_write_printf(stream, "Options:");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "\n");
         } else {
-            printf("Usage: ");
-            frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-            printf("%s [global options] <command> [command options]\n", program->binary_name);
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("\n");
-            frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
-            printf("Global options:");
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("\n");
+            frg_stream_output_write_printf(stream, "Usage: ");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+            frg_stream_output_write_printf(stream, "%s [global options] <command> [command options]\n", program->binary_name);
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "\n");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+            frg_stream_output_write_printf(stream, "Global options:");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "\n");
         }
 
         frg_cli_option_set_print_help(
+            stream,
             program->global_options
         );
 
         if (program->commands != NULL) {
-            printf("\n");
-            frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
-            printf("Commands:");
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("\n");
+            frg_stream_output_write_printf(stream, "\n");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+            frg_stream_output_write_printf(stream, "Commands:");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "\n");
 
             for (GList* command = program->commands; command != NULL; command = command->next) {
-                frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-                printf("  %s\n", ((frg_cli_command_t*)command->data)->name);
-                frg_color_set(stdout, FRG_COLOR_ID_RESET);
+                frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+                frg_stream_output_write_printf(stream, "  %s\n", ((frg_cli_command_t*)command->data)->name);
+                frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             }
 
-            printf("\n");
-            printf("To see more info about a given command, run:\n");
-            frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_BLACK);
-            printf("$ ");
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("%s help <command>\n", program->binary_name);
+            frg_stream_output_write_printf(stream, "\n");
+            frg_stream_output_write_printf(stream, "To see more info about a given command, run:\n");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
+            frg_stream_output_write_printf(stream, "$ ");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "%s help <command>\n", program->binary_name);
         }
     } else {
         frg_cli_command_t* command = (frg_cli_command_t*)g_hash_table_lookup(program->commands_by_name, command_name);
@@ -199,9 +200,9 @@ bool frg_cli_program_try_print_help(
             return false;
         }
 
-        printf("Usage: ");
-        frg_color_set(stdout, FRG_COLOR_ID_BOLD);
-        printf(
+        frg_stream_output_write_printf(stream, "Usage: ");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+        frg_stream_output_write_printf(stream, 
             "%s [global options] %s [command options]%s%s%s\n\n",
             program->binary_name,
             command_name,
@@ -213,28 +214,29 @@ bool frg_cli_program_try_print_help(
                 ? ""
                 : ">"
         );
-        frg_color_set(stdout, FRG_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
         
-        frg_cli_command_print_help(command);
+        frg_cli_command_print_help(stream, command);
 
-        printf("\n");
-        frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
-        printf("Global options:");
-        frg_color_set(stdout, FRG_COLOR_ID_RESET);
-        printf("\n");
+        frg_stream_output_write_printf(stream, "\n");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+        frg_stream_output_write_printf(stream, "Global options:");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_write_printf(stream, "\n");
 
         frg_cli_option_set_print_help(
+            stream,
             program->global_options
         );
 
         if (command->option_set->options != NULL) {
-            printf("\n");
-            frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
-            printf("Command options:");
-            frg_color_set(stdout, FRG_COLOR_ID_RESET);
-            printf("\n");
+            frg_stream_output_write_printf(stream, "\n");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+            frg_stream_output_write_printf(stream, "Command options:");
+            frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+            frg_stream_output_write_printf(stream, "\n");
 
-            frg_cli_option_set_print_help(command->option_set);
+            frg_cli_option_set_print_help(stream, command->option_set);
         }
     }
 
@@ -242,28 +244,30 @@ bool frg_cli_program_try_print_help(
 }
 
 void frg_cli_program_print_version_long(
+    frg_stream_output_t* stream,
     const frg_cli_program_t* program
 ) {
     frg_assert_pointer_non_null(program);
 
-    printf(
+    frg_stream_output_write_printf(stream, 
         "%s %d.%d.%d%s%s\n", program->name, program->version_major,
         program->version_minor, program->version_patch,
         program->version_label == NULL ? "" : "-", program->version_label);
 
     if (program->version_details != NULL) {
-        frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_BLACK);
-        printf("%s\n", program->version_details->str);
-        frg_color_set(stdout, FRG_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
+        frg_stream_output_write_printf(stream, "%s\n", program->version_details->str);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
     }
 }
 
 void frg_cli_program_print_version_short(
+    frg_stream_output_t* stream,
     const frg_cli_program_t* program
 ) {
     frg_assert_pointer_non_null(program);
 
-    printf(
+    frg_stream_output_write_printf(stream, 
         "%d.%d.%d%s%s\n", program->version_major,
         program->version_minor, program->version_patch,
         program->version_label == NULL ? "" : "-", program->version_label);

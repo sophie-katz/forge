@@ -20,26 +20,16 @@
 #include <glib.h>
 #include <stdbool.h>
 #include <forge/common/enums.h>
+#include <forge/streams/input.h>
 
 typedef struct {
-    frg_parsing_source_flags_t flags;
-    FILE* file;
     const char* path;
-    char* text;
-    ssize_t length;
+    frg_stream_input_t* stream;
 } frg_parsing_source_t;
 
-frg_parsing_source_t* frg_parsing_source_new_file(
-    FILE* file,
+frg_parsing_source_t* frg_parsing_source_new(
     const char* path,
-    bool owned
-);
-
-frg_parsing_source_t* frg_parsing_source_new_buffer(
-    char* text,
-    ssize_t length,
-    const char* path,
-    bool owned
+    frg_stream_input_t* stream
 );
 
 void frg_parsing_source_destroy(frg_parsing_source_t** source);

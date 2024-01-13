@@ -19,6 +19,7 @@
 #include <forge/common/enums.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/cli/option.h>
+#include <forge/streams/output.h>
 
 /// \brief The maximum number of option short names possible.
 ///
@@ -53,6 +54,7 @@ frg_cli_option_t* frg_cli_option_set_get_option_by_short_name(
 );
 
 void frg_cli_option_set_print_help(
+    frg_stream_output_t* stream,
     const frg_cli_option_set_t* option_set
 );
 

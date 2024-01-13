@@ -26,7 +26,7 @@ void flag(void) {
         callback
     );
 
-    frg_cli_option_print_help(option);
+    frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
     frg_cli_option_destroy(&option);
 }
@@ -39,7 +39,7 @@ void flag_short(void) {
         callback
     );
 
-    frg_cli_option_print_help(option);
+    frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
     frg_cli_option_destroy(&option);
 }
@@ -52,7 +52,7 @@ void argument(void) {
         callback
     );
 
-    frg_cli_option_print_help(option);
+    frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
     frg_cli_option_destroy(&option);
 }
@@ -66,7 +66,7 @@ void argument_short(void) {
         callback
     );
 
-    frg_cli_option_print_help(option);
+    frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
     frg_cli_option_destroy(&option);
 }
@@ -95,7 +95,7 @@ void choice(void) {
         )
     );
 
-    frg_cli_option_print_help(option);
+    frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
     frg_cli_option_destroy(&option);
 }
@@ -125,7 +125,7 @@ void choice_short(void) {
         )
     );
 
-    frg_cli_option_print_help(option);
+    frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
     frg_cli_option_destroy(&option);
 }

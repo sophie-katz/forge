@@ -15,7 +15,6 @@
 
 #include <forge/messages/message_buffer.h>
 #include <forge/common/error.h>
-#include <forge/common/color.h>
 #include <forge/common/math.h>
 #include <forge/common/memory.h>
 
@@ -109,23 +108,23 @@ gint _frg_message_buffer_message_comparer(gconstpointer a, gconstpointer b) {
 }
 
 void _frg_log_summary_if_errors(
-    FILE* file,
+    frg_stream_output_t* stream,
     frg_message_buffer_t* message_buffer
 ) {
     if (message_buffer->error_count > 0 || message_buffer->warning_count > 0) {
-        frg_color_set(file, FRG_COLOR_ID_WHITE);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_WHITE);
         if (message_buffer->error_count > 0) {
-            fprintf(file, "Failed with ");
+            frg_stream_output_write_printf(stream, "Failed with ");
         } else {
-            fprintf(file, "Succeeded with ");
+            frg_stream_output_write_printf(stream, "Succeeded with ");
         }
     }
 
     if (message_buffer->error_count > 0) {
-        frg_color_set(file, FRG_COLOR_ID_BOLD);
-        frg_color_set(file, FRG_COLOR_ID_RED);
-        fprintf(
-            file,
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RED);
+        frg_stream_output_write_printf(
+            stream,
             "%u error%s",
             message_buffer->error_count,
             message_buffer->error_count == 1 ? "" : "s"
@@ -133,19 +132,19 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0 && message_buffer->warning_count > 0) {
-        frg_color_set(file, FRG_COLOR_ID_RESET);
-        frg_color_set(file, FRG_COLOR_ID_WHITE);
-        fprintf(
-            file,
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_WHITE);
+        frg_stream_output_write_printf(
+            stream,
             " and "
         );
     }
 
     if (message_buffer->warning_count > 0) {
-        frg_color_set(file, FRG_COLOR_ID_BOLD);
-        frg_color_set(file, FRG_COLOR_ID_BRIGHT_YELLOW);
-        fprintf(
-            file,
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW);
+        frg_stream_output_write_printf(
+            stream,
             "%u warning%s",
             message_buffer->warning_count,
             message_buffer->warning_count == 1 ? "" : "s"
@@ -153,20 +152,20 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0 || message_buffer->warning_count > 0) {
-        frg_color_set(file, FRG_COLOR_ID_WHITE);
-        fprintf(file, ".\n");
-        frg_color_set(file, FRG_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_WHITE);
+        frg_stream_output_write_printf(stream, ".\n");
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
     }
 }
 
 void frg_message_buffer_print(
-    FILE* file,
+    frg_stream_output_t* stream,
     frg_message_buffer_t* message_buffer,
     frg_parsing_source_context_t* source_context,
     frg_message_severity_t minimum_severity,
     frg_message_count_t max_messages
 ) {
-    frg_assert_pointer_non_null(file);
+    frg_assert_pointer_non_null(stream);
     frg_assert_pointer_non_null(message_buffer);
     frg_assert_int_ge(minimum_severity, FRG_MESSAGE_SEVERITY_DEBUG);
     frg_assert_int_le(minimum_severity, FRG_MESSAGE_SEVERITY_NOTE);
@@ -213,7 +212,7 @@ void frg_message_buffer_print(
         }
 
         frg_message_print(
-            file,
+            stream,
             message,
             lineno_pad_to_width,
             source_context
@@ -223,7 +222,7 @@ void frg_message_buffer_print(
     }
 
     _frg_log_summary_if_errors(
-        file,
+        stream,
         message_buffer
     );
 }

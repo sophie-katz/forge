@@ -29,7 +29,7 @@ frg_message_buffer_t* frg_message_buffer_new();
 void frg_message_buffer_destroy(frg_message_buffer_t** message_buffer);
 
 void frg_message_buffer_print(
-    FILE* file,
+    frg_stream_output_t* stream,
     frg_message_buffer_t* message_buffer,
     frg_parsing_source_context_t* source_context,
     frg_message_severity_t minimum_severity,

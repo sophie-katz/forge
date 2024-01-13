@@ -36,7 +36,7 @@ int main(void) {
         callback_command
     );
 
-    frg_cli_command_print_help(command);
+    frg_cli_command_print_help(frg_stream_output_get_stdout(), command);
 
     frg_cli_command_destroy(&command);
 

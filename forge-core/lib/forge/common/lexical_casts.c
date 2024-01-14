@@ -536,7 +536,7 @@ bool frg_parse_char(
     // byte value
     if (bytes_read < 0) {
         bytes_read = 1;
-        codepoint = value_string->str[0];
+        codepoint = value_string->str[0] & 0xff;
     }
 
     frg_assert_int_le(bytes_read, value_string->len);

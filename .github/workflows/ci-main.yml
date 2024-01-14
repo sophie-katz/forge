@@ -54,6 +54,7 @@ jobs:
               bison \
               cmake \
               flex \
+              git \
               gnupg \
               libglib2.0-0 \
               libglib2.0-dev \

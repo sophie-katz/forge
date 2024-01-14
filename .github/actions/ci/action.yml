@@ -11,9 +11,9 @@ runs:
     - name: Setup Python environment
       shell: bash
       run: |
-        python3 -m venv .venv
+        python3.11 -m venv .venv
         . .venv/bin/activate
-        pip install meson
+        pip3.11 install meson
 
     - name: Build Core
       working-directory: forge-core

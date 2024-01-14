@@ -38,10 +38,10 @@ jobs:
         uses: ./.github/actions/ci
 
   ci_ubuntu:
-    name: CI (Ubuntu)
+    name: CI (Ubuntu Jammy)
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:latest
+      image: ubuntu:jammy
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -103,5 +103,5 @@ jobs:
           update-alternatives --install /usr/bin/lld lld /usr/bin/lld-17 100 && \
           update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-17 100
 
-      # - name: Run CI
-      #   uses: ./.github/actions/ci
+      - name: Run CI
+        uses: ./.github/actions/ci

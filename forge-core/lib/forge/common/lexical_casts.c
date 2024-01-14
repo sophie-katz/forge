@@ -473,6 +473,30 @@ GString* frg_format_uint(
     return str;
 }
 
+GString* frg_format_uint_with_suffix(
+    uint64_t value,
+    frg_int_base_t base,
+    bool is_signed,
+    frg_bit_width_t bit_width
+) {
+    frg_assert(bit_width == 8 || bit_width == 16 || bit_width == 32 || bit_width == 64);
+
+    GString* result = frg_format_uint(
+        value,
+        base
+    );
+
+    if (is_signed) {
+        g_string_append_c(result, 'i');
+    } else {
+        g_string_append_c(result, 'u');
+    }
+
+    g_string_append_printf(result, "%u", bit_width);
+
+    return result;
+}
+
 frg_recoverable_status_t _frg_parse_base_prefix(
     frg_int_base_t* base,
     frg_parsing_token_reader_t* reader
@@ -552,23 +576,23 @@ frg_recoverable_status_t _frg_get_next_digit(
 
 frg_recoverable_status_t frg_parse_uint(
     frg_message_buffer_t* message_buffer,
-    uint64_t* value,
+    frg_parse_uint_result_t* result,
     frg_parsing_token_reader_t* reader
 ) {
-    frg_assert_pointer_non_null(value);
+    frg_assert_pointer_non_null(result);
     frg_assert_pointer_non_null(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         return FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
     }
 
-    *value = 0;
+    result->value = 0;
 
     uint32_t base = 10;
 
-    frg_recoverable_status_t result = _frg_parse_base_prefix(&base, reader);
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
-        return result;
+    frg_recoverable_status_t status = _frg_parse_base_prefix(&base, reader);
+    if (status != FRG_RECOVERABLE_STATUS_OK) {
+        return status;
     }
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
@@ -576,13 +600,37 @@ frg_recoverable_status_t frg_parse_uint(
     }
 
     while (frg_parsing_token_reader_get_current_char(reader) != 0) {
-        uint32_t digit;
-        frg_recoverable_status_t result = _frg_get_next_digit(&digit, base, reader);
-        if (result != FRG_RECOVERABLE_STATUS_OK) {
-            return result;
+        if (frg_parsing_token_reader_get_current_char(reader) == 'u' || frg_parsing_token_reader_get_current_char(reader) == 'i') {
+            break;
         }
 
-        *value = (*value * base) + digit;
+        uint32_t digit;
+        frg_recoverable_status_t status = _frg_get_next_digit(&digit, base, reader);
+        if (status != FRG_RECOVERABLE_STATUS_OK) {
+            return status;
+        }
+
+        result->value = (result->value * base) + digit;
+    }
+
+    if (frg_parsing_token_reader_get_current_char(reader) == 'u' || frg_parsing_token_reader_get_current_char(reader) == 'i') {
+        result->is_signed = frg_parsing_token_reader_get_current_char(reader) == 'i';
+        frg_parsing_token_reader_step(reader);
+
+        result->bit_width = 0;
+
+        while (frg_parsing_token_reader_get_current_char(reader) != 0) {
+            uint32_t digit;
+            frg_recoverable_status_t status = _frg_get_next_digit(&digit, 10, reader);
+            if (status != FRG_RECOVERABLE_STATUS_OK) {
+                return status;
+            }
+
+            result->bit_width = (result->bit_width * base) + digit;
+        }
+    } else {
+        result->is_signed = false;
+        result->bit_width = 64;
     }
 
     return FRG_RECOVERABLE_STATUS_OK;

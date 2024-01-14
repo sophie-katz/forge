@@ -366,6 +366,40 @@ frg_ast_value_int_t* frg_ast_new_value_u64(
     return ast;
 }
 
+frg_ast_value_int_t* frg_ast_new_value_int_from_lexical_cast_result(
+    const frg_parse_uint_result_t* result
+) {
+    frg_assert_pointer_non_null(result);
+
+    if (result->bit_width == 8) {
+        if (result->is_signed) {
+            return frg_ast_new_value_i8((int8_t)result->value);
+        } else {
+            return frg_ast_new_value_u8((uint8_t)result->value);
+        }
+    } else if (result->bit_width == 16) {
+        if (result->is_signed) {
+            return frg_ast_new_value_i16((int16_t)result->value);
+        } else {
+            return frg_ast_new_value_u16((uint16_t)result->value);
+        }
+    } else if (result->bit_width == 32) {
+        if (result->is_signed) {
+            return frg_ast_new_value_i32((int32_t)result->value);
+        } else {
+            return frg_ast_new_value_u32((uint32_t)result->value);
+        }
+    } else if (result->bit_width == 64) {
+        if (result->is_signed) {
+            return frg_ast_new_value_i64((int64_t)result->value);
+        } else {
+            return frg_ast_new_value_u64((uint64_t)result->value);
+        }
+    } else {
+        frg_die("unexpected bit width %i", result->bit_width);
+    }
+}
+
 frg_ast_value_float_t* frg_ast_new_value_f32(
     frg_f32_t value
 ) {

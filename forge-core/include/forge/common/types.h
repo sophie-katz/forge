@@ -24,6 +24,7 @@ typedef float frg_f32_t;
 typedef double frg_f64_t;
 typedef uint32_t frg_char_t;
 typedef uint32_t frg_int_base_t;
+typedef uint32_t frg_bit_width_t;
 typedef uint32_t frg_requirement_id_t;
 typedef uint32_t frg_proposal_id_t;
 typedef uint32_t frg_subitem_id_t;

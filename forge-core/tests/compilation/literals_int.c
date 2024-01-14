@@ -28,12 +28,12 @@ void _callback_return_i64(
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
 
-    int64_t (*zero)(void) = frg_test_compilation_get_function(
+    int64_t (*return_i8)(void) = frg_test_compilation_get_function(
         shared_library,
         "return_i64"
     );
     
-    TEST_ASSERT_EQUAL(0, zero());
+    TEST_ASSERT_EQUAL(0, return_i8());
 }
 
 void test_return_i64(void) {

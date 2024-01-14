@@ -17,6 +17,7 @@
 
 #include <forge/common/enums.h>
 #include <forge/common/types.h>
+#include <forge/common/lexical_casts.h>
 #include <glib.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -299,6 +300,10 @@ frg_ast_value_int_t* frg_ast_new_value_u32(
 
 frg_ast_value_int_t* frg_ast_new_value_u64(
     uint64_t value
+);
+
+frg_ast_value_int_t* frg_ast_new_value_int_from_lexical_cast_result(
+    const frg_parse_uint_result_t* result
 );
 
 frg_ast_value_float_t* frg_ast_new_value_f32(

@@ -22,6 +22,7 @@ not, see <https://www.gnu.org/licenses/>.
 %{
 #include <forge/ast/ast.h>
 #include <forge/common/types.h>
+#include <forge/common/lexical_casts.h>
 #include <forge/messages/message_buffer.h>
 #include <stdio.h>
 
@@ -56,7 +57,7 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %}
 
 %union {
-    uint64_t value_int;
+    frg_parse_uint_result_t value_int;
     frg_f64_t value_float;
     frg_char_t value_char;
     GString* value_str;
@@ -696,7 +697,7 @@ value_false : KW_FALSE
 
 value_int : INT
 {
-    $$ = frg_ast_new_value_i64($1);
+    $$ = frg_ast_new_value_int_from_lexical_cast_result(&$1);
 };
 
 value_float : FLOAT

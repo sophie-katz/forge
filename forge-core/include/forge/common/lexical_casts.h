@@ -42,9 +42,22 @@ GString* frg_format_uint(
     frg_int_base_t base
 );
 
+GString* frg_format_uint_with_suffix(
+    uint64_t value,
+    frg_int_base_t base,
+    bool is_signed,
+    frg_bit_width_t bit_width
+);
+
+typedef struct {
+    uint64_t value;
+    bool is_signed;
+    frg_bit_width_t bit_width;
+} frg_parse_uint_result_t;
+
 frg_recoverable_status_t frg_parse_uint(
     frg_message_buffer_t* message_buffer,
-    uint64_t* value,
+    frg_parse_uint_result_t* result,
     frg_parsing_token_reader_t* reader
 );
 

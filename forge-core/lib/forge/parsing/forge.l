@@ -228,7 +228,9 @@ false {
         reader
     );
     if (result != FRG_RECOVERABLE_STATUS_OK) {
-        yylval.value_int = 0;
+        yylval.value_int.value = 0;
+        yylval.value_int.is_signed = false;
+        yylval.value_int.bit_width = 64;
     }
 
     frg_parsing_token_reader_destroy(&reader);

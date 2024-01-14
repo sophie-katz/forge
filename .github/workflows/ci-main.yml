@@ -25,8 +25,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
-    name: CI
+  ci_docker:
+    name: CI (Docker image)
     runs-on: ubuntu-latest
     container:
       image: sophiekatz/forge-development:latest
@@ -36,3 +36,35 @@ jobs:
 
       - name: Run CI
         uses: ./.github/actions/ci
+
+  ci_ubuntu:
+    name: CI (Ubuntu)
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -y && \
+          sudo apt-get upgrade -y && \
+          sudo apt-get install -y \
+              bison \
+              cmake \
+              flex \
+              gnupg \
+              libglib2.0-0 \
+              libglib2.0-dev \
+              lsb-release \
+              ninja-build \
+              python3-pip \
+              python3.11 \
+              python3.11-venv \
+              software-properties-common \
+              wget \
+          ;
+
+      # - name: Run CI
+      #   uses: ./.github/actions/ci

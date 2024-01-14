@@ -590,7 +590,7 @@ GString* frg_format_str(const char* value) {
         // byte value
         if (bytes_read < 0) {
             bytes_read = 1;
-            codepoint = *iter;
+            codepoint = *iter & 0xff;
             iter++;
         } else {
             iter += bytes_read;

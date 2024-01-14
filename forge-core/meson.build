@@ -501,6 +501,19 @@ if should_build_tests
     )
 
     test('tests/compilation/literals_int.c', forge_integration_test_compilation_literals_int)
+
+    forge_integration_test_compilation_literals_bool = executable(
+        'test-integration-compilation-literals-bool',
+        'tests/compilation/literals_bool.c',
+        'tests/compilation/test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_core_lib],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test('tests/compilation/literals_bool.c', forge_integration_test_compilation_literals_bool)
 endif
 
 # Demos

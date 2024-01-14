@@ -453,7 +453,7 @@ void test_parse_char_unprintable_unicode(void) {
 
     frg_parsing_token_reader_destroy(&reader);
 
-    TEST_ASSERT_EQUAL('\x97', value);
+    TEST_ASSERT_EQUAL(0x97, value);
 
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
 

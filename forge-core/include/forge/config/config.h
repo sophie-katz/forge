@@ -35,7 +35,7 @@ int frg_config_parse_cli(
     const char** argv
 );
 
-frg_recoverable_status_t frg_config_parse_env(
+bool frg_config_parse_env(
     frg_message_buffer_t* message_buffer,
     frg_config_t* config
 );

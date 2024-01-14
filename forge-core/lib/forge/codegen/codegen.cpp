@@ -80,7 +80,7 @@ frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
     return llvm_module;
 }
 
-frg_recoverable_status_t frg_codegen_write_object_file(
+bool frg_codegen_write_object_file(
     frg_message_buffer_t* message_buffer,
     const frg_llvm_module_t* llvm_module,
     const char* path
@@ -115,7 +115,7 @@ frg_recoverable_status_t frg_codegen_write_object_file(
             error_message.c_str()
         );
 
-        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+        return false;
     }
 
     llvm::TargetOptions target_options;
@@ -146,7 +146,7 @@ frg_recoverable_status_t frg_codegen_write_object_file(
             error_code.message().c_str()
         );
 
-        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+        return false;
     }
 
     llvm::legacy::PassManager pass;
@@ -162,13 +162,13 @@ frg_recoverable_status_t frg_codegen_write_object_file(
             "target machine cannot emit an object file"
         );
 
-        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+        return false;
     }
 
     pass.run(*llvm_module->llvm_module);
     stream.flush();
 
-    return FRG_RECOVERABLE_STATUS_OK;
+    return true;
 }
 
 void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module) {

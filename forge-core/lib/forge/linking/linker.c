@@ -199,7 +199,7 @@ GList* _frg_link_lld_create_arguments(
     return arguments;
 }
 
-frg_recoverable_status_t _frg_link_lld(
+bool _frg_link_lld(
     frg_message_buffer_t* message_buffer,
     const frg_linker_config_t* config,
     frg_linker_mode_t mode,
@@ -255,16 +255,16 @@ frg_recoverable_status_t _frg_link_lld(
 
             g_string_free(arguments_joined, TRUE);
 
-            return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+            return false;
         }
 
-        return FRG_RECOVERABLE_STATUS_OK;
+        return true;
     } else {
-        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+        return false;
     }
 }
 
-frg_recoverable_status_t frg_link(
+bool frg_link(
     frg_message_buffer_t* message_buffer,
     const frg_linker_config_t* config,
     frg_linker_mode_t mode,
@@ -288,7 +288,7 @@ frg_recoverable_status_t frg_link(
                 "Currently only LLD is supported - please install and try again"
             );
 
-            return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+            return false;
         case FRG_LINKER_ID_LD_LLD:
         case FRG_LINKER_ID_LD64_LLD:
         case FRG_LINKER_ID_LLD_LINK:

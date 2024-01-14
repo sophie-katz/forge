@@ -40,7 +40,20 @@
         "stddef.h": "c",
         "memory.h": "c",
         "message.h": "c",
-        "output.h": "c"
+        "output.h": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "variant": "c",
+        "__node_handle": "c",
+        "bitset": "c",
+        "__memory": "c",
+        "limits": "c",
+        "locale": "c"
     },
     "C_Cpp.doxygen.generateOnType": false
 }

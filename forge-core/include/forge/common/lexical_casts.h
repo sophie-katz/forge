@@ -23,7 +23,7 @@
 
 GString* frg_format_char(frg_char_t value);
 
-frg_recoverable_status_t frg_parse_char(
+bool frg_parse_char(
     frg_message_buffer_t* message_buffer,
     frg_char_t* value,
     frg_parsing_token_reader_t* reader
@@ -31,7 +31,7 @@ frg_recoverable_status_t frg_parse_char(
 
 GString* frg_format_str(const char* value);
 
-frg_recoverable_status_t frg_parse_str(
+bool frg_parse_str(
     frg_message_buffer_t* message_buffer,
     GString** value,
     frg_parsing_token_reader_t* reader
@@ -55,7 +55,7 @@ typedef struct {
     frg_bit_width_t bit_width;
 } frg_parse_uint_result_t;
 
-frg_recoverable_status_t frg_parse_uint(
+bool frg_parse_uint(
     frg_message_buffer_t* message_buffer,
     frg_parse_uint_result_t* result,
     frg_parsing_token_reader_t* reader

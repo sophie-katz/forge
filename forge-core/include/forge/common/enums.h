@@ -20,16 +20,16 @@
 #include <forge/common/types.h>
 #include <glib.h>
 
-/// \brief A status result to be returned by functions in Forge to help handle recoverable
-///        errors.
-typedef enum {
-    FRG_RECOVERABLE_STATUS_OK,
-    FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED,
-    FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
-    FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER,
-} frg_recoverable_status_t;
+// /// \brief A status result to be returned by functions in Forge to help handle recoverable
+// ///        errors.
+// typedef enum {
+//     FRG_RECOVERABLE_STATUS_OK,
+//     FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED,
+//     FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT,
+//     FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER,
+// } frg_recoverable_status_t;
 
-const char* frg_recoverable_status_to_string(frg_recoverable_status_t status);
+// const char* frg_recoverable_status_to_string(frg_recoverable_status_t status);
 
 /// A mode for whether or not to use color for console output
 typedef enum {

@@ -222,12 +222,11 @@ false {
         yytext
     );
 
-    frg_recoverable_status_t result = frg_parse_uint(
+    if (!frg_parse_uint(
         _frg_parsing_current_message_buffer,
         &yylval.value_int,
         reader
-    );
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
+    )) {
         yylval.value_int.value = 0;
         yylval.value_int.is_signed = false;
         yylval.value_int.bit_width = 64;
@@ -274,12 +273,11 @@ false {
         yytext
     );
 
-    frg_recoverable_status_t result = frg_parse_str(
+    if (!frg_parse_str(
         _frg_parsing_current_message_buffer,
         &yylval.value_str,
         reader
-    );
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
+    )) {
         yylval.value_str = g_string_new(NULL);
     }
 
@@ -303,12 +301,11 @@ false {
         yytext
     );
 
-    frg_recoverable_status_t result = frg_parse_char(
+    if (!frg_parse_char(
         _frg_parsing_current_message_buffer,
         &yylval.value_char,
         reader
-    );
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
+    )) {
         yylval.value_char = 0;
     }
 

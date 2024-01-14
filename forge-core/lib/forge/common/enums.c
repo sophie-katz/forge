@@ -16,20 +16,20 @@
 #include <forge/common/enums.h>
 #include <forge/common/error.h>
 
-const char* frg_recoverable_status_to_string(frg_recoverable_status_t status) {
-    switch (status) {
-        case FRG_RECOVERABLE_STATUS_OK:
-            return "ok";
-        case FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED:
-            return "error has already been logged";
-        case FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT:
-            return "unexpected end of text";
-        case FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER:
-            return "unexpected character";
-        default:
-            frg_die_unexpected_enum_value(status);
-    }
-}
+// const char* frg_recoverable_status_to_string(frg_recoverable_status_t status) {
+//     switch (status) {
+//         case FRG_RECOVERABLE_STATUS_OK:
+//             return "ok";
+//         case FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED:
+//             return "error has already been logged";
+//         case FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_END_OF_TEXT:
+//             return "unexpected end of text";
+//         case FRG_RECOVERABLE_STATUS_ERROR_UNEXPECTED_CHARACTER:
+//             return "unexpected character";
+//         default:
+//             frg_die_unexpected_enum_value(status);
+//     }
+// }
 
 const char* frg_ast_id_to_string(frg_ast_id_t id) {
     switch (id) {

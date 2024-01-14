@@ -62,7 +62,7 @@ int frg_config_parse_cli(
     return result;
 }
 
-frg_recoverable_status_t _frg_parse_env_bool(
+bool _frg_parse_env_bool(
     frg_message_buffer_t* message_buffer,
     bool* result,
     const char* key,
@@ -74,17 +74,24 @@ frg_recoverable_status_t _frg_parse_env_bool(
 
     if (strcmp(text, "true") == 0) {
         *result = true;
-        return FRG_RECOVERABLE_STATUS_OK;
+        return true;
     } else if (strcmp(text, "false") == 0) {
         *result = false;
-        return FRG_RECOVERABLE_STATUS_OK;
+        return true;
     } else {
-        // frg_log_fatal_error("invalid boolean value for environment variable '%s': %s (expected either 'true' or 'false')", key, text);
-        return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+            "invalid boolean value for environment variable '%s': %s (expected either 'true' or 'false')",
+            key,
+            text
+        );
+
+        return false;
     }
 }
 
-frg_recoverable_status_t _frg_config_parse_env_debug(
+bool _frg_config_parse_env_debug(
     frg_message_buffer_t* message_buffer,
     frg_config_t* config
 ) {
@@ -93,14 +100,13 @@ frg_recoverable_status_t _frg_config_parse_env_debug(
     const char* debug_text = g_getenv("FORGE_DEBUG");
     if (debug_text != NULL && *debug_text != 0) {
         bool debug_value = false;
-        frg_recoverable_status_t result = _frg_parse_env_bool(
+        if (!_frg_parse_env_bool(
             message_buffer,
             &debug_value,
             "FORGE_DEBUG",
             debug_text
-        );
-        if (result != FRG_RECOVERABLE_STATUS_OK) {
-            return result;
+        )) {
+            return false;
         }
 
         if (debug_value) {
@@ -108,10 +114,10 @@ frg_recoverable_status_t _frg_config_parse_env_debug(
         }
     }
 
-    return FRG_RECOVERABLE_STATUS_OK;
+    return true;
 }
 
-frg_recoverable_status_t _frg_config_parse_env_color_mode(
+bool _frg_config_parse_env_color_mode(
     frg_message_buffer_t* message_buffer,
     frg_config_t* config
 ) {
@@ -133,14 +139,14 @@ frg_recoverable_status_t _frg_config_parse_env_color_mode(
                 color_mode_text
             );
 
-            return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+            return false;
         }
     }
 
-    return FRG_RECOVERABLE_STATUS_OK;
+    return true;
 }
 
-frg_recoverable_status_t _frg_config_parse_env_unicode_mode(
+bool _frg_config_parse_env_unicode_mode(
     frg_message_buffer_t* message_buffer,
     frg_config_t* config
 ) {
@@ -162,44 +168,41 @@ frg_recoverable_status_t _frg_config_parse_env_unicode_mode(
                 unicode_mode_text
             );
 
-            return FRG_RECOVERABLE_STATUS_ERROR_WAS_LOGGED;
+            return false;
         }
     }
 
-    return FRG_RECOVERABLE_STATUS_OK;
+    return true;
 }
 
-frg_recoverable_status_t frg_config_parse_env(
+bool frg_config_parse_env(
     frg_message_buffer_t* message_buffer,
     frg_config_t* config
 ) {
     frg_assert_pointer_non_null(config);
     
-    frg_recoverable_status_t result = _frg_config_parse_env_debug(
+    if (!_frg_config_parse_env_debug(
         message_buffer,
         config
-    );
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
-        return result;
+    )) {
+        return false;
     }
 
-    result = _frg_config_parse_env_color_mode(
+    if (!_frg_config_parse_env_color_mode(
         message_buffer,
         config
-    );
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
-        return result;
+    )) {
+        return false;
     }
 
-    result = _frg_config_parse_env_unicode_mode(
+    if (!_frg_config_parse_env_unicode_mode(
         message_buffer,
         config
-    );
-    if (result != FRG_RECOVERABLE_STATUS_OK) {
-        return result;
+    )) {
+        return false;
     }
 
-    return FRG_RECOVERABLE_STATUS_OK;
+    return true;
 }
 
 void frg_config_log_debug(

@@ -232,13 +232,11 @@ void frg_test_compilation(
         GString* path_object = g_string_new(NULL);
         g_string_printf(path_object, "%s/test-compilation-%s.o", g_get_current_dir(), name);
 
-        frg_recoverable_status_t result = frg_codegen_write_object_file(
+        if (!frg_codegen_write_object_file(
             message_buffer,
             llvm_module,
             path_object->str
-        );
-
-        if (result != FRG_RECOVERABLE_STATUS_OK) {
+        )) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
                 message_buffer,
@@ -262,15 +260,13 @@ void frg_test_compilation(
             path_object
         );
 
-        result = frg_link(
+        if (!frg_link(
             message_buffer,
             linker_config,
             FRG_LINKER_MODE_SHARED_LIBRARY,
             path_shared_object->str,
             objects
-        );
-
-        if (result != FRG_RECOVERABLE_STATUS_OK) {
+        )) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
                 message_buffer,

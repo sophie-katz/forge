@@ -20,7 +20,7 @@
 #include <forge/messages/message_buffer.h>
 #include <glib.h>
 
-frg_recoverable_status_t frg_link(
+bool frg_link(
     frg_message_buffer_t* message_buffer,
     const frg_linker_config_t* config,
     frg_linker_mode_t mode,

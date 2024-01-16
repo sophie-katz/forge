@@ -618,21 +618,25 @@ bool frg_parse_str(
     return *value != NULL;
 }
 
-GString* frg_format_uint(
+void _frg_format_base_prefix(
+    GString* formatted,
+    frg_int_base_t base
+) {
+    if (base == 2) {
+        g_string_append(formatted, "0b");
+    } else if (base == 8) {
+        g_string_append(formatted, "0o");
+    } else if (base == 16) {
+        g_string_append(formatted, "0x");
+    }
+}
+
+void _frg_format_uint_without_base_prefix(
+    GString* str,
     uint64_t value,
-    uint32_t base
+    frg_int_base_t base
 ) {
     frg_assert(base == 2 || base == 8 || base == 10 || base == 16);
-
-    GString* str = g_string_new(NULL);
-
-    if (base == 2) {
-        g_string_append(str, "0b");
-    } else if (base == 8) {
-        g_string_append(str, "0o");
-    } else if (base == 16) {
-        g_string_append(str, "0x");
-    }
 
     if (value == 0) {
         g_string_append_c(str, '0');
@@ -653,7 +657,24 @@ GString* frg_format_uint(
 
         g_strreverse(after_prefix);
     }
+}
 
+GString* frg_format_uint(
+    uint64_t value,
+    frg_int_base_t base
+) {
+    frg_assert(base == 2 || base == 8 || base == 10 || base == 16);
+
+    GString* str = g_string_new(NULL);
+
+    _frg_format_base_prefix(str, base);
+
+    _frg_format_uint_without_base_prefix(
+        str,
+        value,
+        base
+    );
+    
     return str;
 }
 
@@ -716,6 +737,7 @@ bool frg_parse_uint(
     frg_parse_uint_result_t* result,
     frg_parsing_token_reader_t* reader
 ) {
+    frg_assert_pointer_non_null(message_buffer);
     frg_assert_pointer_non_null(result);
     frg_assert_pointer_non_null(reader);
 
@@ -758,7 +780,21 @@ bool frg_parse_uint(
         true
     );
 
-    if (digit_count == 0 || frg_parsing_token_reader_get_current_char(reader) == 0) {
+    if (digit_count == 0) {
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+            "Unexpected character in literal"
+        );
+
+        return false;
+    } else if (frg_parsing_token_reader_get_current_char(reader) == 0) {
         result->is_signed = false;
         result->bit_width = 64;
     } else if (frg_parsing_token_reader_get_current_char(reader) == 'u' || frg_parsing_token_reader_get_current_char(reader) == 'i') {
@@ -828,203 +864,420 @@ bool frg_parse_uint(
     return true;
 }
 
-// frg_status_t frg_float_to_str(
-//     GString** str,
-//     frg_f64_t value,
-//     uint32_t base
-// ) {
-//     if (str == NULL) {
-//         return FRG_STATUS_ERROR_NULL_ARGUMENT;
-//     } else if (*str != NULL || (!(base == 2 || base == 8 || base == 10 || base == 16))) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-//     }
+void _frg_float_decompose(
+    frg_f64_t value,
+    frg_f64_t *integral_part,
+    frg_f64_t *fractional_part
+) {
+    frg_assert_pointer_non_null(integral_part);
+    frg_assert_pointer_non_null(fractional_part);
 
-//     *str = g_string_new(NULL);
+    *integral_part = floor(value);
+    *fractional_part = value - *integral_part;
+}
 
-//     if (*str == NULL) {
-//         return FRG_STATUS_ERROR_OUT_OF_MEMORY;
-//     }
+GString* _frg_format_float_without_scientific_notation(
+    frg_f64_t value,
+    frg_int_base_t base
+) {
+    frg_assert(base == 2 || base == 8 || base == 10 || base == 16);
 
-//     if (base == 2) {
-//         g_string_append(*str, "0b");
-//     } else if (base == 8) {
-//         g_string_append(*str, "0o");
-//     } else if (base == 16) {
-//         g_string_append(*str, "0x");
-//     }
+    GString* str = g_string_new(NULL);
 
-//     double integer_part = floor(value);
-//     double fractional_part = value - integer_part;
+    _frg_format_base_prefix(str, base);
 
-//     if (integer_part == 0.0) {
-//         g_string_append_c(*str, '0');
-//     } else {
-//         gchar* after_prefix = (*str)->str + (*str)->len;
+    frg_f64_t integral_part = 0.0;
+    frg_f64_t fractional_part = 0.0;
 
-//         while (integer_part != 0.0) {
-//             uint32_t digit = (uint32_t)fmod(integer_part, base);
+    _frg_float_decompose(fabs(value), &integral_part, &fractional_part);
 
-//             if (digit < 10) {
-//                 g_string_append_c(*str, '0' + digit);
-//             } else {
-//                 g_string_append_c(*str, 'a' + digit - 10);
-//             }
+    if (value < 0.0) {
+        g_string_append_c(str, '-');
+    }
 
-//             integer_part = floor(integer_part / base);
-//         }
+    if (integral_part == 0.0) {
+        g_string_append_c(str, '0');
+    } else {
+        gchar* after_prefix = str->str + str->len;
 
-//         g_strreverse(after_prefix);
-//     }
+        while (integral_part != 0.0) {
+            uint32_t digit = (uint32_t)fmod(integral_part, base);
 
-//     g_string_append_c(*str, '.');
+            if (digit < 10) {
+                g_string_append_c(str, '0' + digit);
+            } else {
+                g_string_append_c(str, 'a' + digit - 10);
+            }
 
-//     if (fractional_part == 0.0) {
-//         g_string_append_c(*str, '0');
-//     } else {
-//         while (fractional_part != 0.0) {
-//             uint32_t digit = (uint32_t)fmod(fractional_part * base, base);
+            integral_part /= base;
+        }
 
-//             if (digit < 10) {
-//                 g_string_append_c(*str, '0' + digit);
-//             } else {
-//                 g_string_append_c(*str, 'a' + digit - 10);
-//             }
+        g_strreverse(after_prefix);
+    }
 
-//             fractional_part *= base;
-//             fractional_part -= floor(fractional_part);
-//         }
-//     }
+    g_string_append_c(str, '.');
 
-//     return FRG_STATUS_OK;
-// }
+    if (fractional_part == 0.0) {
+        g_string_append_c(str, '0');
+    } else {
+        while (fractional_part != 0.0) {
+            uint32_t digit = (uint32_t)fmod(fractional_part * base, base);
 
-// frg_status_t frg_str_to_float(
-//     frg_f64_t* value,
-//     const char* str
-// ) {
-//     if (value == NULL || str == NULL) {
-//         return FRG_STATUS_ERROR_NULL_ARGUMENT;
-//     } else if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     }
+            if (digit < 10) {
+                g_string_append_c(str, '0' + digit);
+            } else {
+                g_string_append_c(str, 'a' + digit - 10);
+            }
 
-//     uint32_t base = 10;
+            fractional_part *= base;
+            fractional_part -= floor(fractional_part);
+        }
+    }
 
-//     frg_check(
-//         _frg_parse_base_prefix(&base, &str)
-//     );
+    return str;
+}
 
-//     if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     }
+GString* frg_format_float(
+    frg_f64_t value,
+    frg_int_base_t base,
+    bool scientific_notation
+) {
+    if (scientific_notation) {
+        int32_t exponent = 0;
+        frg_f64_t negative_factor = 1.0;
 
-//     double integer_part = 0.0;
-//     double fractional_part = 0.0;
-//     double fractional_factor = 1.0;
+        if (value < 0.0) {
+            negative_factor = -1.0;
+            value = -value;
+        }
 
-//     while (*str != 0) {
-//         if (*str == '.') {
-//             break;
-//         }
+        while (value < 1.0) {
+            value *= base;
+            exponent--;
+        }
 
-//         uint32_t digit;
-//         frg_check(
-//             _frg_get_next_digit(&digit, base, &str)
-//         );
+        while (value > base) {
+            value /= base;
+            exponent++;
+        }
 
-//         integer_part = (integer_part * base) + digit;
-//     }
+        GString* str = _frg_format_float_without_scientific_notation(value * negative_factor, base);
 
-//     if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     } else if (*str != '.') {
-//         return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
-//     }
+        g_string_append_c(str, 'e');
 
-//     str++;
+        _frg_format_uint_without_base_prefix(
+            str,
+            exponent,
+            base
+        );
 
-//     if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     }
+        return str;
+    } else {
+        return _frg_format_float_without_scientific_notation(value, base);
+    }
+}
 
-//     while (*str != 0) {
-//         if (*str == '.') {
-//             break;
-//         }
+GString* frg_format_float_with_suffix(
+    frg_f64_t value,
+    frg_int_base_t base,
+    bool scientific_notation,
+    frg_bit_width_t bit_width
+) {
+    frg_assert(bit_width == 32 || bit_width == 64);
 
-//         uint32_t digit;
-//         frg_check(
-//             _frg_get_next_digit(&digit, base, &str)
-//         );
+    GString* result = frg_format_float(
+        value,
+        base,
+        scientific_notation
+    );
 
-//         fractional_part = (fractional_part * base) + digit;
-//         fractional_factor /= base;
-//     }
+    g_string_append_printf(result, "f%u", bit_width);
 
-//     if (*str == 0) {
-//         *value = integer_part + fractional_part * fractional_factor;
-//         return FRG_STATUS_OK;
-//     } else if (*str != 'e') {
-//         return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
-//     }
+    return result;
+}
 
-//     str++;
+bool _frg_parse_float_without_scientific_notation(
+    frg_message_buffer_t* message_buffer,
+    frg_parse_float_result_t* result,
+    frg_parsing_token_reader_t* reader,
+    uint32_t base
+) {
+    frg_assert_pointer_non_null(message_buffer);
+    frg_assert_pointer_non_null(result);
+    frg_assert_pointer_non_null(reader);
 
-//     double exponent_integer_factor = 1.0;
-//     double exponent_integer_part = 0.0;
-//     double exponent_fractional_part = 0.0;
-//     double exponent_fractional_factor = 1.0;
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+        frg_message_emit(
+            message_buffer,
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+            "Cannot parse empty string as literal"
+        );
 
-//     if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     } else if (*str == '-') {
-//         exponent_integer_factor = -1.0;
-//         str++;
-//     }
+        return false;
+    }
 
-//     while (*str != 0) {
-//         if (*str == '.') {
-//             break;
-//         }
+    result->value = 0.0;
+    result->bit_width = 64;
 
-//         uint32_t digit;
-//         frg_check(
-//             _frg_get_next_digit(&digit, base, &str)
-//         );
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
 
-//         exponent_integer_part = (exponent_integer_part * base) + digit;
-//     }
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+            "Unexpected end of literal"
+        );
 
-//     if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     } else if (*str != '.') {
-//         return FRG_STATUS_ERROR_UNEXPECTED_CHARACTER;
-//     }
+        return false;
+    }
 
-//     str++;
+    frg_f64_t integral_part = 0.0;
 
-//     if (*str == 0) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_END_OF_TEXT;
-//     }
+    while (true) {
+        char current_char = frg_parsing_token_reader_get_current_char(reader);
 
-//     while (*str != 0) {
-//         if (*str == '.') {
-//             break;
-//         }
+        while (current_char == '_') {
+            frg_parsing_token_reader_step(reader);
+            current_char = frg_parsing_token_reader_get_current_char(reader);
+        }
 
-//         uint32_t digit;
-//         frg_check(
-//             _frg_get_next_digit(&digit, base, &str)
-//         );
+        if (base == 2) {
+            if (current_char >= '0' && current_char <= '1') {
+                integral_part = (integral_part * base) + (current_char - '0');
+            } else {
+                break;
+            }
+        } else if (base == 8) {
+            if (current_char >= '0' && current_char <= '7') {
+                integral_part = (integral_part * base) + (current_char - '0');
+            } else {
+                break;
+            }
+        } else if (base == 10) {
+            if (current_char >= '0' && current_char <= '9') {
+                integral_part = (integral_part * base) + (current_char - '0');
+            } else {
+                break;
+            }
+        } else if (base == 16) {
+            if (current_char >= '0' && current_char <= '9') {
+                integral_part = (integral_part * base) + (current_char - '0');
+            } else if (current_char >= 'a' && current_char <= 'f') {
+                integral_part = (integral_part * base) + (current_char - 'a') + 10;
+            } else if (current_char >= 'A' && current_char <= 'F') {
+                integral_part = (integral_part * base) + (current_char - 'A') + 10;
+            } else {
+                break;
+            }
+        } else {
+            frg_die("unexpected base %i", base);
+        }
 
-//         exponent_fractional_part = (exponent_fractional_part * base) + digit;
-//         exponent_fractional_factor /= base;
-//     }
+        frg_parsing_token_reader_step(reader);
+    }
 
-//     *value = pow(
-//         integer_part + fractional_part * fractional_factor,
-//         exponent_integer_part * exponent_integer_factor + exponent_fractional_part * exponent_fractional_factor
-//     );
+    while (frg_parsing_token_reader_get_current_char(reader) == '_') {
+        frg_parsing_token_reader_step(reader);
+    }
 
-//     return FRG_STATUS_OK;
-// }
+    if (frg_parsing_token_reader_get_current_char(reader) == 0) {
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+            "Cannot parse string without '.' as float literal"
+        );
+
+        return false;
+    } else if (frg_parsing_token_reader_get_current_char(reader) != '.') {
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_ERROR,
+            "Unexpected character in literal"
+        );
+
+        return false;
+    }
+
+    frg_parsing_token_reader_step(reader);
+
+    frg_f64_t fractional_part = 0.0;
+    frg_f64_t fractional_factor = 1.0;
+
+    while (true) {
+        char current_char = frg_parsing_token_reader_get_current_char(reader);
+
+        while (current_char == '_') {
+            frg_parsing_token_reader_step(reader);
+            current_char = frg_parsing_token_reader_get_current_char(reader);
+        }
+
+        if (base == 2) {
+            if (current_char >= '0' && current_char <= '1') {
+                fractional_part = (fractional_part * base) + (current_char - '0');
+            } else {
+                break;
+            }
+        } else if (base == 8) {
+            if (current_char >= '0' && current_char <= '7') {
+                fractional_part = (fractional_part * base) + (current_char - '0');
+            } else {
+                break;
+            }
+        } else if (base == 10) {
+            if (current_char >= '0' && current_char <= '9') {
+                fractional_part = (fractional_part * base) + (current_char - '0');
+            } else {
+                break;
+            }
+        } else if (base == 16) {
+            if (current_char >= '0' && current_char <= '9') {
+                fractional_part = (fractional_part * base) + (current_char - '0');
+            } else if (current_char >= 'a' && current_char <= 'f') {
+                fractional_part = (fractional_part * base) + (current_char - 'a') + 10;
+            } else if (current_char >= 'A' && current_char <= 'F') {
+                fractional_part = (fractional_part * base) + (current_char - 'A') + 10;
+            } else {
+                break;
+            }
+        } else {
+            frg_die("unexpected base %i", base);
+        }
+
+        fractional_factor /= base;
+        frg_parsing_token_reader_step(reader);
+    }
+
+    result->value = integral_part + fractional_part * fractional_factor;
+
+    return true;
+}
+
+
+
+bool frg_parse_float(
+    frg_message_buffer_t* message_buffer,
+    frg_parse_float_result_t* result,
+    frg_parsing_token_reader_t* reader
+) {
+    frg_parse_float_result_t result_without_scientific_notation;
+
+    uint32_t base = 0;
+    _frg_parse_base_prefix(&base, reader);
+
+    if (!_frg_parse_float_without_scientific_notation(
+        message_buffer,
+        &result_without_scientific_notation,
+        reader,
+        base
+    )) {
+        return false;
+    }
+
+    *result = result_without_scientific_notation;
+
+    if (frg_parsing_token_reader_get_current_char(reader) == 'e') {
+        frg_parsing_token_reader_step(reader);
+
+        double exponent_negative_factor = 1.0;
+
+        if (frg_parsing_token_reader_get_current_char(reader) == '-') {
+            exponent_negative_factor = -1.0;
+            frg_parsing_token_reader_step(reader);
+        }
+
+        frg_parse_float_result_t result_exponent;
+
+        if (!_frg_parse_float_without_scientific_notation(
+            message_buffer,
+            &result_exponent,
+            reader,
+            base
+        )) {
+            return false;
+        }
+
+        result->value *= pow(
+            base,
+            result_exponent.value * exponent_negative_factor
+        );
+    }
+
+    if (frg_parsing_token_reader_get_current_char(reader) == 'f') {
+        frg_parsing_token_reader_step(reader);
+
+        uint64_t bit_width_uncasted = 0;
+
+        size_t digit_count = _frg_parse_uint_partial(
+            &bit_width_uncasted,
+            reader,
+            10,
+            0,
+            false
+        );
+
+        if (digit_count == 0) {
+            frg_parsing_range_t source_range = {
+                .start = *frg_parsing_token_reader_get_current_location(reader),
+                .length = 1
+            };
+
+            frg_message_emit_from_source_range(
+                message_buffer,
+                &source_range,
+                FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+                "Unexpected character in literal"
+            );
+
+            return false;
+        } else if (bit_width_uncasted != 32 && bit_width_uncasted != 64) {
+            frg_parsing_range_t source_range = {
+                .start = *frg_parsing_token_reader_get_current_location(reader),
+                .length = 1
+            };
+
+            frg_message_emit_from_source_range(
+                message_buffer,
+                &source_range,
+                FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+                "Invalid bit width for literal: %Lu",
+                bit_width_uncasted
+            );
+
+            result->bit_width = bit_width_uncasted;
+        }
+    }
+
+    if (frg_parsing_token_reader_get_current_char(reader) != 0) {
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_from_source_range(
+            message_buffer,
+            &source_range,
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+            "Unexpected character in literal"
+        );
+
+        return false;
+    }
+
+    return true;
+}

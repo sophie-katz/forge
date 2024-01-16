@@ -61,12 +61,26 @@ bool frg_parse_uint(
     frg_parsing_token_reader_t* reader
 );
 
-// GString* frg_float_to_str(
-//     frg_f64_t value,
-//     frg_int_base_t base
-// );
+GString* frg_format_float(
+    frg_f64_t value,
+    frg_int_base_t base,
+    bool scientific_notation
+);
 
-// frg_recoverable_status_t frg_str_to_float(
-//     frg_f64_t* value,
-//     const char* str
-// );
+GString* frg_format_float_with_suffix(
+    frg_f64_t value,
+    frg_int_base_t base,
+    bool scientific_notation,
+    frg_bit_width_t bit_width
+);
+
+typedef struct {
+    frg_f64_t value;
+    frg_bit_width_t bit_width;
+} frg_parse_float_result_t;
+
+bool frg_parse_float(
+    frg_message_buffer_t* message_buffer,
+    frg_parse_float_result_t* result,
+    frg_parsing_token_reader_t* reader
+);

@@ -17,12 +17,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [x] Write at least one code generator integration test.
-    - [x] See if we can do LLVM IR comparison easier to help with testing
-    - [x] Maybe parse LLVM IR from text?
-- [x] Implement integer literals of all sizes and signednesses
-- [x] Implement boolean literals
-- [ ] Implement floating point literals of all sizes and signednesses
+- [x] Implement floating point literals of all sizes and signednesses
 - [ ] Add in verification logic
 - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
 
@@ -72,3 +67,8 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Create stream for better testing
 - [x] Move `stream.h` into `streams/utilities.h`
 - [x] Have AST constructors return their specific type
+- [x] Write at least one code generator integration test.
+    - [x] See if we can do LLVM IR comparison easier to help with testing
+    - [x] Maybe parse LLVM IR from text?
+- [x] Implement integer literals of all sizes and signednesses
+- [x] Implement boolean literals

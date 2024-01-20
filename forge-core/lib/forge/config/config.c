@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -22,6 +22,7 @@
 #include <forge/cli/program.h>
 #include <forge/config/config.h>
 #include <forge/config/cli_program.h>
+#include <forge/messages/codes.h>
 #include <forge/parsing/parsing.h>
 
 frg_config_t* frg_config_new_default() {
@@ -79,10 +80,8 @@ bool _frg_parse_env_bool(
         *result = false;
         return true;
     } else {
-        frg_message_emit(
+        frg_message_emit_fc_12_invalid_boolean_env_variable(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "invalid boolean value for environment variable '%s': %s (expected either 'true' or 'false')",
             key,
             text
         );
@@ -132,10 +131,8 @@ bool _frg_config_parse_env_color_mode(
         } else if (strcmp(color_mode_text, "enabled") == 0) {
             frg_stream_output_set_console_color(true);
         } else {
-            frg_message_emit(
+            frg_message_emit_fc_13_unknown_color_mode(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "unknown color mode: %s",
                 color_mode_text
             );
 
@@ -161,10 +158,8 @@ bool _frg_config_parse_env_unicode_mode(
         } else if (strcmp(unicode_mode_text, "enabled") == 0) {
             frg_stream_output_set_console_unicode(true);
         } else {
-            frg_message_emit(
+            frg_message_emit_fc_14_unknown_unicode_mode(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "unknown unicode mode: %s",
                 unicode_mode_text
             );
 
@@ -211,33 +206,37 @@ void frg_config_log_debug(
 ) {
     frg_assert_pointer_non_null(config);
 
-    frg_message_t* message = frg_message_emit(
-        message_buffer,
-        FRG_MESSAGE_SEVERITY_DEBUG,
+    GString* buffer = g_string_new(NULL);
+
+    g_string_append_printf(
+        buffer,
         "Configuration:"
     );
 
-    frg_message_emit_child(
-        message_buffer,
-        message,
-        FRG_MESSAGE_SEVERITY_NOTE,
-        "config.version_short == %s",
+    g_string_append_printf(
+        buffer,
+        "\n  config.version_short == %s\n",
         config->version_short ? "true" : "false"
     );
 
-    frg_message_emit_child(
-        message_buffer,
-        message,
-        FRG_MESSAGE_SEVERITY_NOTE,
-        "config.compile_output_path == \"%s\"",
+    g_string_append_printf(
+        buffer,
+        "\n  config.compile_output_path == \"%s\"\n",
         config->compile_output_path
     );
 
-    frg_message_emit_child(
-        message_buffer,
-        message,
-        FRG_MESSAGE_SEVERITY_NOTE,
-        "config.minimum_message_severity == %i",
+    g_string_append_printf(
+        buffer,
+        "\n  config.minimum_message_severity == %i\n",
         config->minimum_message_severity
     );
+
+    frg_message_emit(
+        message_buffer,
+        FRG_MESSAGE_SEVERITY_DEBUG,
+        NULL,
+        buffer->str
+    );
+
+    g_string_free(buffer, TRUE);
 }

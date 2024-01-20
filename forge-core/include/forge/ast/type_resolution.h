@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -17,15 +17,14 @@
 
 #include <forge/ast/ast.h>
 #include <forge/ast/scope.h>
+#include <forge/messages/message_buffer.h>
 
-frg_status_t frg_ast_resolve_decl_type(
-    frg_ast_t** type,
+frg_ast_t* frg_ast_resolve_decl_type(
     frg_ast_scope_t* scope,
     frg_ast_t* decl
 );
 
-frg_status_t frg_ast_resolve_value_type(
-    frg_ast_t** type,
+frg_ast_t* frg_ast_resolve_value_type(
     frg_ast_scope_t* scope,
     frg_ast_t* value
 );

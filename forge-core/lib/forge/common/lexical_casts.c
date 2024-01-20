@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -16,6 +16,7 @@
 #include <ctype.h>
 #include <forge/common/error.h>
 #include <forge/common/lexical_casts.h>
+#include <forge/messages/codes.h>
 #include <math.h>
 #include <utf8proc.h>
 
@@ -194,11 +195,9 @@ bool _frg_parse_char_unquoted(
                 .length = 1
             };
 
-            frg_message_emit_from_source_range(
+            frg_message_emit_es_3_string_ends_with_backslash(
                 message_buffer,
-                &source_range,
-                FRG_MESSAGE_SEVERITY_ERROR,
-                "'\\' in string expects at least one character afterwards"
+                &source_range
             );
 
             return false;
@@ -244,33 +243,15 @@ bool _frg_parse_char_unquoted(
 
             *value = value_uncasted;
 
-            frg_parsing_range_t source_range = {
-                .start = *frg_parsing_token_reader_get_current_location(reader),
-                .length = 1
-            };
+            if (digit_count != 2) {
+                frg_parsing_range_t source_range = {
+                    .start = *frg_parsing_token_reader_get_current_location(reader),
+                    .length = 1
+                };
 
-            if (digit_count == 0) {
-                frg_message_emit_from_source_range(
+                frg_message_emit_es_4_escape_x_expects_2_hex_digits(
                     message_buffer,
                     &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "Escape code '\\x' expects 2 hexadecimal digits afterwards, but got none",
-                    digit_count
-                );
-            } else if (digit_count == 1) {
-                frg_message_emit_from_source_range(
-                    message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "Escape code '\\x' expects 2 hexadecimal digits afterwards, but only got 1",
-                    digit_count
-                );
-            } else if (digit_count > 2) {
-                frg_message_emit_from_source_range(
-                    message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-                    "Escape code '\\x' expects 2 hexadecimal digits afterwards, but got %i",
                     digit_count
                 );
             }
@@ -285,11 +266,9 @@ bool _frg_parse_char_unquoted(
                     .length = 1
                 };
 
-                frg_message_emit_from_source_range(
+                frg_message_emit_es_5_escape_u_expects_opening_brace(
                     message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "'\\u' in string expects '{' afterwards, not end of string"
+                    &source_range
                 );
 
                 return false;
@@ -299,11 +278,9 @@ bool _frg_parse_char_unquoted(
                     .length = 1
                 };
 
-                frg_message_emit_from_source_range(
+                frg_message_emit_es_5_escape_u_expects_opening_brace(
                     message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "'\\u' in string expects '{' afterwards"
+                    &source_range
                 );
 
                 return false;
@@ -321,17 +298,30 @@ bool _frg_parse_char_unquoted(
                 true
             );
 
+            if (digit_count == 0 || digit_count > 6) {
+                frg_parsing_range_t source_range = {
+                    .start = *frg_parsing_token_reader_get_current_location(reader),
+                    .length = 1
+                };
+
+                frg_message_emit_es_7_escape_u_expects_hex_digits(
+                    message_buffer,
+                    &source_range,
+                    digit_count
+                );
+
+                return false;
+            }
+
             if (value_uncasted > 0xffffff) {
                 frg_parsing_range_t source_range = {
                     .start = *frg_parsing_token_reader_get_current_location(reader),
                     .length = 1
                 };
 
-                frg_message_emit_from_source_range(
+                frg_message_emit_is_1_code_point_limit(
                     message_buffer,
                     &source_range,
-                    FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-                    "Unicode code point specified exceeds 0xffffff (%Lx)",
                     value_uncasted
                 );
 
@@ -340,48 +330,15 @@ bool _frg_parse_char_unquoted(
 
             *value = value_uncasted;
 
-            if (digit_count == 0) {
-                frg_parsing_range_t source_range = {
-                    .start = *frg_parsing_token_reader_get_current_location(reader),
-                    .length = 1
-                };
-
-                frg_message_emit_from_source_range(
-                    message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "Escape code '\\u{' expects at least 1 hexadecimal digit afterwards, but got none"
-                );
-
-                return false;
-            } else if (digit_count > 6) {
-                frg_parsing_range_t source_range = {
-                    .start = *frg_parsing_token_reader_get_current_location(reader),
-                    .length = 1
-                };
-
-                frg_message_emit_from_source_range(
-                    message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "Escape code '\\u{' expects at most 6 hexadecimal digits afterwards, but got %i",
-                    digit_count
-                );
-
-                return false;
-            }
-
             if (frg_parsing_token_reader_get_current_char(reader) != '}') {
                 frg_parsing_range_t source_range = {
                     .start = *frg_parsing_token_reader_get_current_location(reader),
                     .length = 1
                 };
 
-                frg_message_emit_from_source_range(
+                frg_message_emit_es_6_escape_u_expects_closing_brace(
                     message_buffer,
-                    &source_range,
-                    FRG_MESSAGE_SEVERITY_ERROR,
-                    "Escape code '\\u{' in string expects closing '}'"
+                    &source_range
                 );
 
                 return false;
@@ -412,26 +369,16 @@ GString* _frg_parse_string_with_quote_char(
     frg_assert_pointer_non_null(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-        frg_message_emit(
-            message_buffer,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Cannot parse empty string as literal"
+        frg_message_emit_is_2_empty_literal(
+            message_buffer
         );
 
         return NULL;
     }
 
     if (frg_parsing_token_reader_get_current_char(reader) != quote) {
-        frg_parsing_range_t source_range = {
-            .start = *frg_parsing_token_reader_get_current_location(reader),
-            .length = 1
-        };
-        
-        frg_message_emit_from_source_range(
-            message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Literal must start with a quote"
+        frg_message_emit_is_3_literal_must_start_with_quote(
+            message_buffer
         );
 
         return NULL;
@@ -446,11 +393,9 @@ GString* _frg_parse_string_with_quote_char(
             .length = 1
         };
         
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_8_unexpected_end_of_literal(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "Unexpected end of character literal"
+            &source_range
         );
 
         return NULL;
@@ -482,11 +427,9 @@ GString* _frg_parse_string_with_quote_char(
             .length = 1
         };
         
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_8_unexpected_end_of_literal(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "Unexpected end of literal"
+            &source_range
         );
 
         return NULL;
@@ -496,11 +439,9 @@ GString* _frg_parse_string_with_quote_char(
             .length = 1
         };
         
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_8_unexpected_end_of_literal(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "Opening quote expects closing quote"
+            &source_range
         );
 
         return NULL;
@@ -549,19 +490,9 @@ bool frg_parse_char(
             .length = 1
         };
         
-        frg_message_t* message = frg_message_emit_from_source_range(
+        frg_message_emit_es_9_multiple_chars_in_char_literal(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "Character literal contains more than one character"
-        );
-
-        frg_message_emit_child_from_source_range(
-            message_buffer,
-            message,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_NOTE,
-            "If this was supposed to be a string, use double quotes instead"
+            &source_range
         );
 
         return false;
@@ -742,10 +673,14 @@ bool frg_parse_uint(
     frg_assert_pointer_non_null(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-        frg_message_emit(
+        frg_parsing_range_t source_range = {
+            .start = *frg_parsing_token_reader_get_current_location(reader),
+            .length = 1
+        };
+
+        frg_message_emit_es_8_unexpected_end_of_literal(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Cannot parse empty string as literal"
+            &source_range
         );
 
         return false;
@@ -762,11 +697,9 @@ bool frg_parse_uint(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_8_unexpected_end_of_literal(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Unexpected end of literal"
+            &source_range
         );
 
         return false;
@@ -786,11 +719,10 @@ bool frg_parse_uint(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_1_unexpected_character(
             message_buffer,
             &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Unexpected character in literal"
+            frg_parsing_token_reader_get_current_char(reader)
         );
 
         return false;
@@ -817,11 +749,9 @@ bool frg_parse_uint(
                 .length = 1
             };
 
-            frg_message_emit_from_source_range(
+            frg_message_emit_es_10_invalid_bit_width_for_int(
                 message_buffer,
                 &source_range,
-                FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-                "Invalid bit width for literal: %Lu",
                 bit_width_uncasted
             );
 
@@ -836,11 +766,10 @@ bool frg_parse_uint(
                 .length = 1
             };
 
-            frg_message_emit_from_source_range(
+            frg_message_emit_es_1_unexpected_character(
                 message_buffer,
                 &source_range,
-                FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-                "Unexpected character in literal"
+                frg_parsing_token_reader_get_current_char(reader)
             );
 
             return false;
@@ -851,11 +780,10 @@ bool frg_parse_uint(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_1_unexpected_character(
             message_buffer,
             &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Unexpected character in literal"
+            frg_parsing_token_reader_get_current_char(reader)
         );
 
         return false;
@@ -1007,10 +935,8 @@ bool _frg_parse_float_without_scientific_notation(
     frg_assert_pointer_non_null(reader);
 
     if (frg_parsing_token_reader_get_current_char(reader) == 0) {
-        frg_message_emit(
-            message_buffer,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Cannot parse empty string as literal"
+        frg_message_emit_is_2_empty_literal(
+            message_buffer
         );
 
         return false;
@@ -1025,11 +951,9 @@ bool _frg_parse_float_without_scientific_notation(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_8_unexpected_end_of_literal(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Unexpected end of literal"
+            &source_range
         );
 
         return false;
@@ -1090,11 +1014,9 @@ bool _frg_parse_float_without_scientific_notation(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
+        frg_message_emit_is_4_float_literal_missing_dot(
             message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Cannot parse string without '.' as float literal"
+            &source_range
         );
 
         return false;
@@ -1104,11 +1026,10 @@ bool _frg_parse_float_without_scientific_notation(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_1_unexpected_character(
             message_buffer,
             &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "Unexpected character in literal"
+            frg_parsing_token_reader_get_current_char(reader)
         );
 
         return false;
@@ -1237,11 +1158,10 @@ bool frg_parse_float(
                 .length = 1
             };
 
-            frg_message_emit_from_source_range(
+            frg_message_emit_es_1_unexpected_character(
                 message_buffer,
                 &source_range,
-                FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-                "Unexpected character in literal"
+                frg_parsing_token_reader_get_current_char(reader)
             );
 
             return false;
@@ -1251,11 +1171,9 @@ bool frg_parse_float(
                 .length = 1
             };
 
-            frg_message_emit_from_source_range(
+            frg_message_emit_es_11_invalid_bit_width_for_float(
                 message_buffer,
                 &source_range,
-                FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-                "Invalid bit width for literal: %Lu",
                 bit_width_uncasted
             );
 
@@ -1269,12 +1187,11 @@ bool frg_parse_float(
             .length = 1
         };
 
-        frg_message_emit_from_source_range(
-            message_buffer,
-            &source_range,
-            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
-            "Unexpected character in literal"
-        );
+        frg_message_emit_es_1_unexpected_character(
+                message_buffer,
+                &source_range,
+                frg_parsing_token_reader_get_current_char(reader)
+            );
 
         return false;
     }

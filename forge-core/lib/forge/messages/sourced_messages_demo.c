@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -70,6 +70,7 @@ int main(void) {
     frg_message_t* message = frg_message_emit(
         message_buffer,
         FRG_MESSAGE_SEVERITY_DEBUG,
+        NULL,
         "This is a global debug message"
     );
 
@@ -77,30 +78,35 @@ int main(void) {
         message_buffer,
         message,
         FRG_MESSAGE_SEVERITY_NOTE,
+        NULL,
         "This is a global note on a debug message"
     );
 
     frg_message_emit(
         message_buffer,
         FRG_MESSAGE_SEVERITY_WARNING,
+        NULL,
         "This is a global warning message"
     );
 
     frg_message_emit(
         message_buffer,
         FRG_MESSAGE_SEVERITY_ERROR,
+        NULL,
         "This is a global error message"
     );
 
     frg_message_emit(
         message_buffer,
         FRG_MESSAGE_SEVERITY_FATAL_ERROR,
+        NULL,
         "This is a global fatal error message"
     );
 
     frg_message_emit(
         message_buffer,
         FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,
+        NULL,
         "This is a global internal error message"
     );
 
@@ -118,6 +124,7 @@ int main(void) {
         message_buffer,
         &range_file,
         FRG_MESSAGE_SEVERITY_ERROR,
+        NULL,
         "This is an error message for a whole file"
     );
 
@@ -135,6 +142,7 @@ int main(void) {
         message_buffer,
         &range_line,
         FRG_MESSAGE_SEVERITY_ERROR,
+        NULL,
         "This is an error message for a source line"
     );
 
@@ -152,6 +160,7 @@ int main(void) {
         message_buffer,
         &range_char,
         FRG_MESSAGE_SEVERITY_ERROR,
+        NULL,
         "This is an error message for a character"
     );
 
@@ -169,6 +178,7 @@ int main(void) {
         message_buffer,
         &range_single_line,
         FRG_MESSAGE_SEVERITY_WARNING,
+        NULL,
         "This is a warning message for multiple characters on a single line"
     );
 
@@ -186,6 +196,7 @@ int main(void) {
         message_buffer,
         &range_multi_line,
         FRG_MESSAGE_SEVERITY_ERROR,
+        NULL,
         "This is an error message for multiple characters on a multiple lines"
     );
 

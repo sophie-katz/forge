@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -16,6 +16,7 @@
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 #include <forge/linking/linker.h>
+#include <forge/messages/codes.h>
 
 /// \brief Converts a list of \c GString objects into a static array.
 ///
@@ -103,59 +104,13 @@ bool _frg_spawn(
     } else {
         frg_assert_pointer_non_null(error);
 
-        frg_message_t* message = frg_message_emit(
+        frg_message_emit_fl_1_unable_to_spawn(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "Failed to spawn process"
+            error->message,
+            executable,
+            argv,
+            working_directory
         );
-
-        frg_message_emit_child(
-            message_buffer,
-            message,
-            FRG_MESSAGE_SEVERITY_NOTE,
-            "Cause: %s",
-            error->message
-        );
-
-        frg_message_emit_child(
-            message_buffer,
-            message,
-            FRG_MESSAGE_SEVERITY_NOTE,
-            "Executable: '%s'",
-            executable
-        );
-
-        gchar* argv_joined = g_strjoinv(
-            "', '",
-            argv
-        );
-
-        frg_message_emit_child(
-            message_buffer,
-            message,
-            FRG_MESSAGE_SEVERITY_NOTE,
-            "Argv: '%s'",
-            argv_joined
-        );
-
-        if (working_directory != NULL) {
-            frg_message_emit_child(
-                message_buffer,
-                message,
-                FRG_MESSAGE_SEVERITY_NOTE,
-                "Working directory: '%s'",
-                working_directory
-            );
-        } else {
-            frg_message_emit_child(
-                message_buffer,
-                message,
-                FRG_MESSAGE_SEVERITY_NOTE,
-                "Working directory: (inherited)"
-            );
-        }
-
-        g_free(argv_joined);
 
         g_error_free(error);
 
@@ -224,36 +179,24 @@ bool _frg_link_lld(
         arguments
     )) {
         if (exit_status != 0) {
-            frg_message_t* message = frg_message_emit(
-                message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "Linker exited with non-zero exit status: %i",
-                exit_status
+            gchar** argv = _frg_spawn_convert_arguments_to_argv(
+                frg_linker_config_get_linker_path(
+                    config
+                ),
+                &arguments
             );
 
-            GString* arguments_joined = g_string_new(NULL);
-
-            for (GList* arguments_iter = arguments; arguments_iter != NULL; arguments_iter = arguments_iter->next) {
-                g_string_append_printf(
-                    arguments_joined,
-                    "'%s'",
-                    ((GString*)arguments_iter->data)->str
-                );
-
-                if (arguments_iter->next != NULL) {
-                    g_string_append(arguments_joined, ", ");
-                }
-            }
-
-            frg_message_emit_child(
+            frg_message_emit_fl_2_exited_nonzero(
                 message_buffer,
-                message,
-                FRG_MESSAGE_SEVERITY_NOTE,
-                "Arguments: %s",
-                arguments_joined->str
+                exit_status,
+                frg_linker_config_get_linker_path(
+                    config
+                ),
+                argv,
+                NULL
             );
 
-            g_string_free(arguments_joined, TRUE);
+            _frg_spawn_free_argv(&argv);
 
             return false;
         }
@@ -271,22 +214,9 @@ bool frg_link(
     const char* output_path,
     GList* objects
 ) {
-    frg_message_t* message = NULL;
-
     switch (config->linker_id) {
         case FRG_LINKER_ID_NONE:
-            message = frg_message_emit(
-                message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "No linker could be found"
-            );
-
-            frg_message_emit_child(
-                message_buffer,
-                message,
-                FRG_MESSAGE_SEVERITY_NOTE,
-                "Currently only LLD is supported - please install and try again"
-            );
+            frg_message_emit_fl_3_no_linker(message_buffer);
 
             return false;
         case FRG_LINKER_ID_LD_LLD:

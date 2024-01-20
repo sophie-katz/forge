@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -16,6 +16,7 @@
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option_set.h>
+#include <forge/messages/codes.h>
 
 int _frg_cli_get_short_name_index(char short_name) {
     if (short_name >= 'a' && short_name <= 'z') {
@@ -142,10 +143,8 @@ bool _frg_cli_option_set_parse_next_long(
     frg_assert_pointer_non_null(name);
 
     if (name[0] == 0) {
-        frg_message_emit(
-            message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "invalid argument '--'"
+        frg_message_emit_fc_7_invalid_argument_dash_dash(
+            message_buffer
         );
         return false;
     }
@@ -156,10 +155,8 @@ bool _frg_cli_option_set_parse_next_long(
     );
 
     if (option == NULL) {
-        frg_message_emit(
+        frg_message_emit_fc_9_unknown_long_argument(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unknown argument '--%s'",
             name
         );
         return false;
@@ -200,12 +197,11 @@ bool _frg_cli_option_set_parse_next_short(
     );
 
     if (option == NULL) {
-        frg_message_emit(
+        frg_message_emit_fc_9_unknown_long_argument(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unknown argument '--%s'",
             name
         );
+
         return false;
     }
 
@@ -252,10 +248,9 @@ bool frg_cli_option_set_parse_next(
     } else {
         if (argv[*argi][2] != 0) {
             // It is a short argument like -abc
-            frg_message_emit(
+            frg_message_emit_fc_10_long_argument_with_single_dash(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "long arguments must be prefixed with '--', not '-'"
+                argv[*argi]
             );
             return false;
         }

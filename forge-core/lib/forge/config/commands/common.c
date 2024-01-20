@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -14,24 +14,22 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/config/commands/common.h>
+#include <forge/messages/codes.h>
 
 const char* frg_config_commands_get_single_source_file(
     frg_message_buffer_t* message_buffer,
     GList* pos_args
 ) {
     if (pos_args == NULL) {
-        frg_message_emit(
-            message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "command expects a source file as an argument"
+        frg_message_emit_fc_4_expects_source_file(
+            message_buffer
         );
 
         return NULL;
     } else if (pos_args->next != NULL) {
-        frg_message_emit(
+        frg_message_emit_fc_5_expects_only_one_source_file(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "command expects only one source file as an argument"
+            (const char*)pos_args->next->data
         );
 
         return NULL;

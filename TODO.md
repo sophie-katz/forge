@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2024 Sophie Katz
+Copyright (c) 2023-2024 Sophie Katz
 
 This file is part of Forge.
 
@@ -17,7 +17,9 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [x] Implement floating point literals of all sizes and signednesses
+- [ ] Standardize message types
+    - [ ] Add in error codes
+- [ ] Create placeholder requirements for missing features
 - [ ] Add in verification logic
 - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
 
@@ -72,3 +74,4 @@ not, see <https://www.gnu.org/licenses/>.
     - [x] Maybe parse LLVM IR from text?
 - [x] Implement integer literals of all sizes and signednesses
 - [x] Implement boolean literals
+- [x] Implement floating point literals of all sizes and signednesses

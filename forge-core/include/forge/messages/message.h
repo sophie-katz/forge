@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -27,6 +27,7 @@ typedef struct frg_message_t {
     frg_lineno_t log_lineno;
     frg_parsing_range_t source_range;
     frg_message_severity_t severity;
+    const char* code;
     GString* text;
     GList* children;
 } frg_message_t;
@@ -36,6 +37,7 @@ frg_message_t* frg_message_new(
     frg_lineno_t log_lineno,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
+    const char* code,
     GString* text
 );
 

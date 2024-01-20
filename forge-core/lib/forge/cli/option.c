@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -16,6 +16,7 @@
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 #include <forge/cli/option.h>
+#include <forge/messages/codes.h>
 
 bool frg_cli_is_valid_short_name(char short_name) {
     if (short_name >= 'a' && short_name <= 'z') {
@@ -274,11 +275,10 @@ bool frg_cli_option_parse_next(
     } else {
         // If the argument does take a value, make sure there is a value to parse
         if (*argi >= argc) {
-            frg_message_emit(
+            frg_message_emit_fc_1_argument_expects_value(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "argument '%s' expects a value",
-                argv[*argi - 1]
+                argv[*argi - 1],
+                option->value_name
             );
             return false;
         }
@@ -286,11 +286,10 @@ bool frg_cli_option_parse_next(
         frg_assert_string_non_empty(argv[*argi]);
 
         if (argv[*argi][0] == '-') {
-            frg_message_emit(
+            frg_message_emit_fc_2_argument_expects_value_not_argument(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "argument '%s' expects a value, but '%s' is an argument",
                 argv[*argi - 1],
+                option->value_name,
                 argv[*argi]
             );
             return false;
@@ -308,23 +307,11 @@ bool frg_cli_option_parse_next(
             }
 
             if (!found) {
-                frg_message_t* message = frg_message_emit(
+                frg_message_emit_fc_3_invalid_choice(
                     message_buffer,
-                    FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                    "unexpected value for argument '%s', allowed values are:"
+                    argv[*argi - 1],
+                    option
                 );
-
-                for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
-                    const frg_cli_choice_t* choice_casted = (const frg_cli_choice_t*)choice->data;
-                    frg_message_emit_child(
-                        message_buffer,
-                        message,
-                        FRG_MESSAGE_SEVERITY_NOTE,
-                        "  '%s' - %s",
-                        choice_casted->name,
-                        choice_casted->help
-                    );
-                }
 
                 return false;
             }

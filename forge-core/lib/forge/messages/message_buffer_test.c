@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -27,37 +27,37 @@ void test_counts(void) {
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_DEBUG, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_DEBUG, NULL, "hi");
 
     TEST_ASSERT_EQUAL(1, frg_message_buffer_get_message_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_NOTE, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_NOTE, NULL, "hi");
 
     TEST_ASSERT_EQUAL(2, frg_message_buffer_get_message_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_WARNING, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_WARNING, NULL, "hi");
 
     TEST_ASSERT_EQUAL(3, frg_message_buffer_get_message_count(message_buffer));
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
     TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_ERROR, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_ERROR, NULL, "hi");
 
     TEST_ASSERT_EQUAL(4, frg_message_buffer_get_message_count(message_buffer));
     TEST_ASSERT_EQUAL(1, frg_message_buffer_get_error_count(message_buffer));
     TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_FATAL_ERROR, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_FATAL_ERROR, NULL, "hi");
 
     TEST_ASSERT_EQUAL(5, frg_message_buffer_get_message_count(message_buffer));
     TEST_ASSERT_EQUAL(2, frg_message_buffer_get_error_count(message_buffer));
     TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, NULL, "hi");
 
     TEST_ASSERT_EQUAL(6, frg_message_buffer_get_message_count(message_buffer));
     TEST_ASSERT_EQUAL(3, frg_message_buffer_get_error_count(message_buffer));
@@ -69,7 +69,7 @@ void test_counts(void) {
 void test_has_message_with_text(void) {
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
-    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_ERROR, "hi");
+    frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_ERROR, NULL, "hi");
 
     TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "hi"));
     TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text(message_buffer, "bye"));

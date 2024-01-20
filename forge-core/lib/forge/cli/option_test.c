@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -329,7 +329,7 @@ void test_argument_long_without_value(void) {
 
     TEST_ASSERT_GREATER_THAN(0, frg_message_buffer_get_error_count(message_buffer));
 
-    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "argument '--long-argument' expects a value"));
+    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "Argument '--long-argument <value>' must have a value passed"));
 
     frg_cli_option_destroy(&option);
     frg_message_buffer_destroy(&message_buffer);
@@ -360,7 +360,7 @@ void test_argument_long_with_argument_instead_of_value(void) {
 
     TEST_ASSERT_GREATER_THAN(0, frg_message_buffer_get_error_count(message_buffer));
 
-    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "argument '--long-argument' expects a value, but '-a' is an argument"));
+    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "Argument '----long-argument <value>' expects to have a value passed, but '-a' is an argument not a value"));
 
     frg_cli_option_destroy(&option);
     frg_message_buffer_destroy(&message_buffer);

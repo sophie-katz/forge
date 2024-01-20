@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -30,10 +30,10 @@ int _frg_config_commands_callback_compile(
 ) {
     const frg_config_t* config = (const frg_config_t*)user_data;
     if (config->compile_output_path == NULL) {
-        frg_message_emit(
+        frg_message_emit_fc_15_missing_required_argument(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "no output path specified with -o or --output-path"
+            "output-path",
+            "o"
         );
 
         return 1;
@@ -50,10 +50,8 @@ int _frg_config_commands_callback_compile(
 
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-        frg_message_emit(
+        frg_message_emit_ff_2_open_for_reading(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unable to open source file: %s (%s)",
             path,
             strerror(errno)
         );

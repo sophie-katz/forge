@@ -5,7 +5,7 @@ These are formatted license blurbs for putting at the top of files of different 
 ## Languages with `//` comments
 
 ```c
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -24,7 +24,7 @@ These are formatted license blurbs for putting at the top of files of different 
 ## Languages with `#` comments
 
 ```yaml
-# Copyright (c) 2024 Sophie Katz
+# Copyright (c) 2023-2024 Sophie Katz
 #
 # This file is part of Forge.
 #
@@ -44,7 +44,7 @@ These are formatted license blurbs for putting at the top of files of different 
 
 ```html
 <!--
-Copyright (c) 2024 Sophie Katz
+Copyright (c) 2023-2024 Sophie Katz
 
 This file is part of Forge.
 

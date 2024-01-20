@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -40,10 +40,8 @@ int _frg_config_commands_callback_dump_ast(
 
     FILE* file = fopen(path, "r");
     if (file == NULL) {
-        frg_message_emit(
+        frg_message_emit_ff_2_open_for_reading(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unable to open source file: %s (%s)",
             path,
             strerror(errno)
         );

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -35,6 +35,7 @@ extern "C" {
 #include <forge/codegen/codegen.h>
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
+#include <forge/messages/codes.h>
 
 frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
     frg_assert_pointer_non_null(ast);
@@ -90,6 +91,7 @@ bool frg_codegen_write_object_file(
     frg_message_emit(
         message_buffer,
         FRG_MESSAGE_SEVERITY_DEBUG,
+        NULL,
         "Using target triple: %s",
         target_triple.c_str()
     );
@@ -107,10 +109,8 @@ bool frg_codegen_write_object_file(
     );
 
     if (target == NULL) {
-        frg_message_emit(
+        frg_message_emit_fg_2_invalid_target_triple(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unable to get target for %s (%s)",
             target_triple.c_str(),
             error_message.c_str()
         );
@@ -138,10 +138,8 @@ bool frg_codegen_write_object_file(
     );
 
     if (error_code) {
-        frg_message_emit(
+        frg_message_emit_ff_1_open_for_writing(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unable ot open output file for writing %s (%s)",
             path,
             error_code.message().c_str()
         );
@@ -156,10 +154,9 @@ bool frg_codegen_write_object_file(
         nullptr,
         llvm::CodeGenFileType::CGFT_ObjectFile
     )) {
-        frg_message_emit(
+        frg_message_emit_fg_1_cannot_emit_object_file(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "target machine cannot emit an object file"
+            target_triple.c_str()
         );
 
         return false;

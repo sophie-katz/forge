@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -23,10 +23,16 @@ frg_message_t* frg_message_new(
     frg_lineno_t log_lineno,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
+    const char* code,
     GString* text
 ) {
     frg_assert_string_non_empty(log_path);
     frg_assert_int_ge(log_lineno, 1);
+
+    if (code != NULL) {
+        frg_assert_string_non_empty(code);
+    }
+
     frg_assert_gstring_non_empty(text);
     
     frg_message_t* message = frg_safe_malloc(sizeof(frg_message_t));
@@ -56,6 +62,7 @@ frg_message_t* frg_message_new(
     }
 
     message->severity = severity;
+    message->code = code;
     message->text = text;
     message->children = NULL;
 
@@ -160,9 +167,10 @@ void _frg_message_print_prefix_source_location(
     }
 }
 
-void _frg_message_print_prefix_severity(
+void _frg_message_print_prefix_severity_and_code(
     frg_stream_output_t* stream,
-    frg_message_severity_t severity
+    frg_message_severity_t severity,
+    const char* code
 ) {
     frg_assert_pointer_non_null(stream);
 
@@ -170,25 +178,25 @@ void _frg_message_print_prefix_severity(
         case FRG_MESSAGE_SEVERITY_DEBUG:
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_MAGENTA);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-            frg_stream_output_write_printf(stream, "debug: ");
+            frg_stream_output_write_printf(stream, "debug%s ", code == NULL ? ":" : "");
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             break;
         case FRG_MESSAGE_SEVERITY_NOTE:
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-            frg_stream_output_write_printf(stream, "note: ");
+            frg_stream_output_write_printf(stream, "note%s ", code == NULL ? ":" : "");
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             break;
         case FRG_MESSAGE_SEVERITY_WARNING:
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-            frg_stream_output_write_printf(stream, "warning: ");
+            frg_stream_output_write_printf(stream, "warning%s ", code == NULL ? ":" : "");
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             break;
         case FRG_MESSAGE_SEVERITY_ERROR:
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RED);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-            frg_stream_output_write_printf(stream, "error: ");
+            frg_stream_output_write_printf(stream, "error%s ", code == NULL ? ":" : "");
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             break;
         case FRG_MESSAGE_SEVERITY_FATAL_ERROR:
@@ -199,17 +207,25 @@ void _frg_message_print_prefix_severity(
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_RED);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-            frg_stream_output_write_printf(stream, ": ");
+            frg_stream_output_write_printf(stream, "%s ", code == NULL ? ":" : "");
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             break;
         case FRG_MESSAGE_SEVERITY_INTERNAL_ERROR:
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_CYAN);
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-            frg_stream_output_write_printf(stream, "internal error: ");
+            frg_stream_output_write_printf(stream, "internal error%s ", code == NULL ? ":" : "");
             frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
             break;
         default:
             frg_die_unexpected_enum_value(severity);
+    }
+
+    if (code != NULL) {
+        frg_assert_string_non_empty(code);
+
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK);
+        frg_stream_output_write_printf(stream, "[%s] ", code);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
     }
 }
 
@@ -474,9 +490,10 @@ void frg_message_print(
         &message->source_range.start
     );
 
-    _frg_message_print_prefix_severity(
+    _frg_message_print_prefix_severity_and_code(
         stream,
-        message->severity
+        message->severity,
+        message->code
     );
 
     _frg_message_print_text(

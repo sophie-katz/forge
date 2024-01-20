@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -16,6 +16,7 @@
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 #include <forge/cli/program.h>
+#include <forge/messages/codes.h>
 
 frg_cli_program_t* frg_cli_program_new(
     const char* name,
@@ -191,12 +192,12 @@ bool frg_cli_program_try_print_help(
         frg_cli_command_t* command = (frg_cli_command_t*)g_hash_table_lookup(program->commands_by_name, command_name);
         
         if (command == NULL) {
-            frg_message_emit(
+            frg_message_emit_fc_11_unknown_command(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "unknown command '%s'",
-                command_name
+                command_name,
+                program->binary_name
             );
+
             return false;
         }
 
@@ -322,11 +323,11 @@ int frg_cli_program_parse(
             pos_args
         );
     } else if (argi >= argc) {
-        frg_message_emit(
+        frg_message_emit_fc_6_expected_command(
             message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "expected command"
+            program->binary_name
         );
+
         return 1;
     } {
         frg_cli_command_t* command = frg_cli_program_get_command_by_name(
@@ -335,12 +336,12 @@ int frg_cli_program_parse(
         );
 
         if (command == NULL) {
-            frg_message_emit(
+            frg_message_emit_fc_11_unknown_command(
                 message_buffer,
-                FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-                "unknown command '%s'",
-                argv[argi]
+                argv[argi],
+                program->binary_name
             );
+
             return 1;
         }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Sophie Katz
+Copyright (c) 2023-2024 Sophie Katz
 
 This file is part of Forge.
 
@@ -27,6 +27,7 @@ not, see <https://www.gnu.org/licenses/>.
 #include <forge/common/lexical_casts.h>
 #include <forge/common/types.h>
 #include <forge/messages/message_buffer.h>
+#include <forge/messages/codes.h>
 #include <glib.h>
 #include <stdbool.h>
 
@@ -475,10 +476,6 @@ false {
 }
 
 . {
-    char as_char = yytext[0];
-
-    int as_int = ((int)as_char) & 0xff;
-
     frg_parsing_range_t source_range = {
         .start = {
             .path = _frg_parsing_current_path,
@@ -490,21 +487,16 @@ false {
     };
 
     if (isprint(yytext[0])) {
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_1_unexpected_character(
             _frg_parsing_current_message_buffer,
             &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "unexpected character '%c' (0x%2x)",
-            as_char,
-            as_int
+            yytext[0]
         );
     } else {
-        frg_message_emit_from_source_range(
+        frg_message_emit_es_2_unexpected_byte(
             _frg_parsing_current_message_buffer,
             &source_range,
-            FRG_MESSAGE_SEVERITY_ERROR,
-            "unexpected byte 0x%2x",
-            as_int
+            yytext[0]
         );
     }
 }

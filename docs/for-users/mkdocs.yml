@@ -61,4 +61,4 @@ nav:
       - 'Requirement-7: Operators': 'specification/requirements/Requirement-7-operators.md'
       - 'Requirement-8: Operator precedence': 'specification/requirements/Requirement-8-operator-precedence.md'
   - 'Reference':
-    - 'Error codes': 'reference/error-codes.md'
+    - 'Message codes': 'reference/message-codes.md'

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -80,12 +80,7 @@ bool _frg_config_cli_option_callback_color_mode(
     } else if (strcmp(value, "enabled") == 0) {
         frg_stream_output_set_console_color(true);
     } else {
-        frg_message_emit(
-            message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unknown color mode: %s",
-            value
-        );
+        frg_die("unknown color mode");
 
         return false;
     }
@@ -105,12 +100,7 @@ bool _frg_config_cli_option_callback_unicode_mode(
     } else if (strcmp(value, "enabled") == 0) {
         frg_stream_output_set_console_unicode(true);
     } else {
-        frg_message_emit(
-            message_buffer,
-            FRG_MESSAGE_SEVERITY_FATAL_ERROR,
-            "unknown unicode mode: %s",
-            value
-        );
+        frg_die("unknown color mode");
 
         return false;
     }

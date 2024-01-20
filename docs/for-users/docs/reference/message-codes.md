@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# Error codes
+# Message codes
 
-The compiler generates a number of different errors, all of which can be identified by these codes. They are all of the form:
+The compiler generates a number of different messages, all of which can be identified by these codes. They are all of the form:
 
 ```
 <severity><domain><source><number>
@@ -32,6 +32,8 @@ The compiler generates a number of different errors, all of which can be identif
 - `F`: Fatal errors
 - `I`: Internal errors
 
+Notes or debug messages intentionally do not have codes.
+
 ## Domain
 
 `<domain>` can be any of the following:
@@ -41,8 +43,9 @@ The compiler generates a number of different errors, all of which can be identif
 - `S`: Syntax errors
 - `T`: Type errors
 - `G`: Code generation errors
+- `L`: Linker errors
 
-Note that errors from `F` and `C` domains are displayed without error codes.
+Messages from `F` and `C` domains are displayed without error codes.
 
 ## Source
 

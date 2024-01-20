@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sophie Katz
+// Copyright (c) 2023-2024 Sophie Katz
 //
 // This file is part of Forge.
 //
@@ -58,16 +58,18 @@ frg_message_t* _frg_message_emit(
     frg_lineno_t log_lineno,
     frg_message_buffer_t* message_buffer,
     frg_message_severity_t severity,
+    const char* code,
     const char* format,
     ...
 );
 
-#define frg_message_emit(message_buffer, severity, format, ...) \
+#define frg_message_emit(message_buffer, severity, code, format, ...) \
     _frg_message_emit( \
         __FILE__, \
         __LINE__, \
         (message_buffer), \
         (severity), \
+        (code), \
         (format), \
         ##__VA_ARGS__ \
     )
@@ -78,17 +80,19 @@ frg_message_t* _frg_message_emit_from_source_range(
     frg_message_buffer_t* message_buffer,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
+    const char* code,
     const char* format,
     ...
 );
 
-#define frg_message_emit_from_source_range(message_buffer, source_range, severity, format, ...) \
+#define frg_message_emit_from_source_range(message_buffer, source_range, severity, code, format, ...) \
     _frg_message_emit_from_source_range( \
         __FILE__, \
         __LINE__, \
         (message_buffer), \
         (source_range), \
         (severity), \
+        (code), \
         (format), \
         ##__VA_ARGS__ \
     )
@@ -99,17 +103,19 @@ void _frg_message_emit_child(
     frg_message_buffer_t* message_buffer,
     frg_message_t* parent,
     frg_message_severity_t severity,
+    const char* code,
     const char* format,
     ...
 );
 
-#define frg_message_emit_child(message_buffer, parent, severity, format, ...) \
+#define frg_message_emit_child(message_buffer, parent, severity, code, format, ...) \
     _frg_message_emit_child( \
         __FILE__, \
         __LINE__, \
         (message_buffer), \
         (parent), \
         (severity), \
+        (code), \
         (format), \
         ##__VA_ARGS__ \
     )
@@ -121,11 +127,12 @@ void _frg_message_emit_child_from_source_range(
     frg_message_t* parent,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
+    const char* code,
     const char* format,
     ...
 );
 
-#define frg_message_emit_child_from_source_range(message_buffer, parent, source_range, severity, format, ...) \
+#define frg_message_emit_child_from_source_range(message_buffer, parent, source_range, severity, code, format, ...) \
     _frg_message_emit_child_from_source_range( \
         __FILE__, \
         __LINE__, \
@@ -133,6 +140,7 @@ void _frg_message_emit_child_from_source_range(
         (parent), \
         (source_range), \
         (severity), \
+        (code), \
         (format), \
         ##__VA_ARGS__ \
     )

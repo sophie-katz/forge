@@ -26,12 +26,16 @@ frg_ast_t* create_ast(void) {
     stmts = g_list_append(
         stmts,
         frg_ast_new_stmt_return(
+            &frg_parsing_range_null,
             (frg_ast_t*)frg_ast_new_value_binary(
+                &frg_parsing_range_null,
                 FRG_AST_ID_VALUE_ADD,
                 (frg_ast_t*)frg_ast_new_value_i32(
+                    &frg_parsing_range_null,
                     5
                 ),
                 (frg_ast_t*)frg_ast_new_value_i32(
+                    &frg_parsing_range_null,
                     6
                 )
             )
@@ -39,15 +43,18 @@ frg_ast_t* create_ast(void) {
     );
 
     frg_ast_decl_fn_t* ast = frg_ast_new_decl_fn(
+        &frg_parsing_range_null,
         FRG_AST_DECL_FN_FLAG_NONE,
         g_string_new("main"),
         frg_ast_new_ty_fn(
+            &frg_parsing_range_null,
             NULL,
             NULL,
             NULL,
             NULL
         ),
         (frg_ast_t*)frg_ast_new_stmt_block(
+            &frg_parsing_range_null,
             stmts
         )
     );
@@ -253,7 +260,7 @@ frg_ast_visitor_status_t callback_replace_node_pre_value_add(
     frg_ast_t** ast,
     void* user_data
 ) {
-    *ast = (frg_ast_t*)frg_ast_new_value_i32(11);
+    *ast = (frg_ast_t*)frg_ast_new_value_i32(&frg_parsing_range_null, 11);
 
     return FRG_AST_VISITOR_STATUS_OK;
 }
@@ -294,7 +301,7 @@ frg_ast_visitor_status_t callback_replace_node_in_list_pre_stmt_return(
     frg_ast_t** ast,
     void* user_data
 ) {
-    *ast = (frg_ast_t*)frg_ast_new_value_i32(11);
+    *ast = (frg_ast_t*)frg_ast_new_value_i32(&frg_parsing_range_null, 11);
 
     return FRG_AST_VISITOR_STATUS_OK;
 }

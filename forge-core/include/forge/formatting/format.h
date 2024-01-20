@@ -15,24 +15,7 @@
 
 #pragma once
 
-#include <forge/common/types.h>
-#include <stddef.h>
+#include <forge/streams/output.h>
+#include <forge/ast/ast.h>
 
-typedef struct {
-    const char* path;
-    size_t offset;
-    frg_lineno_t lineno;
-    frg_columnno_t columnno;
-} frg_parsing_location_t;
-
-typedef struct {
-    frg_parsing_location_t start;
-    frg_columnno_t length;
-} frg_parsing_range_t;
-
-extern const frg_parsing_range_t frg_parsing_range_null;
-
-frg_parsing_range_t frg_parsing_range_get_span(
-    const frg_parsing_range_t* first,
-    const frg_parsing_range_t* last
-);
+void frg_format(frg_stream_output_t *output, const frg_ast_t* ast, frg_indent_t indent);

@@ -20,11 +20,14 @@
 
 #include <forge/messages/message_buffer.h>
 
-#define frg_message_emit_ff_1_open_for_writing(message_buffer, path, error_message) { \
-        frg_message_t* __frg_ff_1_message = frg_message_emit( \
+// Does FFS mean for fucks sake, facial feminization surgery, or fatal/filesystem?
+// You'll never find out.
+
+#define frg_message_emit_ffs_1_open_for_writing(message_buffer, path, error_message) { \
+        frg_message_t* __frg_ffs_1_message = frg_message_emit( \
             (message_buffer), \
             FRG_MESSAGE_SEVERITY_FATAL_ERROR, \
-            "FF-1", \
+            "FFS-1", \
             "Could not open '%s' for writing", \
             (path) \
         ); \
@@ -32,7 +35,7 @@
         if ((error_message) != NULL) { \
             frg_message_emit_child( \
                 (message_buffer), \
-                __frg_ff_1_message, \
+                __frg_ffs_1_message, \
                 FRG_MESSAGE_SEVERITY_NOTE, \
                 NULL, \
                 "Underlying cause: %s", \
@@ -41,11 +44,11 @@
         } \
     }
 
-#define frg_message_emit_ff_2_open_for_reading(message_buffer, path, error_message) { \
-        frg_message_t* __frg_ff_2_message = frg_message_emit( \
+#define frg_message_emit_ffs_2_open_for_reading(message_buffer, path, error_message) { \
+        frg_message_t* __frg_ffs_2_message = frg_message_emit( \
             (message_buffer), \
             FRG_MESSAGE_SEVERITY_FATAL_ERROR, \
-            "FF-2", \
+            "FFS-2", \
             "Could not open '%s' for reading", \
             (path) \
         ); \
@@ -53,13 +56,95 @@
         if ((error_message) != NULL) { \
             frg_message_emit_child( \
                 (message_buffer), \
-                __frg_ff_2_message, \
+                __frg_ffs_2_message, \
                 FRG_MESSAGE_SEVERITY_NOTE, \
                 NULL, \
                 "Underlying cause: %s", \
                 (error_message) \
             ); \
         } \
+    }
+
+#define frg_message_emit_eft_1_unsupported_requirement(message_buffer, source_range, requirement_number, requirement_title) { \
+        frg_message_t* __frg_eft_1_message = frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_ERROR, \
+            "EFT-1", \
+            "Language feature is not yet supported (%s)", \
+            (requirement_title) \
+        ); \
+        \
+        frg_message_emit_child( \
+            (message_buffer), \
+            __frg_eft_1_message, \
+            FRG_MESSAGE_SEVERITY_NOTE, \
+            NULL, \
+            "It is described in Requirement-%i", \
+            (requirement_number) \
+        ); \
+    }
+
+#define frg_message_emit_eft_2_unsupported_requirement_subitem(message_buffer, source_range, requirement_number, subitem_number, requirement_title) { \
+        frg_message_t* __frg_eft_2_message = frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_ERROR, \
+            "EFT-2", \
+            "Language feature is not yet supported (%s)", \
+            (requirement_title) \
+        ); \
+        \
+        frg_message_emit_child( \
+            (message_buffer), \
+            __frg_eft_2_message, \
+            FRG_MESSAGE_SEVERITY_NOTE, \
+            NULL, \
+            "It is described in Requirement-%i.%i", \
+            (requirement_number), \
+            (subitem_number) \
+        ); \
+    }
+
+#define frg_message_emit_eft_3_unsupported_proposal(message_buffer, source_range, proposal_number, proposal_title) { \
+        frg_message_t* __frg_eft_3_message = frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_ERROR, \
+            "EFT-3", \
+            "Language feature is not yet supported (%s)", \
+            (proposal_title) \
+        ); \
+        \
+        frg_message_emit_child( \
+            (message_buffer), \
+            __frg_eft_3_message, \
+            FRG_MESSAGE_SEVERITY_NOTE, \
+            NULL, \
+            "It is described in Proposal-%i", \
+            (proposal_number) \
+        ); \
+    }
+
+#define frg_message_emit_eft_4_unsupported_proposal_subitem(message_buffer, source_range, proposal_number, subitem_number, proposal_title) { \
+        frg_message_t* __frg_eft_4_message = frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_ERROR, \
+            "EFT-4", \
+            "Language feature is not yet supported (%s)", \
+            (proposal_title) \
+        ); \
+        \
+        frg_message_emit_child( \
+            (message_buffer), \
+            __frg_eft_4_message, \
+            FRG_MESSAGE_SEVERITY_NOTE, \
+            NULL, \
+            "It is described in Proposal-%i.%i", \
+            (proposal_number), \
+            (subitem_number) \
+        ); \
     }
 
 #define frg_message_emit_fc_1_argument_expects_value(message_buffer, argument, value_name) { \
@@ -686,4 +771,95 @@
             NULL, \
             "Currently only LLD is supported - please install and try again" \
         ); \
+    }
+
+#define frg_emit_message_it_1_no_containing_type(message_buffer, source_range, type_a, type_b) { \
+        frg_stream_output_t* __frg_it_1_stream_a = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE); \
+        \
+        frg_format( \
+            __frg_it_1_stream_a, \
+            (type_a), \
+            0 \
+        ); \
+        \
+        GString* __frg_it_1_buffer_a = frg_stream_output_destroy_take_buffer(&__frg_it_1_stream_a); \
+        \
+        frg_stream_output_t* __frg_it_1_stream_b = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE); \
+        \
+        frg_format( \
+            __frg_it_1_stream_b, \
+            (type_b), \
+            0 \
+        ); \
+        \
+        GString* __frg_it_1_buffer_b = frg_stream_output_destroy_take_buffer(&__frg_it_1_stream_b); \
+        \
+        frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
+            "IT-1", \
+            "Unable to find a type that can contain both '%s' and '%s'", \
+            __frg_it_1_buffer_a->str, \
+            __frg_it_1_buffer_b->str \
+        ); \
+        \
+        g_string_free(__frg_it_1_buffer_a, TRUE); \
+        g_string_free(__frg_it_1_buffer_b, TRUE); \
+    }
+
+#define frg_emit_message_et_1_undeclared_symbol(message_buffer, source_range, symbol_name) \
+    frg_message_emit_from_source_range( \
+        (message_buffer), \
+        (source_range), \
+        FRG_MESSAGE_SEVERITY_ERROR, \
+        "ET-1", \
+        "Symbol '%s' must be declared", \
+        (symbol_name) \
+    )
+
+#define frg_emit_message_et_2_cannot_deref_non_pointer(message_buffer, source_range, type) { \
+        frg_stream_output_t* __frg_et_2_stream = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE); \
+        \
+        frg_format( \
+            __frg_et_2_stream, \
+            (type), \
+            0 \
+        ); \
+        \
+        GString* __frg_et_2_buffer = frg_stream_output_destroy_take_buffer(&__frg_et_2_stream); \
+        \
+        frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_ERROR, \
+            "ET-2", \
+            "Cannot dereference non-pointer type '%s'", \
+            __frg_et_2_buffer->str \
+        ); \
+        \
+        g_string_free(__frg_et_2_buffer, TRUE); \
+    }
+
+#define frg_emit_message_et_3_cannot_call_non_fn(message_buffer, source_range, type) { \
+        frg_stream_output_t* __frg_et_3_stream = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE); \
+        \
+        frg_format( \
+            __frg_et_3_stream, \
+            (type), \
+            0 \
+        ); \
+        \
+        GString* __frg_et_3_buffer = frg_stream_output_destroy_take_buffer(&__frg_et_3_stream); \
+        \
+        frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_ERROR, \
+            "ET-3", \
+            "Cannot call non-function type '%s'", \
+            __frg_et_3_buffer->str \
+        ); \
+        \
+        g_string_free(__frg_et_3_buffer, TRUE); \
     }

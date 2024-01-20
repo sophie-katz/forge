@@ -19,12 +19,19 @@
 #include <forge/ast/scope.h>
 #include <forge/messages/message_buffer.h>
 
+frg_ast_t* frg_ast_get_numeric_containing_type(
+    frg_ast_t* first,
+    frg_ast_t* second
+);
+
 frg_ast_t* frg_ast_resolve_decl_type(
+    frg_message_buffer_t* message_buffer,
     frg_ast_scope_t* scope,
     frg_ast_t* decl
 );
 
 frg_ast_t* frg_ast_resolve_value_type(
+    frg_message_buffer_t* message_buffer,
     frg_ast_scope_t* scope,
     frg_ast_t* value
 );

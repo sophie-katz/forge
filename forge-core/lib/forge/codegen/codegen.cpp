@@ -138,7 +138,7 @@ bool frg_codegen_write_object_file(
     );
 
     if (error_code) {
-        frg_message_emit_ff_1_open_for_writing(
+        frg_message_emit_ffs_1_open_for_writing(
             message_buffer,
             path,
             error_code.message().c_str()

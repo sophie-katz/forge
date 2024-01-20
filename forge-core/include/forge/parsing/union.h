@@ -15,24 +15,20 @@
 
 #pragma once
 
-#include <forge/common/types.h>
-#include <stddef.h>
+#include <forge/common/lexical_casts.h>
+#include <forge/parsing/domain.h>
 
 typedef struct {
-    const char* path;
-    size_t offset;
-    frg_lineno_t lineno;
-    frg_columnno_t columnno;
-} frg_parsing_location_t;
+    frg_parsing_range_t source_range;
+    frg_parse_uint_result_t value;
+} frg_parsing_union_uint_t;
 
 typedef struct {
-    frg_parsing_location_t start;
-    frg_columnno_t length;
-} frg_parsing_range_t;
+    frg_parsing_range_t source_range;
+    frg_parse_float_result_t value;
+} frg_parsing_union_float_t;
 
-extern const frg_parsing_range_t frg_parsing_range_null;
-
-frg_parsing_range_t frg_parsing_range_get_span(
-    const frg_parsing_range_t* first,
-    const frg_parsing_range_t* last
-);
+typedef struct {
+    frg_parsing_range_t source_range;
+    GString* value;
+} frg_parsing_union_symbol_t;

@@ -13,26 +13,26 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <forge/parsing/domain.h>
 
-#include <forge/common/types.h>
-#include <stddef.h>
-
-typedef struct {
-    const char* path;
-    size_t offset;
-    frg_lineno_t lineno;
-    frg_columnno_t columnno;
-} frg_parsing_location_t;
-
-typedef struct {
-    frg_parsing_location_t start;
-    frg_columnno_t length;
-} frg_parsing_range_t;
-
-extern const frg_parsing_range_t frg_parsing_range_null;
+const frg_parsing_range_t frg_parsing_range_null = {
+    .start = {
+        .path = NULL,
+        .offset = 0,
+        .lineno = 0,
+        .columnno = 0
+    },
+    .length = 0
+};
 
 frg_parsing_range_t frg_parsing_range_get_span(
     const frg_parsing_range_t* first,
     const frg_parsing_range_t* last
-);
+) {
+    frg_parsing_range_t range = {
+        .start = first->start,
+        .length = last->start.offset + last->length - first->start.offset
+    };
+
+    return range;
+}

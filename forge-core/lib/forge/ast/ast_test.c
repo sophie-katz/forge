@@ -22,12 +22,13 @@ void tearDown(void) {}
 
 void test_decl_get_name_union(void) {
     GList* props = g_list_append(NULL, frg_ast_new_decl_prop(
+        &frg_parsing_range_null,
         FRG_AST_DECL_PROP_FLAG_NONE,
         g_string_new("asdf"),
-        frg_ast_new_ty_primary(FRG_AST_ID_TY_I32)
+        frg_ast_new_ty_primary(&frg_parsing_range_null, FRG_AST_ID_TY_I32)
     ));
 
-    frg_ast_decl_union_t* ast = frg_ast_new_decl_union(g_string_new("Asdf"), props);
+    frg_ast_decl_union_t* ast = frg_ast_new_decl_union(&frg_parsing_range_null, g_string_new("Asdf"), props);
 
     TEST_ASSERT_EQUAL_STRING("Asdf", frg_ast_decl_get_name((const frg_ast_t*)ast));
 
@@ -35,7 +36,7 @@ void test_decl_get_name_union(void) {
 }
 
 void test_decl_get_name_struct(void) {
-    frg_ast_decl_struct_t* ast = frg_ast_new_decl_struct(g_string_new("Asdf"), NULL);
+    frg_ast_decl_struct_t* ast = frg_ast_new_decl_struct(&frg_parsing_range_null, g_string_new("Asdf"), NULL);
 
     TEST_ASSERT_EQUAL_STRING("Asdf", frg_ast_decl_get_name((const frg_ast_t*)ast));
 
@@ -44,9 +45,10 @@ void test_decl_get_name_struct(void) {
 
 void test_decl_get_name_prop(void) {
     frg_ast_decl_prop_t* ast = frg_ast_new_decl_prop(
+        &frg_parsing_range_null,
         FRG_AST_DECL_PROP_FLAG_NONE,
         g_string_new("asdf"),
-        frg_ast_new_ty_primary(FRG_AST_ID_TY_I32)
+        frg_ast_new_ty_primary(&frg_parsing_range_null, FRG_AST_ID_TY_I32)
     );
 
     TEST_ASSERT_EQUAL_STRING("asdf", frg_ast_decl_get_name((const frg_ast_t*)ast));
@@ -56,6 +58,7 @@ void test_decl_get_name_prop(void) {
 
 void test_decl_get_name_iface(void) {
     frg_ast_decl_iface_t* ast = frg_ast_new_decl_iface(
+        &frg_parsing_range_null,
         FRG_AST_DECL_IFACE_FLAG_NONE,
         g_string_new("Asdf"),
         NULL,
@@ -69,11 +72,13 @@ void test_decl_get_name_iface(void) {
 
 void test_decl_get_name_fn_arg(void) {
     frg_ast_decl_fn_arg_t* ast = frg_ast_new_decl_fn_arg(
+        &frg_parsing_range_null,
         FRG_AST_DECL_FN_ARG_FLAG_NONE,
         frg_ast_new_decl_prop(
+            &frg_parsing_range_null,
             FRG_AST_DECL_PROP_FLAG_NONE,
             g_string_new("asdf"),
-            frg_ast_new_ty_primary(FRG_AST_ID_TY_I32)
+            frg_ast_new_ty_primary(&frg_parsing_range_null, FRG_AST_ID_TY_I32)
         ),
         NULL
     );
@@ -85,9 +90,11 @@ void test_decl_get_name_fn_arg(void) {
 
 void test_decl_get_name_fn(void) {
     frg_ast_decl_fn_t* ast = frg_ast_new_decl_fn(
+        &frg_parsing_range_null,
         FRG_AST_DECL_FN_FLAG_NONE,
         g_string_new("asdf"),
         frg_ast_new_ty_fn(
+            &frg_parsing_range_null,
             NULL,
             NULL,
             NULL,
@@ -103,10 +110,12 @@ void test_decl_get_name_fn(void) {
 
 void test_decl_get_name_var(void) {
     frg_ast_decl_var_t* ast = frg_ast_new_decl_var(
+        &frg_parsing_range_null,
         frg_ast_new_decl_prop(
+            &frg_parsing_range_null,
             FRG_AST_DECL_PROP_FLAG_NONE,
             g_string_new("asdf"),
-            frg_ast_new_ty_primary(FRG_AST_ID_TY_I32)
+            frg_ast_new_ty_primary(&frg_parsing_range_null, FRG_AST_ID_TY_I32)
         ),
         NULL
     );
@@ -118,6 +127,7 @@ void test_decl_get_name_var(void) {
 
 void test_decl_get_name_non_decl(void) {
     frg_ast_ty_symbol_t* ast = frg_ast_new_ty_symbol(
+        &frg_parsing_range_null,
         g_string_new("asdf")
     );
 

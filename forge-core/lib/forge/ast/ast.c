@@ -20,17 +20,20 @@
 #include <stdlib.h>
 
 frg_ast_t* frg_ast_new_ty_primary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id
 ) {
     frg_assert(frg_ast_id_is_ty_primary(id));
 
     frg_ast_t* ast = frg_safe_malloc(sizeof(frg_ast_t));
+    ast->source_range = *source_range;
     ast->id = id;
 
     return ast;
 }
 
 frg_ast_ty_symbol_t* frg_ast_new_ty_symbol(
+    const frg_parsing_range_t *source_range,
     GString* name
 ) {
     frg_assert_gstring_non_empty(name);
@@ -38,12 +41,14 @@ frg_ast_ty_symbol_t* frg_ast_new_ty_symbol(
     frg_ast_ty_symbol_t* ast = frg_safe_malloc(sizeof(frg_ast_ty_symbol_t));
 
     ast->base.id = FRG_AST_ID_TY_SYMBOL;
+    ast->base.source_range = *source_range;
     ast->name = name;
 
     return ast;
 }
 
 frg_ast_ty_pointer_t* frg_ast_new_ty_pointer(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* value
 ) {
     frg_assert_pointer_non_null(value);
@@ -51,12 +56,14 @@ frg_ast_ty_pointer_t* frg_ast_new_ty_pointer(
     frg_ast_ty_pointer_t* ast = frg_safe_malloc(sizeof(frg_ast_ty_pointer_t));
 
     ast->base.id = FRG_AST_ID_TY_POINTER;
+    ast->base.source_range = *source_range;
     ast->value = value;
 
     return ast;
 }
 
 frg_ast_ty_fn_t* frg_ast_new_ty_fn(
+    const frg_parsing_range_t *source_range,
     GList* args,
     GList* var_pos_args,
     GList* var_kw_args,
@@ -65,6 +72,7 @@ frg_ast_ty_fn_t* frg_ast_new_ty_fn(
     frg_ast_ty_fn_t* ast = frg_safe_malloc(sizeof(frg_ast_ty_fn_t));
 
     ast->base.id = FRG_AST_ID_TY_FN;
+    ast->base.source_range = *source_range;
     ast->args = args;
     ast->var_pos_args = var_pos_args;
     ast->var_kw_args = var_kw_args;
@@ -74,6 +82,7 @@ frg_ast_ty_fn_t* frg_ast_new_ty_fn(
 }
 
 frg_ast_decl_union_t* frg_ast_new_decl_union(
+    const frg_parsing_range_t *source_range,
     GString* name,
     GList* props
 ) {
@@ -83,6 +92,7 @@ frg_ast_decl_union_t* frg_ast_new_decl_union(
     frg_ast_decl_union_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_union_t));
 
     ast->base.id = FRG_AST_ID_DECL_UNION;
+    ast->base.source_range = *source_range;
     ast->name = name;
     ast->props = props;
 
@@ -90,6 +100,7 @@ frg_ast_decl_union_t* frg_ast_new_decl_union(
 }
 
 frg_ast_decl_struct_t* frg_ast_new_decl_struct(
+    const frg_parsing_range_t *source_range,
     GString* name,
     GList* decls
 ) {
@@ -98,6 +109,7 @@ frg_ast_decl_struct_t* frg_ast_new_decl_struct(
     frg_ast_decl_struct_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_struct_t));
 
     ast->base.id = FRG_AST_ID_DECL_STRUCT;
+    ast->base.source_range = *source_range;
     ast->name = name;
     ast->decls = decls;
 
@@ -105,6 +117,7 @@ frg_ast_decl_struct_t* frg_ast_new_decl_struct(
 }
 
 frg_ast_decl_prop_t* frg_ast_new_decl_prop(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_prop_flags_t flags,
     GString* name,
     frg_ast_t* ty
@@ -114,6 +127,7 @@ frg_ast_decl_prop_t* frg_ast_new_decl_prop(
     frg_ast_decl_prop_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_prop_t));
 
     ast->base.id = FRG_AST_ID_DECL_PROP;
+    ast->base.source_range = *source_range;
     ast->flags = flags;
     ast->name = name;
     ast->ty = ty;
@@ -122,6 +136,7 @@ frg_ast_decl_prop_t* frg_ast_new_decl_prop(
 }
 
 frg_ast_decl_iface_t* frg_ast_new_decl_iface(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_iface_flags_t flags,
     GString* name,
     GList* extends,
@@ -132,6 +147,7 @@ frg_ast_decl_iface_t* frg_ast_new_decl_iface(
     frg_ast_decl_iface_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_iface_t));
 
     ast->base.id = FRG_AST_ID_DECL_IFACE;
+    ast->base.source_range = *source_range;
     ast->flags = flags;
     ast->name = name;
     ast->extends = extends;
@@ -141,6 +157,7 @@ frg_ast_decl_iface_t* frg_ast_new_decl_iface(
 }
 
 frg_ast_decl_fn_arg_t* frg_ast_new_decl_fn_arg(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_fn_arg_flags_t flags,
     frg_ast_decl_prop_t* prop,
     frg_ast_t* default_value
@@ -150,6 +167,7 @@ frg_ast_decl_fn_arg_t* frg_ast_new_decl_fn_arg(
     frg_ast_decl_fn_arg_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_fn_arg_t));
 
     ast->base.id = FRG_AST_ID_DECL_FN_ARG;
+    ast->base.source_range = *source_range;
     ast->flags = flags;
     ast->prop = prop;
     ast->default_value = default_value;
@@ -158,6 +176,7 @@ frg_ast_decl_fn_arg_t* frg_ast_new_decl_fn_arg(
 }
 
 frg_ast_decl_fn_t* frg_ast_new_decl_fn(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_fn_flags_t flags,
     GString* name,
     frg_ast_ty_fn_t* ty,
@@ -169,6 +188,7 @@ frg_ast_decl_fn_t* frg_ast_new_decl_fn(
     frg_ast_decl_fn_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_fn_t));
 
     ast->base.id = FRG_AST_ID_DECL_FN;
+    ast->base.source_range = *source_range;
     ast->flags = flags;
     ast->name = name;
     ast->ty = ty;
@@ -178,6 +198,7 @@ frg_ast_decl_fn_t* frg_ast_new_decl_fn(
 }
 
 frg_ast_decl_var_t* frg_ast_new_decl_var(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_prop_t* prop,
     frg_ast_t* initial_value
 ) {
@@ -186,6 +207,7 @@ frg_ast_decl_var_t* frg_ast_new_decl_var(
     frg_ast_decl_var_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_var_t));
 
     ast->base.id = FRG_AST_ID_DECL_VAR;
+    ast->base.source_range = *source_range;
     ast->prop = prop;
     ast->initial_value = initial_value;
 
@@ -193,28 +215,33 @@ frg_ast_decl_var_t* frg_ast_new_decl_var(
 }
 
 frg_ast_decl_block_t* frg_ast_new_decl_block(
+    const frg_parsing_range_t *source_range,
     GList* decls
 ) {
     frg_ast_decl_block_t* ast = frg_safe_malloc(sizeof(frg_ast_decl_block_t));
 
     ast->base.id = FRG_AST_ID_DECL_BLOCK;
+    ast->base.source_range = *source_range;
     ast->decls = decls;
 
     return ast;
 }
 
 frg_ast_stmt_return_t* frg_ast_new_stmt_return(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* value
 ) {
     frg_ast_stmt_return_t* ast = frg_safe_malloc(sizeof(frg_ast_stmt_return_t));
 
     ast->base.id = FRG_AST_ID_STMT_RETURN;
+    ast->base.source_range = *source_range;
     ast->value = value;
 
     return ast;
 }
 
 frg_ast_stmt_if_t* frg_ast_new_stmt_if(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* condition,
     frg_ast_t* then_clause,
     frg_ast_t* else_clause
@@ -225,6 +252,7 @@ frg_ast_stmt_if_t* frg_ast_new_stmt_if(
     frg_ast_stmt_if_t* ast = frg_safe_malloc(sizeof(frg_ast_stmt_if_t));
 
     ast->base.id = FRG_AST_ID_STMT_IF;
+    ast->base.source_range = *source_range;
     ast->condition = condition;
     ast->then_clause = then_clause;
     ast->else_clause = else_clause;
@@ -233,6 +261,7 @@ frg_ast_stmt_if_t* frg_ast_new_stmt_if(
 }
 
 frg_ast_stmt_while_t* frg_ast_new_stmt_while(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* condition,
     frg_ast_t* body
 ) {
@@ -241,6 +270,7 @@ frg_ast_stmt_while_t* frg_ast_new_stmt_while(
     frg_ast_stmt_while_t* ast = frg_safe_malloc(sizeof(frg_ast_stmt_while_t));
 
     ast->base.id = FRG_AST_ID_STMT_WHILE;
+    ast->base.source_range = *source_range;
     ast->condition = condition;
     ast->body = body;
 
@@ -248,17 +278,20 @@ frg_ast_stmt_while_t* frg_ast_new_stmt_while(
 }
 
 frg_ast_stmt_block_t* frg_ast_new_stmt_block(
+    const frg_parsing_range_t *source_range,
     GList* stmts
 ) {
     frg_ast_stmt_block_t* ast = frg_safe_malloc(sizeof(frg_ast_stmt_block_t));
 
     ast->base.id = FRG_AST_ID_STMT_BLOCK;
+    ast->base.source_range = *source_range;
     ast->stmts = stmts;
 
     return ast;
 }
 
 frg_ast_t* frg_ast_new_value_primary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id
 ) {
     frg_assert(frg_ast_id_is_value_primary(id));
@@ -266,134 +299,152 @@ frg_ast_t* frg_ast_new_value_primary(
     frg_ast_t* ast = frg_safe_malloc(sizeof(frg_ast_t));
 
     ast->id = id;
+    ast->source_range = *source_range;
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_i8(
+    const frg_parsing_range_t *source_range,
     int8_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.i8 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I8);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_I8);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_i16(
+    const frg_parsing_range_t *source_range,
     int16_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.i16 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I16);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_I16);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_i32(
+    const frg_parsing_range_t *source_range,
     int32_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.i32 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I32);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_I32);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_i64(
+    const frg_parsing_range_t *source_range,
     int64_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.i64 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_I64);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_I64);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_u8(
+    const frg_parsing_range_t *source_range,
     uint8_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.u8 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U8);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_U8);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_u16(
+    const frg_parsing_range_t *source_range,
     uint16_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.u16 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U16);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_U16);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_u32(
+    const frg_parsing_range_t *source_range,
     uint32_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.u32 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U32);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_U32);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_u64(
+    const frg_parsing_range_t *source_range,
     uint64_t value
 ) {
     frg_ast_value_int_t* ast = frg_safe_malloc(sizeof(frg_ast_value_int_t));
 
     ast->base.id = FRG_AST_ID_VALUE_INT;
+    ast->base.source_range = *source_range;
     ast->value.u64 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_U64);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_U64);
 
     return ast;
 }
 
 frg_ast_value_int_t* frg_ast_new_value_int_from_lexical_cast_result(
+    const frg_parsing_range_t *source_range,
     const frg_parse_uint_result_t* result
 ) {
     frg_assert_pointer_non_null(result);
 
     if (result->bit_width == 8) {
         if (result->is_signed) {
-            return frg_ast_new_value_i8((int8_t)result->value);
+            return frg_ast_new_value_i8(source_range, (int8_t)result->value);
         } else {
-            return frg_ast_new_value_u8((uint8_t)result->value);
+            return frg_ast_new_value_u8(source_range, (uint8_t)result->value);
         }
     } else if (result->bit_width == 16) {
         if (result->is_signed) {
-            return frg_ast_new_value_i16((int16_t)result->value);
+            return frg_ast_new_value_i16(source_range, (int16_t)result->value);
         } else {
-            return frg_ast_new_value_u16((uint16_t)result->value);
+            return frg_ast_new_value_u16(source_range, (uint16_t)result->value);
         }
     } else if (result->bit_width == 32) {
         if (result->is_signed) {
-            return frg_ast_new_value_i32((int32_t)result->value);
+            return frg_ast_new_value_i32(source_range, (int32_t)result->value);
         } else {
-            return frg_ast_new_value_u32((uint32_t)result->value);
+            return frg_ast_new_value_u32(source_range, (uint32_t)result->value);
         }
     } else if (result->bit_width == 64) {
         if (result->is_signed) {
-            return frg_ast_new_value_i64((int64_t)result->value);
+            return frg_ast_new_value_i64(source_range, (int64_t)result->value);
         } else {
-            return frg_ast_new_value_u64((uint64_t)result->value);
+            return frg_ast_new_value_u64(source_range, (uint64_t)result->value);
         }
     } else {
         frg_die("unexpected bit width %i", result->bit_width);
@@ -401,41 +452,63 @@ frg_ast_value_int_t* frg_ast_new_value_int_from_lexical_cast_result(
 }
 
 frg_ast_value_float_t* frg_ast_new_value_f32(
+    const frg_parsing_range_t *source_range,
     frg_f32_t value
 ) {
     frg_ast_value_float_t* ast = frg_safe_malloc(sizeof(frg_ast_value_float_t));
 
     ast->base.id = FRG_AST_ID_VALUE_FLOAT;
+    ast->base.source_range = *source_range;
     ast->value.f32 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_F32);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_F32);
 
     return ast;
 }
 
 frg_ast_value_float_t* frg_ast_new_value_f64(
+    const frg_parsing_range_t *source_range,
     frg_f64_t value
 ) {
     frg_ast_value_float_t* ast = frg_safe_malloc(sizeof(frg_ast_value_float_t));
 
     ast->base.id = FRG_AST_ID_VALUE_FLOAT;
+    ast->base.source_range = *source_range;
     ast->value.f64 = value;
-    ast->ty = frg_ast_new_ty_primary(FRG_AST_ID_TY_F64);
+    ast->ty = frg_ast_new_ty_primary(source_range, FRG_AST_ID_TY_F64);
 
     return ast;
 }
 
+frg_ast_value_float_t* frg_ast_new_value_float_from_lexical_cast_result(
+    const frg_parsing_range_t *source_range,
+    const frg_parse_float_result_t* result
+) {
+    frg_assert_pointer_non_null(result);
+
+    if (result->bit_width == 32) {
+        return frg_ast_new_value_f32(source_range, (frg_f32_t)result->value);
+    } else if (result->bit_width == 64) {
+        return frg_ast_new_value_f64(source_range, (frg_f64_t)result->value);
+    } else {
+        frg_die("unexpected bit width %i", result->bit_width);
+    }
+}
+
 frg_ast_value_char_t* frg_ast_new_value_char(
+    const frg_parsing_range_t *source_range,
     frg_char_t value
 ) {
     frg_ast_value_char_t* ast = frg_safe_malloc(sizeof(frg_ast_value_char_t));
 
     ast->base.id = FRG_AST_ID_VALUE_CHAR;
+    ast->base.source_range = *source_range;
     ast->value = value;
 
     return ast;
 }
 
 frg_ast_value_str_t* frg_ast_new_value_str(
+    const frg_parsing_range_t *source_range,
     GString* value
 ) {
     frg_assert_pointer_non_null(value);
@@ -443,12 +516,14 @@ frg_ast_value_str_t* frg_ast_new_value_str(
     frg_ast_value_str_t* ast = frg_safe_malloc(sizeof(frg_ast_value_str_t));
 
     ast->base.id = FRG_AST_ID_VALUE_STR;
+    ast->base.source_range = *source_range;
     ast->value = value;
 
     return ast;
 }
 
 frg_ast_value_symbol_t* frg_ast_new_value_symbol(
+    const frg_parsing_range_t *source_range,
     GString* name
 ) {
     frg_assert_gstring_non_empty(name);
@@ -456,12 +531,14 @@ frg_ast_value_symbol_t* frg_ast_new_value_symbol(
     frg_ast_value_symbol_t* ast = frg_safe_malloc(sizeof(frg_ast_value_symbol_t));
 
     ast->base.id = FRG_AST_ID_VALUE_SYMBOL;
+    ast->base.source_range = *source_range;
     ast->name = name;
 
     return ast;
 }
 
 frg_ast_value_call_kw_arg_t* frg_ast_new_value_call_kw_arg(
+    const frg_parsing_range_t *source_range,
     GString* name,
     frg_ast_t* value
 ) {
@@ -471,6 +548,7 @@ frg_ast_value_call_kw_arg_t* frg_ast_new_value_call_kw_arg(
     frg_ast_value_call_kw_arg_t* ast = frg_safe_malloc(sizeof(frg_ast_value_call_kw_arg_t));
 
     ast->base.id = FRG_AST_ID_VALUE_CALL_KW_ARG;
+    ast->base.source_range = *source_range;
     ast->name = name;
     ast->value = value;
 
@@ -478,6 +556,7 @@ frg_ast_value_call_kw_arg_t* frg_ast_new_value_call_kw_arg(
 }
 
 frg_ast_value_call_t* frg_ast_new_value_call(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* callee,
     GList* args,
     GList* kw_args
@@ -487,6 +566,7 @@ frg_ast_value_call_t* frg_ast_new_value_call(
     frg_ast_value_call_t* ast = frg_safe_malloc(sizeof(frg_ast_value_call_t));
 
     ast->base.id = FRG_AST_ID_VALUE_CALL;
+    ast->base.source_range = *source_range;
     ast->callee = callee;
     ast->args = args;
     ast->kw_args = kw_args;
@@ -495,6 +575,7 @@ frg_ast_value_call_t* frg_ast_new_value_call(
 }
 
 frg_ast_value_unary_t* frg_ast_new_value_unary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id,
     frg_ast_t* operand
 ) {
@@ -504,12 +585,14 @@ frg_ast_value_unary_t* frg_ast_new_value_unary(
     frg_ast_value_unary_t* ast = frg_safe_malloc(sizeof(frg_ast_value_unary_t));
 
     ast->base.id = id;
+    ast->base.source_range = *source_range;
     ast->operand = operand;
 
     return ast;
 }
 
 frg_ast_value_binary_t* frg_ast_new_value_binary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id,
     frg_ast_t* left,
     frg_ast_t* right
@@ -521,6 +604,7 @@ frg_ast_value_binary_t* frg_ast_new_value_binary(
     frg_ast_value_binary_t* ast = frg_safe_malloc(sizeof(frg_ast_value_binary_t));
 
     ast->base.id = id;
+    ast->base.source_range = *source_range;
     ast->left = left;
     ast->right = right;
 
@@ -752,6 +836,246 @@ void frg_ast_destroy(frg_ast_t** ast) {
             break;
         default:
             break;
+    }
+}
+
+GList* _frg_ast_clone_list(GList* list) {
+    GList* clone = NULL;
+
+    for (GList* it = list; it != NULL; it = it->next) {
+        clone = g_list_append(clone, frg_ast_clone((frg_ast_t*)it->data));
+    }
+
+    return clone;
+}
+
+frg_ast_t* frg_ast_clone(const frg_ast_t* ast) {
+    if (ast == NULL) {
+        return NULL;
+    }
+
+    frg_ast_t* result = NULL;
+
+    switch (ast->id) {
+        case FRG_AST_ID_TY_BOOL:
+        case FRG_AST_ID_TY_U8:
+        case FRG_AST_ID_TY_U16:
+        case FRG_AST_ID_TY_U32:
+        case FRG_AST_ID_TY_U64:
+        case FRG_AST_ID_TY_I8:
+        case FRG_AST_ID_TY_I16:
+        case FRG_AST_ID_TY_I32:
+        case FRG_AST_ID_TY_I64:
+        case FRG_AST_ID_TY_F32:
+        case FRG_AST_ID_TY_F64:
+            return frg_ast_new_ty_primary(
+                &ast->source_range,
+                ast->id
+            );
+        case FRG_AST_ID_TY_SYMBOL:
+            return (frg_ast_t*)frg_ast_new_ty_symbol(
+                &ast->source_range,
+                g_string_new(((frg_ast_ty_symbol_t*)ast)->name->str)
+            );
+        case FRG_AST_ID_TY_POINTER:
+            return (frg_ast_t*)frg_ast_new_ty_pointer(
+                &ast->source_range,
+                frg_ast_clone(((frg_ast_ty_pointer_t*)ast)->value)
+            );
+        case FRG_AST_ID_TY_FN:
+            return (frg_ast_t*)frg_ast_new_ty_fn(
+                &ast->source_range,
+                _frg_ast_clone_list(((frg_ast_ty_fn_t*)ast)->args),
+                _frg_ast_clone_list(((frg_ast_ty_fn_t*)ast)->var_pos_args),
+                _frg_ast_clone_list(((frg_ast_ty_fn_t*)ast)->var_kw_args),
+                frg_ast_clone(((frg_ast_ty_fn_t*)ast)->return_ty)
+            );
+        case FRG_AST_ID_DECL_UNION:
+            return (frg_ast_t*)frg_ast_new_decl_union(
+                &ast->source_range,
+                g_string_new(((frg_ast_decl_union_t*)ast)->name->str),
+                _frg_ast_clone_list(((frg_ast_decl_union_t*)ast)->props)
+            );
+        case FRG_AST_ID_DECL_STRUCT:
+            return (frg_ast_t*)frg_ast_new_decl_struct(
+                &ast->source_range,
+                g_string_new(((frg_ast_decl_struct_t*)ast)->name->str),
+                _frg_ast_clone_list(((frg_ast_decl_struct_t*)ast)->decls)
+            );
+        case FRG_AST_ID_DECL_PROP:
+            return (frg_ast_t*)frg_ast_new_decl_prop(
+                &ast->source_range,
+                ((frg_ast_decl_prop_t*)ast)->flags,
+                g_string_new(((frg_ast_decl_prop_t*)ast)->name->str),
+                frg_ast_clone(((frg_ast_decl_prop_t*)ast)->ty)
+            );
+        case FRG_AST_ID_DECL_IFACE:
+            return (frg_ast_t*)frg_ast_new_decl_iface(
+                &ast->source_range,
+                ((frg_ast_decl_iface_t*)ast)->flags,
+                g_string_new(((frg_ast_decl_iface_t*)ast)->name->str),
+                _frg_ast_clone_list(((frg_ast_decl_iface_t*)ast)->extends),
+                _frg_ast_clone_list(((frg_ast_decl_iface_t*)ast)->decls)
+            );
+        case FRG_AST_ID_DECL_FN_ARG:
+            return (frg_ast_t*)frg_ast_new_decl_fn_arg(
+                &ast->source_range,
+                ((frg_ast_decl_fn_arg_t*)ast)->flags,
+                (frg_ast_decl_prop_t*)frg_ast_clone((frg_ast_t*)((frg_ast_decl_fn_arg_t*)ast)->prop),
+                frg_ast_clone(((frg_ast_decl_fn_arg_t*)ast)->default_value)
+            );
+        case FRG_AST_ID_DECL_FN:
+            return (frg_ast_t*)frg_ast_new_decl_fn(
+                &ast->source_range,
+                ((frg_ast_decl_fn_t*)ast)->flags,
+                g_string_new(((frg_ast_decl_fn_t*)ast)->name->str),
+                (frg_ast_ty_fn_t*)frg_ast_clone((frg_ast_t*)((frg_ast_decl_fn_t*)ast)->ty),
+                frg_ast_clone(((frg_ast_decl_fn_t*)ast)->body)
+            );
+        case FRG_AST_ID_DECL_VAR:
+            return (frg_ast_t*)frg_ast_new_decl_var(
+                &ast->source_range,
+                (frg_ast_decl_prop_t*)frg_ast_clone((frg_ast_t*)((frg_ast_decl_var_t*)ast)->prop),
+                frg_ast_clone(((frg_ast_decl_var_t*)ast)->initial_value)
+            );
+        case FRG_AST_ID_DECL_BLOCK:
+            return (frg_ast_t*)frg_ast_new_decl_block(
+                &ast->source_range,
+                _frg_ast_clone_list(((frg_ast_decl_block_t*)ast)->decls)
+            );
+        case FRG_AST_ID_STMT_RETURN:
+            return (frg_ast_t*)frg_ast_new_stmt_return(
+                &ast->source_range,
+                frg_ast_clone(((frg_ast_stmt_return_t*)ast)->value)
+            );
+        case FRG_AST_ID_STMT_IF:
+            return (frg_ast_t*)frg_ast_new_stmt_if(
+                &ast->source_range,
+                frg_ast_clone(((frg_ast_stmt_if_t*)ast)->condition),
+                frg_ast_clone(((frg_ast_stmt_if_t*)ast)->then_clause),
+                frg_ast_clone(((frg_ast_stmt_if_t*)ast)->else_clause)
+            );
+        case FRG_AST_ID_STMT_WHILE:
+            return (frg_ast_t*)frg_ast_new_stmt_while(
+                &ast->source_range,
+                frg_ast_clone(((frg_ast_stmt_while_t*)ast)->condition),
+                frg_ast_clone(((frg_ast_stmt_while_t*)ast)->body)
+            );
+        case FRG_AST_ID_STMT_BLOCK:
+            return (frg_ast_t*)frg_ast_new_stmt_block(
+                &ast->source_range,
+                _frg_ast_clone_list(((frg_ast_stmt_block_t*)ast)->stmts)
+            );
+        case FRG_AST_ID_VALUE_TRUE:
+        case FRG_AST_ID_VALUE_FALSE:
+            return frg_ast_new_value_primary(
+                &ast->source_range,
+                ast->id
+            );
+        case FRG_AST_ID_VALUE_INT:
+            result = frg_safe_malloc(sizeof(frg_ast_value_int_t));
+
+            result->id = ast->id;
+            result->source_range = ast->source_range;
+
+            ((frg_ast_value_int_t*)result)->ty = frg_ast_clone(((frg_ast_value_int_t*)ast)->ty);
+            ((frg_ast_value_int_t*)result)->value = ((frg_ast_value_int_t*)ast)->value;
+
+            return result;
+        case FRG_AST_ID_VALUE_FLOAT:
+            result = frg_safe_malloc(sizeof(frg_ast_value_float_t));
+
+            result->id = ast->id;
+            result->source_range = ast->source_range;
+
+            ((frg_ast_value_float_t*)result)->ty = frg_ast_clone(((frg_ast_value_float_t*)ast)->ty);
+            ((frg_ast_value_float_t*)result)->value = ((frg_ast_value_float_t*)ast)->value;
+
+            return result;
+        case FRG_AST_ID_VALUE_CHAR:
+            return (frg_ast_t*)frg_ast_new_value_char(
+                &ast->source_range,
+                ((frg_ast_value_char_t*)ast)->value
+            );
+        case FRG_AST_ID_VALUE_STR:
+            return (frg_ast_t*)frg_ast_new_value_str(
+                &ast->source_range,
+                g_string_new(((frg_ast_value_str_t*)ast)->value->str)
+            );
+        case FRG_AST_ID_VALUE_SYMBOL:
+            return (frg_ast_t*)frg_ast_new_value_symbol(
+                &ast->source_range,
+                g_string_new(((frg_ast_value_symbol_t*)ast)->name->str)
+            );
+        case FRG_AST_ID_VALUE_CALL_KW_ARG:
+            return (frg_ast_t*)frg_ast_new_value_call_kw_arg(
+                &ast->source_range,
+                g_string_new(((frg_ast_value_call_kw_arg_t*)ast)->name->str),
+                frg_ast_clone(((frg_ast_value_call_kw_arg_t*)ast)->value)
+            );
+        case FRG_AST_ID_VALUE_CALL:
+            return (frg_ast_t*)frg_ast_new_value_call(
+                &ast->source_range,
+                frg_ast_clone(((frg_ast_value_call_t*)ast)->callee),
+                _frg_ast_clone_list(((frg_ast_value_call_t*)ast)->args),
+                _frg_ast_clone_list(((frg_ast_value_call_t*)ast)->kw_args)
+            );
+        case FRG_AST_ID_VALUE_DEREF:
+        case FRG_AST_ID_VALUE_GETADDR:
+        case FRG_AST_ID_VALUE_BIT_NOT:
+        case FRG_AST_ID_VALUE_NEG:
+        case FRG_AST_ID_VALUE_LOG_NOT:
+        case FRG_AST_ID_VALUE_INC:
+        case FRG_AST_ID_VALUE_DEC:
+            return (frg_ast_t*)frg_ast_new_value_unary(
+                &ast->source_range,
+                ast->id,
+                frg_ast_clone(((frg_ast_value_unary_t*)ast)->operand)
+            );
+        case FRG_AST_ID_VALUE_ACCESS:
+        case FRG_AST_ID_VALUE_BIT_AND:
+        case FRG_AST_ID_VALUE_BIT_OR:
+        case FRG_AST_ID_VALUE_BIT_XOR:
+        case FRG_AST_ID_VALUE_BIT_SHL:
+        case FRG_AST_ID_VALUE_BIT_SHR:
+        case FRG_AST_ID_VALUE_ADD:
+        case FRG_AST_ID_VALUE_SUB:
+        case FRG_AST_ID_VALUE_MUL:
+        case FRG_AST_ID_VALUE_DIV:
+        case FRG_AST_ID_VALUE_DIV_INT:
+        case FRG_AST_ID_VALUE_MOD:
+        case FRG_AST_ID_VALUE_EXP:
+        case FRG_AST_ID_VALUE_EQ:
+        case FRG_AST_ID_VALUE_NE:
+        case FRG_AST_ID_VALUE_LT:
+        case FRG_AST_ID_VALUE_LE:
+        case FRG_AST_ID_VALUE_GT:
+        case FRG_AST_ID_VALUE_GE:
+        case FRG_AST_ID_VALUE_LOG_AND:
+        case FRG_AST_ID_VALUE_LOG_OR:
+        case FRG_AST_ID_VALUE_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_AND_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_OR_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_XOR_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_SHL_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_SHR_ASSIGN:
+        case FRG_AST_ID_VALUE_ADD_ASSIGN:
+        case FRG_AST_ID_VALUE_SUB_ASSIGN:
+        case FRG_AST_ID_VALUE_MUL_ASSIGN:
+        case FRG_AST_ID_VALUE_DIV_ASSIGN:
+        case FRG_AST_ID_VALUE_DIV_INT_ASSIGN:
+        case FRG_AST_ID_VALUE_MOD_ASSIGN:
+        case FRG_AST_ID_VALUE_EXP_ASSIGN:
+        case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
+        case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
+            return (frg_ast_t*)frg_ast_new_value_binary(
+                &ast->source_range,
+                ast->id,
+                frg_ast_clone(((frg_ast_value_binary_t*)ast)->left),
+                frg_ast_clone(((frg_ast_value_binary_t*)ast)->right)
+            );
+        default:
+            frg_die_unexpected_enum_value(ast->id);
     }
 }
 

@@ -39,13 +39,14 @@ Notes or debug messages intentionally do not have codes.
 `<domain>` can be any of the following:
 
 - `C`: Command line errors
-- `F`: Filesystem errors that may involve being unable to read or write files
-- `S`: Syntax errors
-- `T`: Type errors
+- `FS`: Filesystem errors that may involve being unable to read or write files
+- `FT`: Feature support errors
 - `G`: Code generation errors
 - `L`: Linker errors
+- `S`: Syntax errors
+- `T`: Type errors
 
-Messages from `F` and `C` domains are displayed without error codes.
+Messages from `FS` and `C` domains are displayed without error codes.
 
 ## Source
 

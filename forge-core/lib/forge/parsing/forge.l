@@ -28,6 +28,7 @@ not, see <https://www.gnu.org/licenses/>.
 #include <forge/common/types.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/messages/codes.h>
+#include <forge/parsing/union.h>
 #include <glib.h>
 #include <stdbool.h>
 
@@ -158,7 +159,17 @@ false {
 }
 
 [a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]* {
-    yylval.value_str = g_string_new(yytext);
+    frg_parsing_location_t location = {
+        .path = _frg_parsing_current_path,
+        .offset = _frg_parsing_current_offset,
+        .lineno = yylineno,
+        .columnno = yycolumnno,
+    };
+
+    yylval.value_symbol.source_range.start = location;
+    yylval.value_symbol.source_range.length = yyleng;
+    yylval.value_symbol.value = g_string_new(yytext);
+
     return SYMBOL;
 }
 
@@ -223,14 +234,17 @@ false {
         yytext
     );
 
+    yylval.value_int.source_range.start = location;
+    yylval.value_int.source_range.length = yyleng;
+
     if (!frg_parse_uint(
         _frg_parsing_current_message_buffer,
-        &yylval.value_int,
+        &yylval.value_int.value,
         reader
     )) {
-        yylval.value_int.value = 0;
-        yylval.value_int.is_signed = false;
-        yylval.value_int.bit_width = 64;
+        yylval.value_int.value.value = 0;
+        yylval.value_int.value.is_signed = false;
+        yylval.value_int.value.bit_width = 64;
     }
 
     frg_parsing_token_reader_destroy(&reader);
@@ -239,21 +253,61 @@ false {
 }
 
 [0-9][0-9a-zA-Z_]*\.[0-9a-zA-Z_]* {
-    // frg_recoverable_status_t result = frg_str_to_float(&yylval.value_float, yytext);
-    // if (result != FRG_STATUS_OK) {
-    //     frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
-    yylval.value_float = 0.0;
-    // }
+    frg_parsing_location_t location = {
+        .path = _frg_parsing_current_path,
+        .offset = _frg_parsing_current_offset,
+        .lineno = yylineno,
+        .columnno = yycolumnno,
+    };
+
+    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
+        &location,
+        yytext
+    );
+
+    yylval.value_float.source_range.start = location;
+    yylval.value_float.source_range.length = yyleng;
+
+    if (!frg_parse_float(
+        _frg_parsing_current_message_buffer,
+        &yylval.value_float.value,
+        reader
+    )) {
+        yylval.value_float.value.value = 0.0;
+        yylval.value_float.value.bit_width = 64;
+    }
+
+    frg_parsing_token_reader_destroy(&reader);
 
     return FLOAT;
 }
 
 ([0-9][0-9a-zA-Z_]*)?\.[0-9][0-9a-zA-Z_]* {
-    // frg_status_t result = frg_str_to_float(&yylval.value_float, yytext);
-    // if (result != FRG_STATUS_OK) {
-    //     frg_log_error_at_source_char(_frg_parsing_current_path, yylineno, yycolumnno, "invalid float literal \"%s\"", yytext);
-    yylval.value_float = 0.0;
-    // }
+    frg_parsing_location_t location = {
+        .path = _frg_parsing_current_path,
+        .offset = _frg_parsing_current_offset,
+        .lineno = yylineno,
+        .columnno = yycolumnno,
+    };
+
+    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
+        &location,
+        yytext
+    );
+
+    yylval.value_float.source_range.start = location;
+    yylval.value_float.source_range.length = yyleng;
+
+    if (!frg_parse_float(
+        _frg_parsing_current_message_buffer,
+        &yylval.value_float.value,
+        reader
+    )) {
+        yylval.value_float.value.value = 0.0;
+        yylval.value_float.value.bit_width = 64;
+    }
+
+    frg_parsing_token_reader_destroy(&reader);
 
     return FLOAT;
 }
@@ -262,57 +316,43 @@ false {
 \"(\\.|[^\\"\n])*\" {
     // Taken from https://gist.github.com/codebrainz/2933703
 
-    frg_parsing_location_t location = {
-        .path = _frg_parsing_current_path,
-        .offset = _frg_parsing_current_offset,
-        .lineno = yylineno,
-        .columnno = yycolumnno,
+    frg_parsing_range_t range = {
+        .start = {
+            .path = _frg_parsing_current_path,
+            .offset = _frg_parsing_current_offset,
+            .lineno = yylineno,
+            .columnno = yycolumnno
+        },
+        .length = yyleng
     };
 
-    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        &location,
-        yytext
-    );
-
-    if (!frg_parse_str(
+    frg_message_emit_eft_1_unsupported_requirement(
         _frg_parsing_current_message_buffer,
-        &yylval.value_str,
-        reader
-    )) {
-        yylval.value_str = g_string_new(NULL);
-    }
-
-    frg_parsing_token_reader_destroy(&reader);
-
-    return STR;
+        &range,
+        4,
+        "String literals"
+    );
 }
 
 '(\\.|[^'\n])*' {
     // Taken from https://gist.github.com/codebrainz/2933703
     
-    frg_parsing_location_t location = {
-        .path = _frg_parsing_current_path,
-        .offset = _frg_parsing_current_offset,
-        .lineno = yylineno,
-        .columnno = yycolumnno,
+    frg_parsing_range_t range = {
+        .start = {
+            .path = _frg_parsing_current_path,
+            .offset = _frg_parsing_current_offset,
+            .lineno = yylineno,
+            .columnno = yycolumnno
+        },
+        .length = yyleng
     };
 
-    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        &location,
-        yytext
-    );
-
-    if (!frg_parse_char(
+    frg_message_emit_eft_1_unsupported_requirement(
         _frg_parsing_current_message_buffer,
-        &yylval.value_char,
-        reader
-    )) {
-        yylval.value_char = 0;
-    }
-
-    frg_parsing_token_reader_destroy(&reader);
-
-    return CHAR;
+        &range,
+        5,
+        "Character literals"
+    );
 }
 
 "." {

@@ -60,5 +60,10 @@ nav:
       - 'Requirement-6: File naming': 'specification/requirements/Requirement-6-file-naming.md'
       - 'Requirement-7: Operators': 'specification/requirements/Requirement-7-operators.md'
       - 'Requirement-8: Operator precedence': 'specification/requirements/Requirement-8-operator-precedence.md'
+      - 'Requirement-9: Union declarations': 'specification/requirements/Requirement-9-union-declarations.md'
+      - 'Requirement-10: Struct declarations': 'specification/requirements/Requirement-10-struct-declarations.md'
+      - 'Requirement-11: Dynamic objects': 'specification/requirements/Requirement-11-dynamic-objects.md'
+      - 'Requirement-12: Interface declarations': 'specification/requirements/Requirement-12-interface-declarations.md'
+      - 'Requirement-13: Numeric containing types': 'specification/requirements/Requirement-13-numeric-containing-types.md'
   - 'Reference':
     - 'Message codes': 'reference/message-codes.md'

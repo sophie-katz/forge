@@ -24,6 +24,7 @@ void test_frame(void) {
     frg_ast_scope_frame_t* frame = frg_ast_scope_frame_new();
 
     frg_ast_decl_prop_t* ast = frg_ast_new_decl_prop(
+        &frg_parsing_range_null,
         FRG_AST_DECL_PROP_FLAG_NONE,
         g_string_new("Asdf"),
         NULL
@@ -113,7 +114,9 @@ void test_frame_load_decl_block(void) {
     decls = g_list_append(
         decls,
         frg_ast_new_decl_var(
+            &frg_parsing_range_null,
             frg_ast_new_decl_prop(
+                &frg_parsing_range_null,
                 FRG_AST_DECL_PROP_FLAG_NONE,
                 g_string_new("x"),
                 NULL
@@ -125,9 +128,11 @@ void test_frame_load_decl_block(void) {
     decls = g_list_append(
         decls,
         frg_ast_new_decl_fn(
+            &frg_parsing_range_null,
             FRG_AST_DECL_FN_FLAG_NONE,
             g_string_new("f"),
             frg_ast_new_ty_fn(
+                &frg_parsing_range_null,
                 NULL,
                 NULL,
                 NULL,
@@ -137,7 +142,10 @@ void test_frame_load_decl_block(void) {
         )
     );
 
-    frg_ast_decl_block_t* decl_block = frg_ast_new_decl_block(decls);
+    frg_ast_decl_block_t* decl_block = frg_ast_new_decl_block(
+        &frg_parsing_range_null,
+        decls
+    );
 
     frg_ast_scope_frame_load_decl_block(
         frame,
@@ -177,8 +185,10 @@ void test_frame_load_fn_args(void) {
     args = g_list_append(
         args,
         frg_ast_new_decl_fn_arg(
+            &frg_parsing_range_null,
             FRG_AST_DECL_FN_ARG_FLAG_NONE,
             frg_ast_new_decl_prop(
+                &frg_parsing_range_null,
                 FRG_AST_DECL_PROP_FLAG_NONE,
                 g_string_new("x"),
                 NULL
@@ -190,8 +200,10 @@ void test_frame_load_fn_args(void) {
     args = g_list_append(
         args,
         frg_ast_new_decl_fn_arg(
+            &frg_parsing_range_null,
             FRG_AST_DECL_FN_ARG_FLAG_NONE,
             frg_ast_new_decl_prop(
+                &frg_parsing_range_null,
                 FRG_AST_DECL_PROP_FLAG_NONE,
                 g_string_new("y"),
                 NULL
@@ -201,9 +213,11 @@ void test_frame_load_fn_args(void) {
     );
 
     frg_ast_decl_fn_t* decl_fn = frg_ast_new_decl_fn(
+        &frg_parsing_range_null,
         FRG_AST_DECL_FN_FLAG_NONE,
         g_string_new("f"),
         frg_ast_new_ty_fn(
+            &frg_parsing_range_null,
             args,
             NULL,
             NULL,
@@ -246,6 +260,7 @@ void test_scope(void) {
     frg_ast_scope_t* scope = frg_ast_scope_new();
 
     frg_ast_decl_prop_t* x = frg_ast_new_decl_prop(
+        &frg_parsing_range_null,
         FRG_AST_DECL_PROP_FLAG_NONE,
         g_string_new("x"),
         NULL
@@ -297,6 +312,7 @@ void test_scope(void) {
     frg_ast_scope_push_frame(scope);
 
     frg_ast_decl_prop_t* y = frg_ast_new_decl_prop(
+        &frg_parsing_range_null,
         FRG_AST_DECL_PROP_FLAG_NONE,
         g_string_new("y"),
         NULL

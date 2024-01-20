@@ -53,7 +53,10 @@
         "bitset": "c",
         "__memory": "c",
         "limits": "c",
-        "locale": "c"
+        "locale": "c",
+        "charconv": "c",
+        "compare": "c",
+        "__tree": "c"
     },
     "C_Cpp.doxygen.generateOnType": false
 }

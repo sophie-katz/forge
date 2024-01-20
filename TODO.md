@@ -17,9 +17,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [ ] Standardize message types
-    - [ ] Add in error codes
-- [ ] Create placeholder requirements for missing features
+- [ ] Add in formatting for at least types
 - [ ] Add in verification logic
 - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
 
@@ -34,7 +32,6 @@ not, see <https://www.gnu.org/licenses/>.
 
 - [x] Add in a feature not yet implemented error and a specific error message to indicate that a requirement or proposal is not yet implemented
     - [ ] Ideally reference a documentation URL
-- [ ] Add in token ranges for AST nodes
 - [ ] When printing errors for AST nodes
     - [ ] Print the token range if possible
     - [ ] Otherwise, print the token tree up until the first token range if one exists
@@ -47,6 +44,9 @@ not, see <https://www.gnu.org/licenses/>.
 - [ ] Use `G_GNUC_WARN_UNUSED_RESULT`
     - [ ] Look into other attributes to use
 - [ ] Add in "operator overloading" for values being passed into functions
+- [ ] Make statement and declaration blocks parse more similarly
+- [ ] Rename `error.h` to `assert.h`
+- [ ] Create and conform to naming guidelines
 
 # Completed
 
@@ -75,3 +75,7 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Implement integer literals of all sizes and signednesses
 - [x] Implement boolean literals
 - [x] Implement floating point literals of all sizes and signednesses
+- [x] Standardize message types
+    - [x] Add in error codes
+- [x] Add in token ranges for AST nodes
+- [x] Create placeholder requirements for missing features

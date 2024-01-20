@@ -213,6 +213,77 @@ bool frg_ast_id_is_ty_primary(frg_ast_id_t id) {
     }
 }
 
+bool frg_ast_id_is_ty_int(frg_ast_id_t id) {
+    switch (id) {
+        case FRG_AST_ID_TY_U8:
+        case FRG_AST_ID_TY_U16:
+        case FRG_AST_ID_TY_U32:
+        case FRG_AST_ID_TY_U64:
+        case FRG_AST_ID_TY_I8:
+        case FRG_AST_ID_TY_I16:
+        case FRG_AST_ID_TY_I32:
+        case FRG_AST_ID_TY_I64:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool frg_ast_id_is_ty_int_signed(frg_ast_id_t id) {
+    switch (id) {
+        case FRG_AST_ID_TY_I8:
+        case FRG_AST_ID_TY_I16:
+        case FRG_AST_ID_TY_I32:
+        case FRG_AST_ID_TY_I64:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool frg_ast_id_is_ty_int_unsigned(frg_ast_id_t id) {
+    switch (id) {
+        case FRG_AST_ID_TY_U8:
+        case FRG_AST_ID_TY_U16:
+        case FRG_AST_ID_TY_U32:
+        case FRG_AST_ID_TY_U64:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool frg_ast_id_is_ty_float(frg_ast_id_t id) {
+    switch (id) {
+        case FRG_AST_ID_TY_F32:
+        case FRG_AST_ID_TY_F64:
+            return true;
+        default:
+            return false;
+    }
+}
+
+frg_bit_width_t frg_ast_id_get_bit_width(frg_ast_id_t id) {
+    switch (id) {
+        case FRG_AST_ID_TY_U8:
+        case FRG_AST_ID_TY_I8:
+            return 8;
+        case FRG_AST_ID_TY_U16:
+        case FRG_AST_ID_TY_I16:
+            return 16;
+        case FRG_AST_ID_TY_U32:
+        case FRG_AST_ID_TY_I32:
+        case FRG_AST_ID_TY_F32:
+            return 32;
+        case FRG_AST_ID_TY_U64:
+        case FRG_AST_ID_TY_I64:
+        case FRG_AST_ID_TY_F64:
+            return 64;
+        default:
+            frg_die_unexpected_enum_value(id);
+    }
+}
+
 bool frg_ast_id_is_value_primary(frg_ast_id_t id) {
     switch (id) {
         case FRG_AST_ID_VALUE_TRUE:

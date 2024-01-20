@@ -134,6 +134,11 @@ typedef enum {
 
 const char* frg_ast_id_to_string(frg_ast_id_t id);
 bool frg_ast_id_is_ty_primary(frg_ast_id_t id);
+bool frg_ast_id_is_ty_int(frg_ast_id_t id);
+bool frg_ast_id_is_ty_int_signed(frg_ast_id_t id);
+bool frg_ast_id_is_ty_int_unsigned(frg_ast_id_t id);
+bool frg_ast_id_is_ty_float(frg_ast_id_t id);
+frg_bit_width_t frg_ast_id_get_bit_width(frg_ast_id_t id);
 bool frg_ast_id_is_value_primary(frg_ast_id_t id);
 bool frg_ast_id_is_value_unary(frg_ast_id_t id);
 bool frg_ast_id_is_value_binary(frg_ast_id_t id);

@@ -14,61 +14,423 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/type_resolution.h>
+#include <forge/messages/codes.h>
+#include <forge/common/error.h>
+#include <forge/formatting/format.h>
+
+frg_ast_t* frg_ast_get_numeric_containing_type(
+    frg_ast_t* a,
+    frg_ast_t* b
+) {
+    frg_assert_pointer_non_null(a);
+    frg_assert_pointer_non_null(b);
+
+    if (frg_ast_id_is_ty_int_unsigned(a->id) && frg_ast_id_is_ty_int_unsigned(b->id)) {
+        if (frg_ast_id_get_bit_width(a->id) == 64 || frg_ast_id_get_bit_width(b->id) == 64) {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_U64
+            );
+        } else {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_U32
+            );
+        }
+    } else if (frg_ast_id_is_ty_int_signed(a->id) && frg_ast_id_is_ty_int_signed(b->id)) {
+        if (frg_ast_id_get_bit_width(a->id) == 64 || frg_ast_id_get_bit_width(b->id) == 64) {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_I64
+            );
+        } else {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_I32
+            );
+        }
+    } else if (frg_ast_id_is_ty_int_signed(a->id) && frg_ast_id_is_ty_int_unsigned(b->id)) {
+        if (frg_ast_id_get_bit_width(a->id) <= 32 && frg_ast_id_get_bit_width(b->id) <= 16) {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_I32
+            );
+        } else {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_I64
+            );
+        }
+    } else if (frg_ast_id_is_ty_int_unsigned(a->id) && frg_ast_id_is_ty_int_signed(b->id)) {
+        return frg_ast_get_numeric_containing_type(b, a);
+    } else if (frg_ast_id_is_ty_float(a->id) && frg_ast_id_is_ty_float(b->id)) {
+        if (frg_ast_id_get_bit_width(a->id) == 64 || frg_ast_id_get_bit_width(b->id) == 64) {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_F64
+            );
+        } else {
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_F32
+            );
+        }
+    } else {
+        return frg_ast_new_ty_primary(
+            &frg_parsing_range_null,
+            FRG_AST_ID_TY_F64
+        );
+    }
+}
 
 frg_ast_t* frg_ast_resolve_decl_type(
+    frg_message_buffer_t* message_buffer,
     frg_ast_scope_t* scope,
     frg_ast_t* decl
 ) {
-    
+    frg_assert_pointer_non_null(message_buffer);
+    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(decl);
+
+    frg_ast_t* result = NULL;
+    frg_ast_decl_prop_t* prop = NULL;
+    frg_ast_ty_fn_t* ty_fn = NULL;
+
+    switch (decl->id) {
+        case FRG_AST_ID_DECL_UNION:
+            frg_message_emit_eft_1_unsupported_requirement(
+                message_buffer,
+                &decl->source_range,
+                9,
+                "Union declarations"
+            );
+
+            return NULL;
+        case FRG_AST_ID_DECL_STRUCT:
+            frg_message_emit_eft_1_unsupported_requirement(
+                message_buffer,
+                &decl->source_range,
+                10,
+                "Struct declarations"
+            );
+
+            return NULL;
+        case FRG_AST_ID_DECL_PROP:
+            result = ((frg_ast_decl_prop_t*)decl)->ty;
+
+            if (result == NULL) {
+                frg_message_emit_eft_1_unsupported_requirement(
+                    message_buffer,
+                    &decl->source_range,
+                    11,
+                    "Dynamic objects"
+                );
+            }
+
+            return frg_ast_clone(result);
+        case FRG_AST_ID_DECL_IFACE:
+            frg_message_emit_eft_1_unsupported_requirement(
+                message_buffer,
+                &decl->source_range,
+                11,
+                "Interface declarations"
+            );
+
+            return NULL;
+        case FRG_AST_ID_DECL_FN_ARG:
+            prop = ((frg_ast_decl_fn_arg_t*)decl)->prop;
+
+            frg_assert_pointer_non_null(prop);
+
+            return frg_ast_resolve_decl_type(
+                message_buffer,
+                scope,
+                (frg_ast_t*)prop
+            );
+        case FRG_AST_ID_DECL_FN:
+            ty_fn = ((frg_ast_decl_fn_t*)decl)->ty;
+
+            frg_assert_pointer_non_null(ty_fn);
+
+            return frg_ast_clone((frg_ast_t*)ty_fn);
+        case FRG_AST_ID_DECL_VAR:
+            prop = ((frg_ast_decl_var_t*)decl)->prop;
+
+            frg_assert_pointer_non_null(prop);
+
+            return frg_ast_resolve_decl_type(
+                message_buffer,
+                scope,
+                (frg_ast_t*)prop
+            );
+        default:
+            frg_die_unexpected_enum_value(decl->id);
+    }
 }
 
-// frg_status_t frg_ast_resolve_value_type(
-//     frg_ast_t** type,
-//     frg_ast_scope_t* scope,
-//     frg_ast_t* value
-// ) {
-//     if (type == NULL || scope == NULL || value == NULL) {
-//         return FRG_STATUS_ERROR_NULL_ARGUMENT;
-//     } else if (*type != NULL) {
-//         return FRG_STATUS_ERROR_UNEXPECTED_ARGUMENT_VALUE;
-//     }
+frg_ast_t* frg_ast_resolve_value_type(
+    frg_message_buffer_t* message_buffer,
+    frg_ast_scope_t* scope,
+    frg_ast_t* value
+) {
+    frg_assert_pointer_non_null(message_buffer);
+    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(value);
 
-//     frg_ast_value_int_t* value_int = NULL;
-//     frg_ast_value_float_t* value_float = NULL;
-//     frg_ast_value_symbol_t* value_symbol = NULL;
-//     frg_ast_t* scope_ast = NULL;
+    frg_ast_t* ast = NULL;
+    frg_ast_value_int_t* value_int = NULL;
+    frg_ast_value_float_t* value_float = NULL;
+    frg_ast_value_symbol_t* value_symbol = NULL;
+    frg_ast_value_unary_t* value_unary = NULL;
+    frg_ast_value_call_t* value_call = NULL;
+    frg_ast_value_binary_t* value_binary = NULL;
+    frg_ast_t* type_left = NULL;
+    frg_ast_t* type_right = NULL;
 
-//     switch (value->id) {
-//         case FRG_AST_ID_VALUE_TRUE:
-//         case FRG_AST_ID_VALUE_FALSE:
-//             frg_check(
-//                 frg_ast_new_ty_primary(type, FRG_AST_ID_TY_BOOL)
-//             );
-//             break;
-//         case FRG_AST_ID_VALUE_INT:
-//             value_int = (frg_ast_value_int_t*)value;
+    switch (value->id) {
+        case FRG_AST_ID_VALUE_TRUE:
+        case FRG_AST_ID_VALUE_FALSE:
+        case FRG_AST_ID_VALUE_EQ:
+        case FRG_AST_ID_VALUE_NE:
+        case FRG_AST_ID_VALUE_LT:
+        case FRG_AST_ID_VALUE_LE:
+        case FRG_AST_ID_VALUE_GT:
+        case FRG_AST_ID_VALUE_GE:
+        case FRG_AST_ID_VALUE_LOG_NOT:
+        case FRG_AST_ID_VALUE_LOG_AND:
+        case FRG_AST_ID_VALUE_LOG_OR:
+            return frg_ast_new_ty_primary(
+                &frg_parsing_range_null,
+                FRG_AST_ID_TY_BOOL
+            );
+        case FRG_AST_ID_VALUE_INT:
+            value_int = (frg_ast_value_int_t*)value;
 
-//             frg_check(
-//                 frg_ast_new_ty_primary(type, value_int->ty->id)
-//             );
-//             break;
-//         case FRG_AST_ID_VALUE_FLOAT:
-//             value_float = (frg_ast_value_float_t*)value;
+            frg_assert_pointer_non_null(value_int->ty);
 
-//             frg_check(
-//                 frg_ast_new_ty_primary(type, value_float->ty->id)
-//             );
-//             break;
-//         case FRG_AST_ID_VALUE_SYMBOL:
-//             value_symbol = (frg_ast_value_symbol_t*)value;
+            return frg_ast_clone(value_int->ty);
+        case FRG_AST_ID_VALUE_FLOAT:
+            value_float = (frg_ast_value_float_t*)value;
 
-//             frg_check(
-//                 frg_ast_scope_get_ast(&scope_ast, scope, value_symbol->name->str)
-//             );
-//             break;
-//         default:
-//             return FRG_STATUS_ERROR_UNEXPECTED_ENUM_VALUE;
-//     }
+            frg_assert_pointer_non_null(value_float->ty);
 
-//     return FRG_STATUS_OK;
-// }
+            return frg_ast_clone(value_float->ty);
+        case FRG_AST_ID_VALUE_CHAR:
+            frg_message_emit_eft_1_unsupported_requirement(
+                message_buffer,
+                &value->source_range,
+                5,
+                "Character literals"
+            );
+
+            return NULL;
+        case FRG_AST_ID_VALUE_STR:
+            frg_message_emit_eft_1_unsupported_requirement(
+                message_buffer,
+                &value->source_range,
+                4,
+                "String literals"
+            );
+
+            return NULL;
+        case FRG_AST_ID_VALUE_SYMBOL:
+            value_symbol = (frg_ast_value_symbol_t*)value;
+
+            frg_assert_gstring_non_empty(value_symbol->name);
+
+            ast = frg_ast_scope_get_ast(
+                scope,
+                ((frg_ast_value_symbol_t*)value)->name->str
+            );
+
+            if (ast == NULL) {
+                frg_emit_message_et_1_undeclared_symbol(
+                    message_buffer,
+                    &value->source_range,
+                    value_symbol->name
+                );
+
+                return NULL;
+            }
+
+            return frg_ast_resolve_decl_type(
+                message_buffer,
+                scope,
+                ast
+            );
+        case FRG_AST_ID_VALUE_DEREF:
+            value_unary = (frg_ast_value_unary_t*)value;
+
+            ast = frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_unary->operand
+            );
+
+            if (ast == NULL) {
+                return NULL;
+            }
+
+            if (ast->id != FRG_AST_ID_TY_POINTER) {
+                frg_emit_message_et_2_cannot_deref_non_pointer(
+                    message_buffer,
+                    &value->source_range,
+                    ast
+                );
+
+                return NULL;
+            }
+
+            frg_assert_pointer_non_null(((frg_ast_ty_pointer_t*)ast)->value);
+
+            return frg_ast_clone(((frg_ast_ty_pointer_t*)ast)->value);
+        case FRG_AST_ID_VALUE_GETADDR:
+            value_unary = (frg_ast_value_unary_t*)value;
+
+            ast = frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_unary->operand
+            );
+
+            if (ast == NULL) {
+                return NULL;
+            }
+
+            return (frg_ast_t*)frg_ast_new_ty_pointer(
+                &frg_parsing_range_null,
+                ast
+            );
+        case FRG_AST_ID_VALUE_CALL:
+            value_call = (frg_ast_value_call_t*)value;
+
+            frg_assert_pointer_non_null(value_call->callee);
+
+            ast = frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_call->callee
+            );
+
+            if (ast == NULL) {
+                return NULL;
+            }
+
+            if (ast->id != FRG_AST_ID_TY_FN) {
+                frg_emit_message_et_3_cannot_call_non_fn(
+                    message_buffer,
+                    &value->source_range,
+                    ast
+                );
+
+                return NULL;
+            }
+
+            frg_assert_pointer_non_null(((frg_ast_ty_fn_t*)ast)->return_ty);
+
+            return frg_ast_clone(((frg_ast_ty_fn_t*)ast)->return_ty);
+        case FRG_AST_ID_VALUE_ACCESS:
+            frg_message_emit_eft_1_unsupported_requirement(
+                message_buffer,
+                &value->source_range,
+                10,
+                "Struct declarations"
+            );
+
+            return NULL;
+        case FRG_AST_ID_VALUE_BIT_NOT:
+        case FRG_AST_ID_VALUE_NEG:
+            value_unary = (frg_ast_value_unary_t*)value;
+
+            frg_assert_pointer_non_null(value_unary->operand);
+
+            return frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_unary->operand
+            );
+        case FRG_AST_ID_VALUE_BIT_AND:
+        case FRG_AST_ID_VALUE_BIT_OR:
+        case FRG_AST_ID_VALUE_BIT_XOR:
+        case FRG_AST_ID_VALUE_BIT_SHL:
+        case FRG_AST_ID_VALUE_BIT_SHR:
+        case FRG_AST_ID_VALUE_ADD:
+        case FRG_AST_ID_VALUE_SUB:
+        case FRG_AST_ID_VALUE_MUL:
+        case FRG_AST_ID_VALUE_MOD:
+        case FRG_AST_ID_VALUE_DIV:
+        case FRG_AST_ID_VALUE_DIV_INT:
+        case FRG_AST_ID_VALUE_EXP:
+            value_binary = (frg_ast_value_binary_t*)value;
+
+            frg_assert_pointer_non_null(value_binary->left);
+            frg_assert_pointer_non_null(value_binary->right);
+
+            type_left = frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_binary->left
+            );
+
+            if (type_left == NULL) {
+                return NULL;
+            }
+
+            type_right = frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_binary->right
+            );
+
+            if (type_right == NULL) {
+                return NULL;
+            }
+
+            ast = frg_ast_get_numeric_containing_type(
+                type_left,
+                type_right
+            );
+
+            frg_ast_destroy(&type_left);
+            frg_ast_destroy(&type_right);
+
+            if (ast == NULL) {
+                frg_emit_message_it_1_no_containing_type(
+                    message_buffer,
+                    &value->source_range,
+                    type_left,
+                    type_right
+                );
+            }
+
+            return ast;
+        case FRG_AST_ID_VALUE_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_AND_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_OR_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_XOR_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_SHL_ASSIGN:
+        case FRG_AST_ID_VALUE_BIT_SHR_ASSIGN:
+        case FRG_AST_ID_VALUE_ADD_ASSIGN:
+        case FRG_AST_ID_VALUE_INC:
+        case FRG_AST_ID_VALUE_SUB_ASSIGN:
+        case FRG_AST_ID_VALUE_DEC:
+        case FRG_AST_ID_VALUE_MUL_ASSIGN:
+        case FRG_AST_ID_VALUE_DIV_ASSIGN:
+        case FRG_AST_ID_VALUE_DIV_INT_ASSIGN:
+        case FRG_AST_ID_VALUE_MOD_ASSIGN:
+        case FRG_AST_ID_VALUE_EXP_ASSIGN:
+        case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
+        case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
+            value_binary = (frg_ast_value_binary_t*)value;
+
+            frg_assert_pointer_non_null(value_binary->left);
+
+            return frg_ast_resolve_value_type(
+                message_buffer,
+                scope,
+                value_binary->left
+            );
+        default:
+            frg_die_unexpected_enum_value(value->id);
+    }
+}

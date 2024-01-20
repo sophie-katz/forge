@@ -18,12 +18,14 @@
 #include <forge/common/enums.h>
 #include <forge/common/types.h>
 #include <forge/common/lexical_casts.h>
+#include <forge/parsing/domain.h>
 #include <glib.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
     frg_ast_id_t id;
+    frg_parsing_range_t source_range;
 } frg_ast_t;
 
 typedef struct {
@@ -184,18 +186,22 @@ typedef struct {
 } frg_ast_value_binary_t;
 
 frg_ast_t* frg_ast_new_ty_primary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id
 );
 
 frg_ast_ty_symbol_t* frg_ast_new_ty_symbol(
+    const frg_parsing_range_t *source_range,
     GString* name
 );
 
 frg_ast_ty_pointer_t* frg_ast_new_ty_pointer(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* value
 );
 
 frg_ast_ty_fn_t* frg_ast_new_ty_fn(
+    const frg_parsing_range_t *source_range,
     GList* args,
     GList* var_pos_args,
     GList* var_kw_args,
@@ -203,22 +209,26 @@ frg_ast_ty_fn_t* frg_ast_new_ty_fn(
 );
 
 frg_ast_decl_union_t* frg_ast_new_decl_union(
+    const frg_parsing_range_t *source_range,
     GString* name,
     GList* props
 );
 
 frg_ast_decl_struct_t* frg_ast_new_decl_struct(
+    const frg_parsing_range_t *source_range,
     GString* name,
     GList* decls
 );
 
 frg_ast_decl_prop_t* frg_ast_new_decl_prop(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_prop_flags_t flags,
     GString* name,
     frg_ast_t* ty
 );
 
 frg_ast_decl_iface_t* frg_ast_new_decl_iface(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_iface_flags_t flags,
     GString* name,
     GList* extends,
@@ -226,12 +236,14 @@ frg_ast_decl_iface_t* frg_ast_new_decl_iface(
 );
 
 frg_ast_decl_fn_arg_t* frg_ast_new_decl_fn_arg(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_fn_arg_flags_t flags,
     frg_ast_decl_prop_t* prop,
     frg_ast_t* default_value
 );
 
 frg_ast_decl_fn_t* frg_ast_new_decl_fn(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_fn_flags_t flags,
     GString* name,
     frg_ast_ty_fn_t* ty,
@@ -239,116 +251,148 @@ frg_ast_decl_fn_t* frg_ast_new_decl_fn(
 );
 
 frg_ast_decl_var_t* frg_ast_new_decl_var(
+    const frg_parsing_range_t *source_range,
     frg_ast_decl_prop_t* prop,
     frg_ast_t* initial_value
 );
 
 frg_ast_decl_block_t* frg_ast_new_decl_block(
+    const frg_parsing_range_t *source_range,
     GList* decls
 );
 
 frg_ast_stmt_return_t* frg_ast_new_stmt_return(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* value
 );
 
 frg_ast_stmt_if_t* frg_ast_new_stmt_if(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* condition,
     frg_ast_t* then_clause,
     frg_ast_t* else_clause
 );
 
 frg_ast_stmt_while_t* frg_ast_new_stmt_while(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* condition,
     frg_ast_t* body
 );
 
 frg_ast_stmt_block_t* frg_ast_new_stmt_block(
+    const frg_parsing_range_t *source_range,
     GList* stmts
 );
 
 frg_ast_t* frg_ast_new_value_primary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id
 );
 
 frg_ast_value_int_t* frg_ast_new_value_i8(
+    const frg_parsing_range_t *source_range,
     int8_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_i16(
+    const frg_parsing_range_t *source_range,
     int16_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_i32(
+    const frg_parsing_range_t *source_range,
     int32_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_i64(
+    const frg_parsing_range_t *source_range,
     int64_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_u8(
+    const frg_parsing_range_t *source_range,
     uint8_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_u16(
+    const frg_parsing_range_t *source_range,
     uint16_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_u32(
+    const frg_parsing_range_t *source_range,
     uint32_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_u64(
+    const frg_parsing_range_t *source_range,
     uint64_t value
 );
 
 frg_ast_value_int_t* frg_ast_new_value_int_from_lexical_cast_result(
+    const frg_parsing_range_t *source_range,
     const frg_parse_uint_result_t* result
 );
 
 frg_ast_value_float_t* frg_ast_new_value_f32(
+    const frg_parsing_range_t *source_range,
     frg_f32_t value
 );
 
 frg_ast_value_float_t* frg_ast_new_value_f64(
+    const frg_parsing_range_t *source_range,
     frg_f64_t value
 );
 
+frg_ast_value_float_t* frg_ast_new_value_float_from_lexical_cast_result(
+    const frg_parsing_range_t *source_range,
+    const frg_parse_float_result_t* result
+);
+
 frg_ast_value_char_t* frg_ast_new_value_char(
+    const frg_parsing_range_t *source_range,
     frg_char_t value
 );
 
 frg_ast_value_str_t* frg_ast_new_value_str(
+    const frg_parsing_range_t *source_range,
     GString* value
 );
 
 frg_ast_value_symbol_t* frg_ast_new_value_symbol(
+    const frg_parsing_range_t *source_range,
     GString* name
 );
 
 frg_ast_value_call_kw_arg_t* frg_ast_new_value_call_kw_arg(
+    const frg_parsing_range_t *source_range,
     GString* name,
     frg_ast_t* value
 );
 
 frg_ast_value_call_t* frg_ast_new_value_call(
+    const frg_parsing_range_t *source_range,
     frg_ast_t* callee,
     GList* args,
     GList* kw_args
 );
 
 frg_ast_value_unary_t* frg_ast_new_value_unary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id,
     frg_ast_t* operand
 );
 
 frg_ast_value_binary_t* frg_ast_new_value_binary(
+    const frg_parsing_range_t *source_range,
     frg_ast_id_t id,
     frg_ast_t* left,
     frg_ast_t* right
 );
 
 void frg_ast_destroy(frg_ast_t** ast);
+
+frg_ast_t* frg_ast_clone(const frg_ast_t* ast);
 
 frg_ast_ty_symbol_t* frg_ast_try_cast_ty_symbol(frg_ast_t* ast);
 

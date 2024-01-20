@@ -34,6 +34,12 @@ frg_message_t* frg_message_new(
     }
 
     frg_assert_gstring_non_empty(text);
+    frg_assert(text->str[0] >= 'A' && text->str[0] <= 'Z');
+    frg_assert_int_ne(text->str[text->len - 1], '.');
+    frg_assert_int_ne(text->str[text->len - 1], ',');
+    frg_assert_int_ne(text->str[text->len - 1], '\n');
+    frg_assert_int_ne(text->str[text->len - 1], ':');
+    frg_assert_int_ne(text->str[text->len - 1], ' ');
     
     frg_message_t* message = frg_safe_malloc(sizeof(frg_message_t));
 

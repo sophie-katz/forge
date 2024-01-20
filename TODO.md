@@ -17,7 +17,6 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [ ] Add in formatting for at least types
 - [ ] Add in verification logic
 - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
 
@@ -33,11 +32,10 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Add in a feature not yet implemented error and a specific error message to indicate that a requirement or proposal is not yet implemented
     - [ ] Ideally reference a documentation URL
 - [ ] When printing errors for AST nodes
-    - [ ] Print the token range if possible
+    - [x] Print the token range if possible
     - [ ] Otherwise, print the token tree up until the first token range if one exists
 - [ ] Add in memory leak detection into automated tests.
 - [ ] Add formatter and linter if possible
-- [ ] Enforce all errors start with a capital letter and do not end with punctuation
 - [ ] Make sure all paths are absolute so we don't accidentally open a file twice
 - [ ] Use GLib 2.0 destructs better
 - [ ] Reorganize cli and config to be better
@@ -79,3 +77,5 @@ not, see <https://www.gnu.org/licenses/>.
     - [x] Add in error codes
 - [x] Add in token ranges for AST nodes
 - [x] Create placeholder requirements for missing features
+- [x] Add in formatting for at least types
+- [x] Enforce all errors start with a capital letter and do not end with punctuation

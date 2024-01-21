@@ -18,7 +18,11 @@ not, see <https://www.gnu.org/licenses/>.
 # High priority
 
 - [ ] Add in verification logic
-- [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
+    - [ ] Verify that AST is well-formed
+    - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
+    - [ ] Type verification
+    - [ ] Constant/mutable verification
+    - [ ] Scope verification
 
 # Low priority
 

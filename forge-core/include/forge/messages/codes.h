@@ -23,7 +23,12 @@
 // Does FFS mean for fucks sake, facial feminization surgery, or fatal/filesystem?
 // You'll never find out.
 
+// TODO: Add assertions to these
+
 #define frg_message_emit_ffs_1_open_for_writing(message_buffer, path, error_message) { \
+        frg_assert_pointer_non_null(message_buffer); \
+        frg_assert_string_non_empty(path); \
+        \
         frg_message_t* __frg_ffs_1_message = frg_message_emit( \
             (message_buffer), \
             FRG_MESSAGE_SEVERITY_FATAL_ERROR, \
@@ -33,6 +38,8 @@
         ); \
         \
         if ((error_message) != NULL) { \
+            frg_assert_string_non_empty(error_message); \
+            \
             frg_message_emit_child( \
                 (message_buffer), \
                 __frg_ffs_1_message, \
@@ -71,7 +78,7 @@
             (source_range), \
             FRG_MESSAGE_SEVERITY_ERROR, \
             "EFT-1", \
-            "Language feature is not yet supported (%s)", \
+            "Language feature is not yet supported ('%s')", \
             (requirement_title) \
         ); \
         \
@@ -85,13 +92,16 @@
         ); \
     }
 
-#define frg_message_emit_eft_2_unsupported_requirement_subitem(message_buffer, source_range, requirement_number, subitem_number, requirement_title) { \
+#define frg_message_emit_eft_2_unsupported_requirement_subitem(message_buffer, source_range, requirement_number, requirement_title, subitem_number, subitem_title) { \
+        frg_assert((subitem_title)[0] >= 'a' && (subitem_title)[0] <= 'z'); \
+        \
         frg_message_t* __frg_eft_2_message = frg_message_emit_from_source_range( \
             (message_buffer), \
             (source_range), \
             FRG_MESSAGE_SEVERITY_ERROR, \
             "EFT-2", \
-            "Language feature is not yet supported (%s)", \
+            "Language feature subitem is not yet supported ('%s' in '%s')", \
+            (subitem_title), \
             (requirement_title) \
         ); \
         \
@@ -112,7 +122,7 @@
             (source_range), \
             FRG_MESSAGE_SEVERITY_ERROR, \
             "EFT-3", \
-            "Language feature is not yet supported (%s)", \
+            "Language feature is not yet supported ('%s')", \
             (proposal_title) \
         ); \
         \
@@ -126,13 +136,14 @@
         ); \
     }
 
-#define frg_message_emit_eft_4_unsupported_proposal_subitem(message_buffer, source_range, proposal_number, subitem_number, proposal_title) { \
+#define frg_message_emit_eft_4_unsupported_proposal_subitem(message_buffer, source_range, proposal_number, proposal_title, subitem_number, subitem_title) { \
         frg_message_t* __frg_eft_4_message = frg_message_emit_from_source_range( \
             (message_buffer), \
             (source_range), \
             FRG_MESSAGE_SEVERITY_ERROR, \
             "EFT-4", \
-            "Language feature is not yet supported (%s)", \
+            "Language feature is not yet supported ('%s' in '%s')", \
+            (subitem_title), \
             (proposal_title) \
         ); \
         \
@@ -460,6 +471,72 @@
         FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
         "IS-4", \
         "Cannot parse string without '.' as float literal" \
+    )
+
+#define frg_message_emit_is_5_ast_property_null(message_buffer, source_range, ast_kind, property_name) \
+    frg_message_emit_from_source_range( \
+        (message_buffer), \
+        (source_range), \
+        FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
+        "IS-5", \
+        "AST node '%s' cannot have null '%s'", \
+        frg_ast_kind_to_string(ast_kind), \
+        (property_name) \
+    )
+
+#define frg_message_emit_is_6_ast_property_empty_string(message_buffer, source_range, ast_kind, property_name) \
+    frg_message_emit_from_source_range( \
+        (message_buffer), \
+        (source_range), \
+        FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
+        "IS-6", \
+        "AST node '%s' cannot have '%s' that is an empty string", \
+        frg_ast_kind_to_string(ast_kind), \
+        (property_name) \
+    )
+
+#define frg_message_emit_is_7_invalid_symbol(message_buffer, source_range, ast_kind, property_name) { \
+        frg_message_t* __frg_is_7_message = frg_message_emit_from_source_range( \
+            (message_buffer), \
+            (source_range), \
+            FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
+            "IS-7", \
+            "Symbol '%s' is invalid", \
+            frg_ast_kind_to_string(ast_kind), \
+            (property_name) \
+        ); \
+        \
+        frg_message_emit_child( \
+            (message_buffer), \
+            __frg_is_7_message, \
+            FRG_MESSAGE_SEVERITY_NOTE, \
+            NULL, \
+            "Symbols must start with an underscore or a letter and contain underscores, letters, and numbers" \
+        ); \
+    }
+
+#define frg_message_emit_is_8_ast_property_null_element(message_buffer, source_range, ast_kind, property_name, index) \
+    frg_message_emit_from_source_range( \
+        (message_buffer), \
+        (source_range), \
+        FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
+        "IS-8", \
+        "AST node '%s' property '%s' has invalid null element at index %i", \
+        frg_ast_kind_to_string(ast_kind), \
+        (property_name), \
+        (index) \
+    )
+
+#define frg_message_emit_is_9_ast_property_unexpected_element(message_buffer, source_range, ast_kind, property_name, index) \
+    frg_message_emit_from_source_range( \
+        (message_buffer), \
+        (source_range), \
+        FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, \
+        "IS-9", \
+        "AST node '%s' property '%s' has element of unexpected AST kind at index %i", \
+        frg_ast_kind_to_string(ast_kind), \
+        (property_name), \
+        (index) \
     )
 
 #define frg_message_emit_es_1_unexpected_character(message_buffer, source_range, value) \

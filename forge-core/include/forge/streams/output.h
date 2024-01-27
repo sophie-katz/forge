@@ -69,7 +69,7 @@ void frg_stream_output_write_vprintf(
 
 void frg_stream_output_set_color(
     frg_stream_output_t* output,
-    frg_stream_output_color_id_t id
+    frg_stream_output_color_t color
 );
 
 const char* frg_stream_output_choose_unicode(

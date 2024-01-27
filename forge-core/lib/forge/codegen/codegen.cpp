@@ -63,8 +63,8 @@ frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
     for (GList* it = decl_block->decls; it != NULL; it = it->next) {
         frg_ast_t* decl = (frg_ast_t*)it->data;
 
-        switch (decl->id) {
-            case FRG_AST_ID_DECL_FN:
+        switch (decl->kind) {
+            case FRG_AST_KIND_DECL_FN:
                 _frg_generate_decl_fn(
                     *llvm_module->llvm_builder,
                     *llvm_module->llvm_ctx,
@@ -74,7 +74,7 @@ frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
                 );
                 break;
             default:
-                frg_die_unexpected_enum_value(decl->id);
+                frg_die_unexpected_enum_value(decl->kind);
         }
     }
 

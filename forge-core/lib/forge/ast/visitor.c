@@ -42,13 +42,13 @@ void frg_ast_visitor_destroy(frg_ast_visitor_t** visitor) {
     frg_assert_pointer_non_null(visitor);
     frg_assert_pointer_non_null(*visitor);
 
-    for (frg_ast_id_t id = FRG_AST_ID_FIRST; id <= FRG_AST_ID_LAST; id++) {
-        if ((*visitor)->entries[id].items != NULL) {
-            for (GList* iter = (*visitor)->entries[id].items; iter != NULL; iter = iter->next) {
+    for (frg_ast_kind_t kind = FRG_AST_KIND_FIRST; kind <= FRG_AST_KIND_LAST; kind++) {
+        if ((*visitor)->entries[kind].items != NULL) {
+            for (GList* iter = (*visitor)->entries[kind].items; iter != NULL; iter = iter->next) {
                 frg_ast_visitor_entry_item_destroy((frg_ast_visitor_entry_item_t**)&iter->data);
             }
 
-            g_list_free((*visitor)->entries[id].items);
+            g_list_free((*visitor)->entries[kind].items);
         }
     }
 
@@ -57,21 +57,21 @@ void frg_ast_visitor_destroy(frg_ast_visitor_t** visitor) {
 
 void frg_ast_visitor_add_entry(
     frg_ast_visitor_t* visitor,
-    frg_ast_id_t id,
+    frg_ast_kind_t kind,
     frg_ast_visitor_callback_t callback_pre,
     frg_ast_visitor_callback_t callback_post
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_int_ge(id, FRG_AST_ID_FIRST);
-    frg_assert_int_le(id, FRG_AST_ID_LAST);
+    frg_assert_int_ge(kind, FRG_AST_KIND_FIRST);
+    frg_assert_int_le(kind, FRG_AST_KIND_LAST);
 
     frg_ast_visitor_entry_item_t* item = frg_ast_visitor_entry_item_new(
         callback_pre,
         callback_post
     );
 
-    visitor->entries[id].items = g_list_append(
-        visitor->entries[id].items,
+    visitor->entries[kind].items = g_list_append(
+        visitor->entries[kind].items,
         item
     );
 }
@@ -122,7 +122,7 @@ frg_ast_visitor_status_t _frg_ast_visitor_call_entry(
     frg_assert_pointer_non_null(ast);
     frg_assert_pointer_non_null(*ast);
 
-    for (GList* iter = visitor->entries[(*ast)->id].items; iter != NULL; iter = iter->next) {
+    for (GList* iter = visitor->entries[(*ast)->kind].items; iter != NULL; iter = iter->next) {
         frg_ast_visitor_entry_item_t* item = iter->data;
         frg_ast_visitor_callback_t callback = (pre ? item->callback_pre : item->callback_post);
         if (callback != NULL) {
@@ -171,8 +171,8 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
     parents = g_list_prepend(parents, *ast);
     status = FRG_AST_VISITOR_STATUS_OK;
 
-    switch ((*ast)->id) {
-        case FRG_AST_ID_TY_POINTER:
+    switch ((*ast)->kind) {
+        case FRG_AST_KIND_TY_POINTER:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -183,7 +183,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_TY_FN:
+        case FRG_AST_KIND_TY_FN:
             status = _frg_ast_accept_recursive_list(
                 visitor,
                 parents,
@@ -193,7 +193,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
                 return status;
             }
 
-            status = _frg_ast_accept_recursive_list(
+            status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
                 &((frg_ast_ty_fn_t*)*ast)->var_pos_args
@@ -202,7 +202,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
                 return status;
             }
 
-            status = _frg_ast_accept_recursive_list(
+            status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
                 &((frg_ast_ty_fn_t*)*ast)->var_kw_args
@@ -221,7 +221,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_UNION:
+        case FRG_AST_KIND_DECL_UNION:
             status = _frg_ast_accept_recursive_list(
                 visitor,
                 parents,
@@ -232,7 +232,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_STRUCT:
+        case FRG_AST_KIND_DECL_STRUCT:
             status = _frg_ast_accept_recursive_list(
                 visitor,
                 parents,
@@ -243,7 +243,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_PROP:
+        case FRG_AST_KIND_DECL_PROP:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -254,7 +254,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_IFACE:
+        case FRG_AST_KIND_DECL_IFACE:
             status = _frg_ast_accept_recursive_list(
                 visitor,
                 parents,
@@ -274,7 +274,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_FN_ARG:
+        case FRG_AST_KIND_DECL_FN_ARG:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -294,7 +294,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_FN:
+        case FRG_AST_KIND_DECL_FN:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -314,7 +314,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_VAR:
+        case FRG_AST_KIND_DECL_VAR:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -334,7 +334,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_DECL_BLOCK:
+        case FRG_AST_KIND_DECL_BLOCK:
             status = _frg_ast_accept_recursive_list(
                 visitor,
                 parents,
@@ -345,7 +345,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_STMT_RETURN:
+        case FRG_AST_KIND_STMT_RETURN:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -356,7 +356,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_STMT_IF:
+        case FRG_AST_KIND_STMT_IF:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -385,7 +385,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_STMT_WHILE:
+        case FRG_AST_KIND_STMT_WHILE:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -405,7 +405,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_STMT_BLOCK:
+        case FRG_AST_KIND_STMT_BLOCK:
             status = _frg_ast_accept_recursive_list(
                 visitor,
                 parents,
@@ -416,7 +416,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_VALUE_INT:
+        case FRG_AST_KIND_VALUE_INT:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -427,7 +427,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_VALUE_FLOAT:
+        case FRG_AST_KIND_VALUE_FLOAT:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -438,7 +438,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_VALUE_CALL_KW_ARG:
+        case FRG_AST_KIND_VALUE_CALL_KW_ARG:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -449,7 +449,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_VALUE_CALL:
+        case FRG_AST_KIND_VALUE_CALL:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -478,13 +478,13 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_VALUE_DEREF:
-        case FRG_AST_ID_VALUE_GETADDR:
-        case FRG_AST_ID_VALUE_BIT_NOT:
-        case FRG_AST_ID_VALUE_NEG:
-        case FRG_AST_ID_VALUE_LOG_NOT:
-        case FRG_AST_ID_VALUE_INC:
-        case FRG_AST_ID_VALUE_DEC:
+        case FRG_AST_KIND_VALUE_DEREF:
+        case FRG_AST_KIND_VALUE_GETADDR:
+        case FRG_AST_KIND_VALUE_BIT_NOT:
+        case FRG_AST_KIND_VALUE_NEG:
+        case FRG_AST_KIND_VALUE_LOG_NOT:
+        case FRG_AST_KIND_VALUE_INC:
+        case FRG_AST_KIND_VALUE_DEC:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,
@@ -495,42 +495,42 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
             }
 
             break;
-        case FRG_AST_ID_VALUE_ACCESS:
-        case FRG_AST_ID_VALUE_BIT_AND:
-        case FRG_AST_ID_VALUE_BIT_OR:
-        case FRG_AST_ID_VALUE_BIT_XOR:
-        case FRG_AST_ID_VALUE_BIT_SHL:
-        case FRG_AST_ID_VALUE_BIT_SHR:
-        case FRG_AST_ID_VALUE_ADD:
-        case FRG_AST_ID_VALUE_SUB:
-        case FRG_AST_ID_VALUE_MUL:
-        case FRG_AST_ID_VALUE_DIV:
-        case FRG_AST_ID_VALUE_DIV_INT:
-        case FRG_AST_ID_VALUE_MOD:
-        case FRG_AST_ID_VALUE_EXP:
-        case FRG_AST_ID_VALUE_EQ:
-        case FRG_AST_ID_VALUE_NE:
-        case FRG_AST_ID_VALUE_LT:
-        case FRG_AST_ID_VALUE_LE:
-        case FRG_AST_ID_VALUE_GT:
-        case FRG_AST_ID_VALUE_GE:
-        case FRG_AST_ID_VALUE_LOG_AND:
-        case FRG_AST_ID_VALUE_LOG_OR:
-        case FRG_AST_ID_VALUE_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_AND_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_OR_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_XOR_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_SHL_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_SHR_ASSIGN:
-        case FRG_AST_ID_VALUE_ADD_ASSIGN:
-        case FRG_AST_ID_VALUE_SUB_ASSIGN:
-        case FRG_AST_ID_VALUE_MUL_ASSIGN:
-        case FRG_AST_ID_VALUE_DIV_ASSIGN:
-        case FRG_AST_ID_VALUE_DIV_INT_ASSIGN:
-        case FRG_AST_ID_VALUE_MOD_ASSIGN:
-        case FRG_AST_ID_VALUE_EXP_ASSIGN:
-        case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
-        case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
+        case FRG_AST_KIND_VALUE_ACCESS:
+        case FRG_AST_KIND_VALUE_BIT_AND:
+        case FRG_AST_KIND_VALUE_BIT_OR:
+        case FRG_AST_KIND_VALUE_BIT_XOR:
+        case FRG_AST_KIND_VALUE_BIT_SHL:
+        case FRG_AST_KIND_VALUE_BIT_SHR:
+        case FRG_AST_KIND_VALUE_ADD:
+        case FRG_AST_KIND_VALUE_SUB:
+        case FRG_AST_KIND_VALUE_MUL:
+        case FRG_AST_KIND_VALUE_DIV:
+        case FRG_AST_KIND_VALUE_DIV_INT:
+        case FRG_AST_KIND_VALUE_MOD:
+        case FRG_AST_KIND_VALUE_EXP:
+        case FRG_AST_KIND_VALUE_EQ:
+        case FRG_AST_KIND_VALUE_NE:
+        case FRG_AST_KIND_VALUE_LT:
+        case FRG_AST_KIND_VALUE_LE:
+        case FRG_AST_KIND_VALUE_GT:
+        case FRG_AST_KIND_VALUE_GE:
+        case FRG_AST_KIND_VALUE_LOG_AND:
+        case FRG_AST_KIND_VALUE_LOG_OR:
+        case FRG_AST_KIND_VALUE_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_AND_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_OR_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_XOR_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_SHL_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_SHR_ASSIGN:
+        case FRG_AST_KIND_VALUE_ADD_ASSIGN:
+        case FRG_AST_KIND_VALUE_SUB_ASSIGN:
+        case FRG_AST_KIND_VALUE_MUL_ASSIGN:
+        case FRG_AST_KIND_VALUE_DIV_ASSIGN:
+        case FRG_AST_KIND_VALUE_DIV_INT_ASSIGN:
+        case FRG_AST_KIND_VALUE_MOD_ASSIGN:
+        case FRG_AST_KIND_VALUE_EXP_ASSIGN:
+        case FRG_AST_KIND_VALUE_LOG_AND_ASSIGN:
+        case FRG_AST_KIND_VALUE_LOG_OR_ASSIGN:
             status = _frg_ast_accept_recursive(
                 visitor,
                 parents,

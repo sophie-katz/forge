@@ -14,36 +14,60 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/verification/supported_language_features.h>
+#include <forge/verification/verifier.h>
+#include <forge/messages/codes.h>
+#include <forge/common/error.h>
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_bool(
+frg_ast_visitor_status_t frg_verification_supported_language_features_callback_ty_fn(
     GList* parents,
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_FN);
+    frg_assert_pointer_non_null(user_data);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_float(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    frg_ast_ty_fn_t* ty_fn = (frg_ast_ty_fn_t*)*ast;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_symbol(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    if (ty_fn->var_pos_args != NULL) {
+        frg_message_emit_eft_2_unsupported_requirement_subitem(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            14,
+            "Function declarations",
+            1,
+            "Variable positional arguments"
+        );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_fn(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
+    if (ty_fn->var_kw_args != NULL) {
+        frg_message_emit_eft_2_unsupported_requirement_subitem(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            14,
+            "Function declarations",
+            2,
+            "Variable keyword arguments"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
+    if (ty_fn->return_ty == NULL) {
+        frg_message_emit_eft_1_unsupported_requirement(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            11,
+            "Dynamic objects"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
@@ -52,15 +76,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_UNION);
+    frg_assert_pointer_non_null(user_data);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_struct(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    frg_message_emit_eft_1_unsupported_requirement(
+        verifier->message_buffer,
+        &(*ast)->source_range,
+        9,
+        "Union declarations"
+    );
+
+    return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_prop(
@@ -68,6 +98,47 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_PROP);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_ast_decl_prop_t* decl_prop = (frg_ast_decl_prop_t*)*ast;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    if ((decl_prop->flags & FRG_AST_DECL_PROP_FLAG_OPTIONAL) != 0 || (decl_prop->flags & FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL) != 0) {
+        frg_message_emit_eft_1_unsupported_requirement(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            15,
+            "Optionals"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
+    if ((decl_prop->flags & FRG_AST_DECL_PROP_FLAG_SPREAD) != 0) {
+        frg_message_emit_eft_1_unsupported_requirement(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            16,
+            "Spreads"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
+    if (decl_prop->ty == NULL) {
+        frg_message_emit_eft_1_unsupported_requirement(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            11,
+            "Dynamic objects"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
@@ -76,7 +147,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_IFACE);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    frg_message_emit_eft_1_unsupported_requirement(
+        verifier->message_buffer,
+        &(*ast)->source_range,
+        2,
+        "Interface declarations"
+    );
+
+    return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_fn_arg(
@@ -84,6 +169,40 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_FN_ARG);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_ast_decl_fn_arg_t* decl_fn_arg = (frg_ast_decl_fn_arg_t*)*ast;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    if ((decl_fn_arg->flags & FRG_AST_DECL_FN_ARG_FLAG_KW) != 0) {
+        frg_message_emit_eft_2_unsupported_requirement_subitem(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            14,
+            "Function declarations",
+            2,
+            "Variadic keyword arguments"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
+    if (decl_fn_arg->default_value != NULL) {
+        frg_message_emit_eft_2_unsupported_requirement_subitem(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            14,
+            "Function declarations",
+            3,
+            "Default argument values"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
@@ -92,46 +211,27 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_FN);
+    frg_assert_pointer_non_null(user_data);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_var(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    frg_ast_decl_fn_t* decl_fn = (frg_ast_decl_fn_t*)*ast;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_stmt_if(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+    if ((decl_fn->flags & FRG_AST_DECL_FN_FLAG_MUT) != 0 || (decl_fn->flags & FRG_AST_DECL_FN_FLAG_OVERRIDE) != 0) {
+        frg_message_emit_eft_2_unsupported_requirement_subitem(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            14,
+            "Function declarations",
+            4,
+            "Overriding"
+        );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_stmt_while(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_bool(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
-    return FRG_AST_VISITOR_STATUS_OK;
-}
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_float(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-) {
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
@@ -140,7 +240,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CHAR);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    frg_message_emit_eft_1_unsupported_requirement(
+        verifier->message_buffer,
+        &(*ast)->source_range,
+        5,
+        "Character literals"
+    );
+
+    return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_str(
@@ -148,7 +262,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_STR);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    frg_message_emit_eft_1_unsupported_requirement(
+        verifier->message_buffer,
+        &(*ast)->source_range,
+        4,
+        "String literals"
+    );
+
+    return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_call_kw_arg(
@@ -156,7 +284,23 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CALL_KW_ARG);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    frg_message_emit_eft_2_unsupported_requirement_subitem(
+        verifier->message_buffer,
+        &(*ast)->source_range,
+        14,
+        "Function declarations",
+        2,
+        "Variadic keyword arguments"
+    );
+
+    return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_call(
@@ -164,13 +308,47 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     frg_ast_t** ast,
     void* user_data
 ) {
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CALL);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_ast_value_call_t* value_call = (frg_ast_value_call_t*)*ast;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    if (value_call->kw_args != NULL) {
+        frg_message_emit_eft_2_unsupported_requirement_subitem(
+            verifier->message_buffer,
+            &(*ast)->source_range,
+            14,
+            "Function declarations",
+            2,
+            "Variadic keyword arguments"
+        );
+
+        return FRG_AST_VISITOR_STATUS_SKIP;
+    }
+
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_access(
+frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_operator(
     GList* parents,
     frg_ast_t** ast,
     void* user_data
 ) {
-    return FRG_AST_VISITOR_STATUS_OK;
+    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(*ast);
+    frg_assert_pointer_non_null(user_data);
+
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+
+    frg_message_emit_eft_1_unsupported_requirement(
+        verifier->message_buffer,
+        &(*ast)->source_range,
+        7,
+        "Operators"
+    );
+
+    return FRG_AST_VISITOR_STATUS_SKIP;
 }

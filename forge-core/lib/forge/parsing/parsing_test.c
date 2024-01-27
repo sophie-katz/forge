@@ -38,7 +38,7 @@ void test_buffer(void) {
     frg_ast_t* ast = frg_parse(message_buffer, source);
 
     TEST_ASSERT_NOT_NULL(ast);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_DECL_BLOCK, ast->id);
+    TEST_ASSERT_EQUAL(FRG_AST_KIND_DECL_BLOCK, ast->kind);
 
     frg_ast_destroy(&ast);
     frg_parsing_source_destroy(&source);
@@ -65,7 +65,7 @@ void test_file(void) {
     frg_ast_t* ast = frg_parse(message_buffer, source);
 
     TEST_ASSERT_NOT_NULL(ast);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_DECL_BLOCK, ast->id);
+    TEST_ASSERT_EQUAL(FRG_AST_KIND_DECL_BLOCK, ast->kind);
 
     frg_ast_destroy(&ast);
     frg_parsing_source_destroy(&source);

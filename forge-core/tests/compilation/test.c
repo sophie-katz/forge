@@ -17,7 +17,6 @@
 #include <forge/common/memory.h>
 #include <forge/parsing/source_context.h>
 #include <forge/parsing/parsing.h>
-#include <forge/ast/debug.h>
 #include <forge/linking/linker.h>
 #include <unity.h>
 #include <dlfcn.h>

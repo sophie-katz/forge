@@ -48,13 +48,13 @@ frg_linker_config_t* frg_linker_config_new_default(void) {
 #endif
     
     if (config->ld64_lld_path != NULL) {
-        config->linker_id = FRG_LINKER_ID_LD64_LLD;
+        config->linker_kind = FRG_LINKER_KIND_LD64_LLD;
     } else if (config->ld_lld_path != NULL) {
-        config->linker_id = FRG_LINKER_ID_LD_LLD;
+        config->linker_kind = FRG_LINKER_KIND_LD_LLD;
     } else if (config->lld_link_path != NULL) {
-        config->linker_id = FRG_LINKER_ID_LLD_LINK;
+        config->linker_kind = FRG_LINKER_KIND_LLD_LINK;
     } else {
-        config->linker_id = FRG_LINKER_ID_NONE;
+        config->linker_kind = FRG_LINKER_KIND_NONE;
     }
 
     return config;
@@ -79,29 +79,29 @@ void frg_linker_config_destroy(frg_linker_config_t** config) {
     frg_safe_free((void**)config);
 }
 
-void frg_linker_config_set_linker_id(
+void frg_linker_config_set_linker_kind(
     frg_linker_config_t* config,
-    frg_linker_id_t linker_id
+    frg_linker_kind_t linker_kind
 ) {
     frg_assert_pointer_non_null(config);
 
-    config->linker_id = linker_id;
+    config->linker_kind = linker_kind;
 }
 
 void frg_linker_config_set_linker_path(
     frg_linker_config_t* config,
-    frg_linker_id_t linker_id,
+    frg_linker_kind_t linker_kind,
     const char* linker_path
 ) {
     frg_assert_pointer_non_null(config);
     frg_assert_string_non_empty(linker_path);
 
-    config->linker_id = linker_id;
+    config->linker_kind = linker_kind;
     
-    switch (linker_id) {
-        case FRG_LINKER_ID_NONE:
+    switch (linker_kind) {
+        case FRG_LINKER_KIND_NONE:
             frg_die("cannot set linker path for linker ID 'none'");
-        case FRG_LINKER_ID_LD_LLD:
+        case FRG_LINKER_KIND_LD_LLD:
             if (config->ld_lld_path != NULL) {
                 g_string_free(config->ld_lld_path, TRUE);
             }
@@ -109,7 +109,7 @@ void frg_linker_config_set_linker_path(
             config->ld_lld_path = g_string_new(linker_path);
 
             break;
-        case FRG_LINKER_ID_LD64_LLD:
+        case FRG_LINKER_KIND_LD64_LLD:
             if (config->ld64_lld_path != NULL) {
                 g_string_free(config->ld64_lld_path, TRUE);
             }
@@ -117,7 +117,7 @@ void frg_linker_config_set_linker_path(
             config->ld64_lld_path = g_string_new(linker_path);
 
             break;
-        case FRG_LINKER_ID_LLD_LINK:
+        case FRG_LINKER_KIND_LLD_LINK:
             if (config->lld_link_path != NULL) {
                 g_string_free(config->lld_link_path, TRUE);
             }
@@ -126,7 +126,7 @@ void frg_linker_config_set_linker_path(
 
             break;
         default:
-            frg_die_unexpected_enum_value(linker_id);
+            frg_die_unexpected_enum_value(linker_kind);
     }
 }
 
@@ -135,19 +135,19 @@ const char* frg_linker_config_get_linker_path(
 ) {
     frg_assert_pointer_non_null(config);
 
-    switch (config->linker_id) {
-        case FRG_LINKER_ID_NONE:
+    switch (config->linker_kind) {
+        case FRG_LINKER_KIND_NONE:
             frg_die("cannot get linker path for linker ID 'none'");
-        case FRG_LINKER_ID_LD_LLD:
+        case FRG_LINKER_KIND_LD_LLD:
             frg_assert_gstring_non_empty(config->ld_lld_path);
             return config->ld_lld_path->str;
-        case FRG_LINKER_ID_LD64_LLD:
+        case FRG_LINKER_KIND_LD64_LLD:
             frg_assert_gstring_non_empty(config->ld64_lld_path);
             return config->ld64_lld_path->str;
-        case FRG_LINKER_ID_LLD_LINK:
+        case FRG_LINKER_KIND_LLD_LINK:
             frg_assert_gstring_non_empty(config->lld_link_path);
             return config->lld_link_path->str;
         default:
-            frg_die_unexpected_enum_value(config->linker_id);
+            frg_die_unexpected_enum_value(config->linker_kind);
     }
 }

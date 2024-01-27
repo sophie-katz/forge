@@ -14,8 +14,13 @@
 # not, see <https://www.gnu.org/licenses/>.
 
 option(
-    'testing',
-    type: 'feature',
-    value: 'auto',
-    description: 'Whether or not to build tests'
+    'test_mode',
+    type: 'combo',
+    choices: [
+        'fast',
+        'full',
+        'disabled'
+    ],
+    value: 'fast',
+    description: 'In what mode to run automated tests'
 )

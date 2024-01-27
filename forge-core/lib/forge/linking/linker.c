@@ -214,14 +214,14 @@ bool frg_link(
     const char* output_path,
     GList* objects
 ) {
-    switch (config->linker_id) {
-        case FRG_LINKER_ID_NONE:
+    switch (config->linker_kind) {
+        case FRG_LINKER_KIND_NONE:
             frg_message_emit_fl_3_no_linker(message_buffer);
 
             return false;
-        case FRG_LINKER_ID_LD_LLD:
-        case FRG_LINKER_ID_LD64_LLD:
-        case FRG_LINKER_ID_LLD_LINK:
+        case FRG_LINKER_KIND_LD_LLD:
+        case FRG_LINKER_KIND_LD64_LLD:
+        case FRG_LINKER_KIND_LLD_LINK:
             return _frg_link_lld(
                 message_buffer,
                 config,
@@ -230,6 +230,6 @@ bool frg_link(
                 objects
             );
         default:
-            frg_die_unexpected_enum_value(config->linker_id);
+            frg_die_unexpected_enum_value(config->linker_kind);
     }
 }

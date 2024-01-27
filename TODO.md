@@ -19,7 +19,7 @@ not, see <https://www.gnu.org/licenses/>.
 
 - [ ] Add in verification logic
     - [ ] Verify that AST is well-formed
-    - [ ] Add in a way to verify that AST is simplified and can be passed directly to the code generator
+    - [x] Add in a way to verify that AST is simplified and can be passed directly to the code generator
     - [ ] Type verification
     - [ ] Constant/mutable verification
     - [ ] Scope verification
@@ -38,10 +38,8 @@ not, see <https://www.gnu.org/licenses/>.
 - [ ] When printing errors for AST nodes
     - [x] Print the token range if possible
     - [ ] Otherwise, print the token tree up until the first token range if one exists
-- [ ] Add in memory leak detection into automated tests.
 - [ ] Add formatter and linter if possible
 - [ ] Make sure all paths are absolute so we don't accidentally open a file twice
-- [ ] Use GLib 2.0 destructs better
 - [ ] Reorganize cli and config to be better
 - [ ] Use `G_GNUC_WARN_UNUSED_RESULT`
     - [ ] Look into other attributes to use
@@ -49,6 +47,10 @@ not, see <https://www.gnu.org/licenses/>.
 - [ ] Make statement and declaration blocks parse more similarly
 - [ ] Rename `error.h` to `assert.h`
 - [ ] Create and conform to naming guidelines
+- [ ] Cross-link documentation to code
+- [ ] Break up AST switch statements
+    - [ ] Visitor acceptors
+    - [ ] Type resolvers
 
 # Completed
 
@@ -83,3 +85,4 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Create placeholder requirements for missing features
 - [x] Add in formatting for at least types
 - [x] Enforce all errors start with a capital letter and do not end with punctuation
+- [x] Add in memory leak detection into automated tests.

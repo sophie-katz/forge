@@ -32,27 +32,41 @@ project(
 # Options
 # --------------------------------------------------------------------------------------
 
-if get_option('testing').auto()
-    should_build_tests = get_option('debug')
-else
-    should_build_tests = get_option('testing').enabled()
+forge_should_build_tests = get_option('test_mode') != 'disabled'
+
+if get_option('test_mode') == 'fast'
+    forge_test_wrapper = '../scripts/test_wrapper_fast.bash'
+    forge_test_is_parallel = true
+elif get_option('test_mode') == 'full'
+    forge_test_wrapper = '../scripts/test_wrapper_full.bash'
+    forge_test_is_parallel = false
 endif
+
+# Constants
+# --------------------------------------------------------------------------------------
+
+forge_test_timeout_seconds = 10
 
 # C arguments
 # --------------------------------------------------------------------------------------
 
-add_project_arguments(
+add_global_arguments(
     '-gdwarf-4',
     language: ['c', 'cpp']
 )
 
-add_project_link_arguments(
+add_global_link_arguments(
     '-gdwarf-4',
     language: ['c', 'cpp']
 )
 
 # External programs
 # --------------------------------------------------------------------------------------
+
+program_bash = find_program(
+    'bash',
+    required: true,
+)
 
 program_flex = find_program(
     'flex',
@@ -91,17 +105,20 @@ c_compiler = meson.get_compiler('c')
 cmake = import('cmake')
 
 # Subprojects
-if should_build_tests
+if forge_should_build_tests
     forge_subproject_unity = subproject(
         'Unity',
-        required: true
+        required: true,
+        default_options: [
+            'buildtype=release',
+        ]
     )
 endif
 
 forge_subproject_utf8proc = cmake.subproject('utf8proc')
 
 # Dependencies
-if should_build_tests
+if forge_should_build_tests
     forge_dependency_unity = forge_subproject_unity.get_variable('unity_dep')
 endif
 
@@ -186,7 +203,7 @@ forge_configuration_data.set('llvm_version_major', llvm_version[0])
 forge_configuration_data.set('llvm_version_minor', llvm_version[1])
 forge_configuration_data.set('llvm_version_patch', llvm_version[2])
 
-if should_build_tests
+if forge_should_build_tests
     forge_configuration_data.set('should_build_tests', '1')
 else
     forge_configuration_data.set('should_build_tests', '0')
@@ -222,7 +239,10 @@ forge_include_directories = include_directories('include')
 forge_core_lib = static_library(
     'forge-core',
     'lib/forge/ast/ast.c',
-    'lib/forge/ast/debug.c',
+    'lib/forge/ast/cloners.c',
+    'lib/forge/ast/debug_printers.c',
+    'lib/forge/ast/decl_name_getters.c',
+    'lib/forge/ast/destructors.c',
     'lib/forge/ast/scope.c',
     'lib/forge/ast/type_resolution.c',
     'lib/forge/ast/visitor.c',
@@ -282,20 +302,8 @@ executable(
 # Tests
 # --------------------------------------------------------------------------------------
 
-if should_build_tests
+if forge_should_build_tests
     # Unit
-    forge_unit_test_ast_ast = executable(
-        'test-unit-ast-ast',
-        'lib/forge/ast/ast_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_core_lib],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
-        ]
-    )
-
-    test('ast/ast_test.c', forge_unit_test_ast_ast)
-
     forge_unit_test_ast_scope = executable(
         'test-unit-ast-scope',
         'lib/forge/ast/scope_test.c',
@@ -306,7 +314,16 @@ if should_build_tests
         ]
     )
 
-    test('ast/scope_test.c', forge_unit_test_ast_scope)
+    test(
+        'ast/scope_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_ast_scope
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_ast_visitor = executable(
         'test-unit-ast-visitor',
@@ -318,7 +335,16 @@ if should_build_tests
         ]
     )
 
-    test('ast/visitor_test.c', forge_unit_test_ast_visitor)
+    test(
+        'ast/visitor_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_ast_visitor
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     # TODO: Fix this test
     # forge_unit_test_common_color = executable(
@@ -343,7 +369,16 @@ if should_build_tests
         ]
     )
 
-    test('common/memory_test.c', forge_unit_test_common_memory)
+    test(
+        'common/memory_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_common_memory
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_common_lexical_casts = executable(
         'test-unit-common-lexical-casts',
@@ -355,7 +390,16 @@ if should_build_tests
         ]
     )
 
-    test('common/lexical_casts_test.c', forge_unit_test_common_lexical_casts)
+    test(
+        'common/lexical_casts_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_common_lexical_casts
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_common_math = executable(
         'test-unit-common-math',
@@ -367,7 +411,16 @@ if should_build_tests
         ]
     )
 
-    test('common/math_test.c', forge_unit_test_common_math)
+    test(
+        'common/math_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_common_math
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_cli_option = executable(
         'test-unit-cli-option',
@@ -379,7 +432,16 @@ if should_build_tests
         ]
     )
 
-    test('config/cli/option_test.c', forge_unit_test_cli_option)
+    test(
+        'config/cli/option_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_cli_option
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_cli_option_set = executable(
         'test-unit-cli-option-set',
@@ -391,7 +453,16 @@ if should_build_tests
         ]
     )
 
-    test('config/cli/option_set_test.c', forge_unit_test_cli_option_set)
+    test(
+        'config/cli/option_set_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_cli_option_set
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_cli_program = executable(
         'test-unit-cli-program',
@@ -403,7 +474,16 @@ if should_build_tests
         ]
     )
 
-    test('config/cli/program_test.c', forge_unit_test_cli_program)
+    test(
+        'config/cli/program_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_cli_program
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_parsing_token_reader = executable(
         'test-unit-parsing-token-reader',
@@ -415,7 +495,16 @@ if should_build_tests
         ]
     )
 
-    test('config/parsing/token_reader_test.c', forge_unit_test_parsing_token_reader)
+    test(
+        'config/parsing/token_reader_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_parsing_token_reader
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_messages_message_buffer = executable(
         'test-unit-messages-message-buffer',
@@ -427,7 +516,16 @@ if should_build_tests
         ]
     )
 
-    test('config/messages/message_buffer_test.c', forge_unit_test_messages_message_buffer)
+    test(
+        'config/messages/message_buffer_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_messages_message_buffer
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_parsing_source = executable(
         'test-unit-parsing-source',
@@ -439,7 +537,16 @@ if should_build_tests
         ]
     )
 
-    test('config/parsing/source_test.c', forge_unit_test_parsing_source)
+    test(
+        'config/parsing/source_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_parsing_source
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_parsing_parsing = executable(
         'test-unit-parsing-parsing',
@@ -451,7 +558,16 @@ if should_build_tests
         ]
     )
 
-    test('config/parsing/parsing_test.c', forge_unit_test_parsing_parsing)
+    test(
+        'config/parsing/parsing_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_parsing_parsing
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_streams_input = executable(
         'test-unit-streams-input',
@@ -463,7 +579,16 @@ if should_build_tests
         ]
     )
 
-    test('config/streams/input_test.c', forge_unit_test_streams_input)
+    test(
+        'config/streams/input_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_streams_input
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_unit_test_streams_output = executable(
         'test-unit-streams-output',
@@ -475,7 +600,16 @@ if should_build_tests
         ]
     )
 
-    test('config/streams/output_test.c', forge_unit_test_streams_output)
+    test(
+        'config/streams/output_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_streams_output
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     # Integration
 
@@ -490,7 +624,16 @@ if should_build_tests
         ]
     )
 
-    test('tests/compilation/empty.c', forge_integration_test_compilation_empty)
+    test(
+        'tests/compilation/empty.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_integration_test_compilation_empty
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_integration_test_compilation_literals_int = executable(
         'test-integration-compilation-literals-int',
@@ -503,7 +646,16 @@ if should_build_tests
         ]
     )
 
-    test('tests/compilation/literals_int.c', forge_integration_test_compilation_literals_int)
+    test(
+        'tests/compilation/literals_int.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_integration_test_compilation_literals_int
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_integration_test_compilation_literals_bool = executable(
         'test-integration-compilation-literals-bool',
@@ -516,13 +668,22 @@ if should_build_tests
         ]
     )
 
-    test('tests/compilation/literals_bool.c', forge_integration_test_compilation_literals_bool)
+    test(
+        'tests/compilation/literals_bool.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_integration_test_compilation_literals_bool
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 endif
 
 # Demos
 # --------------------------------------------------------------------------------------
 
-if should_build_tests
+if forge_should_build_tests
     # TODO: Fix this demo
     # forge_demo_common_color = executable(
     #     'demo-common-color',
@@ -542,7 +703,16 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('common/debug_demo.c', forge_demo_common_debug)
+    test(
+        'common/debug_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_common_debug
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_demo_cli_choice = executable(
         'demo-cli-choice',
@@ -552,7 +722,16 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('cli/choice_demo.c', forge_demo_cli_choice)
+    test(
+        'cli/choice_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_cli_choice
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_demo_cli_option = executable(
         'demo-cli-option',
@@ -562,7 +741,16 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('cli/option_demo.c', forge_demo_cli_option)
+    test(
+        'cli/option_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_cli_option
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_demo_cli_option_set = executable(
         'demo-cli-option-set',
@@ -572,7 +760,16 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('cli/option_set_demo.c', forge_demo_cli_option_set)
+    test(
+        'cli/option_set_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_cli_option_set
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_demo_cli_command = executable(
         'demo-cli-command',
@@ -582,7 +779,16 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('cli/command_demo.c', forge_demo_cli_command)
+    test(
+        'cli/command_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_cli_command
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_demo_cli_program = executable(
         'demo-cli-program',
@@ -592,7 +798,16 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('cli/program_demo.c', forge_demo_cli_program)
+    test(
+        'cli/program_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_cli_program
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 
     forge_demo_messages_sourced_messages = executable(
         'demo-messages-sourced-messages',
@@ -602,5 +817,14 @@ if should_build_tests
         dependencies: forge_dependencies
     )
 
-    test('messages/sourced_messages_demo.c', forge_demo_messages_sourced_messages)
+    test(
+        'messages/sourced_messages_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_messages_sourced_messages
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 endif

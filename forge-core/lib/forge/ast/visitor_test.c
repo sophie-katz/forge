@@ -29,7 +29,7 @@ frg_ast_t* create_ast(void) {
             &frg_parsing_range_null,
             (frg_ast_t*)frg_ast_new_value_binary(
                 &frg_parsing_range_null,
-                FRG_AST_ID_VALUE_ADD,
+                FRG_AST_KIND_VALUE_ADD,
                 (frg_ast_t*)frg_ast_new_value_i32(
                     &frg_parsing_range_null,
                     5
@@ -79,9 +79,9 @@ frg_ast_visitor_status_t callback_pre_and_post_pre(
     void* user_data
 ) {
     TEST_ASSERT_NOT_NULL(parents);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_STMT_BLOCK, ((frg_ast_t*)parents->data)->id);
+    TEST_ASSERT_EQUAL(FRG_AST_KIND_STMT_BLOCK, ((frg_ast_t*)parents->data)->kind);
     TEST_ASSERT_NOT_NULL(parents->next);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_DECL_FN, ((frg_ast_t*)parents->next->data)->id);
+    TEST_ASSERT_EQUAL(FRG_AST_KIND_DECL_FN, ((frg_ast_t*)parents->next->data)->kind);
     TEST_ASSERT_NULL(parents->next->next);
 
     int* user_data_int = (int*)user_data;
@@ -99,9 +99,9 @@ frg_ast_visitor_status_t callback_pre_and_post_post(
     void* user_data
 ) {
     TEST_ASSERT_NOT_NULL(parents);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_STMT_BLOCK, ((frg_ast_t*)parents->data)->id);
+    TEST_ASSERT_EQUAL(FRG_AST_KIND_STMT_BLOCK, ((frg_ast_t*)parents->data)->kind);
     TEST_ASSERT_NOT_NULL(parents->next);
-    TEST_ASSERT_EQUAL(FRG_AST_ID_DECL_FN, ((frg_ast_t*)parents->next->data)->id);
+    TEST_ASSERT_EQUAL(FRG_AST_KIND_DECL_FN, ((frg_ast_t*)parents->next->data)->kind);
     TEST_ASSERT_NULL(parents->next->next);
 
     int* user_data_int = (int*)user_data;
@@ -122,7 +122,7 @@ void test_pre_and_post(void) {
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_STMT_RETURN,
+        FRG_AST_KIND_STMT_RETURN,
         callback_pre_and_post_pre,
         callback_pre_and_post_post
     );
@@ -173,21 +173,21 @@ void test_skip(void) {
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_DECL_FN,
+        FRG_AST_KIND_DECL_FN,
         NULL,
         callback_skip_post_decl_fn
     );
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_STMT_RETURN,
+        FRG_AST_KIND_STMT_RETURN,
         callback_skip_pre_stmt_return,
         NULL
     );
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_VALUE_ADD,
+        FRG_AST_KIND_VALUE_ADD,
         callback_skip_pre_value_add,
         NULL
     );
@@ -230,21 +230,21 @@ void test_stop(void) {
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_DECL_FN,
+        FRG_AST_KIND_DECL_FN,
         NULL,
         callback_stop_post_decl_fn
     );
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_STMT_RETURN,
+        FRG_AST_KIND_STMT_RETURN,
         callback_stop_pre_stmt_return,
         NULL
     );
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_VALUE_ADD,
+        FRG_AST_KIND_VALUE_ADD,
         callback_stop_pre_value_add,
         NULL
     );
@@ -280,7 +280,7 @@ void test_replace_node(void) {
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_VALUE_ADD,
+        FRG_AST_KIND_VALUE_ADD,
         callback_replace_node_pre_value_add,
         callback_replace_node_post_value_add
     );
@@ -291,8 +291,8 @@ void test_replace_node(void) {
     TEST_ASSERT_NOT_NULL(ast);
 
     TEST_ASSERT_EQUAL(
-        FRG_AST_ID_VALUE_INT,
-        ((frg_ast_stmt_return_t*)((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts->data)->value->id
+        FRG_AST_KIND_VALUE_INT,
+        ((frg_ast_stmt_return_t*)((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts->data)->value->kind
     );
 }
 
@@ -321,7 +321,7 @@ void test_replace_node_in_list(void) {
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_STMT_RETURN,
+        FRG_AST_KIND_STMT_RETURN,
         callback_replace_node_in_list_pre_stmt_return,
         callback_replace_node_in_list_post_stmt_return
     );
@@ -332,8 +332,8 @@ void test_replace_node_in_list(void) {
     TEST_ASSERT_NOT_NULL(ast);
 
     TEST_ASSERT_EQUAL(
-        FRG_AST_ID_VALUE_INT,
-        ((frg_ast_t*)((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts->data)->id
+        FRG_AST_KIND_VALUE_INT,
+        ((frg_ast_t*)((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts->data)->kind
     );
 }
 
@@ -354,7 +354,7 @@ void test_remove_node_in_list(void) {
 
     frg_ast_visitor_add_entry(
         visitor,
-        FRG_AST_ID_STMT_RETURN,
+        FRG_AST_KIND_STMT_RETURN,
         callback_remove_node_in_list_pre_stmt_return,
         NULL
     );

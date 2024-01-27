@@ -19,6 +19,7 @@
 #include <forge/ast/visitor.h>
 
 typedef struct {
+    frg_message_buffer_t* message_buffer;
     frg_ast_scope_t* scope;
 } frg_verification_verifier_t;
 

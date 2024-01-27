@@ -33,7 +33,7 @@ Changing even simple language features often results in many changes in many pla
 
 ### ID enum
 
-The ID enumerator is the list of all the different types of AST nodes that can exist. This is defined in the [`forge/common/enums.h`](../../../forge-core/include/forge/common/enums.h) file. See the `frg_ast_id_t` enumerator for details.
+The ID enumerator is the list of all the different types of AST nodes that can exist. This is defined in the [`forge/common/enums.h`](../../../forge-core/include/forge/common/enums.h) file. See the `frg_ast_kind_t` enumerator for details.
 
 ### Structs
 

@@ -230,57 +230,57 @@ void yyerror(frg_ast_t**ast, const char* message) {
 %%
 ty_bool : KW_BOOL
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_BOOL);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_BOOL);
 };
 
 ty_u8 : KW_U8
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_U8);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_U8);
 };
 
 ty_u16 : KW_U16
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_U16);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_U16);
 };
 
 ty_u32 : KW_U32
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_U32);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_U32);
 };
 
 ty_u64 : KW_U64
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_U64);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_U64);
 };
 
 ty_i8 : KW_I8
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_I8);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_I8);
 };
 
 ty_i16 : KW_I16
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_I16);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_I16);
 };
 
 ty_i32 : KW_I32
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_I32);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_I32);
 };
 
 ty_i64 : KW_I64
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_I64);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_I64);
 };
 
 ty_f32 : KW_F32
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_F32);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_F32);
 };
 
 ty_f64 : KW_F64
 {
-    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_ID_TY_F64);
+    $$ = frg_ast_new_ty_primary(&$1, FRG_AST_KIND_TY_F64);
 };
 
 ty_symbol : SYMBOL
@@ -897,12 +897,12 @@ stmt_block : CURLY_BRACE_LEFT CURLY_BRACE_RIGHT
 
 value_true : KW_TRUE
 {
-    $$ = frg_ast_new_value_primary(&$1, FRG_AST_ID_VALUE_TRUE);
+    $$ = frg_ast_new_value_primary(&$1, FRG_AST_KIND_VALUE_TRUE);
 };
 
 value_false : KW_FALSE
 {
-    $$ = frg_ast_new_value_primary(&$1, FRG_AST_ID_VALUE_FALSE);
+    $$ = frg_ast_new_value_primary(&$1, FRG_AST_KIND_VALUE_FALSE);
 };
 
 value_int : INT
@@ -986,7 +986,7 @@ value_access : value_access DOT value_call
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_ACCESS, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_ACCESS, $1, $3);
 }
 | value_call
 {
@@ -1000,7 +1000,7 @@ value_deref_getaddr: BIT_AND value_deref_getaddr
         &((frg_ast_t*)$2)->source_range
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_GETADDR, $2);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_GETADDR, $2);
 }
 | MUL value_deref_getaddr
 {
@@ -1009,7 +1009,7 @@ value_deref_getaddr: BIT_AND value_deref_getaddr
         &((frg_ast_t*)$2)->source_range
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_DEREF, $2);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_DEREF, $2);
 }
 | value_access
 {
@@ -1023,7 +1023,7 @@ value_inc_dec : value_deref_getaddr INC
         &$2
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_INC, $1);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_INC, $1);
 }
 | value_deref_getaddr DEC
 {
@@ -1032,7 +1032,7 @@ value_inc_dec : value_deref_getaddr INC
         &$2
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_DEC, $1);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_DEC, $1);
 }
 | value_deref_getaddr
 {
@@ -1046,7 +1046,7 @@ value_exp : value_inc_dec EXP value_exp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_EXP, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_EXP, $1, $3);
 }
 | value_inc_dec
 {
@@ -1060,7 +1060,7 @@ value_neg_bit_not : BIT_NOT value_neg_bit_not
         &((frg_ast_t*)$2)->source_range
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_BIT_NOT, $2);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_BIT_NOT, $2);
 }
 | SUB value_neg_bit_not
 {
@@ -1069,7 +1069,7 @@ value_neg_bit_not : BIT_NOT value_neg_bit_not
         &((frg_ast_t*)$2)->source_range
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_NEG, $2);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_NEG, $2);
 }
 | value_exp
 {
@@ -1083,7 +1083,7 @@ value_mul : value_neg_bit_not MUL value_mul
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_MUL, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_MUL, $1, $3);
 }
 | value_neg_bit_not DIV value_mul
 {
@@ -1092,7 +1092,7 @@ value_mul : value_neg_bit_not MUL value_mul
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_DIV, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_DIV, $1, $3);
 }
 | value_neg_bit_not DIV_INT value_mul
 {
@@ -1101,7 +1101,7 @@ value_mul : value_neg_bit_not MUL value_mul
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_DIV_INT, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_DIV_INT, $1, $3);
 }
 | value_neg_bit_not MOD value_mul
 {
@@ -1110,7 +1110,7 @@ value_mul : value_neg_bit_not MUL value_mul
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_MOD, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_MOD, $1, $3);
 }
 | value_neg_bit_not
 {
@@ -1124,7 +1124,7 @@ value_add : value_mul ADD value_add
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_ADD, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_ADD, $1, $3);
 }
 | value_mul SUB value_add
 {
@@ -1133,7 +1133,7 @@ value_add : value_mul ADD value_add
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_SUB, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_SUB, $1, $3);
 }
 | value_mul
 {
@@ -1147,7 +1147,7 @@ value_bit_shift : value_add BIT_SHL value_bit_shift
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_SHL, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_SHL, $1, $3);
 }
 | value_add BIT_SHR value_bit_shift
 {
@@ -1156,7 +1156,7 @@ value_bit_shift : value_add BIT_SHL value_bit_shift
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_SHR, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_SHR, $1, $3);
 }
 | value_add
 {
@@ -1170,7 +1170,7 @@ value_bit_and : value_bit_shift BIT_AND value_bit_and
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_AND, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_AND, $1, $3);
 }
 | value_bit_shift
 {
@@ -1184,7 +1184,7 @@ value_bit_xor : value_bit_and BIT_XOR value_bit_xor
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_XOR, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_XOR, $1, $3);
 }
 | value_bit_and
 {
@@ -1198,7 +1198,7 @@ value_bit_or : value_bit_xor BIT_OR value_bit_or
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_OR, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_OR, $1, $3);
 }
 | value_bit_xor
 {
@@ -1212,7 +1212,7 @@ value_cmp : value_bit_or EQ value_cmp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_EQ, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_EQ, $1, $3);
 }
 | value_bit_or NE value_cmp
 {
@@ -1221,7 +1221,7 @@ value_cmp : value_bit_or EQ value_cmp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_NE, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_NE, $1, $3);
 }
 | value_bit_or LT value_cmp
 {
@@ -1230,7 +1230,7 @@ value_cmp : value_bit_or EQ value_cmp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_LT, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_LT, $1, $3);
 }
 | value_bit_or LE value_cmp
 {
@@ -1239,7 +1239,7 @@ value_cmp : value_bit_or EQ value_cmp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_LE, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_LE, $1, $3);
 }
 | value_bit_or GT value_cmp
 {
@@ -1248,7 +1248,7 @@ value_cmp : value_bit_or EQ value_cmp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_GT, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_GT, $1, $3);
 }
 | value_bit_or GE value_cmp
 {
@@ -1257,7 +1257,7 @@ value_cmp : value_bit_or EQ value_cmp
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_GE, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_GE, $1, $3);
 }
 | value_bit_or
 {
@@ -1271,7 +1271,7 @@ value_log_not : LOG_NOT value_cmp
         &((frg_ast_t*)$2)->source_range
     );
 
-    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_ID_VALUE_LOG_NOT, $2);
+    $$ = frg_ast_new_value_unary(&source_range, FRG_AST_KIND_VALUE_LOG_NOT, $2);
 }
 | value_cmp
 {
@@ -1285,7 +1285,7 @@ value_log_and : value_log_not LOG_AND value_log_and
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_LOG_AND, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_LOG_AND, $1, $3);
 }
 | value_log_not
 {
@@ -1299,7 +1299,7 @@ value_log_or : value_log_and LOG_OR value_log_or
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_LOG_OR, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_LOG_OR, $1, $3);
 }
 | value_log_and
 {
@@ -1313,7 +1313,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_ASSIGN, $1, $3);
 }
 | value_log_or ADD_ASSIGN value_assign
 {
@@ -1322,7 +1322,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_ADD_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_ADD_ASSIGN, $1, $3);
 }
 | value_log_or SUB_ASSIGN value_assign
 {
@@ -1331,7 +1331,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_SUB_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_SUB_ASSIGN, $1, $3);
 }
 | value_log_or MUL_ASSIGN value_assign
 {
@@ -1340,7 +1340,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_MUL_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_MUL_ASSIGN, $1, $3);
 }
 | value_log_or DIV_ASSIGN value_assign
 {
@@ -1349,7 +1349,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_DIV_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_DIV_ASSIGN, $1, $3);
 }
 | value_log_or DIV_INT_ASSIGN value_assign
 {
@@ -1358,7 +1358,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_DIV_INT_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_DIV_INT_ASSIGN, $1, $3);
 }
 | value_log_or MOD_ASSIGN value_assign
 {
@@ -1367,7 +1367,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_MOD_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_MOD_ASSIGN, $1, $3);
 }
 | value_log_or BIT_SHL_ASSIGN value_assign
 {
@@ -1376,7 +1376,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_SHL_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_SHL_ASSIGN, $1, $3);
 }
 | value_log_or BIT_SHR_ASSIGN value_assign
 {
@@ -1385,7 +1385,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_SHR_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_SHR_ASSIGN, $1, $3);
 }
 | value_log_or BIT_AND_ASSIGN value_assign
 {
@@ -1394,7 +1394,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_AND_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_AND_ASSIGN, $1, $3);
 }
 | value_log_or BIT_XOR_ASSIGN value_assign
 {
@@ -1403,7 +1403,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_XOR_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_XOR_ASSIGN, $1, $3);
 }
 | value_log_or BIT_OR_ASSIGN value_assign
 {
@@ -1412,7 +1412,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_BIT_OR_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_BIT_OR_ASSIGN, $1, $3);
 }
 | value_log_or EXP_ASSIGN value_assign
 {
@@ -1421,7 +1421,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_EXP_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_EXP_ASSIGN, $1, $3);
 }
 | value_log_or LOG_AND_ASSIGN value_assign
 {
@@ -1430,7 +1430,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_LOG_AND_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_LOG_AND_ASSIGN, $1, $3);
 }
 | value_log_or LOG_OR_ASSIGN value_assign
 {
@@ -1439,7 +1439,7 @@ value_assign : value_log_or ASSIGN value_assign
         &((frg_ast_t*)$3)->source_range
     );
 
-    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_ID_VALUE_LOG_OR_ASSIGN, $1, $3);
+    $$ = frg_ast_new_value_binary(&source_range, FRG_AST_KIND_VALUE_LOG_OR_ASSIGN, $1, $3);
 }
 | value_log_or
 {

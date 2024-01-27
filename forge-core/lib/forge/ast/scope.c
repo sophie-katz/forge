@@ -40,7 +40,13 @@ void frg_ast_scope_frame_add_ast(frg_ast_scope_frame_t* scope_frame, frg_ast_t* 
     frg_assert_pointer_non_null(scope_frame);
     frg_assert_pointer_non_null(ast);
 
-    const char* name = frg_ast_decl_get_name(ast);
+    const char* name;
+
+    if (ast->kind == FRG_AST_KIND_DECL_FN_ARG) {
+        name = frg_ast_get_decl_fn_arg_name(ast);
+    } else {
+        name = frg_ast_get_decl_name(ast);
+    }
     
     frg_assert_string_non_empty(name);
 

@@ -202,15 +202,15 @@ void frg_cli_option_print_help(
     frg_stream_output_write_string(stream, "  ");
 
     if (option->short_name != FRG_CLI_OPTION_SHORT_NAME_NULL) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
         frg_stream_output_write_printf(stream, "-%c", option->short_name);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
         frg_stream_output_write_printf(stream, ", ");
     }
 
-    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
     frg_stream_output_write_printf(stream, "--%s", option->long_name);
-    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
 
     if (option->value_name != NULL) {
         frg_stream_output_write_printf(stream, " <%s>", option->value_name);
@@ -220,12 +220,12 @@ void frg_cli_option_print_help(
 
     if (option->choices != NULL) {
         frg_stream_output_write_printf(stream, "    ");
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_UNDERLINE);
         frg_stream_output_write_printf(stream, "Choices:");
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
         frg_stream_output_write_printf(stream, "\n");
 
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
         for (GList* choice = option->choices; choice != NULL; choice = choice->next) {
             frg_cli_choice_print_help(stream, (const frg_cli_choice_t*)choice->data);
         }

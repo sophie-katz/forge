@@ -25,15 +25,15 @@
 #include <forge/config/commands/version.h>
 
 void frg_config_cli_program_banner(void) {
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BOLD);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
     frg_stream_output_write_printf(frg_stream_output_get_stdout(), "\n       \\ | / ,\n");
     frg_stream_output_write_printf(frg_stream_output_get_stdout(), "     `\n");
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_RED);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_RED);
     frg_stream_output_write_printf(frg_stream_output_get_stdout(), "---------------\n");
     frg_stream_output_write_printf(frg_stream_output_get_stdout(), "  ----.      /\n");
     frg_stream_output_write_printf(frg_stream_output_get_stdout(), "      /___^__\\\n\n");
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RESET);
 }
 
 int _frg_config_cli_program_callback(

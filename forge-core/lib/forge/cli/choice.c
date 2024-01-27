@@ -56,8 +56,8 @@ void frg_cli_choice_print_help(
         )
     );
 
-    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
     frg_stream_output_write_printf(stream, "%s", choice->name);
-    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
     frg_stream_output_write_printf(stream, " (%s)\n", choice->help);
 }

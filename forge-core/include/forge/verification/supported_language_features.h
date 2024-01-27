@@ -17,37 +17,13 @@
 
 #include <forge/ast/visitor.h>
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_bool(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_float(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_symbol(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_ty_fn(
+frg_ast_visitor_status_t frg_verification_supported_language_features_callback_ty_fn(
     GList* parents,
     frg_ast_t** ast,
     void* user_data
 );
 
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_union(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_struct(
     GList* parents,
     frg_ast_t** ast,
     void* user_data
@@ -77,36 +53,6 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     void* user_data
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_var(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_stmt_if(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_stmt_while(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_bool(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_float(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
-);
-
 frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_char(
     GList* parents,
     frg_ast_t** ast,
@@ -131,7 +77,7 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     void* user_data
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_access(
+frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_operator(
     GList* parents,
     frg_ast_t** ast,
     void* user_data

@@ -249,7 +249,7 @@ void frg_stream_output_write_vprintf(
 
 void frg_stream_output_set_color(
     frg_stream_output_t* output,
-    frg_stream_output_color_id_t id
+    frg_stream_output_color_t color
 ) {
     frg_assert_pointer_non_null(output);
 
@@ -257,72 +257,72 @@ void frg_stream_output_set_color(
         return;
     }
 
-    switch (id) {
-        case FRG_STREAM_OUTPUT_COLOR_ID_RESET:
+    switch (color) {
+        case FRG_STREAM_OUTPUT_COLOR_RESET:
             frg_stream_output_write_string(output, "\033[0;0m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BOLD:
+        case FRG_STREAM_OUTPUT_COLOR_BOLD:
             frg_stream_output_write_string(output, "\033[1m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_DIM:
+        case FRG_STREAM_OUTPUT_COLOR_DIM:
             frg_stream_output_write_string(output, "\033[2m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_ITALIC:
+        case FRG_STREAM_OUTPUT_COLOR_ITALIC:
             frg_stream_output_write_string(output, "\033[3m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_UNDERLINE:
+        case FRG_STREAM_OUTPUT_COLOR_UNDERLINE:
             frg_stream_output_write_string(output, "\033[4m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BLACK:
+        case FRG_STREAM_OUTPUT_COLOR_BLACK:
             frg_stream_output_write_string(output, "\033[30m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_RED:
+        case FRG_STREAM_OUTPUT_COLOR_RED:
             frg_stream_output_write_string(output, "\033[31m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_GREEN:
+        case FRG_STREAM_OUTPUT_COLOR_GREEN:
             frg_stream_output_write_string(output, "\033[32m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_YELLOW:
+        case FRG_STREAM_OUTPUT_COLOR_YELLOW:
             frg_stream_output_write_string(output, "\033[33m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BLUE:
+        case FRG_STREAM_OUTPUT_COLOR_BLUE:
             frg_stream_output_write_string(output, "\033[34m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_MAGENTA:
+        case FRG_STREAM_OUTPUT_COLOR_MAGENTA:
             frg_stream_output_write_string(output, "\033[35m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_CYAN:
+        case FRG_STREAM_OUTPUT_COLOR_CYAN:
             frg_stream_output_write_string(output, "\033[36m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_WHITE:
+        case FRG_STREAM_OUTPUT_COLOR_WHITE:
             frg_stream_output_write_string(output, "\033[37m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLACK:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLACK:
             frg_stream_output_write_string(output, "\033[90m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_RED:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_RED:
             frg_stream_output_write_string(output, "\033[91m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_GREEN:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_GREEN:
             frg_stream_output_write_string(output, "\033[92m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW:
             frg_stream_output_write_string(output, "\033[93m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_BLUE:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLUE:
             frg_stream_output_write_string(output, "\033[94m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_MAGENTA:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_MAGENTA:
             frg_stream_output_write_string(output, "\033[95m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_CYAN:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_CYAN:
             frg_stream_output_write_string(output, "\033[96m");
             break;
-        case FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_WHITE:
+        case FRG_STREAM_OUTPUT_COLOR_BRIGHT_WHITE:
             frg_stream_output_write_string(output, "\033[97m");
             break;
         default:
-            frg_die_unexpected_enum_value(id);
+            frg_die_unexpected_enum_value(color);
     }
 }
 

@@ -56,7 +56,10 @@
         "locale": "c",
         "charconv": "c",
         "compare": "c",
-        "__tree": "c"
+        "__tree": "c",
+        "supported_language_features.h": "c",
+        "verifier.h": "c",
+        "types.h": "c"
     },
     "C_Cpp.doxygen.generateOnType": false
 }

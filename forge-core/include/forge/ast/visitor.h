@@ -40,7 +40,7 @@ typedef struct {
 } frg_ast_visitor_entry_t;
 
 typedef struct {
-    frg_ast_visitor_entry_t entries[FRG_AST_ID_COUNT];
+    frg_ast_visitor_entry_t entries[FRG_AST_KIND_COUNT];
     void* user_data;
 } frg_ast_visitor_t;
 
@@ -49,7 +49,7 @@ void frg_ast_visitor_destroy(frg_ast_visitor_t** visitor);
 
 void frg_ast_visitor_add_entry(
     frg_ast_visitor_t* visitor,
-    frg_ast_id_t id,
+    frg_ast_kind_t kind,
     frg_ast_visitor_callback_t callback_pre,
     frg_ast_visitor_callback_t callback_post
 );

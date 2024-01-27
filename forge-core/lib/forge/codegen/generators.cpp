@@ -31,31 +31,31 @@ llvm::Type* _frg_generate_type(
 
     llvm::Type* value = NULL;
     
-    switch (ast->id) {
-        case FRG_AST_ID_TY_BOOL:
+    switch (ast->kind) {
+        case FRG_AST_KIND_TY_BOOL:
             return llvm::Type::getInt1Ty(ctx);
-        case FRG_AST_ID_TY_U8:
-        case FRG_AST_ID_TY_I8:
+        case FRG_AST_KIND_TY_U8:
+        case FRG_AST_KIND_TY_I8:
             return llvm::Type::getInt8Ty(ctx);
-        case FRG_AST_ID_TY_U16:
-        case FRG_AST_ID_TY_I16:
+        case FRG_AST_KIND_TY_U16:
+        case FRG_AST_KIND_TY_I16:
             return llvm::Type::getInt16Ty(ctx);
-        case FRG_AST_ID_TY_U32:
-        case FRG_AST_ID_TY_I32:
+        case FRG_AST_KIND_TY_U32:
+        case FRG_AST_KIND_TY_I32:
             return llvm::Type::getInt32Ty(ctx);
-        case FRG_AST_ID_TY_U64:
-        case FRG_AST_ID_TY_I64:
+        case FRG_AST_KIND_TY_U64:
+        case FRG_AST_KIND_TY_I64:
             return llvm::Type::getInt64Ty(ctx);
-        case FRG_AST_ID_TY_F32:
+        case FRG_AST_KIND_TY_F32:
             return llvm::Type::getFloatTy(ctx);
-        case FRG_AST_ID_TY_F64:
+        case FRG_AST_KIND_TY_F64:
             return llvm::Type::getDoubleTy(ctx);
-        case FRG_AST_ID_TY_SYMBOL:
+        case FRG_AST_KIND_TY_SYMBOL:
             return (llvm::Type*)frg_ast_scope_get_ir(
                 scope,
                 ((frg_ast_ty_symbol_t*)ast)->name->str
             );
-        case FRG_AST_ID_TY_POINTER:
+        case FRG_AST_KIND_TY_POINTER:
             value = _frg_generate_type(
                 ctx,
                 scope,
@@ -67,7 +67,7 @@ llvm::Type* _frg_generate_type(
                 0
             );
         default:
-            frg_die_unexpected_enum_value(ast->id);
+            frg_die_unexpected_enum_value(ast->kind);
     }
 }
 
@@ -153,8 +153,8 @@ void _frg_generate_stmt(
 
     llvm::Value* value = NULL;
 
-    switch (ast->id) {
-        case FRG_AST_ID_STMT_RETURN:
+    switch (ast->kind) {
+        case FRG_AST_KIND_STMT_RETURN:
             value = _frg_generate_value(
                 ctx,
                 scope,
@@ -164,7 +164,7 @@ void _frg_generate_stmt(
             builder.CreateRet(value);
 
             break;
-        case FRG_AST_ID_STMT_BLOCK:
+        case FRG_AST_KIND_STMT_BLOCK:
             frg_ast_scope_push_frame(
                 scope
             );
@@ -183,58 +183,58 @@ void _frg_generate_stmt(
             );
 
             break;
-        case FRG_AST_ID_VALUE_TRUE:
-        case FRG_AST_ID_VALUE_FALSE:
-        case FRG_AST_ID_VALUE_INT:
-        case FRG_AST_ID_VALUE_FLOAT:
-        case FRG_AST_ID_VALUE_CHAR:
-        case FRG_AST_ID_VALUE_STR:
-        case FRG_AST_ID_VALUE_SYMBOL:
-        case FRG_AST_ID_VALUE_DEREF:
-        case FRG_AST_ID_VALUE_GETADDR:
-        case FRG_AST_ID_VALUE_CALL_KW_ARG:
-        case FRG_AST_ID_VALUE_CALL:
-        case FRG_AST_ID_VALUE_ACCESS:
-        case FRG_AST_ID_VALUE_BIT_NOT:
-        case FRG_AST_ID_VALUE_BIT_AND:
-        case FRG_AST_ID_VALUE_BIT_OR:
-        case FRG_AST_ID_VALUE_BIT_XOR:
-        case FRG_AST_ID_VALUE_BIT_SHL:
-        case FRG_AST_ID_VALUE_BIT_SHR:
-        case FRG_AST_ID_VALUE_NEG:
-        case FRG_AST_ID_VALUE_ADD:
-        case FRG_AST_ID_VALUE_SUB:
-        case FRG_AST_ID_VALUE_MUL:
-        case FRG_AST_ID_VALUE_DIV:
-        case FRG_AST_ID_VALUE_DIV_INT:
-        case FRG_AST_ID_VALUE_MOD:
-        case FRG_AST_ID_VALUE_EXP:
-        case FRG_AST_ID_VALUE_EQ:
-        case FRG_AST_ID_VALUE_NE:
-        case FRG_AST_ID_VALUE_LT:
-        case FRG_AST_ID_VALUE_LE:
-        case FRG_AST_ID_VALUE_GT:
-        case FRG_AST_ID_VALUE_GE:
-        case FRG_AST_ID_VALUE_LOG_NOT:
-        case FRG_AST_ID_VALUE_LOG_AND:
-        case FRG_AST_ID_VALUE_LOG_OR:
-        case FRG_AST_ID_VALUE_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_AND_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_OR_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_XOR_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_SHL_ASSIGN:
-        case FRG_AST_ID_VALUE_BIT_SHR_ASSIGN:
-        case FRG_AST_ID_VALUE_ADD_ASSIGN:
-        case FRG_AST_ID_VALUE_INC:
-        case FRG_AST_ID_VALUE_SUB_ASSIGN:
-        case FRG_AST_ID_VALUE_DEC:
-        case FRG_AST_ID_VALUE_MUL_ASSIGN:
-        case FRG_AST_ID_VALUE_DIV_ASSIGN:
-        case FRG_AST_ID_VALUE_DIV_INT_ASSIGN:
-        case FRG_AST_ID_VALUE_MOD_ASSIGN:
-        case FRG_AST_ID_VALUE_EXP_ASSIGN:
-        case FRG_AST_ID_VALUE_LOG_AND_ASSIGN:
-        case FRG_AST_ID_VALUE_LOG_OR_ASSIGN:
+        case FRG_AST_KIND_VALUE_TRUE:
+        case FRG_AST_KIND_VALUE_FALSE:
+        case FRG_AST_KIND_VALUE_INT:
+        case FRG_AST_KIND_VALUE_FLOAT:
+        case FRG_AST_KIND_VALUE_CHAR:
+        case FRG_AST_KIND_VALUE_STR:
+        case FRG_AST_KIND_VALUE_SYMBOL:
+        case FRG_AST_KIND_VALUE_DEREF:
+        case FRG_AST_KIND_VALUE_GETADDR:
+        case FRG_AST_KIND_VALUE_CALL_KW_ARG:
+        case FRG_AST_KIND_VALUE_CALL:
+        case FRG_AST_KIND_VALUE_ACCESS:
+        case FRG_AST_KIND_VALUE_BIT_NOT:
+        case FRG_AST_KIND_VALUE_BIT_AND:
+        case FRG_AST_KIND_VALUE_BIT_OR:
+        case FRG_AST_KIND_VALUE_BIT_XOR:
+        case FRG_AST_KIND_VALUE_BIT_SHL:
+        case FRG_AST_KIND_VALUE_BIT_SHR:
+        case FRG_AST_KIND_VALUE_NEG:
+        case FRG_AST_KIND_VALUE_ADD:
+        case FRG_AST_KIND_VALUE_SUB:
+        case FRG_AST_KIND_VALUE_MUL:
+        case FRG_AST_KIND_VALUE_DIV:
+        case FRG_AST_KIND_VALUE_DIV_INT:
+        case FRG_AST_KIND_VALUE_MOD:
+        case FRG_AST_KIND_VALUE_EXP:
+        case FRG_AST_KIND_VALUE_EQ:
+        case FRG_AST_KIND_VALUE_NE:
+        case FRG_AST_KIND_VALUE_LT:
+        case FRG_AST_KIND_VALUE_LE:
+        case FRG_AST_KIND_VALUE_GT:
+        case FRG_AST_KIND_VALUE_GE:
+        case FRG_AST_KIND_VALUE_LOG_NOT:
+        case FRG_AST_KIND_VALUE_LOG_AND:
+        case FRG_AST_KIND_VALUE_LOG_OR:
+        case FRG_AST_KIND_VALUE_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_AND_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_OR_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_XOR_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_SHL_ASSIGN:
+        case FRG_AST_KIND_VALUE_BIT_SHR_ASSIGN:
+        case FRG_AST_KIND_VALUE_ADD_ASSIGN:
+        case FRG_AST_KIND_VALUE_INC:
+        case FRG_AST_KIND_VALUE_SUB_ASSIGN:
+        case FRG_AST_KIND_VALUE_DEC:
+        case FRG_AST_KIND_VALUE_MUL_ASSIGN:
+        case FRG_AST_KIND_VALUE_DIV_ASSIGN:
+        case FRG_AST_KIND_VALUE_DIV_INT_ASSIGN:
+        case FRG_AST_KIND_VALUE_MOD_ASSIGN:
+        case FRG_AST_KIND_VALUE_EXP_ASSIGN:
+        case FRG_AST_KIND_VALUE_LOG_AND_ASSIGN:
+        case FRG_AST_KIND_VALUE_LOG_OR_ASSIGN:
             value = _frg_generate_value(
                 ctx,
                 scope,
@@ -245,7 +245,7 @@ void _frg_generate_stmt(
 
             break;
         default:
-            frg_die_unexpected_enum_value(ast->id);
+            frg_die_unexpected_enum_value(ast->kind);
     }
 }
 
@@ -259,64 +259,64 @@ llvm::Value* _frg_generate_value(
 
     frg_ast_value_int_t* value_int = NULL;
 
-    switch (ast->id) {
-        case FRG_AST_ID_VALUE_TRUE:
+    switch (ast->kind) {
+        case FRG_AST_KIND_VALUE_TRUE:
             return llvm::ConstantInt::getTrue(ctx);
-        case FRG_AST_ID_VALUE_FALSE:
+        case FRG_AST_KIND_VALUE_FALSE:
             return llvm::ConstantInt::getFalse(ctx);
-        case FRG_AST_ID_VALUE_INT:
+        case FRG_AST_KIND_VALUE_INT:
             value_int = (frg_ast_value_int_t*)ast;
-            switch (value_int->ty->id) {
-                case FRG_AST_ID_TY_U8:
+            switch (value_int->ty->kind) {
+                case FRG_AST_KIND_TY_U8:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt8Ty(ctx),
                         value_int->value.u8,
                         false
                     );
                     break;
-                case FRG_AST_ID_TY_U16:
+                case FRG_AST_KIND_TY_U16:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt16Ty(ctx),
                         value_int->value.u16,
                         false
                     );
                     break;
-                case FRG_AST_ID_TY_U32:
+                case FRG_AST_KIND_TY_U32:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt32Ty(ctx),
                         value_int->value.u32,
                         false
                     );
                     break;
-                case FRG_AST_ID_TY_U64:
+                case FRG_AST_KIND_TY_U64:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt64Ty(ctx),
                         value_int->value.u64,
                         false
                     );
                     break;
-                case FRG_AST_ID_TY_I8:
+                case FRG_AST_KIND_TY_I8:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt8Ty(ctx),
                         value_int->value.i8,
                         true
                     );
                     break;
-                case FRG_AST_ID_TY_I16:
+                case FRG_AST_KIND_TY_I16:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt16Ty(ctx),
                         value_int->value.i16,
                         true
                     );
                     break;
-                case FRG_AST_ID_TY_I32:
+                case FRG_AST_KIND_TY_I32:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt32Ty(ctx),
                         value_int->value.i32,
                         true
                     );
                     break;
-                case FRG_AST_ID_TY_I64:
+                case FRG_AST_KIND_TY_I64:
                     return llvm::ConstantInt::get(
                         llvm::Type::getInt64Ty(ctx),
                         value_int->value.i64,
@@ -324,10 +324,10 @@ llvm::Value* _frg_generate_value(
                     );
                     break;
                 default:
-                    frg_die_unexpected_enum_value(value_int->ty->id);
+                    frg_die_unexpected_enum_value(value_int->ty->kind);
             }
         default:
-            frg_die_unexpected_enum_value(ast->id);
+            frg_die_unexpected_enum_value(ast->kind);
     }
 }
 }

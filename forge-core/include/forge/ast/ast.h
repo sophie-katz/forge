@@ -24,9 +24,30 @@
 #include <stdint.h>
 
 typedef struct {
-    frg_ast_id_t id;
+    frg_ast_kind_t kind;
     frg_parsing_range_t source_range;
 } frg_ast_t;
+
+typedef void (*frg_ast_destructor)(frg_ast_t* ast);
+typedef frg_ast_t* (*frg_ast_cloner)(const frg_ast_t* ast);
+typedef const char* (*frg_ast_decl_name_getter)(const frg_ast_t* ast);
+typedef void (*frg_ast_debug_printer)(
+    frg_stream_output_t* stream,
+    const frg_ast_t* ast,
+    frg_indent_t indent
+);
+
+typedef struct {
+    const char* name;
+    frg_ast_kind_flags_t flags;
+    frg_bit_width_t ty_bit_width;
+    frg_ast_destructor destructor;
+    frg_ast_cloner cloner;
+    frg_ast_decl_name_getter decl_name_getter;
+    frg_ast_debug_printer debug_printer;
+} frg_ast_kind_info_t;
+
+const frg_ast_kind_info_t* frg_ast_kind_info_get(frg_ast_kind_t kind);
 
 typedef struct {
     frg_ast_t base;
@@ -41,8 +62,8 @@ typedef struct {
 typedef struct {
     frg_ast_t base;
     GList* args;
-    GList* var_pos_args;
-    GList* var_kw_args;
+    frg_ast_t* var_pos_args;
+    frg_ast_t* var_kw_args;
     frg_ast_t* return_ty;
 } frg_ast_ty_fn_t;
 
@@ -187,7 +208,7 @@ typedef struct {
 
 frg_ast_t* frg_ast_new_ty_primary(
     const frg_parsing_range_t *source_range,
-    frg_ast_id_t id
+    frg_ast_kind_t kind
 );
 
 frg_ast_ty_symbol_t* frg_ast_new_ty_symbol(
@@ -203,8 +224,8 @@ frg_ast_ty_pointer_t* frg_ast_new_ty_pointer(
 frg_ast_ty_fn_t* frg_ast_new_ty_fn(
     const frg_parsing_range_t *source_range,
     GList* args,
-    GList* var_pos_args,
-    GList* var_kw_args,
+    frg_ast_t* var_pos_args,
+    frg_ast_t* var_kw_args,
     frg_ast_t* return_ty
 );
 
@@ -286,7 +307,7 @@ frg_ast_stmt_block_t* frg_ast_new_stmt_block(
 
 frg_ast_t* frg_ast_new_value_primary(
     const frg_parsing_range_t *source_range,
-    frg_ast_id_t id
+    frg_ast_kind_t kind
 );
 
 frg_ast_value_int_t* frg_ast_new_value_i8(
@@ -379,13 +400,13 @@ frg_ast_value_call_t* frg_ast_new_value_call(
 
 frg_ast_value_unary_t* frg_ast_new_value_unary(
     const frg_parsing_range_t *source_range,
-    frg_ast_id_t id,
+    frg_ast_kind_t kind,
     frg_ast_t* operand
 );
 
 frg_ast_value_binary_t* frg_ast_new_value_binary(
     const frg_parsing_range_t *source_range,
-    frg_ast_id_t id,
+    frg_ast_kind_t kind,
     frg_ast_t* left,
     frg_ast_t* right
 );
@@ -438,4 +459,12 @@ frg_ast_value_unary_t* frg_ast_try_cast_value_unary(frg_ast_t* ast);
 
 frg_ast_value_binary_t* frg_ast_try_cast_value_binary(frg_ast_t* ast);
 
-const char* frg_ast_decl_get_name(const frg_ast_t* ast);
+const char* frg_ast_get_decl_name(const frg_ast_t* ast);
+
+const char* frg_ast_get_decl_fn_arg_name(const frg_ast_t* ast);
+
+void frg_ast_print_debug(
+    frg_stream_output_t* stream,
+    const frg_ast_t* ast,
+    frg_indent_t indent
+);

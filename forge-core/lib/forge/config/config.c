@@ -15,7 +15,6 @@
 
 #include <build_config.h>
 #include <forge/ast/ast.h>
-#include <forge/ast/debug.h>
 #include <forge/codegen/codegen.h>
 #include <forge/common/error.h>
 #include <forge/common/memory.h>

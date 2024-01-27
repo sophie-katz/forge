@@ -112,7 +112,7 @@ void _frg_log_summary_if_errors(
     frg_message_buffer_t* message_buffer
 ) {
     if (message_buffer->error_count > 0 || message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_WHITE);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
         if (message_buffer->error_count > 0) {
             frg_stream_output_write_printf(stream, "Failed with ");
         } else {
@@ -121,8 +121,8 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RED);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RED);
         frg_stream_output_write_printf(
             stream,
             "%u error%s",
@@ -132,8 +132,8 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0 && message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_WHITE);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
         frg_stream_output_write_printf(
             stream,
             " and "
@@ -141,8 +141,8 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BOLD);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_BRIGHT_YELLOW);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
         frg_stream_output_write_printf(
             stream,
             "%u warning%s",
@@ -152,9 +152,9 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0 || message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_WHITE);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
         frg_stream_output_write_printf(stream, ".\n");
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_ID_RESET);
+        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
     }
 }
 

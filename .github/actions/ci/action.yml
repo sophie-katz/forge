@@ -21,7 +21,7 @@ runs:
       run: |
         . ../.venv/bin/activate
         git config --global --add safe.directory $(realpath ..)
-        meson setup build
+        meson setup build -Dtest_mode=full
         meson compile -C build
 
     - name: Run tests

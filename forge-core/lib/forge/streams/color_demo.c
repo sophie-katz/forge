@@ -19,116 +19,116 @@
 int main(void) {
     printf("Font styles:\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BOLD);
+    frg_color_set(stdout, FRG_COLOR_BOLD);
     printf("  bold\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
-    frg_color_set(stdout, FRG_COLOR_ID_DIM);
+    frg_color_set(stdout, FRG_COLOR_RESET);
+    frg_color_set(stdout, FRG_COLOR_DIM);
     printf("  dim\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
-    frg_color_set(stdout, FRG_COLOR_ID_ITALIC);
+    frg_color_set(stdout, FRG_COLOR_RESET);
+    frg_color_set(stdout, FRG_COLOR_ITALIC);
     printf("  italic\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
+    frg_color_set(stdout, FRG_COLOR_RESET);
     printf("  ");
-    frg_color_set(stdout, FRG_COLOR_ID_UNDERLINE);
+    frg_color_set(stdout, FRG_COLOR_UNDERLINE);
     printf("underline");
-    frg_color_set(stdout, FRG_COLOR_ID_RESET);
+    frg_color_set(stdout, FRG_COLOR_RESET);
     printf("\n");
 
     printf("\nColors:\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_RED);
+    frg_color_set(stdout, FRG_COLOR_RED);
     printf("  red\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_GREEN);
+    frg_color_set(stdout, FRG_COLOR_GREEN);
     printf("  green\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_YELLOW);
+    frg_color_set(stdout, FRG_COLOR_YELLOW);
     printf("  yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BLUE);
+    frg_color_set(stdout, FRG_COLOR_BLUE);
     printf("  blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_MAGENTA);
+    frg_color_set(stdout, FRG_COLOR_MAGENTA);
     printf("  magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_CYAN);
+    frg_color_set(stdout, FRG_COLOR_CYAN);
     printf("  cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_WHITE);
+    frg_color_set(stdout, FRG_COLOR_WHITE);
     printf("  white\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_BLACK);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLACK);
     printf("  bright black\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_RED);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_RED);
     printf("  bright red\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_GREEN);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_GREEN);
     printf("  bright green\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_YELLOW);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_YELLOW);
     printf("  bright yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_BLUE);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLUE);
     printf("  bright blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_MAGENTA);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_MAGENTA);
     printf("  bright magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_CYAN);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_CYAN);
     printf("  bright cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_WHITE);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_WHITE);
     printf("  bright white\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_DIM);
+    frg_color_set(stdout, FRG_COLOR_DIM);
 
-    frg_color_set(stdout, FRG_COLOR_ID_RED);
+    frg_color_set(stdout, FRG_COLOR_RED);
     printf("  dimmed red\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_GREEN);
+    frg_color_set(stdout, FRG_COLOR_GREEN);
     printf("  dimmed green\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_YELLOW);
+    frg_color_set(stdout, FRG_COLOR_YELLOW);
     printf("  dimmed yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BLUE);
+    frg_color_set(stdout, FRG_COLOR_BLUE);
     printf("  dimmed blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_MAGENTA);
+    frg_color_set(stdout, FRG_COLOR_MAGENTA);
     printf("  dimmed magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_CYAN);
+    frg_color_set(stdout, FRG_COLOR_CYAN);
     printf("  dimmed cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_WHITE);
+    frg_color_set(stdout, FRG_COLOR_WHITE);
     printf("  dimmed white\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_BLACK);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLACK);
     printf("  dimmed bright black\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_RED);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_RED);
     printf("  dimmed bright red\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_GREEN);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_GREEN);
     printf("  dimmed bright green\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_YELLOW);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_YELLOW);
     printf("  dimmed bright yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_BLUE);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLUE);
     printf("  dimmed bright blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_MAGENTA);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_MAGENTA);
     printf("  dimmed bright magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_CYAN);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_CYAN);
     printf("  dimmed bright cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_ID_BRIGHT_WHITE);
+    frg_color_set(stdout, FRG_COLOR_BRIGHT_WHITE);
     printf("  dimmed bright white\n");
 
     return 0;

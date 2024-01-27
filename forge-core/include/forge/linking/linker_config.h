@@ -18,7 +18,7 @@
 #include <forge/common/enums.h>
 
 typedef struct {
-    frg_linker_id_t linker_id;
+    frg_linker_kind_t linker_kind;
     GString* ld_lld_path;
     GString* ld64_lld_path;
     GString* lld_link_path;
@@ -27,14 +27,14 @@ typedef struct {
 frg_linker_config_t* frg_linker_config_new_default(void);
 void frg_linker_config_destroy(frg_linker_config_t** config);
 
-void frg_linker_config_set_linker_id(
+void frg_linker_config_set_linker_kind(
     frg_linker_config_t* config,
-    frg_linker_id_t linker_id
+    frg_linker_kind_t linker_kind
 );
 
 void frg_linker_config_set_linker_path(
     frg_linker_config_t* config,
-    frg_linker_id_t linker_id,
+    frg_linker_kind_t linker_kind,
     const char* linker_path
 );
 

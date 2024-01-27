@@ -15,11 +15,22 @@
 
 #pragma once
 
-#include <forge/ast/ast.h>
-#include <forge/common/debug.h>
+#include <forge/ast/visitor.h>
 
-void frg_ast_print_debug(
-    frg_stream_output_t* stream,
-    const frg_ast_t* ast,
-    frg_indent_t indent
+frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_symbol(
+    GList* parents,
+    frg_ast_t** ast,
+    void* user_data
+);
+
+frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_pointer(
+    GList* parents,
+    frg_ast_t** ast,
+    void* user_data
+);
+
+frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_fn(
+    GList* parents,
+    frg_ast_t** ast,
+    void* user_data
 );

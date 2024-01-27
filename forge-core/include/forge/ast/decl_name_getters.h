@@ -15,17 +15,12 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <forge/ast/ast.h>
 
-typedef int32_t frg_lineno_t;
-typedef int32_t frg_columnno_t;
-typedef int32_t frg_indent_t;
-typedef float frg_f32_t;
-typedef double frg_f64_t;
-typedef uint32_t frg_char_t;
-typedef uint32_t frg_int_base_t;
-typedef uint32_t frg_bit_width_t;
-typedef uint32_t frg_requirement_number_t;
-typedef uint32_t frg_proposal_number_t;
-typedef uint32_t frg_subitem_number_t;
-typedef uint32_t frg_message_count_t;
+const char* frg_ast_decl_name_getter_decl_union(const frg_ast_t* ast);
+const char* frg_ast_decl_name_getter_decl_struct(const frg_ast_t* ast);
+const char* frg_ast_decl_name_getter_decl_prop(const frg_ast_t* ast);
+const char* frg_ast_decl_name_getter_decl_iface(const frg_ast_t* ast);
+const char* frg_ast_decl_name_getter_decl_fn_arg(const frg_ast_t* ast);
+const char* frg_ast_decl_name_getter_decl_fn(const frg_ast_t* ast);
+const char* frg_ast_decl_name_getter_decl_var(const frg_ast_t* ast);

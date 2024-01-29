@@ -31,7 +31,7 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    ...
-   obj:/usr/lib/aarch64-linux-gnu/libLLVM-*.so.*
+   obj:/usr/*lib*/libLLVM-*.so.*
    ...
    fun:call_init
    fun:call_init
@@ -44,7 +44,7 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
-   obj:/usr/lib/aarch64-linux-gnu/libz3.so.*
+   obj:/usr/*lib*/libz3.so.*
    fun:call_init
    fun:call_init
    fun:_dl_init

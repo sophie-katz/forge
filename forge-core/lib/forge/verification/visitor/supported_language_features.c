@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/verification/supported_language_features.h>
+#include <forge/verification/visitor/supported_language_features.h>
 #include <forge/verification/verifier.h>
 #include <forge/messages/codes.h>
 #include <forge/common/error.h>

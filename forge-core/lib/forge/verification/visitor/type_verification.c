@@ -13,25 +13,14 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <forge/verification/visitor/type_verification.h>
+#include <forge/ast/kind_info.h>
+#include <forge/common/error.h>
 
-#include <forge/ast/ast.h>
-#include <forge/ast/scope.h>
-#include <forge/messages/message_buffer.h>
-
-frg_ast_t* frg_ast_get_numeric_containing_type(
-    frg_ast_t* first,
-    frg_ast_t* second
-);
-
-frg_ast_t* frg_ast_resolve_decl_type(
-    frg_message_buffer_t* message_buffer,
-    frg_ast_scope_t* scope,
-    frg_ast_t* decl
-);
-
-frg_ast_t* frg_ast_resolve_value_type(
-    frg_message_buffer_t* message_buffer,
-    frg_ast_scope_t* scope,
-    frg_ast_t* value
-);
+frg_ast_visitor_status_t frg_verification_type_verification_callback_ty_symbol(
+    GList* parents,
+    frg_ast_t** ast,
+    void* user_data
+) {
+    frg_die_ast_kind_not_yet_supported((*ast)->kind);
+}

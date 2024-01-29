@@ -59,7 +59,8 @@
         "__tree": "c",
         "supported_language_features.h": "c",
         "verifier.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "typeinfo": "c"
     },
     "C_Cpp.doxygen.generateOnType": false
 }

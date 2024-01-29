@@ -32,7 +32,7 @@ void frg_ast_scope_frame_add_ast(
 );
 
 frg_ast_t* frg_ast_scope_frame_get_ast(
-    frg_ast_scope_frame_t* scope_frame,
+    const frg_ast_scope_frame_t* scope_frame,
     const char* name
 );
 
@@ -43,7 +43,7 @@ void frg_ast_scope_frame_add_ir(
 );
 
 void* frg_ast_scope_frame_get_ir(
-    frg_ast_scope_frame_t* scope_frame,
+    const frg_ast_scope_frame_t* scope_frame,
     const char* name
 );
 
@@ -79,7 +79,7 @@ void frg_ast_scope_add_ast(
 );
 
 frg_ast_t* frg_ast_scope_get_ast(
-    frg_ast_scope_t* scope,
+    const frg_ast_scope_t* scope,
     const char* name
 );
 
@@ -90,7 +90,7 @@ void frg_ast_scope_add_ir(
 );
 
 void* frg_ast_scope_get_ir(
-    frg_ast_scope_t* scope,
+    const frg_ast_scope_t* scope,
     const char* name
 );
 

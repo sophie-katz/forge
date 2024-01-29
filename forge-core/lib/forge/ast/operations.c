@@ -22,7 +22,7 @@ const char* frg_ast_get_decl_name(const frg_ast_t* ast) {
     frg_assert_pointer_non_null(ast);
     frg_assert(frg_ast_kind_info_get(ast->kind)->flags & FRG_AST_KIND_FLAG_DECL);
 
-    frg_ast_decl_name_getter decl_name_getter = frg_ast_kind_info_get(ast->kind)->decl_name_getter;
+    frg_ast_decl_name_getter_t decl_name_getter = frg_ast_kind_info_get(ast->kind)->decl_name_getter;
 
     frg_assert_pointer_non_null(decl_name_getter);
 
@@ -33,7 +33,7 @@ const char* frg_ast_get_decl_fn_arg_name(const frg_ast_t* ast) {
     frg_assert_pointer_non_null(ast);
     frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_FN_ARG);
 
-    frg_ast_decl_name_getter decl_name_getter = frg_ast_kind_info_get(ast->kind)->decl_name_getter;
+    frg_ast_decl_name_getter_t decl_name_getter = frg_ast_kind_info_get(ast->kind)->decl_name_getter;
 
     frg_assert_pointer_non_null(decl_name_getter);
 
@@ -52,7 +52,7 @@ void frg_ast_print_debug(
 
     frg_debug_print_node(stream, frg_ast_kind_info_get(ast->kind)->name);
 
-    frg_ast_debug_printer debug_printer = frg_ast_kind_info_get(ast->kind)->debug_printer;
+    frg_ast_debug_printer_t debug_printer = frg_ast_kind_info_get(ast->kind)->debug_printer;
 
     if (debug_printer != NULL) {
         debug_printer(stream, ast, indent);
@@ -92,7 +92,7 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(
     parents = g_list_prepend(parents, *ast);
     status = FRG_AST_VISITOR_STATUS_OK;
 
-    frg_ast_visitor_acceptor visitor_acceptor = frg_ast_kind_info_get((*ast)->kind)->visitor_acceptor;
+    frg_ast_visitor_acceptor_t visitor_acceptor = frg_ast_kind_info_get((*ast)->kind)->visitor_acceptor;
 
     if (visitor_acceptor != NULL) {
         status = visitor_acceptor(

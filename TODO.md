@@ -17,6 +17,17 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
+- [ ] Add reference types (for internal use)
+    - [ ] Create unary type operators
+- [ ] Add `void` type
+- [ ] Add stack allocation for structs
+- [ ] Use `elif` instead of `else if`
+- [ ] Add in heap allocation with `new` and `free`
+- [ ] Add in array types
+- [ ] Add in allocation for arrays
+    - [ ] Stack
+    - [ ] Heap
+- [ ] Add in casting
 - [ ] Add in verification logic
     - [ ] Verify that AST is well-formed
     - [x] Add in a way to verify that AST is simplified and can be passed directly to the code generator
@@ -26,8 +37,9 @@ not, see <https://www.gnu.org/licenses/>.
 
 # Low priority
 
+- [ ] Create tests for AST kind info coverage
+- [ ] Create tests for visitor AST kind coverage
 - [ ] Look over LLVM codegen and see if there's anything there that should be added to the language
-- [ ] Use `elif` instead of `else if`
 - [ ] Add in test matrix to dockerfile so we can get better arch/OS support
 - [ ] Create a shared compilation function to use for the three now-missing CLI commands
 
@@ -48,9 +60,11 @@ not, see <https://www.gnu.org/licenses/>.
 - [ ] Rename `error.h` to `assert.h`
 - [ ] Create and conform to naming guidelines
 - [ ] Cross-link documentation to code
+- [ ] Find a better way to organize code so that not everything is in the AST module
 - [ ] Break up AST switch statements
-    - [ ] Visitor acceptors
-    - [ ] Type resolvers
+    - [x] Visitor acceptors
+    - [x] Type resolvers
+    - [ ] Formatters
 
 # Completed
 

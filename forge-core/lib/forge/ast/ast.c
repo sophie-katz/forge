@@ -617,7 +617,7 @@ void frg_ast_destroy(frg_ast_t** ast) {
     frg_assert_pointer_non_null(ast);
     frg_assert_pointer_non_null(*ast);
 
-    frg_ast_destructor destructor = frg_ast_kind_info_get((*ast)->kind)->destructor;
+    frg_ast_destructor_t destructor = frg_ast_kind_info_get((*ast)->kind)->destructor;
     
     if (destructor != NULL) {
         destructor(*ast);

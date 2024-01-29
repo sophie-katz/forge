@@ -16,7 +16,7 @@
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 #include <forge/verification/verifier.h>
-#include <forge/verification/supported_language_features.h>
+#include <forge/verification/visitor/supported_language_features.h>
 
 frg_verification_verifier_t* frg_verification_verifier_new() {
     frg_verification_verifier_t* verifier = frg_safe_malloc(sizeof(frg_verification_verifier_t));

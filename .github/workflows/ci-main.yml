@@ -64,6 +64,7 @@ jobs:
               python3.11 \
               python3.11-venv \
               software-properties-common \
+              valgrind \
               wget \
           ;
       
@@ -134,6 +135,7 @@ jobs:
               python3.11 \
               python3.11-venv \
               software-properties-common \
+              valgrind \
               wget \
           ;
       

@@ -21,6 +21,27 @@
 static frg_stream_output_t* _frg_stream_output_stdout = NULL;
 static frg_stream_output_t* _frg_stream_output_stderr = NULL;
 
+void frg_stream_output_init() {
+    frg_assert_message(_frg_stream_output_stdout == NULL && _frg_stream_output_stderr == NULL, "init called twice");
+
+    _frg_stream_output_stdout = frg_stream_output_new_file(
+        stdout,
+        FRG_STREAM_OUTPUT_FLAG_DETECT_COLOR | FRG_STREAM_OUTPUT_FLAG_DETECT_UNICODE
+    );
+
+    _frg_stream_output_stderr = frg_stream_output_new_file(
+        stderr,
+        FRG_STREAM_OUTPUT_FLAG_DETECT_COLOR | FRG_STREAM_OUTPUT_FLAG_DETECT_UNICODE
+    );
+}
+
+void frg_stream_output_cleanup() {
+    frg_assert_message(_frg_stream_output_stdout != NULL || _frg_stream_output_stderr != NULL, "init was not called");
+
+    frg_stream_output_destroy(&_frg_stream_output_stdout);
+    frg_stream_output_destroy(&_frg_stream_output_stderr);
+}
+
 bool _frg_stream_output_detect_color(
     FILE* file
 ) {
@@ -343,23 +364,13 @@ const char* frg_stream_output_choose_unicode(
 }
 
 frg_stream_output_t* frg_stream_output_get_stdout() {
-    if (_frg_stream_output_stdout == NULL) {
-        _frg_stream_output_stdout = frg_stream_output_new_file(
-            stdout,
-            FRG_STREAM_OUTPUT_FLAG_DETECT_COLOR | FRG_STREAM_OUTPUT_FLAG_DETECT_UNICODE
-        );
-    }
+    frg_assert_message(_frg_stream_output_stdout != NULL, "init was not called");
 
     return _frg_stream_output_stdout;
 }
 
 frg_stream_output_t* frg_stream_output_get_stderr() {
-    if (_frg_stream_output_stderr == NULL) {
-        _frg_stream_output_stderr = frg_stream_output_new_file(
-            stderr,
-            FRG_STREAM_OUTPUT_FLAG_DETECT_COLOR | FRG_STREAM_OUTPUT_FLAG_DETECT_UNICODE
-        );
-    }
+    frg_assert_message(_frg_stream_output_stderr != NULL, "init was not called");
 
     return _frg_stream_output_stderr;
 }

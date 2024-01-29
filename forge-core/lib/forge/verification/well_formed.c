@@ -18,6 +18,7 @@
 #include <forge/messages/codes.h>
 #include <forge/common/error.h>
 #include <utf8proc.h>
+#include <forge/ast/kind_info.h>
 
 bool _frg_verification_well_formed_is_valid_symbol_codepoint_first(utf8proc_int32_t codepoint) {
     if (codepoint == '_') {
@@ -88,43 +89,45 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_symbol(
     frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_SYMBOL);
     frg_assert_pointer_non_null(user_data);
 
-    frg_ast_ty_symbol_t* ty_symbol = (frg_ast_ty_symbol_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_die_ast_kind_not_yet_supported((*ast)->kind);
 
-    if (ty_symbol->name == NULL) {
-        frg_message_emit_is_5_ast_property_null(
-            verifier->message_buffer,
-            &(*ast)->source_range,
-            (*ast)->kind,
-            "name"
-        );
+    // frg_ast_ty_symbol_t* ty_symbol = (frg_ast_ty_symbol_t*)*ast;
+    // frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
-        return FRG_AST_VISITOR_STATUS_SKIP;
-    }
+    // if (ty_symbol->name == NULL) {
+    //     frg_message_emit_is_5_ast_property_null(
+    //         verifier->message_buffer,
+    //         &(*ast)->source_range,
+    //         (*ast)->kind,
+    //         "name"
+    //     );
+
+    //     return FRG_AST_VISITOR_STATUS_SKIP;
+    // }
     
-    if (ty_symbol->name->len == 0) {
-        frg_message_emit_is_6_ast_property_empty_string(
-            verifier->message_buffer,
-            &(*ast)->source_range,
-            (*ast)->kind,
-            "name"
-        );
+    // if (ty_symbol->name->len == 0) {
+    //     frg_message_emit_is_6_ast_property_empty_string(
+    //         verifier->message_buffer,
+    //         &(*ast)->source_range,
+    //         (*ast)->kind,
+    //         "name"
+    //     );
 
-        return FRG_AST_VISITOR_STATUS_SKIP;
-    }
+    //     return FRG_AST_VISITOR_STATUS_SKIP;
+    // }
     
-    if (!_frg_verification_well_formed_is_valid_symbol(ty_symbol->name)) {
-        frg_message_emit_is_6_ast_property_invalid_symbol(
-            verifier->message_buffer,
-            &(*ast)->source_range,
-            (*ast)->kind,
-            "name"
-        );
+    // if (!_frg_verification_well_formed_is_valid_symbol(ty_symbol->name)) {
+    //     frg_message_emit_is_6_ast_property_invalid_symbol(
+    //         verifier->message_buffer,
+    //         &(*ast)->source_range,
+    //         (*ast)->kind,
+    //         "name"
+    //     );
 
-        return FRG_AST_VISITOR_STATUS_SKIP;
-    }
+    //     return FRG_AST_VISITOR_STATUS_SKIP;
+    // }
 
-    return FRG_AST_VISITOR_STATUS_OK;
+    // return FRG_AST_VISITOR_STATUS_OK;
 }
 
 frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_pointer(
@@ -137,21 +140,23 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_pointer(
     frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_POINTER);
     frg_assert_pointer_non_null(user_data);
 
-    frg_ast_ty_pointer_t* ty_pointer = (frg_ast_ty_pointer_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_die_ast_kind_not_yet_supported((*ast)->kind);
 
-    if (ty_pointer->value == NULL) {
-        frg_message_emit_is_5_ast_property_null(
-            verifier->message_buffer,
-            &(*ast)->source_range,
-            (*ast)->kind,
-            "value"
-        );
+    // frg_ast_ty_pointer_t* ty_pointer = (frg_ast_ty_pointer_t*)*ast;
+    // frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
-        return FRG_AST_VISITOR_STATUS_SKIP;
-    }
+    // if (ty_pointer->value == NULL) {
+    //     frg_message_emit_is_5_ast_property_null(
+    //         verifier->message_buffer,
+    //         &(*ast)->source_range,
+    //         (*ast)->kind,
+    //         "value"
+    //     );
 
-    return FRG_AST_VISITOR_STATUS_OK;
+    //     return FRG_AST_VISITOR_STATUS_SKIP;
+    // }
+
+    // return FRG_AST_VISITOR_STATUS_OK;
 }
 
 frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_fn(
@@ -164,49 +169,51 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_fn(
     frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_FN);
     frg_assert_pointer_non_null(user_data);
 
-    frg_ast_ty_fn_t* ty_fn = (frg_ast_ty_fn_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_die_ast_kind_not_yet_supported((*ast)->kind);
 
-    size_t index = 0;
-    for (GList* iter = ty_fn->args; iter != NULL; iter = iter->next) {
-        frg_ast_t* arg = (frg_ast_t*)iter->data;
+    // frg_ast_ty_fn_t* ty_fn = (frg_ast_ty_fn_t*)*ast;
+    // frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
-        if (arg == NULL) {
-            frg_message_emit_is_8_ast_property_null_element(
-                verifier->message_buffer,
-                &(*ast)->source_range,
-                (*ast)->kind,
-                "args",
-                index
-            );
+    // size_t index = 0;
+    // for (GList* iter = ty_fn->args; iter != NULL; iter = iter->next) {
+    //     frg_ast_t* arg = (frg_ast_t*)iter->data;
 
-            return FRG_AST_VISITOR_STATUS_SKIP;
-        }
+    //     if (arg == NULL) {
+    //         frg_message_emit_is_8_ast_property_null_element(
+    //             verifier->message_buffer,
+    //             &(*ast)->source_range,
+    //             (*ast)->kind,
+    //             "args",
+    //             index
+    //         );
 
-        if (arg->kind != FRG_AST_KIND_DECL_FN_ARG) {
-            frg_message_emit_is_9_ast_property_unexpected_element(
-                verifier->message_buffer,
-                &(*ast)->source_range,
-                (*ast)->kind,
-                "args",
-                index
-            );
+    //         return FRG_AST_VISITOR_STATUS_SKIP;
+    //     }
+
+    //     if (arg->kind != FRG_AST_KIND_DECL_FN_ARG) {
+    //         frg_message_emit_is_9_ast_property_unexpected_element(
+    //             verifier->message_buffer,
+    //             &(*ast)->source_range,
+    //             (*ast)->kind,
+    //             "args",
+    //             index
+    //         );
             
-            return FRG_AST_VISITOR_STATUS_SKIP;
-        }
+    //         return FRG_AST_VISITOR_STATUS_SKIP;
+    //     }
 
-        frg_ast_decl_fn_arg_t* decl_fn_arg = (frg_ast_decl_fn_arg_t*)arg;
+    //     frg_ast_decl_fn_arg_t* decl_fn_arg = (frg_ast_decl_fn_arg_t*)arg;
 
-        if (decl_fn_arg->flags & FRG_AST_DECL_FN_ARG_FLAG_KW) {
-            // Error: keyword arguments should be in the var_kw_args property
-        }
+    //     if (decl_fn_arg->flags & FRG_AST_DECL_FN_ARG_FLAG_KW) {
+    //         frg_die_message_no_code_yet();
+    //     }
 
-        index++;
-    }
+    //     index++;
+    // }
 
-    if (ty_fn->var_pos_args != NULL) {
-        
-    }
+    // if (ty_fn->var_pos_args != NULL) {
+    //     // TODO: Keep implementing this function
+    // }
 
-    return FRG_AST_VISITOR_STATUS_OK;
+    // return FRG_AST_VISITOR_STATUS_OK;
 }

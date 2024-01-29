@@ -136,6 +136,8 @@ int one_command_command(void) {
 }
 
 int main(void) {
+    frg_stream_output_init();
+
     printf("=== NO COMMANDS ===\n\n");
     
     int result = no_commands();
@@ -156,6 +158,8 @@ int main(void) {
     if (result != 0) {
         return result;
     }
-    
+
+    frg_stream_output_cleanup();
+
     return 0;
 }

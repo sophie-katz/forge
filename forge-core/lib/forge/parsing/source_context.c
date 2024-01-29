@@ -33,9 +33,13 @@ void frg_parsing_source_context_destroy(frg_parsing_source_context_t** source_co
     frg_assert_pointer_non_null(source_context);
     frg_assert_pointer_non_null(*source_context);
 
-    for (GList* source = g_hash_table_get_values((*source_context)->sources); source != NULL; source = source->next) {
+    GList* values = g_hash_table_get_values((*source_context)->sources);
+
+    for (GList* source = values; source != NULL; source = source->next) {
         frg_parsing_source_destroy((frg_parsing_source_t**)&source->data);
     }
+
+    g_list_free(values);
 
     g_hash_table_destroy((*source_context)->sources);
 

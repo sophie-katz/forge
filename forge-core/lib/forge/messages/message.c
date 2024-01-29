@@ -469,6 +469,8 @@ void _frg_message_print_sample(
 
             current_lineno++;
         }
+
+        g_string_free(loaded, TRUE);
     } else {
         frg_stream_output_write_printf(stream, "\n");
     }

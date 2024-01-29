@@ -78,6 +78,8 @@ frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
         }
     }
 
+    frg_ast_scope_destroy(&scope);
+
     return llvm_module;
 }
 
@@ -144,6 +146,8 @@ bool frg_codegen_write_object_file(
             error_code.message().c_str()
         );
 
+        delete target_machine;
+
         return false;
     }
 
@@ -159,11 +163,15 @@ bool frg_codegen_write_object_file(
             target_triple.c_str()
         );
 
+        delete target_machine;
+
         return false;
     }
 
     pass.run(*llvm_module->llvm_module);
     stream.flush();
+
+    delete target_machine;
 
     return true;
 }

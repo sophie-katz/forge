@@ -85,6 +85,10 @@ void frg_cli_program_destroy(
         &(*program)->global_options
     );
 
+    if ((*program)->version_details != NULL) {
+        g_string_free((*program)->version_details, true);
+    }
+
     frg_safe_free((void**)program);
 }
 

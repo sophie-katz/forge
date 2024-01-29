@@ -14,12 +14,17 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <unity.h>
+#include <forge/streams/output.h>
 
 #include "test.h"
 
-void setUp(void) {}
+void setUp(void) {
+    frg_stream_output_init();
+}
 
-void tearDown(void) {}
+void tearDown(void) {
+    frg_stream_output_cleanup();
+}
 
 void _callback_empty(
     const frg_message_buffer_t* message_buffer,

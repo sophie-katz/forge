@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/destructors.h>
+#include <forge/ast/kind_info.h>
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 

@@ -14,12 +14,17 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <unity.h>
+#include <forge/streams/output.h>
 
 #include "test.h"
 
-void setUp(void) {}
+void setUp(void) {
+    frg_stream_output_init();
+}
 
-void tearDown(void) {}
+void tearDown(void) {
+    frg_stream_output_cleanup();
+}
 
 void _callback_return_true(
     const frg_message_buffer_t* message_buffer,
@@ -49,6 +54,8 @@ void test_return_true(void) {
         "    flags = none\n"
         "    name = \"return_true\"\n"
         "    ty = [ty-fn]\n"
+        "      var-pos-args = [null]\n"
+        "      var-kw-args = [null]\n"
         "      return-ty = [ty-bool]\n"
         "    body = [stmt-block]\n"
         "      stmts[0] = [stmt-return]\n"
@@ -94,6 +101,8 @@ void test_return_false(void) {
         "    flags = none\n"
         "    name = \"return_false\"\n"
         "    ty = [ty-fn]\n"
+        "      var-pos-args = [null]\n"
+        "      var-kw-args = [null]\n"
         "      return-ty = [ty-bool]\n"
         "    body = [stmt-block]\n"
         "      stmts[0] = [stmt-return]\n"

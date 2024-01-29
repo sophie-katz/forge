@@ -29,10 +29,22 @@
 #define frg_die_unexpected_enum_value(enum_value) \
     frg_die("unexpected enum value for '%s', %i", #enum_value, (int)(enum_value))
 
+#define frg_die_ast_kind_not_yet_supported(ast_kind) \
+    frg_die("support for AST kind '%s', %s not yet supported for this operation", #ast_kind, frg_ast_kind_info_get(ast_kind)->name)
+
+#define frg_die_message_no_code_yet() \
+    frg_die("message emitted here does not yet have a code defined")
+
 #ifdef FRG_SHOULD_BUILD_ASSERTS
 #define frg_assert(condition) { \
     if (!(condition)) { \
         frg_die("assertion must be met: %s", #condition); \
+    } \
+}
+
+#define frg_assert_message(condition, message) { \
+    if (!(condition)) { \
+        frg_die("assertion must be met: %s (%s)", #condition, (message)); \
     } \
 }
 
@@ -155,6 +167,7 @@
 }
 #else
 #define frg_assert(condition)
+#define frg_assert_message(condition, message)
 #define frg_assert_pointer_non_null(pointer)
 #define frg_assert_pointer_null(pointer)
 #define frg_assert_string_non_empty(string)

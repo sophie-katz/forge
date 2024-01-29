@@ -495,8 +495,12 @@ bool frg_parse_char(
             &source_range
         );
 
+        g_string_free(value_string, TRUE);
+
         return false;
     }
+
+    g_string_free(value_string, TRUE);
 
     return true;
 }
@@ -660,6 +664,10 @@ void _frg_parse_base_prefix(
         }
     } else {
         *base = 10;
+    }
+
+    if (state != NULL) {
+        frg_parsing_token_reader_destroy(&state);
     }
 }
 

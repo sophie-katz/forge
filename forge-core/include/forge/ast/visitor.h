@@ -54,7 +54,9 @@ void frg_ast_visitor_add_entry(
     frg_ast_visitor_callback_t callback_post
 );
 
-frg_ast_visitor_status_t frg_ast_accept(
+frg_ast_visitor_status_t frg_ast_visitor_call_entry(
     frg_ast_visitor_t* visitor,
-    frg_ast_t** ast
+    GList* parents,
+    frg_ast_t** ast,
+    bool pre
 );

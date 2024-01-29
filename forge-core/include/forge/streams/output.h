@@ -20,6 +20,9 @@
 #include <stdbool.h>
 #include <forge/common/enums.h>
 
+void frg_stream_output_init();
+void frg_stream_output_cleanup();
+
 typedef struct {
     frg_stream_output_flags_t flags;
     FILE* file;

@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/visitor.h>
+#include <forge/ast/operations.h>
 #include <unity.h>
 
 void setUp(void) {}
@@ -71,6 +72,9 @@ void test_empty(void) {
 
     TEST_ASSERT_EQUAL(FRG_AST_VISITOR_STATUS_OK, status);
     TEST_ASSERT_NOT_NULL(ast);
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 frg_ast_visitor_status_t callback_pre_and_post_pre(
@@ -132,6 +136,9 @@ void test_pre_and_post(void) {
     TEST_ASSERT_EQUAL(FRG_AST_VISITOR_STATUS_OK, status);
     TEST_ASSERT_NOT_NULL(ast);
     TEST_ASSERT_EQUAL(2, user_data);
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 frg_ast_visitor_status_t callback_skip_pre_stmt_return(
@@ -197,6 +204,9 @@ void test_skip(void) {
     TEST_ASSERT_EQUAL(FRG_AST_VISITOR_STATUS_OK, status);
     TEST_ASSERT_NOT_NULL(ast);
     TEST_ASSERT_EQUAL(1, user_data);
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 frg_ast_visitor_status_t callback_stop_pre_stmt_return(
@@ -253,6 +263,9 @@ void test_stop(void) {
 
     TEST_ASSERT_EQUAL(FRG_AST_VISITOR_STATUS_STOP, status);
     TEST_ASSERT_NOT_NULL(ast);
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 frg_ast_visitor_status_t callback_replace_node_pre_value_add(
@@ -260,6 +273,8 @@ frg_ast_visitor_status_t callback_replace_node_pre_value_add(
     frg_ast_t** ast,
     void* user_data
 ) {
+    frg_ast_destroy(ast);
+
     *ast = (frg_ast_t*)frg_ast_new_value_i32(&frg_parsing_range_null, 11);
 
     return FRG_AST_VISITOR_STATUS_OK;
@@ -294,6 +309,9 @@ void test_replace_node(void) {
         FRG_AST_KIND_VALUE_INT,
         ((frg_ast_stmt_return_t*)((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts->data)->value->kind
     );
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 frg_ast_visitor_status_t callback_replace_node_in_list_pre_stmt_return(
@@ -301,6 +319,8 @@ frg_ast_visitor_status_t callback_replace_node_in_list_pre_stmt_return(
     frg_ast_t** ast,
     void* user_data
 ) {
+    frg_ast_destroy(ast);
+
     *ast = (frg_ast_t*)frg_ast_new_value_i32(&frg_parsing_range_null, 11);
 
     return FRG_AST_VISITOR_STATUS_OK;
@@ -335,6 +355,9 @@ void test_replace_node_in_list(void) {
         FRG_AST_KIND_VALUE_INT,
         ((frg_ast_t*)((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts->data)->kind
     );
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 frg_ast_visitor_status_t callback_remove_node_in_list_pre_stmt_return(
@@ -342,7 +365,7 @@ frg_ast_visitor_status_t callback_remove_node_in_list_pre_stmt_return(
     frg_ast_t** ast,
     void* user_data
 ) {
-    *ast = NULL;
+    frg_ast_destroy(ast);
 
     return FRG_AST_VISITOR_STATUS_OK;
 }
@@ -367,6 +390,9 @@ void test_remove_node_in_list(void) {
     TEST_ASSERT_NULL(
         ((frg_ast_stmt_block_t*)((frg_ast_decl_fn_t*)ast)->body)->stmts
     );
+
+    frg_ast_visitor_destroy(&visitor);
+    frg_ast_destroy(&ast);
 }
 
 int main(void) {

@@ -18,6 +18,8 @@
 #include <forge/parsing/source_context.h>
 #include <forge/parsing/parsing.h>
 #include <forge/linking/linker.h>
+#include <forge/ast/operations.h>
+#include <forge/ast/kind_info.h>
 #include <unity.h>
 #include <dlfcn.h>
 
@@ -117,6 +119,7 @@ void frg_test_compilation(
 
     GString* source_path = g_string_new(NULL);
     g_string_printf(source_path, "test-compilation-%s.frg", name);
+    gchar* current_dir = NULL;
 
     // Create source
     frg_parsing_source_t* source = frg_parsing_source_new(
@@ -229,7 +232,9 @@ void frg_test_compilation(
     // Link into shared object
     if (llvm_module != NULL) {
         GString* path_object = g_string_new(NULL);
-        g_string_printf(path_object, "%s/test-compilation-%s.o", g_get_current_dir(), name);
+        current_dir = g_get_current_dir();
+        g_string_printf(path_object, "%s/test-compilation-%s.o", current_dir, name);
+        g_free(current_dir);
 
         if (!frg_codegen_write_object_file(
             message_buffer,
@@ -250,7 +255,9 @@ void frg_test_compilation(
         frg_linker_config_t* linker_config = frg_linker_config_new_default();
 
         GString* path_shared_object = g_string_new(NULL);
-        g_string_printf(path_shared_object, "%s/test-compilation-%s.so", g_get_current_dir(), name);
+        current_dir = g_get_current_dir();
+        g_string_printf(path_shared_object, "%s/test-compilation-%s.so", current_dir, name);
+        g_free(current_dir);
 
         GList* objects = NULL;
 

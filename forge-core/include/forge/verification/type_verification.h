@@ -13,21 +13,12 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/cli/choice.h>
+#pragma once
 
-int main(void) {
-    frg_stream_output_init();
+#include <forge/ast/visitor.h>
 
-    frg_cli_choice_t* choice = frg_cli_choice_new(
-        "option-name",
-        "A description of the choice"
-    );
-    
-    frg_cli_choice_print_help(frg_stream_output_get_stdout(), choice);
-
-    frg_cli_choice_destroy(&choice);
-
-    frg_stream_output_cleanup();
-
-    return 0;
-}
+frg_ast_visitor_status_t frg_verification_type_verification_callback_ty_symbol(
+    GList* parents,
+    frg_ast_t** ast,
+    void* user_data
+);

@@ -14,12 +14,17 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <unity.h>
+#include <forge/streams/output.h>
 
 #include "test.h"
 
-void setUp(void) {}
+void setUp(void) {
+    frg_stream_output_init();
+}
 
-void tearDown(void) {}
+void tearDown(void) {
+    frg_stream_output_cleanup();
+}
 
 void _callback_return_i64(
     const frg_message_buffer_t* message_buffer,
@@ -49,6 +54,8 @@ void test_return_i64(void) {
         "    flags = none\n"
         "    name = \"return_i64\"\n"
         "    ty = [ty-fn]\n"
+        "      var-pos-args = [null]\n"
+        "      var-kw-args = [null]\n"
         "      return-ty = [ty-i64]\n"
         "    body = [stmt-block]\n"
         "      stmts[0] = [stmt-return]\n"
@@ -96,6 +103,8 @@ void test_return_i32(void) {
         "    flags = none\n"
         "    name = \"return_i32\"\n"
         "    ty = [ty-fn]\n"
+        "      var-pos-args = [null]\n"
+        "      var-kw-args = [null]\n"
         "      return-ty = [ty-i32]\n"
         "    body = [stmt-block]\n"
         "      stmts[0] = [stmt-return]\n"
@@ -143,6 +152,8 @@ void test_return_u8(void) {
         "    flags = none\n"
         "    name = \"return_u8\"\n"
         "    ty = [ty-fn]\n"
+        "      var-pos-args = [null]\n"
+        "      var-kw-args = [null]\n"
         "      return-ty = [ty-u8]\n"
         "    body = [stmt-block]\n"
         "      stmts[0] = [stmt-return]\n"
@@ -190,6 +201,8 @@ void test_return_implicit(void) {
         "    flags = none\n"
         "    name = \"return_implicit\"\n"
         "    ty = [ty-fn]\n"
+        "      var-pos-args = [null]\n"
+        "      var-kw-args = [null]\n"
         "      return-ty = [ty-u64]\n"
         "    body = [stmt-block]\n"
         "      stmts[0] = [stmt-return]\n"

@@ -61,6 +61,8 @@ void open_sources(frg_parsing_source_context_t* source_context) {
 }
 
 int main(void) {
+    frg_stream_output_init();
+
     frg_parsing_source_context_t* source_context = frg_parsing_source_context_new();
 
     open_sources(source_context);
@@ -210,6 +212,8 @@ int main(void) {
 
     frg_message_buffer_destroy(&message_buffer);
     frg_parsing_source_context_destroy(&source_context);
+
+    frg_stream_output_cleanup();
 
     return 0;
 }

@@ -28,27 +28,6 @@ typedef struct {
     frg_parsing_range_t source_range;
 } frg_ast_t;
 
-typedef void (*frg_ast_destructor)(frg_ast_t* ast);
-typedef frg_ast_t* (*frg_ast_cloner)(const frg_ast_t* ast);
-typedef const char* (*frg_ast_decl_name_getter)(const frg_ast_t* ast);
-typedef void (*frg_ast_debug_printer)(
-    frg_stream_output_t* stream,
-    const frg_ast_t* ast,
-    frg_indent_t indent
-);
-
-typedef struct {
-    const char* name;
-    frg_ast_kind_flags_t flags;
-    frg_bit_width_t ty_bit_width;
-    frg_ast_destructor destructor;
-    frg_ast_cloner cloner;
-    frg_ast_decl_name_getter decl_name_getter;
-    frg_ast_debug_printer debug_printer;
-} frg_ast_kind_info_t;
-
-const frg_ast_kind_info_t* frg_ast_kind_info_get(frg_ast_kind_t kind);
-
 typedef struct {
     frg_ast_t base;
     GString* name;
@@ -458,13 +437,3 @@ frg_ast_value_call_t* frg_ast_try_cast_value_call(frg_ast_t* ast);
 frg_ast_value_unary_t* frg_ast_try_cast_value_unary(frg_ast_t* ast);
 
 frg_ast_value_binary_t* frg_ast_try_cast_value_binary(frg_ast_t* ast);
-
-const char* frg_ast_get_decl_name(const frg_ast_t* ast);
-
-const char* frg_ast_get_decl_fn_arg_name(const frg_ast_t* ast);
-
-void frg_ast_print_debug(
-    frg_stream_output_t* stream,
-    const frg_ast_t* ast,
-    frg_indent_t indent
-);

@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/scope.h>
+#include <forge/ast/operations.h>
 #include <forge/common/error.h>
 #include <forge/common/memory.h>
 
@@ -146,6 +147,8 @@ void frg_ast_scope_destroy(frg_ast_scope_t** scope) {
         frg_ast_scope_frame_t* frame = (frg_ast_scope_frame_t*)it->data;
         frg_ast_scope_frame_destroy(&frame);
     }
+
+    g_list_free((*scope)->frames);
 
     frg_safe_free((void**)scope);
 }

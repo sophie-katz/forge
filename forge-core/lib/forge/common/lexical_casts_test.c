@@ -16,88 +16,108 @@
 #include <forge/common/lexical_casts.h>
 #include <unity.h>
 
-void setUp(void) {}
+void setUp(void) {
+    frg_stream_output_init();
+}
 
-void tearDown(void) {}
+void tearDown(void) {
+    frg_stream_output_cleanup();
+}
 
 void test_format_char_null(void) {
     GString* formatted = frg_format_char(0);
     TEST_ASSERT_EQUAL_STRING("'\\0'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_unprintable_ascii(void) {
     GString* formatted = frg_format_char(0x04);
     TEST_ASSERT_EQUAL_STRING("'\\x04'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_printable_ascii(void) {
     GString* formatted = frg_format_char('a');
     TEST_ASSERT_EQUAL_STRING("'a'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_backslash(void) {
     GString* formatted = frg_format_char('\\');
     TEST_ASSERT_EQUAL_STRING("'\\\\'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_single_quote(void) {
     GString* formatted = frg_format_char('\'');
     TEST_ASSERT_EQUAL_STRING("'\\''", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_double_quote(void) {
     GString* formatted = frg_format_char('"');
     TEST_ASSERT_EQUAL_STRING("'\"'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_alert(void) {
     GString* formatted = frg_format_char('\a');
     TEST_ASSERT_EQUAL_STRING("'\\a'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_backspace(void) {
     GString* formatted = frg_format_char('\b');
     TEST_ASSERT_EQUAL_STRING("'\\b'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_ascii_escape(void) {
     GString* formatted = frg_format_char('\033');
     TEST_ASSERT_EQUAL_STRING("'\\e'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_form_feed(void) {
     GString* formatted = frg_format_char('\f');
     TEST_ASSERT_EQUAL_STRING("'\\f'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_newline(void) {
     GString* formatted = frg_format_char('\n');
     TEST_ASSERT_EQUAL_STRING("'\\n'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_carriage_return(void) {
     GString* formatted = frg_format_char('\r');
     TEST_ASSERT_EQUAL_STRING("'\\r'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_horizontal_tab(void) {
     GString* formatted = frg_format_char('\t');
     TEST_ASSERT_EQUAL_STRING("'\\t'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_vertical_tab(void) {
     GString* formatted = frg_format_char('\v');
     TEST_ASSERT_EQUAL_STRING("'\\v'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_unprintable_unicode(void) {
     GString* formatted = frg_format_char(0x97);
     TEST_ASSERT_EQUAL_STRING("'\\u{97}'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_char_printable_unicode(void) {
     GString* formatted = frg_format_char(0x1f600);
     TEST_ASSERT_EQUAL_STRING("'😀'", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void _test_parse_char(frg_char_t expected, const char* formatted) {
@@ -204,101 +224,121 @@ void test_parse_char_printable_unicode(void) {
 void test_format_str_empty(void) {
     GString* formatted = frg_format_str("");
     TEST_ASSERT_EQUAL_STRING("\"\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_null(void) {
     GString* formatted = frg_format_str("\0");
     TEST_ASSERT_EQUAL_STRING("\"\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_unprintable_ascii(void) {
     GString* formatted = frg_format_str("\x04");
     TEST_ASSERT_EQUAL_STRING("\"\\x04\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_printable_ascii(void) {
     GString* formatted = frg_format_str("a");
     TEST_ASSERT_EQUAL_STRING("\"a\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_backslash(void) {
     GString* formatted = frg_format_str("\\");
     TEST_ASSERT_EQUAL_STRING("\"\\\\\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_single_quote(void) {
     GString* formatted = frg_format_str("'");
     TEST_ASSERT_EQUAL_STRING("\"'\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_double_quote(void) {
     GString* formatted = frg_format_str("\"");
     TEST_ASSERT_EQUAL_STRING("\"\\\"\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_alert(void) {
     GString* formatted = frg_format_str("\a");
     TEST_ASSERT_EQUAL_STRING("\"\\a\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_backspace(void) {
     GString* formatted = frg_format_str("\b");
     TEST_ASSERT_EQUAL_STRING("\"\\b\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_ascii_escape(void) {
     GString* formatted = frg_format_str("\033");
     TEST_ASSERT_EQUAL_STRING("\"\\e\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_form_feed(void) {
     GString* formatted = frg_format_str("\f");
     TEST_ASSERT_EQUAL_STRING("\"\\f\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_newline(void) {
     GString* formatted = frg_format_str("\n");
     TEST_ASSERT_EQUAL_STRING("\"\\n\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_carriage_return(void) {
     GString* formatted = frg_format_str("\r");
     TEST_ASSERT_EQUAL_STRING("\"\\r\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_horizontal_tab(void) {
     GString* formatted = frg_format_str("\t");
     TEST_ASSERT_EQUAL_STRING("\"\\t\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_vertical_tab(void) {
     GString* formatted = frg_format_str("\v");
     TEST_ASSERT_EQUAL_STRING("\"\\v\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_unprintable_unicode(void) {
     GString* formatted = frg_format_str("\x97");
     TEST_ASSERT_EQUAL_STRING("\"\\u{97}\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_printable_unicode(void) {
     GString* formatted = frg_format_str("😀");
     TEST_ASSERT_EQUAL_STRING("\"😀\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_multiple_chars_ascii(void) {
     GString* formatted = frg_format_str("hello, world");
     TEST_ASSERT_EQUAL_STRING("\"hello, world\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_multiple_chars_unprintable_unicode(void) {
     GString* formatted = frg_format_str("\x97\x98");
     TEST_ASSERT_EQUAL_STRING("\"\\u{97}\\u{98}\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void test_format_str_multiple_chars_printable_unicode(void) {
     GString* formatted = frg_format_str("😀😘");
     TEST_ASSERT_EQUAL_STRING("\"😀😘\"", formatted->str);
+    g_string_free(formatted, TRUE);
 }
 
 void _test_parse_str(const char* expected, const char* formatted) {
@@ -335,6 +375,7 @@ void _test_parse_str(const char* expected, const char* formatted) {
 
     TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
 
+    g_string_free(actual, TRUE);
     frg_message_buffer_destroy(&message_buffer);
 }
 

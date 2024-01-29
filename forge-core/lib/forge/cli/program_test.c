@@ -65,6 +65,8 @@ void test_get_command(void) {
     TEST_ASSERT_NOT_NULL(frg_cli_program_get_command_by_name(program, "asdf"));
     TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "asd"));
     TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "b"));
+
+    frg_cli_program_destroy(&program);
 }
 
 int main(void) {

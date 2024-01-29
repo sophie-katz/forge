@@ -17,6 +17,8 @@
 #include <stdio.h>
 
 int main(void) {
+    frg_stream_output_init();
+
     frg_debug_print_node(frg_stream_output_get_stdout(), "node %d", 0);
     frg_debug_print_newline(frg_stream_output_get_stdout(), 2);
     frg_debug_print_property(frg_stream_output_get_stdout(), "a", "hi");
@@ -32,5 +34,8 @@ int main(void) {
     frg_debug_print_newline(frg_stream_output_get_stdout(), 4);
     frg_debug_print_property_with_index(frg_stream_output_get_stdout(), "d", 2, "%d", 3);
     printf("\n");
+
+    frg_stream_output_cleanup();
+
     return 0;
 }

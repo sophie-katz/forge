@@ -9,17 +9,30 @@ $*
 # If it passes, re-run using Valgrind to check for memory leaks
 
 rm -f valgrind.log
-valgrind --tool=memcheck --log-file=valgrind.log $*
+valgrind \
+    --tool=memcheck \
+    --suppressions=/usr/share/glib-2.0/valgrind/glib.supp \
+    --suppressions=../forge.supp \
+    --leak-check=full \
+    --show-leak-kinds=all \
+    --log-file=valgrind.log \
+    $*
 
-if grep -P -q -e "no leaks are possible" valgrind.log; then
+if grep -P -q -e "definitely lost: 0 bytes" valgrind.log && \
+    grep -P -q -e "indirectly lost: 0 bytes" valgrind.log && \
+    grep -P -q -e "possibly lost: 0 bytes" valgrind.log && \
+    grep -P -q -e "still reachable: 0 bytes" valgrind.log; then
     echo
-    echo "No memory leaks detected"
+    echo "[test_wrapper_full] No memory leaks detected"
+elif grep -P -q -e "All heap blocks were freed -- no leaks are possible" valgrind.log; then
+    echo
+    echo "[test_wrapper_full] No memory leaks detected"
 else
     echo
-    echo "ERROR: Test had memory leaks"
+    echo "[test_wrapper_full] ERROR: Test had memory leaks"
+    echo
+    cat valgrind.log
     exit 1
 fi
-
-cat valgrind.log
 
 rm -f valgrind.log

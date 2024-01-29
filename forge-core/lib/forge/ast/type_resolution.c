@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/type_resolution.h>
+#include <forge/ast/kind_info.h>
 #include <forge/messages/codes.h>
 #include <forge/common/error.h>
 #include <forge/formatting/format.h>

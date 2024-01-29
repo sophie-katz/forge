@@ -45,7 +45,7 @@ endif
 # Constants
 # --------------------------------------------------------------------------------------
 
-forge_test_timeout_seconds = 10
+forge_test_timeout_seconds = 120
 
 # C arguments
 # --------------------------------------------------------------------------------------
@@ -239,6 +239,8 @@ forge_include_directories = include_directories('include')
 forge_core_lib = static_library(
     'forge-core',
     'lib/forge/ast/ast.c',
+    'lib/forge/ast/kind_info.c',
+    'lib/forge/ast/operations.c',
     'lib/forge/ast/cloners.c',
     'lib/forge/ast/debug_printers.c',
     'lib/forge/ast/decl_name_getters.c',
@@ -246,6 +248,7 @@ forge_core_lib = static_library(
     'lib/forge/ast/scope.c',
     'lib/forge/ast/type_resolution.c',
     'lib/forge/ast/visitor.c',
+    'lib/forge/ast/visitor_acceptors.c',
     'lib/forge/cli/choice.c',
     'lib/forge/cli/command.c',
     'lib/forge/cli/option_set.c',
@@ -280,7 +283,9 @@ forge_core_lib = static_library(
     'lib/forge/streams/input.c',
     'lib/forge/streams/output.c',
     'lib/forge/verification/supported_language_features.c',
+    'lib/forge/verification/type_verification.c',
     'lib/forge/verification/verifier.c',
+    'lib/forge/verification/well_formed.c',
     forge_generated_files_flex,
     forge_generated_files_bison,
     include_directories: forge_include_directories,
@@ -433,7 +438,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/cli/option_test.c',
+        'cli/option_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -454,7 +459,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/cli/option_set_test.c',
+        'cli/option_set_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -475,7 +480,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/cli/program_test.c',
+        'cli/program_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -496,7 +501,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/parsing/token_reader_test.c',
+        'parsing/token_reader_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -517,7 +522,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/messages/message_buffer_test.c',
+        'messages/message_buffer_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -538,7 +543,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/parsing/source_test.c',
+        'parsing/source_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -559,7 +564,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/parsing/parsing_test.c',
+        'parsing/parsing_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -580,7 +585,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/streams/input_test.c',
+        'streams/input_test.c',
         program_bash,
         args: [
             forge_test_wrapper,
@@ -601,7 +606,7 @@ if forge_should_build_tests
     )
 
     test(
-        'config/streams/output_test.c',
+        'streams/output_test.c',
         program_bash,
         args: [
             forge_test_wrapper,

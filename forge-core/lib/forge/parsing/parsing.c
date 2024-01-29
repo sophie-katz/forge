@@ -22,6 +22,7 @@ extern int yyparse(frg_ast_t** ast);
 extern int yy_scan_buffer(char* base, size_t size);
 extern void yypop_buffer_state(void);
 extern void yyrestart(FILE* file);
+extern int yylex_destroy(void);
 
 const char* _frg_parsing_current_path = NULL;
 size_t _frg_parsing_current_offset = 0;
@@ -74,6 +75,8 @@ frg_ast_t* frg_parse(
     if (frg_stream_input_is_buffer(source->stream)) {
         yypop_buffer_state();
     }
+
+    yylex_destroy();
 
     // Unset globals
     _frg_parsing_current_path = NULL;

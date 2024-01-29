@@ -16,6 +16,8 @@
 #include <forge/ast/debug_printers.h>
 #include <forge/common/error.h>
 #include <forge/common/debug.h>
+#include <forge/ast/operations.h>
+#include <forge/ast/kind_info.h>
 
 typedef struct {
     frg_stream_output_t* stream;

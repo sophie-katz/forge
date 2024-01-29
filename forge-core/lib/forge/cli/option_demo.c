@@ -131,6 +131,8 @@ void choice_short(void) {
 }
 
 int main(void) {
+    frg_stream_output_init();
+
     printf("== FLAG ==\n\n");
     flag();
     printf("\n== FLAG (SHORT) ==\n\n");
@@ -143,6 +145,8 @@ int main(void) {
     choice();
     printf("\n== CHOICE (SHORT) ==\n\n");
     choice_short();
+
+    frg_stream_output_cleanup();
 
     return 0;
 }

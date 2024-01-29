@@ -1,0 +1,52 @@
+{
+   <dl_init_hash_table>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:g_hash_table_new_full
+   ...
+   obj:/usr/*lib*/libglib-2.0.so.0.*
+   fun:call_init
+   fun:call_init
+   fun:_dl_init
+   fun:(below main)
+}
+
+{
+   <dl_init_malloc>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:g_malloc
+   ...
+   obj:/usr/*lib*/libglib-2.0.so.0.*
+   fun:call_init
+   fun:call_init
+   fun:_dl_init
+   fun:(below main)
+}
+
+{
+   <llvm_globals>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/lib/aarch64-linux-gnu/libLLVM-*.so.*
+   ...
+   fun:call_init
+   fun:call_init
+   fun:_dl_init
+   ...
+}
+
+{
+   <z3_globals>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/aarch64-linux-gnu/libz3.so.*
+   fun:call_init
+   fun:call_init
+   fun:_dl_init
+   fun:(below main)
+}

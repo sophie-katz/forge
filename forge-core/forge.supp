@@ -9,7 +9,7 @@
    fun:call_init
    fun:call_init
    fun:_dl_init
-   fun:(below main)
+   ...
 }
 
 {
@@ -23,7 +23,7 @@
    fun:call_init
    fun:call_init
    fun:_dl_init
-   fun:(below main)
+   ...
 }
 
 {
@@ -48,5 +48,5 @@
    fun:call_init
    fun:call_init
    fun:_dl_init
-   fun:(below main)
+   ...
 }

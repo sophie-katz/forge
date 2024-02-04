@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/formatting/formatters.h>
+#include <forge/common/error.h>
 
 void frg_format_ty_bool(
     frg_stream_output_t *output,
@@ -196,15 +197,13 @@ void frg_format_ty_fn(
     frg_assert_int_eq(ast->kind, FRG_AST_KIND_TY_FN);
     frg_assert_int_non_negative(indent);
 
-    ty_fn = (frg_ast_ty_fn_t*)ast;
-
-    frg_assert_pointer_null(ty_fn->var_pos_args);
-    frg_assert_pointer_null(ty_fn->var_kw_args);
-    frg_assert_pointer_non_null(ty_fn->return_ty);
+    frg_assert_pointer_null(((frg_ast_ty_fn_t*)ast)->var_pos_args);
+    frg_assert_pointer_null(((frg_ast_ty_fn_t*)ast)->var_kw_args);
+    frg_assert_pointer_non_null(((frg_ast_ty_fn_t*)ast)->return_ty);
 
     frg_stream_output_write_string(output, "(");
 
-    for (GList* iter = ty_fn->args; iter != NULL; iter = iter->next) {
+    for (GList* iter = ((frg_ast_ty_fn_t*)ast)->args; iter != NULL; iter = iter->next) {
         frg_format(output, iter->data, indent);
 
         if (iter->next != NULL) {
@@ -214,7 +213,7 @@ void frg_format_ty_fn(
 
     frg_stream_output_write_string(output, ") -> ");
 
-    frg_format(output, ty_fn->return_ty, indent);
+    frg_format(output, ((frg_ast_ty_fn_t*)ast)->return_ty, indent);
 }
 
 void frg_format_decl_prop(
@@ -227,6 +226,22 @@ void frg_format_decl_prop(
     frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_PROP);
     frg_assert_int_non_negative(indent);
 
+    if ((((frg_ast_decl_prop_t*)ast)->flags & FRG_AST_DECL_PROP_FLAG_SPREAD) != 0) {
+        frg_stream_output_write_string(output, "...");
+    }
+
+    frg_stream_output_write_string(output, ((frg_ast_decl_prop_t*)ast)->name->str);
+
+    if ((((frg_ast_decl_prop_t*)ast)->flags & FRG_AST_DECL_PROP_FLAG_OPTIONAL) != 0) {
+        frg_stream_output_write_string(output, "?");
+    } else if ((((frg_ast_decl_prop_t*)ast)->flags & FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL) != 0) {
+        frg_stream_output_write_string(output, "!");
+    }
+
+    if (((frg_ast_decl_prop_t*)ast)->ty != NULL) {
+        frg_stream_output_write_string(output, ": ");
+        frg_format(output, ((frg_ast_decl_prop_t*)ast)->ty, indent);
+    }
 }
 
 void frg_format_decl_fn_arg(
@@ -239,4 +254,14 @@ void frg_format_decl_fn_arg(
     frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_FN_ARG);
     frg_assert_int_non_negative(indent);
 
+    if ((((frg_ast_decl_fn_arg_t*)ast)->flags & FRG_AST_DECL_FN_ARG_FLAG_KW) != 0) {
+        frg_stream_output_write_string(output, "kw ");
+    }
+
+    frg_format(output, (frg_ast_t*)((frg_ast_decl_fn_arg_t*)ast)->prop, indent);
+
+    if (((frg_ast_decl_fn_arg_t*)ast)->default_value != NULL) {
+        frg_stream_output_write_string(output, " = ");
+        frg_format(output, ((frg_ast_decl_fn_arg_t*)ast)->default_value, indent);
+    }
 }

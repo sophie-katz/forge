@@ -62,5 +62,8 @@
         "types.h": "c",
         "typeinfo": "c"
     },
-    "C_Cpp.doxygen.generateOnType": false
+    "C_Cpp.doxygen.generateOnType": false,
+    "cSpell.words": [
+        "Katz"
+    ]
 }

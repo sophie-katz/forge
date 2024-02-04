@@ -19,7 +19,6 @@
 #include <forge/ast/operations.h>
 #include <forge/common/error.h>
 #include <forge/messages/codes.h>
-#include <forge/formatting/format.h>
 
 frg_ast_t* frg_ast_type_resolver_decl_union(
     frg_message_buffer_t* message_buffer,

@@ -40,7 +40,7 @@ not, see <https://www.gnu.org/licenses/>.
 - [ ] Create tests for AST kind info coverage
 - [ ] Create tests for visitor AST kind coverage
 - [ ] Look over LLVM codegen and see if there's anything there that should be added to the language
-- [ ] Add in test matrix to dockerfile so we can get better arch/OS support
+- [ ] Add in test matrix to dockerfile so we can get better arch/OS support **(requires GitHub teams)**
 - [ ] Create a shared compilation function to use for the three now-missing CLI commands
 
 # Backlog

@@ -45,6 +45,8 @@ void frg_ast_print_debug(
     const frg_ast_t* ast,
     frg_indent_t indent
 ) {
+    frg_assert_pointer_non_null(ast);
+
     if (ast == NULL) {
         frg_debug_print_node(stream, "null");
         return;
@@ -58,6 +60,23 @@ void frg_ast_print_debug(
         debug_printer(stream, ast, indent);
     }
 }
+
+// void frg_ast_print_formatted(
+//     frg_stream_output_t* stream,
+//     const frg_ast_t* ast,
+//     frg_indent_t indent
+// ) {
+//     frg_assert_pointer_non_null(stream);
+//     frg_assert_pointer_non_null(ast);
+
+//     frg_ast_debug_printer_t debug_printer = frg_ast_kind_info_get(ast->kind)->debug_printer;
+
+//     if (debug_printer != NULL) {
+//         debug_printer(stream, ast, indent);
+//     } else {
+//         frg_die_ast_kind_not_yet_supported(ast->kind);
+//     }
+// }
 
 frg_ast_visitor_status_t _frg_ast_accept_recursive(
     frg_ast_visitor_t* visitor,

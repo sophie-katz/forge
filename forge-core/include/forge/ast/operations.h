@@ -28,6 +28,12 @@ void frg_ast_print_debug(
     frg_indent_t indent
 );
 
+void frg_ast_print_formatted(
+    frg_stream_output_t* stream,
+    const frg_ast_t* ast,
+    frg_indent_t indent
+);
+
 frg_ast_visitor_status_t frg_ast_accept(
     frg_ast_visitor_t* visitor,
     frg_ast_t** ast

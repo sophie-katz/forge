@@ -15,32 +15,7 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# File module structure
+Planning documents. Prefix all of them with the date in `YYYY-MM-DD-` notation to make clear if any plans are out of date.
 
-## External modules
-
-```
-their_module_name/
-    their_module_name_if_dynamic.so.0.1.0
-    their_module_name_if_static.a
-    +public_submodule/
-        +public_file.frgd
-    index.frgd
-```
-
-## Internal module
-
-```
-my_module_name/
-    private_submodule/
-        private_file.frg
-    +public_submodule/
-        private_file.frg
-        +public_file.frg
-```
-
-From `private_file.frg`:
-
-```
-import ..public_submodule.private_file.{my_function, my_struct};
-```
+> [!WARNING]  
+> Putting planning documents in a Git repo is a bad idea! I'm just putting them here for now because I'm lazy and I have decision paralysis on which tool to use for notes.

@@ -15,32 +15,4 @@ You should have received a copy of the GNU General Public License along with For
 not, see <https://www.gnu.org/licenses/>.
 -->
 
-# File module structure
-
-## External modules
-
-```
-their_module_name/
-    their_module_name_if_dynamic.so.0.1.0
-    their_module_name_if_static.a
-    +public_submodule/
-        +public_file.frgd
-    index.frgd
-```
-
-## Internal module
-
-```
-my_module_name/
-    private_submodule/
-        private_file.frg
-    +public_submodule/
-        private_file.frg
-        +public_file.frg
-```
-
-From `private_file.frg`:
-
-```
-import ..public_submodule.private_file.{my_function, my_struct};
-```
+Documentation intended for developers of Forge Core.

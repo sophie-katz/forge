@@ -269,7 +269,7 @@ forge_core_lib = static_library(
     'lib/forge/config/commands/link.c',
     'lib/forge/config/commands/version.c',
     'lib/forge/config/config.c',
-    'lib/forge/formatting/format.c',
+    'lib/forge/formatting/formatters.c',
     'lib/forge/linking/linker_config.c',
     'lib/forge/linking/linker.c',
     'lib/forge/messages/message.c',

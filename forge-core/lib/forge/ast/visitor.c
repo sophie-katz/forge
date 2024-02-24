@@ -151,7 +151,9 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive(frg_ast_node_t** mut_node,
     status = visitor_acceptor(mut_node, visitor, parents_next);
   }
 
-  g_list_delete_link(parents_next, parents_next); // NOLINT(clang-diagnostic-unused-result)
+  parents_next = g_list_delete_link( // NOLINT(clang-analyzer-deadcode.DeadStores)
+    parents_next,
+    parents_next);
 
   if (status == FRG_AST_VISITOR_STATUS_SKIP) {
     return FRG_AST_VISITOR_STATUS_OK;

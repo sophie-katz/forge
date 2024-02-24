@@ -71,5 +71,6 @@
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [
         "Katz"
-    ]
+    ],
+    "editor.formatOnSave": true
 }

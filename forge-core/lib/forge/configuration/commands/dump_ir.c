@@ -28,49 +28,49 @@
 //                                           GList* positional_arguments) {
 //   frg_assert_pointer_non_null(program);
 
-//   const char* path
-//     = frg_config_commands_get_single_source_file(message_buffer, positional_arguments);
+// const char* path
+//   = frg_config_commands_get_single_source_file(message_buffer, positional_arguments);
 
-//   if (path == NULL) {
-//     return 1;
-//   }
+// if (path == NULL) {
+//   return 1;
+// }
 
-//   FILE* file = fopen(path, "r");
-//   if (file == NULL) {
-//     frg_message_emit_ff_2_open_for_reading(message_buffer, path, strerror(errno));
+// FILE* file = fopen(path, "r");
+// if (file == NULL) {
+//   frg_message_emit_ff_2_open_for_reading(message_buffer, path, strerror(errno));
 
-//     return 1;
-//   }
+// return 1;
+// }
 
-//   frg_parsing_source_t* source = frg_parsing_source_new_file(file, path, false);
+// frg_parsing_source_t* source = frg_parsing_source_new_file(file, path, false);
 
-//   frg_ast_node_t* node         = frg_parse(message_buffer, source);
+// frg_ast_node_t* node         = frg_parse(message_buffer, source);
 
-//   if (ast == NULL) {
-//     frg_parsing_source_destroy(source);
-
-//     fclose(file);
-
-//     return 1;
-//   }
-
-//   frg_llvm_module_t* llvm_module = frg_codegen(ast);
-
-//   frg_ast_destroy(ast);
-
+// if (ast == NULL) {
 //   frg_parsing_source_destroy(source);
 
-//   fclose(file);
+// fclose(file);
 
-//   if (llvm_module == NULL) {
-//     return 1;
-//   }
+// return 1;
+// }
 
-//   frg_codegen_print_module(llvm_module);
+// frg_llvm_module_t* llvm_module = frg_codegen(ast);
 
-//   frg_codegen_destroy_module(&llvm_module);
+// frg_ast_destroy(ast);
 
-//   return 0;
+// frg_parsing_source_destroy(source);
+
+// fclose(file);
+
+// if (llvm_module == NULL) {
+//   return 1;
+// }
+
+// frg_codegen_print_module(llvm_module);
+
+// frg_codegen_destroy_module(&llvm_module);
+
+// return 0;
 // }
 
 // frg_cli_command_t* frg_config_commands_new_dump_ir() {

@@ -1,6 +1,6 @@
 name: Build and Test C Project
 
-runs: 
+runs:
   using: composite
   steps:
     - name: Checkout main
@@ -30,3 +30,27 @@ runs:
       run: |
         . ../.venv/bin/activate 
         meson test -v -C build
+
+    - name: Check style
+      working-directory: forge-core
+      shell: bash
+      run: |
+        if ninja clang-format -C build 2>&1 | grep -q "File reformatted:"; then
+          echo "Error: clang-format would make changes"
+          exit 1
+        fi
+
+    - name: Lint
+      working-directory: forge-core
+      shell: bash
+      run: |
+        for file in $(find include -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
+          $(find lib -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
+          $(find src -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
+          $(find tests -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp'); do
+          clang-tidy --warnings-as-errors --config-file=.clang-tidy "$file" -- -Iinclude -Ibuild -Isubprojects/utf8proc -Isubprojects/Unity/src $(pkg-config --cflags glib-2.0) $(llvm-config --cflags)
+
+          if [ $? -ne 0 ]; then
+            exit 1
+          fi
+        done

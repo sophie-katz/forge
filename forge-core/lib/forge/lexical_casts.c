@@ -444,7 +444,7 @@ void frg_print_string(frg_stream_output_t* mut_stream, const char* value) {
     // If the character is an invalid UTF-8 sequence, we just read it as a standalone
     // byte value
     if (bytes_read < 0) {
-      codepoint  = *iter & 0xff;
+      codepoint = *iter & 0xff;
       iter++;
     } else {
       iter += bytes_read;

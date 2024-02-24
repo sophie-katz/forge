@@ -16,19 +16,19 @@
 #include <forge/cli/program.h>
 
 int callback_command(
-    frg_message_buffer_t* message_buffer,
-    const struct frg_cli_program_t* program,
-    void* user_data,
-    GList* pos_args
+    frg_message_buffer_t* mut_message_buffer,
+    void* mut_user_data,
+    const frg_cli_program_t* program,
+    const GList* positional_arguments
 ) {
     return 0;
 }
 
-bool callback_option(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
+bool callback_option(frg_message_buffer_t* mut_message_buffer, void* mut_user_data, const char* value) {
     return true;
 }
 
-int no_commands(void) {
+int no_commands() {
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
     frg_cli_program_t* program = frg_cli_program_new(
@@ -49,13 +49,13 @@ int no_commands(void) {
 
     frg_cli_program_try_print_help(frg_stream_output_get_stdout(), message_buffer, program, NULL);
 
-    frg_cli_program_destroy(&program);
-    frg_message_buffer_destroy(&message_buffer);
+    frg_cli_program_destroy(program);
+    frg_message_buffer_destroy(message_buffer);
 
     return 0;
 }
 
-int one_command_global(void) {
+int one_command_global() {
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
     frg_cli_program_t* program = frg_cli_program_new(
@@ -89,13 +89,13 @@ int one_command_global(void) {
 
     frg_cli_program_try_print_help(frg_stream_output_get_stdout(), message_buffer, program, NULL);
 
-    frg_cli_program_destroy(&program);
-    frg_message_buffer_destroy(&message_buffer);
+    frg_cli_program_destroy(program);
+    frg_message_buffer_destroy(message_buffer);
 
     return 0;
 }
 
-int one_command_command(void) {
+int one_command_command() {
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
     frg_cli_program_t* program = frg_cli_program_new(
@@ -129,13 +129,13 @@ int one_command_command(void) {
 
     frg_cli_program_try_print_help(frg_stream_output_get_stdout(), message_buffer, program, "command");
 
-    frg_cli_program_destroy(&program);
-    frg_message_buffer_destroy(&message_buffer);
+    frg_cli_program_destroy(program);
+    frg_message_buffer_destroy(message_buffer);
 
     return 0;
 }
 
-int main(void) {
+int main() {
     frg_stream_output_init();
 
     printf("=== NO COMMANDS ===\n\n");

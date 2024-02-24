@@ -17,68 +17,68 @@
 
 #include <forge/ast/visitor.h>
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_ty_fn(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_type_function(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_union(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_union(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_prop(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_property(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_iface(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_interface(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_fn_arg(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_function_argument(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_fn(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_function(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_char(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_character(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_str(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_string(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_call_kw_arg(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_call_keyword_argument(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_call(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_call(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_operator(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_operator(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );

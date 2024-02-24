@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 #include <forge/cli/choice.h>
 
 frg_cli_choice_t* frg_cli_choice_new(
@@ -24,7 +24,7 @@ frg_cli_choice_t* frg_cli_choice_new(
     frg_assert_string_non_empty(name);
     frg_assert_string_non_empty(help);
 
-    frg_cli_choice_t* choice = frg_safe_malloc(
+    frg_cli_choice_t* choice = frg_malloc(
         sizeof(frg_cli_choice_t)
     );
 
@@ -35,29 +35,29 @@ frg_cli_choice_t* frg_cli_choice_new(
 }
 
 void frg_cli_choice_destroy(
-    frg_cli_choice_t** choice
+    frg_cli_choice_t* choice
 ) {
-    frg_safe_free((void**)choice);
+    frg_free(choice);
 }
 
 void frg_cli_choice_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_choice_t* choice
 ) {
     frg_assert_pointer_non_null(choice);
 
     frg_stream_output_write_printf(
-        stream,
+        mut_stream,
         "      %s ",
-        frg_stream_output_choose_unicode(
-            stream,
+        frg_stream_output_choose_ascii_or_unicode(
+            mut_stream,
             "-",
             "•"
         )
     );
 
-    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
-    frg_stream_output_write_printf(stream, "%s", choice->name);
-    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
-    frg_stream_output_write_printf(stream, " (%s)\n", choice->help);
+    frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
+    frg_stream_output_write_string(mut_stream, choice->name);
+    frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);
+    frg_stream_output_write_printf(mut_stream, " (%s)\n", choice->help);
 }

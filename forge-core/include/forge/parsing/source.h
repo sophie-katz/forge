@@ -19,7 +19,7 @@
 #include <forge/parsing/domain.h>
 #include <glib.h>
 #include <stdbool.h>
-#include <forge/common/enums.h>
+#include <forge/enums.h>
 #include <forge/streams/input.h>
 
 typedef struct {
@@ -32,9 +32,9 @@ frg_parsing_source_t* frg_parsing_source_new(
     frg_stream_input_t* stream
 );
 
-void frg_parsing_source_destroy(frg_parsing_source_t** source);
+void frg_parsing_source_destroy(frg_parsing_source_t* source);
 
 GString* frg_parsing_source_load_range(
-    frg_parsing_source_t* source,
+    frg_parsing_source_t* mut_source,
     const frg_parsing_range_t* range
 );

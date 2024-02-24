@@ -15,11 +15,11 @@
 
 #include <forge/cli/option_set.h>
 
-bool callback(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
+bool callback(frg_message_buffer_t* mut_message_buffer, void* mut_user_data, const char* value) {
     return true;
 }
 
-int main(void) {
+int main() {
     frg_stream_output_init();
 
     frg_cli_option_set_t* option_set = frg_cli_option_set_new();
@@ -123,7 +123,7 @@ int main(void) {
 
     frg_cli_option_set_print_help(frg_stream_output_get_stdout(), option_set);
 
-    frg_cli_option_set_destroy(&option_set);
+    frg_cli_option_set_destroy(option_set);
 
     frg_stream_output_cleanup();
 

@@ -19,18 +19,19 @@
 #include <glib.h>
 
 typedef struct {
-    GHashTable* sources;
+    GHashTable* _sources;
 } frg_parsing_source_context_t;
 
 frg_parsing_source_context_t* frg_parsing_source_context_new();
-void frg_parsing_source_context_destroy(frg_parsing_source_context_t** source_context);
 
-frg_parsing_source_t* frg_parsing_source_context_add(
-    frg_parsing_source_context_t* source_context,
+void frg_parsing_source_context_destroy(frg_parsing_source_context_t* source_context);
+
+void frg_parsing_source_context_add_source(
+    frg_parsing_source_context_t* mut_source_context,
     frg_parsing_source_t* source
 );
 
 frg_parsing_source_t* frg_parsing_source_context_get_source_by_path(
-    frg_parsing_source_context_t* source_context,
+    frg_parsing_source_context_t* mut_source_context,
     const char* path
 );

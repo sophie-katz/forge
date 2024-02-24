@@ -15,30 +15,33 @@
 
 #pragma once
 
-#include <forge/ast/ast.h>
+#include <forge/ast/node.h>
 
-frg_ast_t* frg_ast_clone_base(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_ty_symbol(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_ty_pointer(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_ty_fn(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_union(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_struct(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_prop(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_iface(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_fn_arg(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_fn(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_var(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_decl_block(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_stmt_return(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_stmt_if(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_stmt_while(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_stmt_block(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_int(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_float(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_char(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_str(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_symbol(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_call_kw_arg(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_call(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_unary(const frg_ast_t* ast);
-frg_ast_t* frg_ast_clone_value_binary(const frg_ast_t* ast);
+frg_ast_node_t* frg_ast_cloner_type_bool(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_type_int(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_type_float(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_type_symbol(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_type_pointer(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_type_function(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_union(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_structure(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_property(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_interface(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_function_argument(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_function(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_variable(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_block(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_statement_return(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_statement_if(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_statement_while(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_statement_block(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_bool(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_int(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_float(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_character(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_string(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_symbol(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_call_keyword_argument(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_call(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_unary(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_value_binary(const frg_ast_node_t* node);

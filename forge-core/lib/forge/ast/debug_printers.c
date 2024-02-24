@@ -14,509 +14,663 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/debug_printers.h>
-#include <forge/common/error.h>
-#include <forge/common/debug.h>
-#include <forge/ast/operations.h>
-#include <forge/ast/kind_info.h>
+#include <forge/assert.h>
+#include <forge/debug.h>
+#include <forge/ast/utilities.h>
+#include <forge/ast/node_kind_info.h>
+#include <forge/enum_printing.h>
 
-typedef struct {
-    frg_stream_output_t* stream;
-    const frg_indent_t indent;
-    const char* label;
-    size_t index;
-} _frg_ast_print_debug_list_ctx_t;
+void _frg_ast_print_debug_list(frg_stream_output_t* mut_stream, const GList* list, const char* label, const frg_ast_print_debug_options_t* options) {
+    frg_ast_node_count_t index = 0;
 
-void _frg_ast_print_debug_list_gfunc(gpointer data, gpointer user_data) {
-    _frg_ast_print_debug_list_ctx_t* ctx = (_frg_ast_print_debug_list_ctx_t*)user_data;
-
-    frg_debug_print_newline(ctx->stream, ctx->indent);
-    frg_debug_print_property_with_index(
-        ctx->stream,
-        ctx->label,
-        ctx->index,
-        NULL
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
     );
 
-    frg_ast_print_debug(ctx->stream, (const frg_ast_t*)data, ctx->indent + FRG_DEBUG_INDENT_WIDTH);
+    for (const GList* iter = list; iter != NULL; iter = iter->next) {
+        if (index >= options->max_list_length) {
+            frg_debug_print_newline(mut_stream, options->indentation);
+            frg_debug_print_property_with_index(mut_stream, label, index, "...");
+            break;
+        }
 
-    ctx->index++;
+        frg_debug_print_newline(mut_stream, options->indentation);
+        frg_debug_print_property_with_index(
+            mut_stream,
+            label,
+            index,
+            NULL
+        );
+
+        frg_ast_print_debug(mut_stream, (const frg_ast_node_t*)iter->data, &options_next);
+
+        index++;
+    }
 }
 
-void _frg_ast_print_debug_list(frg_stream_output_t* stream, GList* list, const char* label, frg_indent_t indent) {
-    _frg_ast_print_debug_list_ctx_t ctx = {
-        .stream = stream,
-        .indent = indent,
-        .label = label,
-        .index = 0
-    };
+void frg_ast_debug_printer_type_int(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_INT);
+    frg_assert_int_non_negative(options->indentation);
+    frg_assert_int_non_negative(options->max_depth);
 
-    g_list_foreach(list, _frg_ast_print_debug_list_gfunc, &ctx);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "flags", NULL);
+    frg_ast_node_type_int_flags_print(mut_stream, ((const frg_ast_node_type_int_t*)node)->flags);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "bit-width", "%u", ((const frg_ast_node_type_int_t*)node)->bit_width);
 }
 
-void frg_ast_debug_printer_ty_symbol(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_TY_SYMBOL);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_type_float(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FLOAT);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_ty_symbol_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "bit-width", "%u", ((const frg_ast_node_type_float_t*)node)->bit_width);
 }
 
-void frg_ast_debug_printer_ty_pointer(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_TY_POINTER);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_type_symbol(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_SYMBOL);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_ast_print_debug(stream, ((frg_ast_ty_pointer_t*)ast)->value, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((const frg_ast_node_type_symbol_t*)node)->name->str);
 }
 
-void frg_ast_debug_printer_ty_fn(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_TY_FN);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_type_pointer(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_POINTER);
+    frg_assert_int_non_negative(options->indentation);
+
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_type_pointer_t*)node)->value, &options_next);
+}
+
+void frg_ast_debug_printer_type_function(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
+    frg_assert_int_non_negative(options->indentation);
+
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_ty_fn_t*)ast)->args,
-        "args",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((const frg_ast_node_type_function_t*)node)->arguments,
+        "arguments",
+        &options_next
     );
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "var-pos-args", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_ty_fn_t*)ast)->var_pos_args, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "variadic-positional-arguments", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_type_function_t*)node)->variadic_positional_arguments, &options_next);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "var-kw-args", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_ty_fn_t*)ast)->var_kw_args, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "variadic-keyword-arguments", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_type_function_t*)node)->variadic_keyword_arguments, &options_next);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "return-ty", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_ty_fn_t*)ast)->return_ty, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "return-type", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_type_function_t*)node)->return_type, &options_next);
 }
 
-void frg_ast_debug_printer_decl_union(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_UNION);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_union(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_decl_union_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((const frg_ast_node_declaration_union_t*)node)->name->str);
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_decl_union_t*)ast)->props,
-        "props",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((const frg_ast_node_declaration_union_t*)node)->properties,
+        "properties",
+        &options_next
     );
-
-    g_string_free(formatted, TRUE);
 }
 
-void frg_ast_debug_printer_decl_struct(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_STRUCT);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_structure(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_decl_struct_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((const frg_ast_node_declaration_structure_t*)node)->name->str);
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_decl_struct_t*)ast)->decls,
-        "decls",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((const frg_ast_node_declaration_structure_t*)node)->declarations,
+        "declarations",
+        &options_next
     );
-
-    g_string_free(formatted, TRUE);
 }
 
-void frg_ast_debug_printer_decl_prop(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_PROP);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_property(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* flags_string = frg_ast_decl_prop_flags_to_string(
-        ((frg_ast_decl_prop_t*)ast)->flags
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
     );
-    frg_debug_print_property(stream, "flags", flags_string->str);
-    g_string_free(flags_string, TRUE);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_decl_prop_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "flags", NULL);
+    frg_ast_node_declaration_property_flags_print(mut_stream, ((const frg_ast_node_declaration_property_t*)node)->flags);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "type", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_decl_prop_t*)ast)->ty, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((const frg_ast_node_declaration_property_t*)node)->name->str);
 
-    g_string_free(flags_string, TRUE);
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "type", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_declaration_property_t*)node)->type, &options_next);
 }
 
-void frg_ast_debug_printer_decl_iface(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_IFACE);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_interface(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* flags_string = frg_ast_decl_iface_flags_to_string(
-        ((frg_ast_decl_iface_t*)ast)->flags
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
     );
-    frg_debug_print_property(stream, "flags", flags_string->str);
-    g_string_free(flags_string, TRUE);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_decl_iface_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "flags", NULL);
+    frg_ast_node_declaration_interface_flags_print(mut_stream, ((const frg_ast_node_declaration_interface_t*)node)->flags);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((const frg_ast_node_declaration_interface_t*)node)->name->str);
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_decl_iface_t*)ast)->extends,
+        mut_stream,
+        ((const frg_ast_node_declaration_interface_t*)node)->extends,
         "extends",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        &options_next
     );
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_decl_iface_t*)ast)->decls,
-        "decls",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((const frg_ast_node_declaration_interface_t*)node)->declarations,
+        "declarations",
+        &options_next
     );
-
-    g_string_free(flags_string, TRUE);
-    g_string_free(formatted, TRUE);
 }
 
-void frg_ast_debug_printer_decl_fn_arg(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_FN_ARG);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_function_argument(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
             
-    GString* flags_string = frg_ast_decl_fn_arg_flags_to_string(
-        ((frg_ast_decl_fn_arg_t*)ast)->flags
+    frg_debug_print_property(mut_stream, "flags", NULL);
+    frg_ast_node_declaration_function_argument_flags_print(mut_stream, ((const frg_ast_node_declaration_function_argument_t*)node)->flags);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "property", NULL);
+    frg_ast_print_debug(mut_stream, (const frg_ast_node_t*)((const frg_ast_node_declaration_function_argument_t*)node)->property, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "default-value", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_declaration_function_argument_t*)node)->default_value, &options_next);
+}
+
+void frg_ast_debug_printer_declaration_function(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
+    frg_assert_int_non_negative(options->indentation);
+
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
     );
-    frg_debug_print_property(stream, "flags", flags_string->str);
-    g_string_free(flags_string, TRUE);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "prop", NULL);
-    frg_ast_print_debug(stream, (const frg_ast_t*)((frg_ast_decl_fn_arg_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "flags", NULL);
+    frg_ast_node_declaration_function_flags_print(mut_stream, ((const frg_ast_node_declaration_function_t*)node)->flags);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "default-value", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_decl_fn_arg_t*)ast)->default_value, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((const frg_ast_node_declaration_function_t*)node)->name->str);
 
-    g_string_free(flags_string, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "type", NULL);
+    frg_ast_print_debug(mut_stream, (const frg_ast_node_t*)((const frg_ast_node_declaration_function_t*)node)->type, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "body", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_declaration_function_t*)node)->body, &options_next);
 }
 
-void frg_ast_debug_printer_decl_fn(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_FN);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_variable(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* flags_string = frg_ast_decl_fn_flags_to_string(
-        ((frg_ast_decl_fn_t*)ast)->flags
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
     );
-    frg_debug_print_property(stream, "flags", flags_string->str);
-    g_string_free(flags_string, TRUE);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_decl_fn_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "property", NULL);
+    frg_ast_print_debug(mut_stream, (const frg_ast_node_t*)((const frg_ast_node_declaration_variable_t*)node)->property, &options_next);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "ty", NULL);
-    frg_ast_print_debug(stream, (const frg_ast_t*)((frg_ast_decl_fn_t*)ast)->ty, indent + FRG_DEBUG_INDENT_WIDTH);
-
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "body", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_decl_fn_t*)ast)->body, indent + FRG_DEBUG_INDENT_WIDTH);
-
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "initial-value", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_declaration_variable_t*)node)->initial_value, &options_next);
 }
 
-void frg_ast_debug_printer_decl_var(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_VAR);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_declaration_block(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_BLOCK);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "prop", NULL);
-    frg_ast_print_debug(stream, (const frg_ast_t*)((frg_ast_decl_var_t*)ast)->prop, indent + FRG_DEBUG_INDENT_WIDTH);
-
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "initial-value", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_decl_var_t*)ast)->initial_value, indent + FRG_DEBUG_INDENT_WIDTH);
-}
-
-void frg_ast_debug_printer_decl_block(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_DECL_BLOCK);
-    frg_assert_int_non_negative(indent);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_decl_block_t*)ast)->decls,
-        "decls",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((const frg_ast_node_declaration_block_t*)node)->declarations,
+        "declarations",
+        &options_next
     );
 }
 
-void frg_ast_debug_printer_stmt_return(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_STMT_RETURN);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_statement_return(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_RETURN);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "value", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_stmt_return_t*)ast)->value, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "value", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_statement_return_t*)node)->value, &options_next);
 }
 
-void frg_ast_debug_printer_stmt_if(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_STMT_IF);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_statement_if(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_IF);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "condition", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_stmt_if_t*)ast)->condition, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "then-clause", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_stmt_if_t*)ast)->then_clause, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "condition", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_statement_if_t*)node)->condition, &options_next);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "else-clause", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_stmt_if_t*)ast)->else_clause, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "then-clause", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_statement_if_t*)node)->then_clause, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "else-clause", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_statement_if_t*)node)->else_clause, &options_next);
 }
 
-void frg_ast_debug_printer_stmt_while(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_STMT_WHILE);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_statement_while(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_WHILE);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "condition", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_stmt_while_t*)ast)->condition, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "body", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_stmt_while_t*)ast)->body, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "condition", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_statement_while_t*)node)->condition, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "body", NULL);
+    frg_ast_print_debug(mut_stream, ((const frg_ast_node_statement_while_t*)node)->body, &options_next);
 }
 
-void frg_ast_debug_printer_stmt_block(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_STMT_BLOCK);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_statement_block(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_BLOCK);
+    frg_assert_int_non_negative(options->indentation);
+
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        0
+    );
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_stmt_block_t*)ast)->stmts,
-        "stmts",
-        indent
+        mut_stream,
+        ((const frg_ast_node_statement_block_t*)node)->statements,
+        "statements",
+        &options_next
     );
 }
 
-void frg_ast_debug_printer_value_int(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_INT);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_bool(
+    frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options
+) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_BOOL);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "ty", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_int_t*)ast)->ty, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "value", "%s", ((const frg_ast_node_value_bool_t*)node)->value ? "true" : "false");
+}
 
-    frg_debug_print_newline(stream, indent);
-    if (((frg_ast_value_int_t*)ast)->ty == NULL) {
-        frg_debug_print_property(stream, "value", "%li (defaulting to i64 since 'ty' is null)", ((frg_ast_value_int_t*)ast)->value.i64);
-    } else {
-        switch (((frg_ast_value_int_t*)ast)->ty->kind) {
-            case FRG_AST_KIND_TY_U8:
-                frg_debug_print_property(stream, "value", "%u", ((frg_ast_value_int_t*)ast)->value.u8);
+void frg_ast_debug_printer_value_int(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_INT);
+    frg_assert_int_non_negative(options->indentation);
+
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "type", NULL);
+    frg_ast_print_debug(mut_stream, (const frg_ast_node_t*)&((const frg_ast_node_value_int_t*)node)->type, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    if ((((const frg_ast_node_value_int_t*)node)->type.flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) == 0) {
+        switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
+            case 8:
+                frg_debug_print_property(mut_stream, "value", "%ii8", ((const frg_ast_node_value_int_t*)node)->value.as_i8);
                 break;
-            case FRG_AST_KIND_TY_U16:
-                frg_debug_print_property(stream, "value", "%u", ((frg_ast_value_int_t*)ast)->value.u16);
+            case 16:
+                frg_debug_print_property(mut_stream, "value", "%ii16", ((const frg_ast_node_value_int_t*)node)->value.as_i16);
                 break;
-            case FRG_AST_KIND_TY_U32:
-                frg_debug_print_property(stream, "value", "%u", ((frg_ast_value_int_t*)ast)->value.u32);
+            case 32:
+                frg_debug_print_property(mut_stream, "value", "%ii32", ((const frg_ast_node_value_int_t*)node)->value.as_i32);
                 break;
-            case FRG_AST_KIND_TY_U64:
-                frg_debug_print_property(stream, "value", "%lu", ((frg_ast_value_int_t*)ast)->value.u64);
-                break;
-            case FRG_AST_KIND_TY_I8:
-                frg_debug_print_property(stream, "value", "%i", ((frg_ast_value_int_t*)ast)->value.i8);
-                break;
-            case FRG_AST_KIND_TY_I16:
-                frg_debug_print_property(stream, "value", "%i", ((frg_ast_value_int_t*)ast)->value.i16);
-                break;
-            case FRG_AST_KIND_TY_I32:
-                frg_debug_print_property(stream, "value", "%i", ((frg_ast_value_int_t*)ast)->value.i32);
-                break;
-            case FRG_AST_KIND_TY_I64:
-                frg_debug_print_property(stream, "value", "%li", ((frg_ast_value_int_t*)ast)->value.i64);
+            case 64:
+                frg_debug_print_property(mut_stream, "value", "%lii64", ((const frg_ast_node_value_int_t*)node)->value.as_i64);
                 break;
             default:
-                frg_debug_print_property(stream, "value", "%li (defaulting to i64 since 'ty' is an unexpected type for an integer)", ((frg_ast_value_int_t*)ast)->value.i64);
+                frg_debug_print_property(mut_stream, "value", "%li (defaulting to i64 since bit width %u is not supported)", ((const frg_ast_node_value_int_t*)node)->value.as_i64, ((const frg_ast_node_value_int_t*)node)->type.bit_width);
+                break;
+        }
+    } else {
+        switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
+            case 8:
+                frg_debug_print_property(mut_stream, "value", "%uu8", ((const frg_ast_node_value_int_t*)node)->value.as_u8);
+                break;
+            case 16:
+                frg_debug_print_property(mut_stream, "value", "%uu16", ((const frg_ast_node_value_int_t*)node)->value.as_u16);
+                break;
+            case 32:
+                frg_debug_print_property(mut_stream, "value", "%uu32", ((const frg_ast_node_value_int_t*)node)->value.as_u32);
+                break;
+            case 64:
+                frg_debug_print_property(mut_stream, "value", "%luu64", ((const frg_ast_node_value_int_t*)node)->value.as_u64);
+                break;
+            default:
+                frg_debug_print_property(mut_stream, "value", "%lu (defaulting to u64 since bit width %u is not supported)", ((const frg_ast_node_value_int_t*)node)->value.as_u64, ((const frg_ast_node_value_int_t*)node)->type.bit_width);
                 break;
         }
     }
 }
 
-void frg_ast_debug_printer_value_float(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_FLOAT);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_float(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_FLOAT);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "ty", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_float_t*)ast)->ty, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
-    frg_debug_print_newline(stream, indent);
-    if (((frg_ast_value_float_t*)ast)->ty == NULL) {
-        frg_debug_print_property(stream, "value", "%f (defaulting to f64 since 'ty' is null)", ((frg_ast_value_float_t*)ast)->value.f64);
-    } else {
-        switch (((frg_ast_value_int_t*)ast)->ty->kind) {
-            case FRG_AST_KIND_TY_F32:
-                frg_debug_print_property(stream, "value", "%f", ((frg_ast_value_float_t*)ast)->value.f32);
-                break;
-            case FRG_AST_KIND_TY_F64:
-                frg_debug_print_property(stream, "value", "%f", ((frg_ast_value_float_t*)ast)->value.f64);
-                break;
-            default:
-                frg_debug_print_property(stream, "value", "%f (defaulting to f64 since 'ty' is an unexpected type for a float)", ((frg_ast_value_float_t*)ast)->value.f64);
-                break;
-        }
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "type", NULL);
+    frg_ast_print_debug(mut_stream, (const frg_ast_node_t*)&((const frg_ast_node_value_float_t*)node)->type, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    switch (((const frg_ast_node_value_float_t*)node)->type.bit_width) {
+        case 32:
+            frg_debug_print_property(mut_stream, "value", "%ff32", ((const frg_ast_node_value_float_t*)node)->value.as_f32);
+            break;
+        case 64:
+            frg_debug_print_property(mut_stream, "value", "%lff64", ((const frg_ast_node_value_float_t*)node)->value.as_f64);
+            break;
+        default:
+            frg_debug_print_property(mut_stream, "value", "%lf (defaulting to f64 since bit width %u is not supported)", ((const frg_ast_node_value_float_t*)node)->value.as_f64, ((const frg_ast_node_value_float_t*)node)->type.bit_width);
+            break;
     }
 }
 
-void frg_ast_debug_printer_value_char(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_CHAR);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_character(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CHARACTER);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_char(((frg_ast_value_char_t*)ast)->value);
-    frg_debug_print_property(stream, "value", "%s", formatted->str);
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "value", NULL);
+    frg_print_character(mut_stream, ((frg_ast_node_value_character_t*)node)->value);
 }
 
-void frg_ast_debug_printer_value_str(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_STR);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_string(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_STRING);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_value_str_t*)ast)->value->str);
-    frg_debug_print_property(stream, "value", "%s", formatted->str);
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "value", NULL);
+    frg_print_string(mut_stream, ((frg_ast_node_value_string_t*)node)->value->str);
 }
 
-void frg_ast_debug_printer_value_symbol(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_SYMBOL);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_symbol(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_SYMBOL);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_value_symbol_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((frg_ast_node_value_symbol_t*)node)->name->str);
 }
 
-void frg_ast_debug_printer_value_call_kw_arg(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_CALL_KW_ARG);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_call_keyword_argument(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CALL_KEYWORD_ARGUMENT);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    GString* formatted = frg_format_str(((frg_ast_value_call_kw_arg_t*)ast)->name->str);
-    frg_debug_print_property(stream, "name", "%s", formatted->str);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "value", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_call_kw_arg_t*)ast)->value, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "name", NULL);
+    frg_print_string(mut_stream, ((frg_ast_node_value_call_keyword_argument_t*)node)->name->str);
 
-    g_string_free(formatted, TRUE);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "value", NULL);
+    frg_ast_print_debug(mut_stream, ((frg_ast_node_value_call_keyword_argument_t*)node)->value, &options_next);
 }
 
-void frg_ast_debug_printer_value_call(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_int_eq(ast->kind, FRG_AST_KIND_VALUE_CALL);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_call(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CALL);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "callee", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_call_t*)ast)->callee, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "callee", NULL);
+    frg_ast_print_debug(mut_stream, ((frg_ast_node_value_call_t*)node)->callee, &options_next);
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_value_call_t*)ast)->args,
-        "args",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((frg_ast_node_value_call_t*)node)->arguments,
+        "arguments",
+        &options_next
     );
 
     _frg_ast_print_debug_list(
-        stream,
-        ((frg_ast_value_call_t*)ast)->kw_args,
-        "kw-args",
-        indent + FRG_DEBUG_INDENT_WIDTH
+        mut_stream,
+        ((frg_ast_node_value_call_t*)node)->keyword_arguments,
+        "keyword-arguments",
+        &options_next
     );
 }
 
-void frg_ast_debug_printer_value_unary(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert(frg_ast_kind_info_get(ast->kind)->flags & FRG_AST_KIND_FLAG_VALUE_UNARY);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_unary(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert(frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_UNARY);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "operand", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_unary_t*)ast)->operand, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "operand", NULL);
+    frg_ast_print_debug(mut_stream, ((frg_ast_node_value_unary_t*)node)->operand, &options_next);
 }
 
-void frg_ast_debug_printer_value_binary(frg_stream_output_t* stream, const frg_ast_t* ast, frg_indent_t indent) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(ast);
-    frg_assert(frg_ast_kind_info_get(ast->kind)->flags & FRG_AST_KIND_FLAG_VALUE_BINARY);
-    frg_assert_int_non_negative(indent);
+void frg_ast_debug_printer_value_binary(frg_stream_output_t* mut_stream,
+    const frg_ast_node_t* node,
+    const frg_ast_print_debug_options_t* options) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(node);
+    frg_assert(frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_BINARY);
+    frg_assert_int_non_negative(options->indentation);
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "left", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_binary_t*)ast)->left, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_ast_print_debug_options_t options_next = frg_ast_print_debug_options_get_next(
+        options,
+        FRG_DEBUG_INDENTATION_WIDTH
+    );
 
-    frg_debug_print_newline(stream, indent);
-    frg_debug_print_property(stream, "right", NULL);
-    frg_ast_print_debug(stream, ((frg_ast_value_binary_t*)ast)->right, indent + FRG_DEBUG_INDENT_WIDTH);
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "left", NULL);
+    frg_ast_print_debug(mut_stream, ((frg_ast_node_value_binary_t*)node)->left, &options_next);
+
+    frg_debug_print_newline(mut_stream, options->indentation);
+    frg_debug_print_property(mut_stream, "right", NULL);
+    frg_ast_print_debug(mut_stream, ((frg_ast_node_value_binary_t*)node)->right, &options_next);
 }
-

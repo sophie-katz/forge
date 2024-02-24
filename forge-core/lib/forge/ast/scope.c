@@ -14,118 +14,124 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/scope.h>
-#include <forge/ast/operations.h>
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/ast/utilities.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 
 frg_ast_scope_frame_t* frg_ast_scope_frame_new() {
-    frg_ast_scope_frame_t* scope_frame = frg_safe_malloc(sizeof(frg_ast_scope_frame_t));
+    frg_ast_scope_frame_t* scope_frame = frg_malloc(sizeof(frg_ast_scope_frame_t));
 
-    scope_frame->ast = g_hash_table_new(g_str_hash, g_str_equal);
-    scope_frame->ir = g_hash_table_new(g_str_hash, g_str_equal);
+    scope_frame->_map_ast = g_hash_table_new((GHashFunc)g_str_hash, (GEqualFunc)g_str_equal);
+    scope_frame->_map_ir = g_hash_table_new((GHashFunc)g_str_hash, (GEqualFunc)g_str_equal);
 
     return scope_frame;
 }
 
-void frg_ast_scope_frame_destroy(frg_ast_scope_frame_t** scope_frame) {
+void frg_ast_scope_frame_destroy(frg_ast_scope_frame_t* scope_frame) {
     frg_assert_pointer_non_null(scope_frame);
-    frg_assert_pointer_non_null(*scope_frame);
 
-    g_hash_table_destroy((*scope_frame)->ast);
-    g_hash_table_destroy((*scope_frame)->ir);
+    g_hash_table_destroy(scope_frame->_map_ast);
+    g_hash_table_destroy(scope_frame->_map_ir);
 
-    frg_safe_free((void**)scope_frame);
+    frg_free(scope_frame);
 }
 
-void frg_ast_scope_frame_add_ast(frg_ast_scope_frame_t* scope_frame, frg_ast_t* ast) {
-    frg_assert_pointer_non_null(scope_frame);
-    frg_assert_pointer_non_null(ast);
+void frg_ast_scope_frame_add_ast(
+    frg_ast_scope_frame_t* mut_scope_frame,
+    frg_ast_node_t* node
+) {
+    frg_assert_pointer_non_null(mut_scope_frame);
+    frg_assert_pointer_non_null(node);
 
     const char* name;
 
-    if (ast->kind == FRG_AST_KIND_DECL_FN_ARG) {
-        name = frg_ast_get_decl_fn_arg_name(ast);
+    if (node->kind == FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT) {
+        name = frg_ast_declaration_function_argument_name_get(node);
     } else {
-        name = frg_ast_get_decl_name(ast);
+        name = frg_ast_declaration_name_get(node);
     }
     
     frg_assert_string_non_empty(name);
 
-    g_hash_table_insert(scope_frame->ast, (void*)name, (void*)ast);
+    g_hash_table_insert(mut_scope_frame->_map_ast, (void*)name, (void*)node);
 }
 
-frg_ast_t* frg_ast_scope_frame_get_ast(
-    const frg_ast_scope_frame_t* scope_frame,
+frg_ast_node_t* frg_ast_scope_frame_get_ast(
+    frg_ast_scope_frame_t* mut_scope_frame,
     const char* name
 ) {
-    frg_assert_pointer_non_null(scope_frame);
+    frg_assert_pointer_non_null(mut_scope_frame);
     frg_assert_string_non_empty(name);
 
     return g_hash_table_lookup(
-        scope_frame->ast,
+        mut_scope_frame->_map_ast,
         (void*)name
     );
 }
 
-void frg_ast_scope_frame_add_ir(frg_ast_scope_frame_t* scope_frame, const char* name, void* ir) {
-    frg_assert_pointer_non_null(scope_frame);
+void frg_ast_scope_frame_add_ir(
+    frg_ast_scope_frame_t* mut_scope_frame,
+    const char* name,
+    void* ir
+) {
+    frg_assert_pointer_non_null(mut_scope_frame);
     frg_assert_string_non_empty(name);
     frg_assert_pointer_non_null(ir);
 
-    g_hash_table_insert(scope_frame->ir, (void*)name, (void*)ir);
+    g_hash_table_insert(mut_scope_frame->_map_ir, (void*)name, (void*)ir);
 }
 
 void* frg_ast_scope_frame_get_ir(
-    const frg_ast_scope_frame_t* scope_frame,
+    frg_ast_scope_frame_t* mut_scope_frame,
     const char* name
 ) {
-    frg_assert_pointer_non_null(scope_frame);
+    frg_assert_pointer_non_null(mut_scope_frame);
     frg_assert_string_non_empty(name);
 
     return g_hash_table_lookup(
-        scope_frame->ir,
+        mut_scope_frame->_map_ir,
         (void*)name
     );
 }
 
-void frg_ast_scope_frame_load_decl_block(
-    frg_ast_scope_frame_t* scope_frame,
-    frg_ast_decl_block_t* block
+void frg_ast_scope_frame_load_declaration_block(
+    frg_ast_scope_frame_t* mut_scope_frame,
+    const frg_ast_node_declaration_block_t* block
 ) {
-    frg_assert_pointer_non_null(scope_frame);
+    frg_assert_pointer_non_null(mut_scope_frame);
     frg_assert_pointer_non_null(block);
 
     GList* it = NULL;
     for (
-        it = g_list_first(block->decls);
+        it = g_list_first(block->declarations);
         it != NULL;
         it = g_list_next(it)
     ) {
-        frg_ast_scope_frame_add_ast(scope_frame, (frg_ast_t*)it->data);
+        frg_ast_scope_frame_add_ast(mut_scope_frame, (frg_ast_node_t*)it->data);
     }
 }
 
-void frg_ast_scope_frame_load_decl_fn_args(
-    frg_ast_scope_frame_t* scope_frame,
-    frg_ast_decl_fn_t* fn
+void frg_ast_scope_frame_load_declaration_function_args(
+    frg_ast_scope_frame_t* mut_scope_frame,
+    const frg_ast_node_declaration_function_t* function
 ) {
-    frg_assert_pointer_non_null(scope_frame);
-    frg_assert_pointer_non_null(fn);
+    frg_assert_pointer_non_null(mut_scope_frame);
+    frg_assert_pointer_non_null(function);
 
     GList* it = NULL;
     for (
-        it = g_list_first(fn->ty->args);
+        it = g_list_first(function->type->arguments);
         it != NULL;
         it = g_list_next(it)
     ) {
-        frg_ast_scope_frame_add_ast(scope_frame, (frg_ast_t*)it->data);
+        frg_ast_scope_frame_add_ast(mut_scope_frame, (frg_ast_node_t*)it->data);
     }
 }
 
 frg_ast_scope_t* frg_ast_scope_new() {
-    frg_ast_scope_t* scope = frg_safe_malloc(sizeof(frg_ast_scope_t));
+    frg_ast_scope_t* scope = frg_malloc(sizeof(frg_ast_scope_t));
 
-    scope->frames = NULL;
+    scope->_frames = NULL;
 
     frg_ast_scope_push_frame(
         scope
@@ -134,94 +140,89 @@ frg_ast_scope_t* frg_ast_scope_new() {
     return scope;
 }
 
-void frg_ast_scope_destroy(frg_ast_scope_t** scope) {
+void frg_ast_scope_destroy(frg_ast_scope_t* scope) {
     frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(*scope);
 
     GList* it = NULL;
     for (
-        it = g_list_first((*scope)->frames);
+        it = g_list_first(scope->_frames);
         it != NULL;
         it = g_list_next(it)
     ) {
-        frg_ast_scope_frame_t* frame = (frg_ast_scope_frame_t*)it->data;
-        frg_ast_scope_frame_destroy(&frame);
+        frg_ast_scope_frame_destroy((frg_ast_scope_frame_t*)it->data);
     }
 
-    g_list_free((*scope)->frames);
+    g_list_free(scope->_frames);
 
-    frg_safe_free((void**)scope);
+    frg_free(scope);
 }
 
-void frg_ast_scope_push_frame(frg_ast_scope_t* scope) {
-    frg_assert_pointer_non_null(scope);
+void frg_ast_scope_push_frame(frg_ast_scope_t* mut_scope) {
+    frg_assert_pointer_non_null(mut_scope);
 
     frg_ast_scope_frame_t* frame = frg_ast_scope_frame_new();
 
-    scope->frames = g_list_prepend(scope->frames, (void*)frame);
+    mut_scope->_frames = g_list_prepend(mut_scope->_frames, (void*)frame);
 }
 
-void frg_ast_scope_pop_frame(frg_ast_scope_t* scope) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(scope->frames);
+void frg_ast_scope_pop_frame(frg_ast_scope_t* mut_scope) {
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(mut_scope->_frames);
 
-    frg_ast_scope_frame_t* frame = (frg_ast_scope_frame_t*)scope->frames->data;
-    frg_ast_scope_frame_destroy(&frame);
+    frg_ast_scope_frame_destroy((frg_ast_scope_frame_t*)mut_scope->_frames->data);
 
-    scope->frames = g_list_delete_link(scope->frames, scope->frames);
+    mut_scope->_frames = g_list_delete_link(mut_scope->_frames, mut_scope->_frames);
 
-    if (scope->frames == NULL) {
+    if (mut_scope->_frames == NULL) {
         frg_die("must not pop first scope frame");
     }
 }
 
 frg_ast_scope_frame_t* frg_ast_scope_get_current_frame(
-    frg_ast_scope_t* scope
+    frg_ast_scope_t* mut_scope
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(scope->frames);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(mut_scope->_frames);
 
-    return (frg_ast_scope_frame_t*)scope->frames->data;
+    return (frg_ast_scope_frame_t*)mut_scope->_frames->data;
 }
 
 void frg_ast_scope_add_ast(
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    frg_ast_node_t* node
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(node);
 
     frg_ast_scope_frame_t* scope_frame = frg_ast_scope_get_current_frame(
-        scope
+        mut_scope
     );
 
     frg_ast_scope_frame_add_ast(
         scope_frame,
-        ast
+        node
     );
 }
 
-frg_ast_t* frg_ast_scope_get_ast(
-    const frg_ast_scope_t* scope,
+frg_ast_node_t* frg_ast_scope_get_ast(
+    frg_ast_scope_t* mut_scope,
     const char* name
 ) {
-    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(mut_scope);
     frg_assert_string_non_empty(name);
 
     for (
-        GList* it = g_list_first(scope->frames);
+        GList* it = g_list_first(mut_scope->_frames);
         it != NULL;
         it = g_list_next(it)
     ) {
-        frg_ast_scope_frame_t* scope_frame = (frg_ast_scope_frame_t*)it->data;
-
-        frg_ast_t* ast = frg_ast_scope_frame_get_ast(
-            scope_frame,
+        frg_ast_node_t* node = frg_ast_scope_frame_get_ast(
+            (frg_ast_scope_frame_t*)it->data,
             name
         );
 
-        if (ast != NULL) {
-            return ast;
+        if (node != NULL) {
+            return node;
         }
     }
 
@@ -229,16 +230,16 @@ frg_ast_t* frg_ast_scope_get_ast(
 }
 
 void frg_ast_scope_add_ir(
-    frg_ast_scope_t* scope,
+    frg_ast_scope_t* mut_scope,
     const char* name,
     void* ir
 ) {
-    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(mut_scope);
     frg_assert_string_non_empty(name);
     frg_assert_pointer_non_null(ir);
 
     frg_ast_scope_frame_t* scope_frame = frg_ast_scope_get_current_frame(
-        scope
+        mut_scope
     );
 
     frg_ast_scope_frame_add_ir(
@@ -249,21 +250,19 @@ void frg_ast_scope_add_ir(
 }
 
 void* frg_ast_scope_get_ir(
-    const frg_ast_scope_t* scope,
+    frg_ast_scope_t* mut_scope,
     const char* name
 ) {
-    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(mut_scope);
     frg_assert_string_non_empty(name);
 
     for (
-        GList* it = g_list_first(scope->frames);
+        GList* it = g_list_first(mut_scope->_frames);
         it != NULL;
         it = g_list_next(it)
     ) {
-        frg_ast_scope_frame_t* scope_frame = (frg_ast_scope_frame_t*)it->data;
-
         void* ir = frg_ast_scope_frame_get_ir(
-            scope_frame,
+            (frg_ast_scope_frame_t*)it->data,
             name
         );
 
@@ -275,36 +274,36 @@ void* frg_ast_scope_get_ir(
     return NULL;
 }
 
-void frg_ast_scope_load_decl_block(
-    frg_ast_scope_t* scope,
-    frg_ast_decl_block_t* block
+void frg_ast_scope_load_declaration_block(
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_declaration_block_t* block
 ) {
-    frg_assert_pointer_non_null(scope);
+    frg_assert_pointer_non_null(mut_scope);
     frg_assert_pointer_non_null(block);
 
     frg_ast_scope_frame_t* scope_frame = frg_ast_scope_get_current_frame(
-        scope
+        mut_scope
     );
 
-    frg_ast_scope_frame_load_decl_block(
+    frg_ast_scope_frame_load_declaration_block(
         scope_frame,
         block
     );
 }
 
-void frg_ast_scope_load_decl_fn_args(
-    frg_ast_scope_t* scope,
-    frg_ast_decl_fn_t* fn
+void frg_ast_scope_load_declaration_function_args(
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_declaration_function_t* function
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(fn);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(function);
 
     frg_ast_scope_frame_t* scope_frame = frg_ast_scope_get_current_frame(
-        scope
+        mut_scope
     );
 
-    frg_ast_scope_frame_load_decl_fn_args(
+    frg_ast_scope_frame_load_declaration_function_args(
         scope_frame,
-        fn
+        function
     );
 }

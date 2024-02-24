@@ -14,83 +14,79 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/parsing/token_reader.h>
-#include <forge/common/memory.h>
-#include <forge/common/error.h>
+#include <forge/memory.h>
+#include <forge/assert.h>
 #include <string.h>
 
 frg_parsing_token_reader_t* frg_parsing_token_reader_new(const frg_parsing_location_t* start, const char* text) {
     frg_assert_string_non_empty(start->path);
-    frg_assert_int_ge(start->lineno, 1);
-    frg_assert_int_ge(start->columnno, 1);
+    frg_assert_int_greater_than_or_equal_to(start->line_number, 1);
+    frg_assert_int_greater_than_or_equal_to(start->column_number, 1);
     frg_assert_string_non_empty(text);
 
-    frg_parsing_token_reader_t* reader = frg_safe_malloc(sizeof(frg_parsing_token_reader_t));
+    frg_parsing_token_reader_t* reader = frg_malloc(sizeof(frg_parsing_token_reader_t));
 
-    reader->start = *start;
-    reader->text = text;
-    reader->current_location = *start;
-    reader->current_char = text;
+    reader->_start = *start;
+    reader->_text = text;
+    reader->_current_location = *start;
+    reader->_current_character = text;
 
     return reader;
 }
 
-void frg_parsing_token_reader_destroy(frg_parsing_token_reader_t** reader) {
+void frg_parsing_token_reader_destroy(frg_parsing_token_reader_t* reader) {
     frg_assert(reader != NULL);
-    frg_assert(*reader != NULL);
 
-    frg_safe_free((void**)reader);
+    frg_free(reader);
 }
 
 const frg_parsing_location_t* frg_parsing_token_reader_get_current_location(const frg_parsing_token_reader_t* reader) {
     frg_assert(reader != NULL);
 
-    return &reader->current_location;
+    return &reader->_current_location;
 }
 
-char frg_parsing_token_reader_get_current_char(const frg_parsing_token_reader_t* reader) {
+char frg_parsing_token_reader_get_current_character(const frg_parsing_token_reader_t* reader) {
     frg_assert(reader != NULL);
 
-    return *reader->current_char;
+    return *reader->_current_character;
 }
 
-void frg_parsing_token_reader_step(frg_parsing_token_reader_t* reader) {
-    frg_assert(reader != NULL);
+void frg_parsing_token_reader_step(frg_parsing_token_reader_t* mut_reader) {
+    frg_assert(mut_reader != NULL);
 
-    if (*reader->current_char == 0) {
+    if (*mut_reader->_current_character == 0) {
         return;
-    } else if (*reader->current_char == '\n') {
-        reader->current_location.lineno++;
-        reader->current_location.columnno = 1;
+    } else if (*mut_reader->_current_character == '\n') {
+        mut_reader->_current_location.line_number++;
+        mut_reader->_current_location.column_number = 1;
     } else {
-        reader->current_location.columnno++;
+        mut_reader->_current_location.column_number++;
     }
 
-    reader->current_location.offset++;
-    reader->current_char++;
+    mut_reader->_current_location.offset++;
+    mut_reader->_current_character++;
 }
 
-frg_parsing_token_reader_t* frg_parsing_token_reader_save(const frg_parsing_token_reader_t* reader) {
+frg_parsing_token_reader_t* frg_parsing_token_reader_clone(const frg_parsing_token_reader_t* reader) {
     frg_assert_pointer_non_null(reader);
 
-    frg_parsing_token_reader_t* state = frg_parsing_token_reader_new(&reader->start, reader->text);
-    state->current_location = reader->current_location;
-    state->current_char = reader->current_char;
+    frg_parsing_token_reader_t* clone = frg_parsing_token_reader_new(&reader->_start, reader->_text);
+    clone->_current_location = reader->_current_location;
+    clone->_current_character = reader->_current_character;
 
-    return state;
+    return clone;
 }
 
-void frg_parsing_token_reader_restore(frg_parsing_token_reader_t* reader, frg_parsing_token_reader_t** state) {
-    frg_assert_pointer_non_null(reader);
+void frg_parsing_token_reader_restore(frg_parsing_token_reader_t* mut_reader, const frg_parsing_token_reader_t* state) {
+    frg_assert_pointer_non_null(mut_reader);
     frg_assert_pointer_non_null(state);
-    frg_assert_pointer_non_null(*state);
-    frg_assert_int_eq(reader->start.offset, (*state)->start.offset);
-    frg_assert_int_eq(reader->start.lineno, (*state)->start.lineno);
-    frg_assert_int_eq(reader->start.columnno, (*state)->start.columnno);
-    frg_assert_int_eq(reader->start.path, (*state)->start.path);
-    frg_assert_int_eq(reader->text, (*state)->text);
+    frg_assert_int_equal_to(mut_reader->_start.offset, state->_start.offset);
+    frg_assert_int_equal_to(mut_reader->_start.line_number, state->_start.line_number);
+    frg_assert_int_equal_to(mut_reader->_start.column_number, state->_start.column_number);
+    frg_assert_int_equal_to(mut_reader->_start.path, state->_start.path);
+    frg_assert_int_equal_to(mut_reader->_text, state->_text);
 
-    reader->current_location = (*state)->current_location;
-    reader->current_char = (*state)->current_char;
-
-    frg_parsing_token_reader_destroy(state);
+    mut_reader->_current_location = state->_current_location;
+    mut_reader->_current_character = state->_current_character;
 }

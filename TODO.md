@@ -17,6 +17,31 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
+- [ ] Refactor code to meet new conventions
+    - [x] Declaration style
+    - [x] Destructors with single pointers
+    - [x] Method functions
+    - [x] Private fields
+    - [x] Getters and setters
+        - [x] Usage
+        - [x] Declaration style
+    - [x] Recursive structs
+    - [x] Forward declarations
+        - [x] Circular file dependencies
+        - [x] Circular struct dependencies
+    - [x] Abbreviations
+    - [x] Module name prefixes
+    - [x] No nested modules
+    - [x] Symbols not just the module name
+    - [x] Singular form
+    - [x] Global variables
+    - [x] Mutable and output function arguments
+    - [x] Function argument order
+    - [x] Private symbols
+    - [x] Match implementation code to headers
+        - [x] Make sure all `frg_free` calls are for single pointers
+    - [x] Make sure all private symbols have a good reason to be
+- [ ] Add formatter and linter if possible
 - [ ] Add reference types (for internal use)
     - [ ] Create unary type operators
 - [ ] Add `void` type
@@ -50,7 +75,6 @@ not, see <https://www.gnu.org/licenses/>.
 - [ ] When printing errors for AST nodes
     - [x] Print the token range if possible
     - [ ] Otherwise, print the token tree up until the first token range if one exists
-- [ ] Add formatter and linter if possible
 - [ ] Make sure all paths are absolute so we don't accidentally open a file twice
 - [ ] Reorganize cli and config to be better
 - [ ] Use `G_GNUC_WARN_UNUSED_RESULT`
@@ -65,6 +89,7 @@ not, see <https://www.gnu.org/licenses/>.
     - [x] Visitor acceptors
     - [x] Type resolvers
     - [ ] Formatters
+- [ ] Create stricter types for IR
 
 # Completed
 

@@ -18,19 +18,18 @@
 #include <glib.h>
 #include <forge/cli/option_set.h>
 #include <forge/streams/output.h>
-
-struct frg_cli_program_t;
+#include <forge/cli/program_forward.h>
 
 typedef int (*frg_cli_command_callback_t)(
-    frg_message_buffer_t* message_buffer,
-    const struct frg_cli_program_t* program,
-    void* user_data,
-    GList* pos_args
+    frg_message_buffer_t* mut_message_buffer,
+    void* mut_user_data,
+    const frg_cli_program_t* program,
+    const GList* positional_arguments
 );
 
 typedef struct {
     const char* name;
-    const char* pos_args_name;
+    const char* positional_arguments_name;
     const char* help;
     frg_cli_option_set_t* option_set;
     frg_cli_command_callback_t callback;
@@ -38,16 +37,16 @@ typedef struct {
 
 frg_cli_command_t* frg_cli_command_new(
     const char* name,
-    const char* pos_args_name,
+    const char* positional_arguments_name,
     const char* help,
     frg_cli_command_callback_t callback
 );
 
 void frg_cli_command_destroy(
-    frg_cli_command_t** command
+    frg_cli_command_t* command
 );
 
 void frg_cli_command_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_command_t* command
 );

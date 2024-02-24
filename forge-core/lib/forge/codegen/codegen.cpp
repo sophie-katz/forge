@@ -25,7 +25,7 @@
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/IR/LegacyPassManager.h>
 
-struct frg_llvm_module_t {
+struct frg_codegen_module_t {
     llvm::LLVMContext *llvm_ctx;
     llvm::IRBuilder<> *llvm_builder;
     llvm::Module* llvm_module;
@@ -33,65 +33,47 @@ struct frg_llvm_module_t {
 
 extern "C" {
 #include <forge/codegen/codegen.h>
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 #include <forge/messages/codes.h>
 
-frg_llvm_module_t* frg_codegen(const frg_ast_t* ast) {
-    frg_assert_pointer_non_null(ast);
+void frg_codegen_module_destroy(frg_codegen_module_t* module) {
+    frg_assert_pointer_non_null(module);
 
-    frg_llvm_module_t* llvm_module = (frg_llvm_module_t*)frg_safe_malloc(
-        sizeof(frg_llvm_module_t)
-    );
+    delete module->llvm_module;
+    delete module->llvm_builder;
+    delete module->llvm_ctx;
 
-    llvm_module->llvm_ctx = new llvm::LLVMContext();
-    llvm_module->llvm_builder = new llvm::IRBuilder<>(*llvm_module->llvm_ctx);
-    llvm_module->llvm_module = new llvm::Module("forge", *llvm_module->llvm_ctx);
-
-    frg_ast_decl_block_t* decl_block = frg_ast_try_cast_decl_block((frg_ast_t*)ast);
-    if (decl_block == NULL) {
-        frg_die("can only generate machine code from a declaration block");
-    }
-
-    frg_ast_scope_t* scope = frg_ast_scope_new();
-
-    frg_ast_scope_load_decl_block(
-        scope,
-        decl_block
-    );
-
-    for (GList* it = decl_block->decls; it != NULL; it = it->next) {
-        frg_ast_t* decl = (frg_ast_t*)it->data;
-
-        switch (decl->kind) {
-            case FRG_AST_KIND_DECL_FN:
-                _frg_generate_decl_fn(
-                    *llvm_module->llvm_builder,
-                    *llvm_module->llvm_ctx,
-                    *llvm_module->llvm_module,
-                    scope,
-                    decl
-                );
-                break;
-            default:
-                frg_die_unexpected_enum_value(decl->kind);
-        }
-    }
-
-    frg_ast_scope_destroy(&scope);
-
-    return llvm_module;
+    frg_free(module);
 }
 
-bool frg_codegen_write_object_file(
-    frg_message_buffer_t* message_buffer,
-    const frg_llvm_module_t* llvm_module,
+void frg_codegen_module_print(
+    frg_stream_output_t* mut_stream,
+    const frg_codegen_module_t* module
+) {
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(module);
+
+    std::string llvm_ir_string;
+    llvm::raw_string_ostream llvm_stream(llvm_ir_string);
+
+    module->llvm_module->print(llvm_stream, nullptr);
+
+    frg_stream_output_write_string(
+        mut_stream,
+        llvm_ir_string.c_str()
+    );
+}
+
+bool frg_codegen_module_write_object_file(
+    frg_message_buffer_t* mut_message_buffer,
+    const frg_codegen_module_t* module,
     const char* path
 ) {
     std::string target_triple = llvm::sys::getDefaultTargetTriple();
 
     frg_message_emit(
-        message_buffer,
+        mut_message_buffer,
         FRG_MESSAGE_SEVERITY_DEBUG,
         NULL,
         "Using target triple: %s",
@@ -112,7 +94,7 @@ bool frg_codegen_write_object_file(
 
     if (target == NULL) {
         frg_message_emit_fg_2_invalid_target_triple(
-            message_buffer,
+            mut_message_buffer,
             target_triple.c_str(),
             error_message.c_str()
         );
@@ -129,8 +111,8 @@ bool frg_codegen_write_object_file(
         llvm::Reloc::PIC_
     );
 
-    llvm_module->llvm_module->setDataLayout(target_machine->createDataLayout());
-    llvm_module->llvm_module->setTargetTriple(target_triple);
+    module->llvm_module->setDataLayout(target_machine->createDataLayout());
+    module->llvm_module->setTargetTriple(target_triple);
 
     std::error_code error_code;
     llvm::raw_fd_ostream stream(
@@ -141,7 +123,7 @@ bool frg_codegen_write_object_file(
 
     if (error_code) {
         frg_message_emit_ffs_1_open_for_writing(
-            message_buffer,
+            mut_message_buffer,
             path,
             error_code.message().c_str()
         );
@@ -159,7 +141,7 @@ bool frg_codegen_write_object_file(
         llvm::CodeGenFileType::CGFT_ObjectFile
     )) {
         frg_message_emit_fg_1_cannot_emit_object_file(
-            message_buffer,
+            mut_message_buffer,
             target_triple.c_str()
         );
 
@@ -168,7 +150,7 @@ bool frg_codegen_write_object_file(
         return false;
     }
 
-    pass.run(*llvm_module->llvm_module);
+    pass.run(*module->llvm_module);
     stream.flush();
 
     delete target_machine;
@@ -176,32 +158,50 @@ bool frg_codegen_write_object_file(
     return true;
 }
 
-void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module) {
-    frg_assert_pointer_non_null(llvm_module);
-    frg_assert_pointer_non_null(*llvm_module);
+frg_codegen_module_t* frg_codegen(const frg_ast_node_t* node) {
+    frg_assert_pointer_non_null(node);
 
-    delete (*llvm_module)->llvm_module;
-    delete (*llvm_module)->llvm_builder;
-    delete (*llvm_module)->llvm_ctx;
-
-    frg_safe_free((void**) llvm_module);
-}
-
-void frg_codegen_print_module(
-    frg_stream_output_t* stream,
-    const frg_llvm_module_t* llvm_module
-) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(llvm_module);
-
-    std::string llvm_ir_string;
-    llvm::raw_string_ostream llvm_stream(llvm_ir_string);
-
-    llvm_module->llvm_module->print(llvm_stream, nullptr);
-
-    frg_stream_output_write_string(
-        stream,
-        llvm_ir_string.c_str()
+    frg_codegen_module_t* module = (frg_codegen_module_t*)frg_malloc(
+        sizeof(frg_codegen_module_t)
     );
+
+    module->llvm_ctx = new llvm::LLVMContext();
+    module->llvm_builder = new llvm::IRBuilder<>(*module->llvm_ctx);
+    module->llvm_module = new llvm::Module("forge", *module->llvm_ctx);
+
+    if (node->kind != FRG_AST_NODE_KIND_DECLARATION_BLOCK) {
+        frg_die("can only generate machine code from a declaration block");
+    }
+
+    const frg_ast_node_declaration_block_t* declaration_block = (const frg_ast_node_declaration_block_t*)node;
+
+    frg_ast_scope_t* scope = frg_ast_scope_new();
+
+    frg_ast_scope_load_declaration_block(
+        scope,
+        declaration_block
+    );
+
+    for (const GList* it = declaration_block->declarations; it != NULL; it = it->next) {
+        const frg_ast_node_t* declaration = (const frg_ast_node_t*)it->data;
+
+        switch (declaration->kind) {
+            case FRG_AST_NODE_KIND_DECLARATION_FUNCTION:
+                _frg_codegen_generate_declaration_function(
+                    *module->llvm_builder,
+                    *module->llvm_ctx,
+                    *module->llvm_module,
+                    scope,
+                    declaration
+                );
+                break;
+            default:
+                frg_die_unexpected_enum_value(declaration->kind);
+        }
+    }
+
+    frg_ast_scope_destroy(scope);
+
+    return module;
 }
 }

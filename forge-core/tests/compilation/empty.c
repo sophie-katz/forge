@@ -18,29 +18,29 @@
 
 #include "test.h"
 
-void setUp(void) {
+void setUp() {
     frg_stream_output_init();
 }
 
-void tearDown(void) {
+void tearDown() {
     frg_stream_output_cleanup();
 }
 
 void _callback_empty(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 }
 
-void test_empty(void) {
+void test_empty() {
     frg_test_compilation(
         "empty",
         // Source
         "",
         // AST debug
-        "[decl-block]",
+        "[declaration-block]",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n",
@@ -49,7 +49,7 @@ void test_empty(void) {
     );
 }
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_empty);
     return UNITY_END();

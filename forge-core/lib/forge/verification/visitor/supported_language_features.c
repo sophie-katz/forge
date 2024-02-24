@@ -16,25 +16,25 @@
 #include <forge/verification/visitor/supported_language_features.h>
 #include <forge/verification/verifier.h>
 #include <forge/messages/codes.h>
-#include <forge/common/error.h>
+#include <forge/assert.h>
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_ty_fn(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_type_function(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_FN);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_ast_ty_fn_t* ty_fn = (frg_ast_ty_fn_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_ast_node_type_function_t* type_function = (frg_ast_node_type_function_t*)*mut_node;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
-    if (ty_fn->var_pos_args != NULL) {
+    if (type_function->variadic_positional_arguments != NULL) {
         frg_message_emit_eft_2_unsupported_requirement_subitem(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             14,
             "Function declarations",
             1,
@@ -44,10 +44,10 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_t
         return FRG_AST_VISITOR_STATUS_SKIP;
     }
 
-    if (ty_fn->var_kw_args != NULL) {
+    if (type_function->variadic_keyword_arguments != NULL) {
         frg_message_emit_eft_2_unsupported_requirement_subitem(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             14,
             "Function declarations",
             2,
@@ -57,10 +57,10 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_t
         return FRG_AST_VISITOR_STATUS_SKIP;
     }
 
-    if (ty_fn->return_ty == NULL) {
+    if (type_function->return_type == NULL) {
         frg_message_emit_eft_1_unsupported_requirement(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             11,
             "Dynamic objects"
         );
@@ -71,21 +71,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_t
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_union(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_union(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_UNION);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
     frg_message_emit_eft_1_unsupported_requirement(
-        verifier->message_buffer,
-        &(*ast)->source_range,
+        verifier->mut_message_buffer,
+        &(*mut_node)->source_range,
         9,
         "Union declarations"
     );
@@ -93,23 +93,23 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_prop(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_property(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_PROP);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_ast_decl_prop_t* decl_prop = (frg_ast_decl_prop_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_ast_node_declaration_property_t* declaration_property = (frg_ast_node_declaration_property_t*)*mut_node;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
-    if ((decl_prop->flags & FRG_AST_DECL_PROP_FLAG_OPTIONAL) != 0 || (decl_prop->flags & FRG_AST_DECL_PROP_FLAG_NON_OPTIONAL) != 0) {
+    if ((declaration_property->flags & FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_OPTIONAL) != 0 || (declaration_property->flags & FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NON_OPTIONAL) != 0) {
         frg_message_emit_eft_1_unsupported_requirement(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             15,
             "Optionals"
         );
@@ -117,10 +117,10 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
         return FRG_AST_VISITOR_STATUS_SKIP;
     }
 
-    if ((decl_prop->flags & FRG_AST_DECL_PROP_FLAG_SPREAD) != 0) {
+    if ((declaration_property->flags & FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_SPREAD) != 0) {
         frg_message_emit_eft_1_unsupported_requirement(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             16,
             "Spreads"
         );
@@ -128,10 +128,10 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
         return FRG_AST_VISITOR_STATUS_SKIP;
     }
 
-    if (decl_prop->ty == NULL) {
+    if (declaration_property->type == NULL) {
         frg_message_emit_eft_1_unsupported_requirement(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             11,
             "Dynamic objects"
         );
@@ -142,21 +142,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_iface(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_interface(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_IFACE);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
     frg_message_emit_eft_1_unsupported_requirement(
-        verifier->message_buffer,
-        &(*ast)->source_range,
+        verifier->mut_message_buffer,
+        &(*mut_node)->source_range,
         2,
         "Interface declarations"
     );
@@ -164,23 +164,23 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_fn_arg(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_function_argument(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_FN_ARG);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_ast_decl_fn_arg_t* decl_fn_arg = (frg_ast_decl_fn_arg_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_ast_node_declaration_function_argument_t* declaration_function_argument = (frg_ast_node_declaration_function_argument_t*)*mut_node;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
-    if ((decl_fn_arg->flags & FRG_AST_DECL_FN_ARG_FLAG_KW) != 0) {
+    if ((declaration_function_argument->flags & FRG_AST_NODE_DECLARATION_FUNCTION_ARGUMENT_FLAG_KEYWORD) != 0) {
         frg_message_emit_eft_2_unsupported_requirement_subitem(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             14,
             "Function declarations",
             2,
@@ -190,10 +190,10 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
         return FRG_AST_VISITOR_STATUS_SKIP;
     }
 
-    if (decl_fn_arg->default_value != NULL) {
+    if (declaration_function_argument->default_value != NULL) {
         frg_message_emit_eft_2_unsupported_requirement_subitem(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             14,
             "Function declarations",
             3,
@@ -206,23 +206,23 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_decl_fn(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_function(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_FN);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_ast_decl_fn_t* decl_fn = (frg_ast_decl_fn_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_ast_node_declaration_function_t* declaration_function = (frg_ast_node_declaration_function_t*)*mut_node;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
-    if ((decl_fn->flags & FRG_AST_DECL_FN_FLAG_MUT) != 0 || (decl_fn->flags & FRG_AST_DECL_FN_FLAG_OVERRIDE) != 0) {
+    if ((declaration_function->flags & FRG_AST_NODE_DECLARATION_FUNCTION_FLAG_MUTABLE) != 0 || (declaration_function->flags & FRG_AST_NODE_DECLARATION_FUNCTION_FLAG_OVERRIDE) != 0) {
         frg_message_emit_eft_2_unsupported_requirement_subitem(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             14,
             "Function declarations",
             4,
@@ -235,21 +235,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_char(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_character(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CHAR);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_CHARACTER);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
     frg_message_emit_eft_1_unsupported_requirement(
-        verifier->message_buffer,
-        &(*ast)->source_range,
+        verifier->mut_message_buffer,
+        &(*mut_node)->source_range,
         5,
         "Character literals"
     );
@@ -257,21 +257,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_str(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_string(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_STR);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_STRING);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
     frg_message_emit_eft_1_unsupported_requirement(
-        verifier->message_buffer,
-        &(*ast)->source_range,
+        verifier->mut_message_buffer,
+        &(*mut_node)->source_range,
         4,
         "String literals"
     );
@@ -279,21 +279,21 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_call_kw_arg(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_call_keyword_argument(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CALL_KW_ARG);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_CALL_KEYWORD_ARGUMENT);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
     frg_message_emit_eft_2_unsupported_requirement_subitem(
-        verifier->message_buffer,
-        &(*ast)->source_range,
+        verifier->mut_message_buffer,
+        &(*mut_node)->source_range,
         14,
         "Function declarations",
         2,
@@ -303,23 +303,23 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_SKIP;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_value_call(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_call(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CALL);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_CALL);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_ast_value_call_t* value_call = (frg_ast_value_call_t*)*ast;
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_ast_node_value_call_t* value_call = (frg_ast_node_value_call_t*)*mut_node;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
-    if (value_call->kw_args != NULL) {
+    if (value_call->keyword_arguments != NULL) {
         frg_message_emit_eft_2_unsupported_requirement_subitem(
-            verifier->message_buffer,
-            &(*ast)->source_range,
+            verifier->mut_message_buffer,
+            &(*mut_node)->source_range,
             14,
             "Function declarations",
             2,
@@ -332,20 +332,20 @@ frg_ast_visitor_status_t frg_verification_supported_language_features_callback_p
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_callback_pre_operator(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_operator(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
+    frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
     frg_message_emit_eft_1_unsupported_requirement(
-        verifier->message_buffer,
-        &(*ast)->source_range,
+        verifier->mut_message_buffer,
+        &(*mut_node)->source_range,
         7,
         "Operators"
     );

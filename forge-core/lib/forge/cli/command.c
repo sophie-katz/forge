@@ -13,29 +13,29 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 #include <forge/cli/command.h>
 
 frg_cli_command_t* frg_cli_command_new(
     const char* name,
-    const char* pos_args_name,
+    const char* positional_arguments_name,
     const char* help,
     frg_cli_command_callback_t callback
 ) {
     frg_assert_string_non_empty(name);
 
-    if (pos_args_name != NULL) {
-        frg_assert_string_non_empty(pos_args_name);
+    if (positional_arguments_name != NULL) {
+        frg_assert_string_non_empty(positional_arguments_name);
     }
 
     frg_assert_string_non_empty(help);
     frg_assert_pointer_non_null(callback);
 
-    frg_cli_command_t* command = frg_safe_malloc(sizeof(frg_cli_command_t));
+    frg_cli_command_t* command = frg_malloc(sizeof(frg_cli_command_t));
 
     command->name = name;
-    command->pos_args_name = pos_args_name;
+    command->positional_arguments_name = positional_arguments_name;
     command->help = help;
     command->option_set = NULL;
     command->callback = callback;
@@ -45,21 +45,20 @@ frg_cli_command_t* frg_cli_command_new(
 }
 
 void frg_cli_command_destroy(
-    frg_cli_command_t** command
+    frg_cli_command_t* command
 ) {
     frg_assert_pointer_non_null(command);
-    frg_assert_pointer_non_null(*command);
 
     frg_cli_option_set_destroy(
-        &(*command)->option_set
+        command->option_set
     );
 
-    frg_safe_free((void**)command);
+    frg_free(command);
 }
 
 void frg_cli_command_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_command_t* command
 ) {
-    frg_stream_output_write_printf(stream, "%s\n", command->help);
+    frg_stream_output_write_printf(mut_stream, "%s\n", command->help);
 }

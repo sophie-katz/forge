@@ -16,11 +16,11 @@
 #include <forge/parsing/source.h>
 #include <unity.h>
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-void test_buffer_load_at_beginning_of_first_line(void) {
+void test_buffer_load_at_beginning_of_first_line() {
     char buffer[] = "hello, world";
 
     frg_stream_input_t* stream = frg_stream_input_new_buffer(
@@ -38,8 +38,8 @@ void test_buffer_load_at_beginning_of_first_line(void) {
         .start = {
             .path = "--",
             .offset = 0,
-            .lineno = 1,
-            .columnno = 1
+            .line_number = 1,
+            .column_number = 1
         }
     };
 
@@ -50,13 +50,13 @@ void test_buffer_load_at_beginning_of_first_line(void) {
 
     TEST_ASSERT_EQUAL_STRING("hello, world", loaded->str);
     
-    frg_parsing_source_destroy(&source);
+    frg_parsing_source_destroy(source);
     g_string_free(loaded, TRUE);
 }
 
 // TODO: This needs more testing, but since it's not critical whatevs
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_buffer_load_at_beginning_of_first_line);
     return UNITY_END();

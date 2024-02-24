@@ -18,56 +18,45 @@
 #include <forge/messages/message.h>
 
 typedef struct {
-    GList* messages;
-    frg_lineno_t max_lineno;
+    GList* _messages;
+    frg_line_number_t _max_line_number;
     frg_message_count_t message_count;
     frg_message_count_t error_count;
     frg_message_count_t warning_count;
 } frg_message_buffer_t;
 
 frg_message_buffer_t* frg_message_buffer_new();
-void frg_message_buffer_destroy(frg_message_buffer_t** message_buffer);
+
+void frg_message_buffer_destroy(frg_message_buffer_t* message_buffer);
 
 void frg_message_buffer_print(
-    frg_stream_output_t* stream,
-    frg_message_buffer_t* message_buffer,
-    frg_parsing_source_context_t* source_context,
+    frg_stream_output_t* mut_stream,
+    frg_parsing_source_context_t* mut_source_context,
+    frg_message_buffer_t* mut_message_buffer,
     frg_message_severity_t minimum_severity,
     frg_message_count_t max_messages
 );
 
-frg_message_count_t frg_message_buffer_get_message_count(
-    const frg_message_buffer_t* message_buffer
-);
-
-frg_message_count_t frg_message_buffer_get_error_count(
-    const frg_message_buffer_t* message_buffer
-);
-
-frg_message_count_t frg_message_buffer_get_warning_count(
-    const frg_message_buffer_t* message_buffer
-);
-
-bool frg_message_buffer_has_message_with_text(
+bool frg_message_buffer_has_message_with_text_equal_to(
     const frg_message_buffer_t* message_buffer,
     const char* text
 );
 
 frg_message_t* _frg_message_emit(
+    frg_message_buffer_t* mut_message_buffer,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
+    frg_line_number_t log_line_number,
     frg_message_severity_t severity,
     const char* code,
     const char* format,
     ...
 );
 
-#define frg_message_emit(message_buffer, severity, code, format, ...) \
+#define frg_message_emit(mut_message_buffer, severity, code, format, ...) \
     _frg_message_emit( \
+        (mut_message_buffer), \
         __FILE__, \
         __LINE__, \
-        (message_buffer), \
         (severity), \
         (code), \
         (format), \
@@ -75,9 +64,9 @@ frg_message_t* _frg_message_emit(
     )
 
 frg_message_t* _frg_message_emit_from_source_range(
+    frg_message_buffer_t* mut_message_buffer,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
@@ -85,11 +74,11 @@ frg_message_t* _frg_message_emit_from_source_range(
     ...
 );
 
-#define frg_message_emit_from_source_range(message_buffer, source_range, severity, code, format, ...) \
+#define frg_message_emit_from_source_range(mut_message_buffer, source_range, severity, code, format, ...) \
     _frg_message_emit_from_source_range( \
+        (mut_message_buffer), \
         __FILE__, \
         __LINE__, \
-        (message_buffer), \
         (source_range), \
         (severity), \
         (code), \
@@ -98,22 +87,22 @@ frg_message_t* _frg_message_emit_from_source_range(
     )
 
 void _frg_message_emit_child(
+    frg_message_buffer_t* mut_message_buffer,
+    frg_message_t* mut_parent,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
-    frg_message_t* parent,
+    frg_line_number_t log_line_number,
     frg_message_severity_t severity,
     const char* code,
     const char* format,
     ...
 );
 
-#define frg_message_emit_child(message_buffer, parent, severity, code, format, ...) \
+#define frg_message_emit_child(mut_message_buffer, mut_parent, severity, code, format, ...) \
     _frg_message_emit_child( \
+        (mut_message_buffer), \
+        (mut_parent), \
         __FILE__, \
         __LINE__, \
-        (message_buffer), \
-        (parent), \
         (severity), \
         (code), \
         (format), \
@@ -121,10 +110,10 @@ void _frg_message_emit_child(
     )
 
 void _frg_message_emit_child_from_source_range(
+    frg_message_buffer_t* mut_message_buffer,
+    frg_message_t* mut_parent,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
-    frg_message_t* parent,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
@@ -132,12 +121,12 @@ void _frg_message_emit_child_from_source_range(
     ...
 );
 
-#define frg_message_emit_child_from_source_range(message_buffer, parent, source_range, severity, code, format, ...) \
+#define frg_message_emit_child_from_source_range(mut_message_buffer, mut_parent, source_range, severity, code, format, ...) \
     _frg_message_emit_child_from_source_range( \
+        (mut_message_buffer), \
+        (mut_parent), \
         __FILE__, \
         __LINE__, \
-        (message_buffer), \
-        (parent), \
         (source_range), \
         (severity), \
         (code), \

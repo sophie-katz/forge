@@ -15,12 +15,12 @@
 
 #include <forge/parsing/domain.h>
 
-const frg_parsing_range_t frg_parsing_range_null = {
+const frg_parsing_range_t frg_global_parsing_range_null = {
     .start = {
         .path = NULL,
         .offset = 0,
-        .lineno = 0,
-        .columnno = 0
+        .line_number = 0,
+        .column_number = 0
     },
     .length = 0
 };

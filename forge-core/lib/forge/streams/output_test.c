@@ -14,59 +14,89 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/streams/output.h>
-#include <forge/common/memory.h>
+#include <forge/memory.h>
 #include <unity.h>
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-void test_stream(frg_stream_output_t* stream) {
-    frg_stream_output_write_char(stream, 'a');
-    frg_stream_output_write_string(stream, "b");
-    frg_stream_output_write_string_with_length(stream, "cd", 1);
-    frg_stream_output_write_printf(stream, "%i", 1);
+void test_stream(frg_stream_output_t* mut_stream) {
+    frg_stream_output_write_character(mut_stream, 'a');
+    frg_stream_output_write_string(mut_stream, "b");
+    frg_stream_output_write_string_with_length(mut_stream, "cd", 1);
+    frg_stream_output_write_printf(mut_stream, "%i", 1);
 }
 
-void test_stream_buffer(void) {
+void test_stream_buffer() {
     frg_stream_output_t* stream = frg_stream_output_new_buffer(
         FRG_STREAM_OUTPUT_FLAG_NONE
     );
 
     test_stream(stream);
 
-    GString* buffer = frg_stream_output_destroy_take_buffer(&stream);
+    GString* buffer = frg_stream_output_destroy_take_buffer(stream);
 
     TEST_ASSERT_EQUAL_STRING("abc1", buffer->str);
 
     g_string_free(buffer, TRUE);
 }
 
-void test_stream_file(void) {
-    char* buffer = frg_safe_malloc(1024);
+void test_stream_file() {
+    char* buffer = frg_malloc(1024);
     memset(buffer, 0, 1024);
 
     FILE* file = fmemopen(buffer, 1024, "w+");
 
     frg_stream_output_t* stream = frg_stream_output_new_file(
         file,
-        false
+        FRG_STREAM_OUTPUT_FLAG_NONE
     );
 
     test_stream(stream);
 
-    frg_stream_output_destroy(&stream);
+    frg_stream_output_destroy(stream);
 
     fclose(file);
 
     TEST_ASSERT_EQUAL_STRING("abc1", buffer);
 
-    frg_safe_free((void**)&buffer);
+    frg_free(buffer);
 }
 
-int main(void) {
+void test_color_enabled() {
+    frg_stream_output_t* stream = frg_stream_output_new_buffer(
+        FRG_STREAM_OUTPUT_FLAG_COLOR
+    );
+
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BLUE);
+
+    GString* buffer = frg_stream_output_destroy_take_buffer(stream);
+
+    TEST_ASSERT_GREATER_THAN(0, buffer->len);
+
+    g_string_free(buffer, TRUE);
+}
+
+void test_color_disabled() {
+    frg_stream_output_t* stream = frg_stream_output_new_buffer(
+        FRG_STREAM_OUTPUT_FLAG_NONE
+    );
+
+    frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BLUE);
+
+    GString* buffer = frg_stream_output_destroy_take_buffer(stream);
+
+    TEST_ASSERT_EQUAL(0, buffer->len);
+
+    g_string_free(buffer, TRUE);
+}
+
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_stream_buffer);
     RUN_TEST(test_stream_file);
+    RUN_TEST(test_color_enabled);
+    RUN_TEST(test_color_disabled);
     return UNITY_END();
 }

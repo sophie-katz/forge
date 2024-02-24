@@ -570,7 +570,7 @@
     )
 
 #define frg_message_emit_es_4_escape_x_expects_2_hex_digits(message_buffer, source_range, digit_count) { \
-        frg_assert_int_lt((digit_count), 2); \
+        frg_assert_int_less_than_or_equal_toss_than((digit_count), 2); \
         \
         frg_message_t* __frg_es_4_message = frg_message_emit_from_source_range( \
             (message_buffer), \
@@ -658,7 +658,7 @@
         "Unexpected end of literal" \
     )
 
-#define frg_message_emit_es_9_multiple_chars_in_char_literal(message_buffer, source_range) { \
+#define frg_message_emit_es_9_multiple_characters_in_character_literal(message_buffer, source_range) { \
         frg_message_t* __frg_es_9_message = frg_message_emit_from_source_range( \
             (message_buffer), \
             (source_range), \
@@ -754,7 +754,7 @@
         \
         gchar* __frg_fl_argv_joined = g_strjoinv( \
             "', '", \
-            (argv) \
+            (gchar**)(argv) \
         ); \
         \
         frg_message_emit_child( \
@@ -895,7 +895,7 @@
         (symbol_name) \
     )
 
-#define frg_emit_message_et_2_cannot_deref_non_pointer(message_buffer, source_range, type) { \
+#define frg_emit_message_et_2_cannot_dereference_non_pointer(message_buffer, source_range, type) { \
         frg_stream_output_t* __frg_et_2_stream = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE); \
         \
         frg_format( \
@@ -918,7 +918,7 @@
         g_string_free(__frg_et_2_buffer, TRUE); \
     }
 
-#define frg_emit_message_et_3_cannot_call_non_fn(message_buffer, source_range, type) { \
+#define frg_emit_message_et_3_cannot_call_non_function(message_buffer, source_range, type) { \
         frg_stream_output_t* __frg_et_3_stream = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE); \
         \
         frg_format( \

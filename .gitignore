@@ -13,10 +13,27 @@
 # You should have received a copy of the GNU General Public License along with Forge. If
 # not, see <https://www.gnu.org/licenses/>.
 
-build/
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 .DS_Store
-*.vsix
+.pnp.*
 .venv/
+.yarn/*
+*.local
+*.log
+*.log*
 *.o
 *.so
-*.log
+*.tsbuildinfo
+*.vsix
+build/
+coverage
+dist
+dist-ssr
+logs
+node_modules
+playwright-report/
+test-results/

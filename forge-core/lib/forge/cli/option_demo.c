@@ -15,11 +15,11 @@
 
 #include <forge/cli/option.h>
 
-bool callback(frg_message_buffer_t* message_buffer, void* user_data, const char* value) {
+bool callback(frg_message_buffer_t* mut_message_buffer, void* mut_user_data, const char* value) {
     return true;
 }
 
-void flag(void) {
+void flag() {
     frg_cli_option_t* option = frg_cli_option_new_flag(
         "long-name",
         "A description of the option",
@@ -28,10 +28,10 @@ void flag(void) {
 
     frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
-    frg_cli_option_destroy(&option);
+    frg_cli_option_destroy(option);
 }
 
-void flag_short(void) {
+void flag_short() {
     frg_cli_option_t* option = frg_cli_option_new_flag_short(
         'l',
         "long-name",
@@ -41,10 +41,10 @@ void flag_short(void) {
 
     frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
-    frg_cli_option_destroy(&option);
+    frg_cli_option_destroy(option);
 }
 
-void argument(void) {
+void argument() {
     frg_cli_option_t* option = frg_cli_option_new_argument(
         "long-name",
         "value",
@@ -54,10 +54,10 @@ void argument(void) {
 
     frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
-    frg_cli_option_destroy(&option);
+    frg_cli_option_destroy(option);
 }
 
-void argument_short(void) {
+void argument_short() {
     frg_cli_option_t* option = frg_cli_option_new_argument_short(
         'l',
         "long-name",
@@ -68,10 +68,10 @@ void argument_short(void) {
 
     frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
-    frg_cli_option_destroy(&option);
+    frg_cli_option_destroy(option);
 }
 
-void choice(void) {
+void choice() {
     frg_cli_option_t* option = frg_cli_option_new_choice(
         "long-name",
         "value",
@@ -97,10 +97,10 @@ void choice(void) {
 
     frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
-    frg_cli_option_destroy(&option);
+    frg_cli_option_destroy(option);
 }
 
-void choice_short(void) {
+void choice_short() {
     frg_cli_option_t* option = frg_cli_option_new_choice_short(
         'l',
         "long-name",
@@ -127,10 +127,10 @@ void choice_short(void) {
 
     frg_cli_option_print_help(frg_stream_output_get_stdout(), option);
 
-    frg_cli_option_destroy(&option);
+    frg_cli_option_destroy(option);
 }
 
-int main(void) {
+int main() {
     frg_stream_output_init();
 
     printf("== FLAG ==\n\n");

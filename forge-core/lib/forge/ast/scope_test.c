@@ -16,16 +16,16 @@
 #include <forge/ast/scope.h>
 #include <unity.h>
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-void test_frame(void) {
+void test_frame() {
     frg_ast_scope_frame_t* frame = frg_ast_scope_frame_new();
 
-    frg_ast_decl_prop_t* ast = frg_ast_new_decl_prop(
-        &frg_parsing_range_null,
-        FRG_AST_DECL_PROP_FLAG_NONE,
+    frg_ast_node_declaration_property_t* ast = frg_ast_node_declaration_property_new(
+        &frg_global_parsing_range_null,
+        FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
         g_string_new("Asdf"),
         NULL
     );
@@ -34,7 +34,7 @@ void test_frame(void) {
 
     frg_ast_scope_frame_add_ast(
         frame,
-        (frg_ast_t*)ast
+        (frg_ast_node_t*)ast
     );
 
     TEST_ASSERT_EQUAL_PTR(
@@ -101,23 +101,23 @@ void test_frame(void) {
         )
     );
 
-    frg_ast_destroy((frg_ast_t**)&ast);
+    frg_ast_node_destroy((frg_ast_node_t*)ast);
 
-    frg_ast_scope_frame_destroy(&frame);
+    frg_ast_scope_frame_destroy(frame);
 }
 
-void test_frame_load_decl_block(void) {
+void test_frame_load_declaration_block() {
     frg_ast_scope_frame_t* frame = frg_ast_scope_frame_new();
 
     GList* decls = NULL;
 
     decls = g_list_append(
         decls,
-        frg_ast_new_decl_var(
-            &frg_parsing_range_null,
-            frg_ast_new_decl_prop(
-                &frg_parsing_range_null,
-                FRG_AST_DECL_PROP_FLAG_NONE,
+        frg_ast_node_declaration_variable_new(
+            &frg_global_parsing_range_null,
+            frg_ast_node_declaration_property_new(
+                &frg_global_parsing_range_null,
+                FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
                 g_string_new("x"),
                 NULL
             ),
@@ -127,12 +127,12 @@ void test_frame_load_decl_block(void) {
 
     decls = g_list_append(
         decls,
-        frg_ast_new_decl_fn(
-            &frg_parsing_range_null,
-            FRG_AST_DECL_FN_FLAG_NONE,
+        frg_ast_node_declaration_function_new(
+            &frg_global_parsing_range_null,
+            FRG_AST_NODE_DECLARATION_FUNCTION_FLAG_NONE,
             g_string_new("f"),
-            frg_ast_new_ty_fn(
-                &frg_parsing_range_null,
+            frg_ast_node_type_function_new(
+                &frg_global_parsing_range_null,
                 NULL,
                 NULL,
                 NULL,
@@ -142,12 +142,12 @@ void test_frame_load_decl_block(void) {
         )
     );
 
-    frg_ast_decl_block_t* decl_block = frg_ast_new_decl_block(
-        &frg_parsing_range_null,
+    frg_ast_node_declaration_block_t* decl_block = frg_ast_node_declaration_block_new(
+        &frg_global_parsing_range_null,
         decls
     );
 
-    frg_ast_scope_frame_load_decl_block(
+    frg_ast_scope_frame_load_declaration_block(
         frame,
         decl_block
     );
@@ -173,23 +173,23 @@ void test_frame_load_decl_block(void) {
         )
     );
 
-    frg_ast_scope_frame_destroy(&frame);
-    frg_ast_destroy((frg_ast_t**)&decl_block);
+    frg_ast_scope_frame_destroy(frame);
+    frg_ast_node_destroy((frg_ast_node_t*)decl_block);
 }
 
-void test_frame_load_fn_args(void) {
+void test_frame_load_function_args() {
     frg_ast_scope_frame_t* frame = frg_ast_scope_frame_new();
 
     GList* args = NULL;
 
     args = g_list_append(
         args,
-        frg_ast_new_decl_fn_arg(
-            &frg_parsing_range_null,
-            FRG_AST_DECL_FN_ARG_FLAG_NONE,
-            frg_ast_new_decl_prop(
-                &frg_parsing_range_null,
-                FRG_AST_DECL_PROP_FLAG_NONE,
+        frg_ast_node_declaration_function_argument_new(
+            &frg_global_parsing_range_null,
+            FRG_AST_NODE_DECLARATION_FUNCTION_ARGUMENT_FLAG_NONE,
+            frg_ast_node_declaration_property_new(
+                &frg_global_parsing_range_null,
+                FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
                 g_string_new("x"),
                 NULL
             ),
@@ -199,12 +199,12 @@ void test_frame_load_fn_args(void) {
 
     args = g_list_append(
         args,
-        frg_ast_new_decl_fn_arg(
-            &frg_parsing_range_null,
-            FRG_AST_DECL_FN_ARG_FLAG_NONE,
-            frg_ast_new_decl_prop(
-                &frg_parsing_range_null,
-                FRG_AST_DECL_PROP_FLAG_NONE,
+        frg_ast_node_declaration_function_argument_new(
+            &frg_global_parsing_range_null,
+            FRG_AST_NODE_DECLARATION_FUNCTION_ARGUMENT_FLAG_NONE,
+            frg_ast_node_declaration_property_new(
+                &frg_global_parsing_range_null,
+                FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
                 g_string_new("y"),
                 NULL
             ),
@@ -212,12 +212,12 @@ void test_frame_load_fn_args(void) {
         )
     );
 
-    frg_ast_decl_fn_t* decl_fn = frg_ast_new_decl_fn(
-        &frg_parsing_range_null,
-        FRG_AST_DECL_FN_FLAG_NONE,
+    frg_ast_node_declaration_function_t* decl_function = frg_ast_node_declaration_function_new(
+        &frg_global_parsing_range_null,
+        FRG_AST_NODE_DECLARATION_FUNCTION_FLAG_NONE,
         g_string_new("f"),
-        frg_ast_new_ty_fn(
-            &frg_parsing_range_null,
+        frg_ast_node_type_function_new(
+            &frg_global_parsing_range_null,
             args,
             NULL,
             NULL,
@@ -226,9 +226,9 @@ void test_frame_load_fn_args(void) {
         NULL
     );
 
-    frg_ast_scope_frame_load_decl_fn_args(
+    frg_ast_scope_frame_load_declaration_function_args(
         frame,
-        decl_fn
+        decl_function
     );
 
     TEST_ASSERT_NOT_NULL(
@@ -252,16 +252,16 @@ void test_frame_load_fn_args(void) {
         )
     );
 
-    frg_ast_scope_frame_destroy(&frame);
-    frg_ast_destroy((frg_ast_t**)&decl_fn);
+    frg_ast_scope_frame_destroy(frame);
+    frg_ast_node_destroy((frg_ast_node_t*)decl_function);
 }
 
-void test_scope(void) {
+void test_scope() {
     frg_ast_scope_t* scope = frg_ast_scope_new();
 
-    frg_ast_decl_prop_t* x = frg_ast_new_decl_prop(
-        &frg_parsing_range_null,
-        FRG_AST_DECL_PROP_FLAG_NONE,
+    frg_ast_node_declaration_property_t* x = frg_ast_node_declaration_property_new(
+        &frg_global_parsing_range_null,
+        FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
         g_string_new("x"),
         NULL
     );
@@ -270,7 +270,7 @@ void test_scope(void) {
 
     frg_ast_scope_add_ast(
         scope,
-        (frg_ast_t*)x
+        (frg_ast_node_t*)x
     );
 
     TEST_ASSERT_EQUAL_PTR(
@@ -311,16 +311,16 @@ void test_scope(void) {
 
     frg_ast_scope_push_frame(scope);
 
-    frg_ast_decl_prop_t* y = frg_ast_new_decl_prop(
-        &frg_parsing_range_null,
-        FRG_AST_DECL_PROP_FLAG_NONE,
+    frg_ast_node_declaration_property_t* y = frg_ast_node_declaration_property_new(
+        &frg_global_parsing_range_null,
+        FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
         g_string_new("y"),
         NULL
     );
 
     frg_ast_scope_add_ast(
         scope,
-        (frg_ast_t*)y
+        (frg_ast_node_t*)y
     );
 
     TEST_ASSERT_EQUAL_PTR(
@@ -407,15 +407,16 @@ void test_scope(void) {
         )
     );
 
-    frg_ast_destroy((frg_ast_t**)&x);
-    frg_ast_destroy((frg_ast_t**)&y);
-    frg_ast_scope_destroy(&scope);
+    frg_ast_node_destroy((frg_ast_node_t*)x);
+    frg_ast_node_destroy((frg_ast_node_t*)y);
+    frg_ast_scope_destroy(scope);
 }
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_frame);
-    RUN_TEST(test_frame_load_decl_block);
+    RUN_TEST(test_frame_load_declaration_block);
+    RUN_TEST(test_frame_load_function_args);
     RUN_TEST(test_scope);
     return UNITY_END();
 }

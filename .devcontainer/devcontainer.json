@@ -11,18 +11,23 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"github.vscode-github-actions",
-				"ms-vscode.cpptools",
-				"mesonbuild.mesonbuild",
-				"sophiekatz.forge",
-				"eamodio.gitlens",
-				"streetsidesoftware.code-spell-checker",
 				"bierner.markdown-checkbox",
 				"bierner.markdown-emoji",
-				"bierner.markdown-preview-github-styles",
 				"bierner.markdown-mermaid",
+				"bierner.markdown-preview-github-styles",
 				"daohong-emilio.yash",
-				"ms-python.python"
+				"dbaeumer.vscode-eslint",
+				"eamodio.gitlens",
+				"esbenp.prettier-vscode",
+				"github.vscode-github-actions",
+				"mesonbuild.mesonbuild",
+				"ms-playwright.playwright",
+				"ms-python.python",
+				"ms-vscode.cpptools",
+				"sophiekatz.forge",
+				"streetsidesoftware.code-spell-checker",
+				"Vue.volar",
+				"Vue.vscode-typescript-vue-plugin"
 			]
 		}
 	}

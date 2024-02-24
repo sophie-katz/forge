@@ -14,15 +14,15 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/messages/message_buffer.h>
-#include <forge/common/error.h>
-#include <forge/common/math.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/math.h>
+#include <forge/memory.h>
 
 frg_message_buffer_t* frg_message_buffer_new() {
-    frg_message_buffer_t* message_buffer = frg_safe_malloc(sizeof(frg_message_buffer_t));
+    frg_message_buffer_t* message_buffer = frg_malloc(sizeof(frg_message_buffer_t));
     
-    message_buffer->messages = NULL;
-    message_buffer->max_lineno = 0;
+    message_buffer->_messages = NULL;
+    message_buffer->_max_line_number = 0;
     message_buffer->message_count = 0;
     message_buffer->error_count = 0;
     message_buffer->warning_count = 0;
@@ -30,24 +30,25 @@ frg_message_buffer_t* frg_message_buffer_new() {
     return message_buffer;
 }
 
-void frg_message_buffer_destroy(frg_message_buffer_t** message_buffer) {
+void frg_message_buffer_destroy(frg_message_buffer_t* message_buffer) {
     frg_assert_pointer_non_null(message_buffer);
-    frg_assert_pointer_non_null(*message_buffer);
 
-    for (GList* iter = (*message_buffer)->messages; iter != NULL; iter = iter->next) {
+    for (GList* iter = message_buffer->_messages; iter != NULL; iter = iter->next) {
         frg_message_t* message = (frg_message_t*)iter->data;
-        frg_message_destroy(&message);
+        frg_message_destroy(message);
     }
 
-    g_list_free((*message_buffer)->messages);
+    g_list_free(message_buffer->_messages);
 
-    frg_safe_free((void**)message_buffer);
+    frg_free(message_buffer);
 }
 
-// TODO: Finish this
 gint _frg_message_buffer_message_comparer(gconstpointer a, gconstpointer b) {
     const frg_message_t* message_a = (const frg_message_t*)a;
     const frg_message_t* message_b = (const frg_message_t*)b;
+
+    frg_assert_pointer_non_null(message_a);
+    frg_assert_pointer_non_null(message_b);
 
     // Sort by severity (high to low)
     if (message_a->severity > message_b->severity) {
@@ -57,11 +58,11 @@ gint _frg_message_buffer_message_comparer(gconstpointer a, gconstpointer b) {
     }
 
     // Sort by source path (alphabetically with NULLs first)
-    if (message_a->source_range.start.path == NULL && message_a->source_range.start.path != NULL) {
+    if (message_a->source_range.start.path == NULL && message_b->source_range.start.path != NULL) {
         return -1;
-    } else if (message_a->source_range.start.path != NULL && message_a->source_range.start.path == NULL) {
+    } else if (message_a->source_range.start.path != NULL && message_b->source_range.start.path == NULL) {
         return 1;
-    } else if (message_a->source_range.start.path != NULL && message_a->source_range.start.path != NULL) {
+    } else if (message_a->source_range.start.path != NULL && message_b->source_range.start.path != NULL) {
         int source_path_comparison = strcmp(message_a->source_range.start.path, message_b->source_range.start.path);
 
         if (source_path_comparison != 0) {
@@ -91,9 +92,9 @@ gint _frg_message_buffer_message_comparer(gconstpointer a, gconstpointer b) {
     }
     
     // Sort by log line number (low to high)
-    if (message_a->log_lineno < message_b->log_lineno) {
+    if (message_a->log_line_number < message_b->log_line_number) {
         return -1;
-    } else if (message_a->log_lineno > message_b->log_lineno) {
+    } else if (message_a->log_line_number > message_b->log_line_number) {
         return 1;
     }
 
@@ -107,24 +108,24 @@ gint _frg_message_buffer_message_comparer(gconstpointer a, gconstpointer b) {
     return 0;
 }
 
-void _frg_log_summary_if_errors(
-    frg_stream_output_t* stream,
-    frg_message_buffer_t* message_buffer
+void _frg_message_buffer_print_summary_if_errors(
+    frg_stream_output_t* mut_stream,
+    const frg_message_buffer_t* message_buffer
 ) {
     if (message_buffer->error_count > 0 || message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
         if (message_buffer->error_count > 0) {
-            frg_stream_output_write_printf(stream, "Failed with ");
+            frg_stream_output_write_printf(mut_stream, "Failed with ");
         } else {
-            frg_stream_output_write_printf(stream, "Succeeded with ");
+            frg_stream_output_write_printf(mut_stream, "Succeeded with ");
         }
     }
 
     if (message_buffer->error_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RED);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RED);
         frg_stream_output_write_printf(
-            stream,
+            mut_stream,
             "%u error%s",
             message_buffer->error_count,
             message_buffer->error_count == 1 ? "" : "s"
@@ -132,19 +133,19 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0 && message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
-        frg_stream_output_write_printf(
-            stream,
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
+        frg_stream_output_write_string(
+            mut_stream,
             " and "
         );
     }
 
     if (message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
         frg_stream_output_write_printf(
-            stream,
+            mut_stream,
             "%u warning%s",
             message_buffer->warning_count,
             message_buffer->warning_count == 1 ? "" : "s"
@@ -152,36 +153,36 @@ void _frg_log_summary_if_errors(
     }
 
     if (message_buffer->error_count > 0 || message_buffer->warning_count > 0) {
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
-        frg_stream_output_write_printf(stream, ".\n");
-        frg_stream_output_set_color(stream, FRG_STREAM_OUTPUT_COLOR_RESET);
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_WHITE);
+        frg_stream_output_write_printf(mut_stream, ".\n");
+        frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);
     }
 }
 
 void frg_message_buffer_print(
-    frg_stream_output_t* stream,
-    frg_message_buffer_t* message_buffer,
-    frg_parsing_source_context_t* source_context,
+    frg_stream_output_t* mut_stream,
+    frg_parsing_source_context_t* mut_source_context,
+    frg_message_buffer_t* mut_message_buffer,
     frg_message_severity_t minimum_severity,
     frg_message_count_t max_messages
 ) {
-    frg_assert_pointer_non_null(stream);
-    frg_assert_pointer_non_null(message_buffer);
-    frg_assert_int_ge(minimum_severity, FRG_MESSAGE_SEVERITY_DEBUG);
-    frg_assert_int_le(minimum_severity, FRG_MESSAGE_SEVERITY_NOTE);
+    frg_assert_pointer_non_null(mut_stream);
+    frg_assert_pointer_non_null(mut_message_buffer);
+    frg_assert_int_greater_than_or_equal_to(minimum_severity, FRG_MESSAGE_SEVERITY_DEBUG);
+    frg_assert_int_less_than_or_equal_to(minimum_severity, FRG_MESSAGE_SEVERITY_NOTE);
 
-    frg_columnno_t lineno_pad_to_width = frg_get_uint32_digit_count(
-        message_buffer->max_lineno
+    frg_column_number_t line_number_pad_to_width = frg_get_uint32_digit_count(
+        mut_message_buffer->_max_line_number
     );
 
-    message_buffer->messages = g_list_sort(
-        message_buffer->messages,
+    mut_message_buffer->_messages = g_list_sort(
+        mut_message_buffer->_messages,
         _frg_message_buffer_message_comparer
     );
 
     // frg_message_count_t printed_message_count = 0;
 
-    for (GList* iter = message_buffer->messages; iter != NULL; iter = iter->next) {
+    for (GList* iter = mut_message_buffer->_messages; iter != NULL; iter = iter->next) {
         // if (printed_message_count >= max_messages) {
         //     // TODO: Add suggestion here
         //     // TODO: Fix this
@@ -192,13 +193,13 @@ void frg_message_buffer_print(
         //     //     FRG_MESSAGE_SEVERITY_FATAL_ERROR,
         //     //     "Too many messages to show, displaying highest priority %i/%i",
         //     //     printed_message_count,
-        //     //     g_list_length(message_buffer->messages)
+        //     //     g_list_length(message_buffer->_messages)
         //     // );
 
         //     // frg_message_print(
         //     //     file,
         //     //     message_limit_reached,
-        //     //     lineno_pad_to_width,
+        //     //     line_number_pad_to_width,
         //     //     source_context
         //     // );
 
@@ -212,53 +213,29 @@ void frg_message_buffer_print(
         }
 
         frg_message_print(
-            stream,
+            mut_stream,
+            mut_source_context,
             message,
-            lineno_pad_to_width,
-            source_context
+            line_number_pad_to_width
         );
 
         // printed_message_count++;
     }
 
-    _frg_log_summary_if_errors(
-        stream,
-        message_buffer
+    _frg_message_buffer_print_summary_if_errors(
+        mut_stream,
+        mut_message_buffer
     );
 }
 
-frg_message_count_t frg_message_buffer_get_message_count(
-    const frg_message_buffer_t* message_buffer
-) {
-    frg_assert_pointer_non_null(message_buffer);
-    
-    return message_buffer->message_count;
-}
-
-frg_message_count_t frg_message_buffer_get_error_count(
-    const frg_message_buffer_t* message_buffer
-) {
-    frg_assert_pointer_non_null(message_buffer);
-    
-    return message_buffer->error_count;
-}
-
-frg_message_count_t frg_message_buffer_get_warning_count(
-    const frg_message_buffer_t* message_buffer
-) {
-    frg_assert_pointer_non_null(message_buffer);
-    
-    return message_buffer->warning_count;
-}
-
-bool frg_message_buffer_has_message_with_text(
+bool frg_message_buffer_has_message_with_text_equal_to(
     const frg_message_buffer_t* message_buffer,
     const char* text
 ) {
     frg_assert_pointer_non_null(message_buffer);
     frg_assert_string_non_empty(text);
     
-    for (GList* iter = message_buffer->messages; iter != NULL; iter = iter->next) {
+    for (GList* iter = message_buffer->_messages; iter != NULL; iter = iter->next) {
         frg_message_t* message = (frg_message_t*)iter->data;
 
         if (strcmp(message->text->str, text) == 0) {
@@ -270,27 +247,27 @@ bool frg_message_buffer_has_message_with_text(
 }
 
 void _frg_message_buffer_update_counters(
-    frg_message_buffer_t* message_buffer,
+    frg_message_buffer_t* mut_message_buffer,
     const frg_message_t* message
 ) {
-    message_buffer->max_lineno = MAX(
-        message_buffer->max_lineno,
-        message->source_range.start.lineno
+    mut_message_buffer->_max_line_number = MAX(
+        mut_message_buffer->_max_line_number,
+        message->source_range.start.line_number
     );
 
-    message_buffer->message_count++;
+    mut_message_buffer->message_count++;
 
     if (message->severity >= FRG_MESSAGE_SEVERITY_ERROR) {
-        message_buffer->error_count++;
+        mut_message_buffer->error_count++;
     } else if (message->severity == FRG_MESSAGE_SEVERITY_WARNING) {
-        message_buffer->warning_count++;
+        mut_message_buffer->warning_count++;
     }
 }
 
 frg_message_t* _frg_message_emit_helper(
+    frg_message_buffer_t* mut_message_buffer,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
@@ -298,8 +275,8 @@ frg_message_t* _frg_message_emit_helper(
     va_list args
 ) {
     frg_assert_string_non_empty(log_path);
-    frg_assert_int_positive(log_lineno);
-    frg_assert_pointer_non_null(message_buffer);
+    frg_assert_int_positive(log_line_number);
+    frg_assert_pointer_non_null(mut_message_buffer);
     frg_assert_string_non_empty(format);
 
     GString* text = g_string_new(NULL);
@@ -309,20 +286,20 @@ frg_message_t* _frg_message_emit_helper(
 
     frg_message_t* message = frg_message_new(
         log_path,
-        log_lineno,
+        log_line_number,
         source_range,
         severity,
         code,
         text
     );
 
-    message_buffer->messages = g_list_append(
-        message_buffer->messages,
+    mut_message_buffer->_messages = g_list_prepend(
+        mut_message_buffer->_messages,
         message
     );
 
     _frg_message_buffer_update_counters(
-        message_buffer,
+        mut_message_buffer,
         message
     );
 
@@ -330,10 +307,10 @@ frg_message_t* _frg_message_emit_helper(
 }
 
 void _frg_message_emit_child_helper(
+    frg_message_buffer_t* mut_message_buffer,
+    frg_message_t* mut_parent,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
-    frg_message_t* parent,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
@@ -341,9 +318,9 @@ void _frg_message_emit_child_helper(
     va_list args
 ) {
     frg_assert_string_non_empty(log_path);
-    frg_assert_int_positive(log_lineno);
-    frg_assert_pointer_non_null(message_buffer);
-    frg_assert_pointer_non_null(parent);
+    frg_assert_int_positive(log_line_number);
+    frg_assert_pointer_non_null(mut_message_buffer);
+    frg_assert_pointer_non_null(mut_parent);
     frg_assert_string_non_empty(format);
 
     GString* text = g_string_new(NULL);
@@ -353,7 +330,7 @@ void _frg_message_emit_child_helper(
 
     frg_message_t* message = frg_message_new(
         log_path,
-        log_lineno,
+        log_line_number,
         source_range,
         severity,
         code,
@@ -361,20 +338,20 @@ void _frg_message_emit_child_helper(
     );
 
     frg_message_add_child(
-        parent,
+        mut_parent,
         message
     );
 
     _frg_message_buffer_update_counters(
-        message_buffer,
+        mut_message_buffer,
         message
     );
 }
 
 frg_message_t* _frg_message_emit(
+    frg_message_buffer_t* mut_message_buffer,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
+    frg_line_number_t log_line_number,
     frg_message_severity_t severity,
     const char* code,
     const char* format,
@@ -384,9 +361,9 @@ frg_message_t* _frg_message_emit(
     va_start(args, format);
 
     frg_message_t* message = _frg_message_emit_helper(
+        mut_message_buffer,
         log_path,
-        log_lineno,
-        message_buffer,
+        log_line_number,
         NULL,
         severity,
         code,
@@ -400,9 +377,9 @@ frg_message_t* _frg_message_emit(
 }
 
 frg_message_t* _frg_message_emit_from_source_range(
+    frg_message_buffer_t* mut_message_buffer,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
@@ -415,9 +392,9 @@ frg_message_t* _frg_message_emit_from_source_range(
     va_start(args, format);
 
     frg_message_t* message = _frg_message_emit_helper(
+        mut_message_buffer,
         log_path,
-        log_lineno,
-        message_buffer,
+        log_line_number,
         source_range,
         severity,
         code,
@@ -431,10 +408,10 @@ frg_message_t* _frg_message_emit_from_source_range(
 }
 
 void _frg_message_emit_child(
+    frg_message_buffer_t* mut_message_buffer,
+    frg_message_t* mut_parent,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
-    frg_message_t* parent,
+    frg_line_number_t log_line_number,
     frg_message_severity_t severity,
     const char* code,
     const char* format,
@@ -444,10 +421,10 @@ void _frg_message_emit_child(
     va_start(args, format);
 
     _frg_message_emit_child_helper(
+        mut_message_buffer,
+        mut_parent,
         log_path,
-        log_lineno,
-        message_buffer,
-        parent,
+        log_line_number,
         NULL,
         severity,
         code,
@@ -459,10 +436,10 @@ void _frg_message_emit_child(
 }
 
 void _frg_message_emit_child_from_source_range(
+    frg_message_buffer_t* mut_message_buffer,
+    frg_message_t* mut_parent,
     const char* log_path,
-    frg_lineno_t log_lineno,
-    frg_message_buffer_t* message_buffer,
-    frg_message_t* parent,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
@@ -473,10 +450,10 @@ void _frg_message_emit_child_from_source_range(
     va_start(args, format);
 
     _frg_message_emit_child_helper(
+        mut_message_buffer,
+        mut_parent,
         log_path,
-        log_lineno,
-        message_buffer,
-        parent,
+        log_line_number,
         source_range,
         severity,
         code,

@@ -13,21 +13,21 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 #include <forge/parsing/source_context.h>
-#include <forge/parsing/parsing.h>
-#include <forge/linking/linker.h>
-#include <forge/ast/operations.h>
-#include <forge/ast/kind_info.h>
+#include <forge/parsing/parse.h>
+#include <forge/linking/link.h>
+#include <forge/ast/utilities.h>
+#include <forge/ast/node_kind_info.h>
 #include <unity.h>
 #include <dlfcn.h>
 
 #include "test.h"
 
 void _frg_test_compare_multiline(
-    frg_message_buffer_t* message_buffer,
-    frg_parsing_source_context_t* source_context,
+    frg_message_buffer_t* mut_message_buffer,
+    frg_parsing_source_context_t* mut_source_context,
     const char* expected,
     const char* actual
 ) {
@@ -79,8 +79,8 @@ void _frg_test_compare_multiline(
 
     frg_message_buffer_print(
         frg_stream_output_get_stderr(),
-        message_buffer,
-        source_context,
+        mut_source_context,
+        mut_message_buffer,
         FRG_MESSAGE_SEVERITY_DEBUG,
         0
     );
@@ -95,7 +95,7 @@ frg_stream_input_t* _frg_test_compilation_new_stream(
 
     size_t length = strlen(source_text);
     
-    char* source_buffer = frg_safe_malloc(length + 2);
+    char* source_buffer = frg_malloc(length + 2);
     source_buffer[length] = 0;
     source_buffer[length + 1] = 0;
     
@@ -129,21 +129,21 @@ void frg_test_compilation(
 
     // Create source context
     frg_parsing_source_context_t* source_context = frg_parsing_source_context_new();
-    frg_parsing_source_context_add(source_context, source);
+    frg_parsing_source_context_add_source(source_context, source);
 
     // Create message buffer
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
     // Parse
-    frg_ast_t* ast = frg_parse(message_buffer, source);
+    frg_ast_node_t* node = frg_parse(message_buffer, source);
 
     // Check AST
     if (ast_debug != NULL) {
-        if (ast == NULL) {
+        if (node == NULL) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
-                message_buffer,
                 source_context,
+                message_buffer,
                 FRG_MESSAGE_SEVERITY_DEBUG,
                 0
             );
@@ -151,17 +151,17 @@ void frg_test_compilation(
             TEST_FAIL_MESSAGE("Unexpected error while parsing AST");
         }
         
-        frg_stream_output_t* output = frg_stream_output_new_buffer(
+        frg_stream_output_t* stream = frg_stream_output_new_buffer(
             FRG_STREAM_OUTPUT_FLAG_NONE
         );
 
         frg_ast_print_debug(
-            output,
-            ast,
-            0
+            stream,
+            node,
+            &frg_ast_print_debug_options_default
         );
 
-        GString* ast_debug_actual = frg_stream_output_destroy_take_buffer(&output);
+        GString* ast_debug_actual = frg_stream_output_destroy_take_buffer(stream);
 
         _frg_test_compare_multiline(
             message_buffer,
@@ -172,11 +172,11 @@ void frg_test_compilation(
 
         g_string_free(ast_debug_actual, TRUE);
     } else {
-        if (ast != NULL) {
+        if (node != NULL) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
-                message_buffer,
                 source_context,
+                message_buffer,
                 FRG_MESSAGE_SEVERITY_DEBUG,
                 0
             );
@@ -186,23 +186,23 @@ void frg_test_compilation(
     }
 
     // Check LLVM IR
-    frg_llvm_module_t* llvm_module = NULL;
+    frg_codegen_module_t* codegen_module = NULL;
 
-    if (ast != NULL) {
-        llvm_module = frg_codegen(
-            ast
+    if (node != NULL) {
+        codegen_module = frg_codegen(
+            node
         );
 
-        frg_stream_output_t* output = frg_stream_output_new_buffer(
+        frg_stream_output_t* stream = frg_stream_output_new_buffer(
             FRG_STREAM_OUTPUT_FLAG_NONE
         );
 
-        frg_codegen_print_module(
-            output,
-            llvm_module
+        frg_codegen_module_print(
+            stream,
+            codegen_module
         );
 
-        GString* llvm_ir_actual = frg_stream_output_destroy_take_buffer(&output);
+        GString* llvm_ir_actual = frg_stream_output_destroy_take_buffer(stream);
 
         _frg_test_compare_multiline(
             message_buffer,
@@ -216,8 +216,8 @@ void frg_test_compilation(
         if (callback != NULL) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
-                message_buffer,
                 source_context,
+                message_buffer,
                 FRG_MESSAGE_SEVERITY_DEBUG,
                 0
             );
@@ -230,21 +230,21 @@ void frg_test_compilation(
     }
 
     // Link into shared object
-    if (llvm_module != NULL) {
+    if (codegen_module != NULL) {
         GString* path_object = g_string_new(NULL);
         current_dir = g_get_current_dir();
         g_string_printf(path_object, "%s/test-compilation-%s.o", current_dir, name);
         g_free(current_dir);
 
-        if (!frg_codegen_write_object_file(
+        if (!frg_codegen_module_write_object_file(
             message_buffer,
-            llvm_module,
+            codegen_module,
             path_object->str
         )) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
-                message_buffer,
                 source_context,
+                message_buffer,
                 FRG_MESSAGE_SEVERITY_DEBUG,
                 0
             );
@@ -252,7 +252,7 @@ void frg_test_compilation(
             TEST_FAIL_MESSAGE("Unexpected error while writing object file");
         }
 
-        frg_linker_config_t* linker_config = frg_linker_config_new_default();
+        frg_linking_configuration_t* linking_configuration = frg_linking_configuration_detect();
 
         GString* path_shared_object = g_string_new(NULL);
         current_dir = g_get_current_dir();
@@ -268,15 +268,15 @@ void frg_test_compilation(
 
         if (!frg_link(
             message_buffer,
-            linker_config,
-            FRG_LINKER_MODE_SHARED_LIBRARY,
+            linking_configuration,
+            FRG_LINKING_MODE_SHARED_LIBRARY,
             path_shared_object->str,
             objects
         )) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
-                message_buffer,
                 source_context,
+                message_buffer,
                 FRG_MESSAGE_SEVERITY_DEBUG,
                 0
             );
@@ -299,8 +299,8 @@ void frg_test_compilation(
         if (callback != NULL) {
             frg_message_buffer_print(
                 frg_stream_output_get_stderr(),
-                message_buffer,
                 source_context,
+                message_buffer,
                 FRG_MESSAGE_SEVERITY_DEBUG,
                 0
             );
@@ -321,12 +321,12 @@ void frg_test_compilation(
         g_list_free(objects);
         g_string_free(path_shared_object, TRUE);
         g_string_free(path_object, TRUE);
-        frg_linker_config_destroy(&linker_config);
+        frg_linking_configuration_destroy(linking_configuration);
     } else {
         frg_message_buffer_print(
             frg_stream_output_get_stderr(),
-            message_buffer,
             source_context,
+            message_buffer,
             FRG_MESSAGE_SEVERITY_DEBUG,
             0
         );
@@ -340,28 +340,28 @@ void frg_test_compilation(
     }
 
     // Cleanup
-    if (llvm_module != NULL) {
-        frg_codegen_destroy_module(&llvm_module);
+    if (codegen_module != NULL) {
+        frg_codegen_module_destroy(codegen_module);
     }
 
-    if (ast != NULL) {
-        frg_ast_destroy(&ast);
+    if (node != NULL) {
+        frg_ast_node_destroy(node);
     }
 
-    frg_message_buffer_destroy(&message_buffer);
-    frg_parsing_source_context_destroy(&source_context);
+    frg_message_buffer_destroy(message_buffer);
+    frg_parsing_source_context_destroy(source_context);
     g_string_free(source_path, TRUE);
 }
 
 void* frg_test_compilation_get_function(
-    void* shared_library,
+    void* mut_shared_library,
     const char* name
 ) {
-    TEST_ASSERT_NOT_NULL(shared_library);
+    TEST_ASSERT_NOT_NULL(mut_shared_library);
     TEST_ASSERT_NOT_EMPTY(name);
 
     void* symbol = dlsym(
-        shared_library,
+        mut_shared_library,
         name
     );
 

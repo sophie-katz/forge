@@ -34,7 +34,7 @@ void open_sources(frg_parsing_source_context_t* source_context) {
         stream_file
     );
 
-    frg_parsing_source_context_add(
+    frg_parsing_source_context_add_source(
         source_context,
         source_file
     );
@@ -54,13 +54,13 @@ void open_sources(frg_parsing_source_context_t* source_context) {
         stream_buffer
     );
 
-    frg_parsing_source_context_add(
+    frg_parsing_source_context_add_source(
         source_context,
         source_buffer
     );
 }
 
-int main(void) {
+int main() {
     frg_stream_output_init();
 
     frg_parsing_source_context_t* source_context = frg_parsing_source_context_new();
@@ -117,8 +117,8 @@ int main(void) {
         .start = {
             .path = "main.frg",
             .offset = 0,
-            .lineno = 0,
-            .columnno = 0
+            .line_number = 0,
+            .column_number = 0
         }
     };
 
@@ -135,8 +135,8 @@ int main(void) {
         .start = {
             .path = "main.frg",
             .offset = 0,
-            .lineno = 2,
-            .columnno = 0
+            .line_number = 2,
+            .column_number = 0
         }
     };
 
@@ -153,8 +153,8 @@ int main(void) {
         .start = {
             .path = "lib.frg",
             .offset = 46,
-            .lineno = 2,
-            .columnno = 15
+            .line_number = 2,
+            .column_number = 15
         }
     };
 
@@ -171,8 +171,8 @@ int main(void) {
         .start = {
             .path = "lib.frg",
             .offset = 41,
-            .lineno = 2,
-            .columnno = 10
+            .line_number = 2,
+            .column_number = 10
         }
     };
 
@@ -189,8 +189,8 @@ int main(void) {
         .start = {
             .path = "lib.frg",
             .offset = 41,
-            .lineno = 2,
-            .columnno = 10
+            .line_number = 2,
+            .column_number = 10
         }
     };
 
@@ -204,14 +204,14 @@ int main(void) {
 
     frg_message_buffer_print(
         frg_stream_output_get_stdout(),
-        message_buffer,
         source_context,
+        message_buffer,
         FRG_MESSAGE_SEVERITY_DEBUG,
         0
     );
 
-    frg_message_buffer_destroy(&message_buffer);
-    frg_parsing_source_context_destroy(&source_context);
+    frg_message_buffer_destroy(message_buffer);
+    frg_parsing_source_context_destroy(source_context);
 
     frg_stream_output_cleanup();
 

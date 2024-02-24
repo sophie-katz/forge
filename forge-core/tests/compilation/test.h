@@ -19,7 +19,7 @@
 
 typedef void (*frg_test_compilation_callback)(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 );
 
 void frg_test_compilation(
@@ -31,6 +31,6 @@ void frg_test_compilation(
 );
 
 void* frg_test_compilation_get_function(
-    void* shared_library,
+    void* mut_shared_library,
     const char* name
 );

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <forge/common/enums.h>
+#include <forge/enums.h>
 #include <forge/cli/choice.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/streams/output.h>
@@ -26,8 +26,8 @@
 bool frg_cli_is_valid_short_name(char short_name);
 
 typedef bool (*frg_cli_option_callback_t)(
-    frg_message_buffer_t* message_buffer,
-    void* user_data,
+    frg_message_buffer_t* mut_message_buffer,
+    void* mut_user_data,
     const char* value
 );
 
@@ -37,7 +37,7 @@ typedef struct {
     const char* value_name;
     const char* help;
     GList* choices;
-    frg_cli_option_callback_t callback;
+    frg_cli_option_callback_t _callback;
 } frg_cli_option_t;
 
 frg_cli_option_t* frg_cli_option_new_flag(
@@ -84,24 +84,24 @@ frg_cli_option_t* frg_cli_option_new_choice_short(
 );
 
 void frg_cli_option_destroy(
-    frg_cli_option_t** option
+    frg_cli_option_t* option
 );
 
 void frg_cli_option_add_choice(
-    frg_cli_option_t* option,
+    frg_cli_option_t* mut_option,
     frg_cli_choice_t* choice
 );
 
 void frg_cli_option_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_option_t* option
 );
 
 bool frg_cli_option_parse_next(
-    frg_message_buffer_t* message_buffer,
+    frg_message_buffer_t* mut_message_buffer,
+    int* mut_argi,
+    void* mut_user_data,
     const frg_cli_option_t* option,
-    int* argi,
     int argc,
-    const char** argv,
-    void* user_data
+    const char** argv
 );

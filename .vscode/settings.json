@@ -60,7 +60,13 @@
         "supported_language_features.h": "c",
         "verifier.h": "c",
         "types.h": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "stdio.h": "c",
+        "options.h": "c",
+        "cli_program.h": "c",
+        "visitor_acceptors.h": "c",
+        "formatted_printers.h": "c",
+        "spawn.h": "c"
     },
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [

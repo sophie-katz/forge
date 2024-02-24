@@ -13,13 +13,13 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/config/config.h>
-#include <build_config.h>
+#include <forge/configuration/options.h>
+#include <build_configuration.h>
 
 int main(int argc, char *argv[]) {
     // frg_parsing_source_context_t* source_context = frg_parsing_source_context_new();
 
-    // frg_message_buffer_t* message_buffer = frg_message_buffer_new();
+    // frg_message_buffer_t* mut_message_buffer = frg_message_buffer_new();
 
     // frg_config_t* config = frg_config_new_default();
 
@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
     //     5 // TODO: Make this configurable
     // );
 
-    // frg_message_buffer_destroy(&message_buffer);
+    // frg_message_buffer_destroy(message_buffer);
 
-    // frg_parsing_source_context_destroy(&source_context);
+    // frg_parsing_source_context_destroy(source_context);
 
     return 0;
 }

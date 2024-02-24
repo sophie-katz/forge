@@ -18,19 +18,22 @@
 #include <forge/parsing/domain.h>
 
 typedef struct {
-    frg_parsing_location_t start;
-    const char* text;
-    frg_parsing_location_t current_location;
-    const char* current_char;
+    frg_parsing_location_t _start;
+    const char* _text;
+    frg_parsing_location_t _current_location;
+    const char* _current_character;
 } frg_parsing_token_reader_t;
 
 frg_parsing_token_reader_t* frg_parsing_token_reader_new(const frg_parsing_location_t* start, const char* text);
-void frg_parsing_token_reader_destroy(frg_parsing_token_reader_t** reader);
+
+void frg_parsing_token_reader_destroy(frg_parsing_token_reader_t* reader);
 
 const frg_parsing_location_t* frg_parsing_token_reader_get_current_location(const frg_parsing_token_reader_t* reader);
-char frg_parsing_token_reader_get_current_char(const frg_parsing_token_reader_t* reader);
 
-void frg_parsing_token_reader_step(frg_parsing_token_reader_t* reader);
+char frg_parsing_token_reader_get_current_character(const frg_parsing_token_reader_t* reader);
 
-frg_parsing_token_reader_t* frg_parsing_token_reader_save(const frg_parsing_token_reader_t* reader);
-void frg_parsing_token_reader_restore(frg_parsing_token_reader_t* reader, frg_parsing_token_reader_t** state);
+void frg_parsing_token_reader_step(frg_parsing_token_reader_t* mut_reader);
+
+frg_parsing_token_reader_t* frg_parsing_token_reader_clone(const frg_parsing_token_reader_t* reader);
+
+void frg_parsing_token_reader_restore(frg_parsing_token_reader_t* mut_reader, const frg_parsing_token_reader_t* state);

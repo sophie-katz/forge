@@ -85,12 +85,10 @@ fswatch -o .. | xargs -n1 -I{} bash -c "clear && ./build/forge dump-ast ../examp
 
 ## Generating code coverage
 
-> [!WARNING]  
-> Code coverage isn't really configured correctly yet. It's not correct and is thus basically useless.
-
-Run these commands:
+Run this command:
 
 ```shell
-meson test -C build
-ninja coverage -C build
+meson compile -C build && \
+    meson test -C build && \
+    ninja coverage-html -C build
 ```

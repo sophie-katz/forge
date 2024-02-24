@@ -22,13 +22,13 @@ not, see <https://www.gnu.org/licenses/>.
 
 %{
 #include <ctype.h>
-#include <forge/ast/ast.h>
-#include <forge/common/enums.h>
-#include <forge/common/lexical_casts.h>
-#include <forge/common/types.h>
+#include <forge/ast/node.h>
+#include <forge/enums.h>
+#include <forge/lexical_casts.h>
+#include <forge/types.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/messages/codes.h>
-#include <forge/parsing/union.h>
+#include <forge/parsing/unions.h>
 #include <glib.h>
 #include <stdbool.h>
 
@@ -41,7 +41,7 @@ extern const char* _frg_parsing_current_path;
 extern size_t _frg_parsing_current_offset;
 extern frg_message_buffer_t* _frg_parsing_current_message_buffer;
 
-frg_columnno_t yycolumnno = 1;
+frg_column_number_t yycolumnno = 1;
 %}
 
 %%
@@ -55,115 +55,115 @@ frg_columnno_t yycolumnno = 1;
 #[^\n]*\n ;
 
 bool {
-    return KW_BOOL;
+    return KEYWORD_BOOL;
 }
 
 u8 {
-    return KW_U8;
+    return KEYWORD_U8;
 }
 
 u16 {
-    return KW_U16;
+    return KEYWORD_U16;
 }
 
 u32 {
-    return KW_U32;
+    return KEYWORD_U32;
 }
 
 u64 {
-    return KW_U64;
+    return KEYWORD_U64;
 }
 
 i8 {
-    return KW_I8;
+    return KEYWORD_I8;
 }
 
 i16 {
-    return KW_I16;
+    return KEYWORD_I16;
 }
 
 i32 {
-    return KW_I32;
+    return KEYWORD_I32;
 }
 
 i64 {
-    return KW_I64;
+    return KEYWORD_I64;
 }
 
 f32 {
-    return KW_F32;
+    return KEYWORD_F32;
 }
 
 f64 {
-    return KW_F64;
+    return KEYWORD_F64;
 }
 
 ty {
-    return KW_TY;
+    return KEYWORD_TY;
 }
 
 prop {
-    return KW_PROP;
+    return KEYWORD_PROP;
 }
 
-iface {
-    return KW_IFACE;
+interface {
+    return KEYWORD_IFACE;
 }
 
 kw {
-    return KW_KW;
+    return KEYWORD_KW;
 }
 
 fn {
-    return KW_FN;
+    return KEYWORD_FN;
 }
 
 const {
-    return KW_CONST;
+    return KEYWORD_CONST;
 }
 
 mut {
-    return KW_MUT;
+    return KEYWORD_MUT;
 }
 
 override {
-    return KW_OVERRIDE;
+    return KEYWORD_OVERRIDE;
 }
 
 return {
-    return KW_RETURN;
+    return KEYWORD_RETURN;
 }
 
 let {
-    return KW_LET;
+    return KEYWORD_LET;
 }
 
 if {
-    return KW_IF;
+    return KEYWORD_IF;
 }
 
 else {
-    return KW_ELSE;
+    return KEYWORD_ELSE;
 }
 
 while {
-    return KW_WHILE;
+    return KEYWORD_WHILE;
 }
 
 true {
-    return KW_TRUE;
+    return KEYWORD_TRUE;
 }
 
 false {
-    return KW_FALSE;
+    return KEYWORD_FALSE;
 }
 
 [a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]* {
     frg_parsing_location_t location = {
         .path = _frg_parsing_current_path,
         .offset = _frg_parsing_current_offset,
-        .lineno = yylineno,
-        .columnno = yycolumnno,
+        .line_number = yylineno,
+        .column_number = yycolumnno,
     };
 
     yylval.value_symbol.source_range.start = location;
@@ -190,11 +190,11 @@ false {
 }
 
 "(" {
-    return PAREN_LEFT;
+    return PARENTHESIS_LEFT;
 }
 
 ")" {
-    return PAREN_RIGHT;
+    return PARENTHESIS_RIGHT;
 }
 
 "," {
@@ -225,8 +225,8 @@ false {
     frg_parsing_location_t location = {
         .path = _frg_parsing_current_path,
         .offset = _frg_parsing_current_offset,
-        .lineno = yylineno,
-        .columnno = yycolumnno,
+        .line_number = yylineno,
+        .column_number = yycolumnno,
     };
 
     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
@@ -238,8 +238,8 @@ false {
     yylval.value_int.source_range.length = yyleng;
 
     if (!frg_parse_uint(
-        _frg_parsing_current_message_buffer,
         &yylval.value_int.value,
+        _frg_parsing_current_message_buffer,
         reader
     )) {
         yylval.value_int.value.value = 0;
@@ -247,7 +247,7 @@ false {
         yylval.value_int.value.bit_width = 64;
     }
 
-    frg_parsing_token_reader_destroy(&reader);
+    frg_parsing_token_reader_destroy(reader);
 
     return INT;
 }
@@ -256,8 +256,8 @@ false {
     frg_parsing_location_t location = {
         .path = _frg_parsing_current_path,
         .offset = _frg_parsing_current_offset,
-        .lineno = yylineno,
-        .columnno = yycolumnno,
+        .line_number = yylineno,
+        .column_number = yycolumnno,
     };
 
     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
@@ -269,15 +269,15 @@ false {
     yylval.value_float.source_range.length = yyleng;
 
     if (!frg_parse_float(
-        _frg_parsing_current_message_buffer,
         &yylval.value_float.value,
+        _frg_parsing_current_message_buffer,
         reader
     )) {
         yylval.value_float.value.value = 0.0;
         yylval.value_float.value.bit_width = 64;
     }
 
-    frg_parsing_token_reader_destroy(&reader);
+    frg_parsing_token_reader_destroy(reader);
 
     return FLOAT;
 }
@@ -286,8 +286,8 @@ false {
     frg_parsing_location_t location = {
         .path = _frg_parsing_current_path,
         .offset = _frg_parsing_current_offset,
-        .lineno = yylineno,
-        .columnno = yycolumnno,
+        .line_number = yylineno,
+        .column_number = yycolumnno,
     };
 
     frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
@@ -299,15 +299,15 @@ false {
     yylval.value_float.source_range.length = yyleng;
 
     if (!frg_parse_float(
-        _frg_parsing_current_message_buffer,
         &yylval.value_float.value,
+        _frg_parsing_current_message_buffer,
         reader
     )) {
         yylval.value_float.value.value = 0.0;
         yylval.value_float.value.bit_width = 64;
     }
 
-    frg_parsing_token_reader_destroy(&reader);
+    frg_parsing_token_reader_destroy(reader);
 
     return FLOAT;
 }
@@ -320,8 +320,8 @@ false {
         .start = {
             .path = _frg_parsing_current_path,
             .offset = _frg_parsing_current_offset,
-            .lineno = yylineno,
-            .columnno = yycolumnno
+            .line_number = yylineno,
+            .column_number = yycolumnno
         },
         .length = yyleng
     };
@@ -341,8 +341,8 @@ false {
         .start = {
             .path = _frg_parsing_current_path,
             .offset = _frg_parsing_current_offset,
-            .lineno = yylineno,
-            .columnno = yycolumnno
+            .line_number = yylineno,
+            .column_number = yycolumnno
         },
         .length = yyleng
     };
@@ -376,11 +376,11 @@ false {
 }
 
 "<<" {
-    return BIT_SHL;
+    return BIT_SHIFT_LEFT;
 }
 
 ">>" {
-    return BIT_SHR;
+    return BIT_SHIFT_RIGHT;
 }
 
 "+" {
@@ -388,63 +388,63 @@ false {
 }
 
 "-" {
-    return SUB;
+    return SUBTRACT;
 }
 
 "*" {
-    return MUL;
+    return MULTIPLY;
 }
 
 "/" {
-    return DIV;
+    return DIVIDE;
 }
 
 "//" {
-    return DIV_INT;
+    return DIVIDE_INT;
 }
 
 "%" {
-    return MOD;
+    return MODULO;
 }
 
 "**" {
-    return EXP;
+    return EXPONENTIATE;
 }
 
 "==" {
-    return EQ;
+    return EQUALS;
 }
 
 "!=" {
-    return NE;
+    return NOT_EQUALS;
 }
 
 "<" {
-    return LT;
+    return IS_LESS_THAN;
 }
 
 "<=" {
-    return LE;
+    return IS_LESS_THAN_OR_EQUAL_TO;
 }
 
 ">" {
-    return GT;
+    return IS_GREATER_THAN;
 }
 
 ">=" {
-    return GE;
+    return IS_GREATER_THAN_OR_EQUAL_TO;
 }
 
 "!" {
-    return LOG_NOT;
+    return LOGICAL_NOT;
 }
 
 "&&" {
-    return LOG_AND;
+    return LOGICAL_AND;
 }
 
 "||" {
-    return LOG_OR;
+    return LOGICAL_OR;
 }
 
 "=" {
@@ -464,11 +464,11 @@ false {
 }
 
 "<<=" {
-    return BIT_SHL_ASSIGN;
+    return BIT_SHIFT_LEFT_ASSIGN;
 }
 
 ">>=" {
-    return BIT_SHR_ASSIGN;
+    return BIT_SHIFT_RIGHT_ASSIGN;
 }
 
 "+=" {
@@ -476,43 +476,43 @@ false {
 }
 
 "-=" {
-    return SUB_ASSIGN;
+    return SUBTRACT_ASSIGN;
 }
 
 "*=" {
-    return MUL_ASSIGN;
+    return MULTIPLY_ASSIGN;
 }
 
 "/=" {
-    return DIV_ASSIGN;
+    return DIVIDE_ASSIGN;
 }
 
 "//=" {
-    return DIV_INT_ASSIGN;
+    return DIVIDE_INT_ASSIGN;
 }
 
 "%=" {
-    return MOD_ASSIGN;
+    return MODULO_ASSIGN;
 }
 
 "**=" {
-    return EXP_ASSIGN;
+    return EXPONENTIATE_ASSIGN;
 }
 
 "&&=" {
-    return LOG_AND_ASSIGN;
+    return LOGICAL_AND_ASSIGN;
 }
 
 "||=" {
-    return LOG_OR_ASSIGN;
+    return LOGICAL_OR_ASSIGN;
 }
 
 "++" {
-    return INC;
+    return INCREMENT;
 }
 
 "--" {
-    return DEC;
+    return DECREMENT;
 }
 
 . {
@@ -520,8 +520,8 @@ false {
         .start = {
             .path = _frg_parsing_current_path,
             .offset = _frg_parsing_current_offset,
-            .lineno = yylineno,
-            .columnno = yycolumnno,
+            .line_number = yylineno,
+            .column_number = yycolumnno,
         },
         .length = 1
     };

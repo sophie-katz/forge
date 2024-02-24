@@ -14,86 +14,91 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/ast/visitor.h>
-#include <forge/common/memory.h>
-#include <forge/common/error.h>
+#include <forge/memory.h>
+#include <forge/assert.h>
+#include <forge/log.h>
+#include <forge/ast/node_kind_info.h>
 
-frg_ast_visitor_entry_item_t* frg_ast_visitor_entry_item_new(
-    frg_ast_visitor_callback_t callback_pre,
-    frg_ast_visitor_callback_t callback_post
-) {
-    frg_ast_visitor_entry_item_t* item = frg_safe_malloc(sizeof(frg_ast_visitor_entry_item_t));
-    item->callback_pre = callback_pre;
-    item->callback_post = callback_post;
-    return item;
+frg_ast_visitor_handler_t* frg_ast_visitor_handler_new() {
+    frg_ast_visitor_handler_t* handler = frg_malloc(sizeof(frg_ast_visitor_handler_t));
+
+    memset(handler->event_callbacks, 0, sizeof(handler->event_callbacks));
+
+    return handler;
 }
 
-void frg_ast_visitor_entry_item_destroy(frg_ast_visitor_entry_item_t** item) {
-    frg_safe_free((void**)item);
+void frg_ast_visitor_handler_destroy(frg_ast_visitor_handler_t* handler) {
+    frg_free(handler);
 }
 
-frg_ast_visitor_t* frg_ast_visitor_new(void* user_data) {
-    frg_ast_visitor_t* visitor = frg_safe_malloc(sizeof(frg_ast_visitor_t));
-    memset(visitor->entries, 0, sizeof(visitor->entries));
-    visitor->user_data = user_data;
+frg_ast_visitor_t* frg_ast_visitor_new(void* mut_user_data) {
+    frg_ast_visitor_t* visitor = frg_malloc(sizeof(frg_ast_visitor_t));
+    memset(visitor->_handlers, 0, sizeof(visitor->_handlers));
+    visitor->_mut_user_data = mut_user_data;
     return visitor;
 }
 
-void frg_ast_visitor_destroy(frg_ast_visitor_t** visitor) {
+void frg_ast_visitor_destroy(frg_ast_visitor_t* visitor) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(*visitor);
 
-    for (frg_ast_kind_t kind = FRG_AST_KIND_FIRST; kind <= FRG_AST_KIND_LAST; kind++) {
-        if ((*visitor)->entries[kind].items != NULL) {
-            for (GList* iter = (*visitor)->entries[kind].items; iter != NULL; iter = iter->next) {
-                frg_ast_visitor_entry_item_destroy((frg_ast_visitor_entry_item_t**)&iter->data);
+    for (frg_ast_node_kind_t kind = FRG_AST_NODE_KIND_FIRST; kind <= FRG_AST_NODE_KIND_LAST; kind++) {
+        if (visitor->_handlers[kind] != NULL) {
+            for (GList* iter = visitor->_handlers[kind]; iter != NULL; iter = iter->next) {
+                frg_ast_visitor_handler_destroy((frg_ast_visitor_handler_t*)iter->data);
             }
 
-            g_list_free((*visitor)->entries[kind].items);
+            g_list_free(visitor->_handlers[kind]);
         }
     }
 
-    frg_safe_free((void**)visitor);
+    frg_free(visitor);
 }
 
-void frg_ast_visitor_add_entry(
-    frg_ast_visitor_t* visitor,
-    frg_ast_kind_t kind,
-    frg_ast_visitor_callback_t callback_pre,
-    frg_ast_visitor_callback_t callback_post
+frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(
+    frg_ast_visitor_t* mut_visitor,
+    frg_ast_node_kind_t node_kind
 ) {
-    frg_assert_pointer_non_null(visitor);
-    frg_assert_int_ge(kind, FRG_AST_KIND_FIRST);
-    frg_assert_int_le(kind, FRG_AST_KIND_LAST);
+    frg_assert_pointer_non_null(mut_visitor);
+    frg_assert_int_greater_than_or_equal_to(node_kind, FRG_AST_NODE_KIND_FIRST);
+    frg_assert_int_less_than_or_equal_to(node_kind, FRG_AST_NODE_KIND_LAST);
 
-    frg_ast_visitor_entry_item_t* item = frg_ast_visitor_entry_item_new(
-        callback_pre,
-        callback_post
+    frg_ast_visitor_handler_t* handler = frg_ast_visitor_handler_new();
+
+    mut_visitor->_handlers[node_kind] = g_list_append(
+        mut_visitor->_handlers[node_kind],
+        handler
     );
 
-    visitor->entries[kind].items = g_list_append(
-        visitor->entries[kind].items,
-        item
-    );
+    return handler;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_call_entry(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast,
-    bool pre
+frg_ast_visitor_status_t frg_ast_visitor_handle_event(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents,
+    frg_ast_visitor_event_t event
 ) {
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
 
-    for (GList* iter = visitor->entries[(*ast)->kind].items; iter != NULL; iter = iter->next) {
-        frg_ast_visitor_entry_item_t* item = iter->data;
-        frg_ast_visitor_callback_t callback = (pre ? item->callback_pre : item->callback_post);
+    frg_ast_node_kind_t original_kind = (*mut_node)->kind;
+
+    for (const GList* iter = visitor->_handlers[(*mut_node)->kind]; iter != NULL; iter = iter->next) {
+        if (*mut_node == NULL) {
+            break;
+        } else if (original_kind != (*mut_node)->kind) {
+            // TODO: Put a warning here
+            break;
+        }
+
+        const frg_ast_visitor_handler_t* handler = (const frg_ast_visitor_handler_t*)iter->data;
+        frg_ast_visitor_callback_t callback = handler->event_callbacks[event];
         if (callback != NULL) {
             frg_ast_visitor_status_t status = callback(
-                parents,
-                ast,
-                visitor->user_data
+                mut_node,
+                visitor->_mut_user_data,
+                parents
             );
             if (status != FRG_AST_VISITOR_STATUS_OK) {
                 return status;
@@ -102,4 +107,114 @@ frg_ast_visitor_status_t frg_ast_visitor_call_entry(
     }
 
     return FRG_AST_VISITOR_STATUS_OK;
+}
+
+frg_ast_visitor_status_t _frg_ast_accept_recursive(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
+) {
+    frg_assert_pointer_non_null(visitor);
+    frg_assert_pointer_non_null(mut_node);
+    
+    if (*mut_node == NULL) {
+        return FRG_AST_VISITOR_STATUS_OK;
+    }
+
+    frg_ast_print_debug_options_t options = {
+        .indentation = 4,
+        .max_depth = 1,
+        .max_list_length = 0
+    };
+
+    if (frg_log_event("Entering '%s' node", frg_ast_node_kind_info_get((*mut_node)->kind)->name)) {
+        frg_log_property("Node", NULL);
+
+        frg_ast_print_debug(
+            frg_log_stream_get(),
+            *mut_node,
+            &options
+        );
+
+        frg_stream_output_write_character(frg_log_stream_get(), '\n');
+    }
+
+    frg_ast_visitor_status_t status = frg_ast_visitor_handle_event(
+        mut_node,
+        visitor,
+        parents,
+        FRG_AST_VISITOR_EVENT_ENTER
+    );
+    if (status == FRG_AST_VISITOR_STATUS_SKIP) {
+        return FRG_AST_VISITOR_STATUS_OK;
+    } else if (status != FRG_AST_VISITOR_STATUS_OK) {
+        return status;
+    }
+
+    if (*mut_node == NULL) {
+        return FRG_AST_VISITOR_STATUS_OK;
+    }
+
+    bool is_top = (parents == NULL);
+
+    GList* parents_next = (GList*)parents;
+    parents_next = g_list_prepend(parents_next, *mut_node);
+    status = FRG_AST_VISITOR_STATUS_OK;
+
+    frg_ast_visitor_acceptor_t visitor_acceptor = frg_ast_node_kind_info_get((*mut_node)->kind)->_visitor_acceptor;
+
+    if (visitor_acceptor != NULL) {
+        status = visitor_acceptor(
+            mut_node,
+            visitor,
+            parents_next
+        );
+    }
+
+    parents_next = g_list_delete_link(parents_next, parents_next);
+
+    if (status == FRG_AST_VISITOR_STATUS_SKIP) {
+        return FRG_AST_VISITOR_STATUS_OK;
+    } else if (status != FRG_AST_VISITOR_STATUS_OK) {
+        return status;
+    }
+
+    if (is_top) {
+        frg_assert_pointer_null(parents);
+    }
+
+    if (frg_log_event("Leaving '%s' node", frg_ast_node_kind_info_get((*mut_node)->kind)->name)) {
+        frg_log_property("Node", NULL);
+
+        frg_ast_print_debug(
+            frg_log_stream_get(),
+            *mut_node,
+            &options
+        );
+
+        frg_stream_output_write_character(frg_log_stream_get(), '\n');
+    }
+
+    status = frg_ast_visitor_handle_event(
+        mut_node,
+        visitor,
+        parents,
+        FRG_AST_VISITOR_EVENT_LEAVE
+    );
+    if (status == FRG_AST_VISITOR_STATUS_STOP) {
+        return status;
+    }
+
+    return FRG_AST_VISITOR_STATUS_OK;
+}
+
+frg_ast_visitor_status_t frg_ast_accept(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor
+) {
+    return _frg_ast_accept_recursive(
+        mut_node,
+        visitor,
+        NULL
+    );
 }

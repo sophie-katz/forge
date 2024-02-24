@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <forge/common/enums.h>
+#include <forge/enums.h>
 #include <forge/streams/output.h>
 
 typedef struct {
@@ -29,10 +29,10 @@ frg_cli_choice_t* frg_cli_choice_new(
 );
 
 void frg_cli_choice_destroy(
-    frg_cli_choice_t** choice
+    frg_cli_choice_t* choice
 );
 
 void frg_cli_choice_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_choice_t* choice
 );

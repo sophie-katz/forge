@@ -15,28 +15,26 @@
 
 #pragma once
 
-#include <forge/ast/ast.h>
+#include <forge/ast/node.h>
 
-void frg_ast_destroy_ty_symbol(frg_ast_t* ast);
-void frg_ast_destroy_ty_pointer(frg_ast_t* ast);
-void frg_ast_destroy_ty_fn(frg_ast_t* ast);
-void frg_ast_destroy_decl_union(frg_ast_t* ast);
-void frg_ast_destroy_decl_struct(frg_ast_t* ast);
-void frg_ast_destroy_decl_prop(frg_ast_t* ast);
-void frg_ast_destroy_decl_iface(frg_ast_t* ast);
-void frg_ast_destroy_decl_fn_arg(frg_ast_t* ast);
-void frg_ast_destroy_decl_fn(frg_ast_t* ast);
-void frg_ast_destroy_decl_var(frg_ast_t* ast);
-void frg_ast_destroy_decl_block(frg_ast_t* ast);
-void frg_ast_destroy_stmt_return(frg_ast_t* ast);
-void frg_ast_destroy_stmt_if(frg_ast_t* ast);
-void frg_ast_destroy_stmt_while(frg_ast_t* ast);
-void frg_ast_destroy_stmt_block(frg_ast_t* ast);
-void frg_ast_destroy_value_int(frg_ast_t* ast);
-void frg_ast_destroy_value_float(frg_ast_t* ast);
-void frg_ast_destroy_value_str(frg_ast_t* ast);
-void frg_ast_destroy_value_symbol(frg_ast_t* ast);
-void frg_ast_destroy_value_call_kw_arg(frg_ast_t* ast);
-void frg_ast_destroy_value_call(frg_ast_t* ast);
-void frg_ast_destroy_value_unary(frg_ast_t* ast);
-void frg_ast_destroy_value_binary(frg_ast_t* ast);
+void frg_ast_destructor_type_symbol(frg_ast_node_t* node);
+void frg_ast_destructor_type_pointer(frg_ast_node_t* node);
+void frg_ast_destructor_type_function(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_union(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_structure(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_property(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_interface(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_function_argument(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_function(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_variable(frg_ast_node_t* node);
+void frg_ast_destructor_declaration_block(frg_ast_node_t* node);
+void frg_ast_destructor_statement_return(frg_ast_node_t* node);
+void frg_ast_destructor_statement_if(frg_ast_node_t* node);
+void frg_ast_destructor_statement_while(frg_ast_node_t* node);
+void frg_ast_destructor_statement_block(frg_ast_node_t* node);
+void frg_ast_destructor_value_string(frg_ast_node_t* node);
+void frg_ast_destructor_value_symbol(frg_ast_node_t* node);
+void frg_ast_destructor_value_call_keyword_argument(frg_ast_node_t* node);
+void frg_ast_destructor_value_call(frg_ast_node_t* node);
+void frg_ast_destructor_value_unary(frg_ast_node_t* node);
+void frg_ast_destructor_value_binary(frg_ast_node_t* node);

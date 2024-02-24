@@ -15,16 +15,16 @@
 
 #pragma once
 
-#include <forge/common/enums.h>
-#include <forge/common/types.h>
+#include <forge/enums.h>
+#include <forge/types.h>
 #include <forge/parsing/domain.h>
 #include <forge/parsing/source_context.h>
 #include <forge/streams/output.h>
 #include <glib.h>
 
-typedef struct frg_message_t {
+typedef struct {
     const char* log_path;
-    frg_lineno_t log_lineno;
+    frg_line_number_t log_line_number;
     frg_parsing_range_t source_range;
     frg_message_severity_t severity;
     const char* code;
@@ -34,20 +34,20 @@ typedef struct frg_message_t {
 
 frg_message_t* frg_message_new(
     const char* log_path,
-    frg_lineno_t log_lineno,
+    frg_line_number_t log_line_number,
     const frg_parsing_range_t* source_range,
     frg_message_severity_t severity,
     const char* code,
     GString* text
 );
 
-void frg_message_destroy(frg_message_t** message);
+void frg_message_destroy(frg_message_t* message);
 
-void frg_message_add_child(frg_message_t* message, frg_message_t* child);
+void frg_message_add_child(frg_message_t* mut_message, frg_message_t* child);
 
 void frg_message_print(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
+    frg_parsing_source_context_t* mut_source_context,
     const frg_message_t* message,
-    frg_columnno_t lineno_pad_to_width,
-    frg_parsing_source_context_t* source_context
+    frg_column_number_t line_number_pad_to_width
 );

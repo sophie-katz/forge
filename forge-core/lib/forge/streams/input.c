@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 #include <forge/streams/input.h>
 #include <string.h>
 #include <glib.h>
@@ -28,13 +28,13 @@ frg_stream_input_t* frg_stream_input_new_file(
     frg_assert((flags & FRG_STREAM_INPUT_FLAG_LENGTH_SET) == 0);
     frg_assert((flags & FRG_STREAM_INPUT_FLAG_EXTRA_NULL_BYTE) == 0);
 
-    frg_stream_input_t* source = frg_safe_malloc(sizeof(frg_stream_input_t));
+    frg_stream_input_t* source = frg_malloc(sizeof(frg_stream_input_t));
     
-    source->flags = flags;
-    source->file = file;
-    source->text = NULL;
-    source->length = 0;
-    source->text_offset = NULL;
+    source->_flags = flags;
+    source->_file = file;
+    source->_text = NULL;
+    source->_length = 0;
+    source->_text_offset = NULL;
 
     return source;
 }
@@ -51,8 +51,8 @@ frg_stream_input_t* frg_stream_input_new_buffer(
     if (flags & FRG_STREAM_INPUT_FLAG_EXTRA_NULL_BYTE) {
         length++;
 
-        frg_assert_int_eq(text[length - 1], 0);
-        frg_assert_int_eq(text[length - 2], 0);
+        frg_assert_int_equal_to(text[length - 1], 0);
+        frg_assert_int_equal_to(text[length - 2], 0);
     }
 
     return frg_stream_input_new_buffer_with_length(text, length, flags);
@@ -66,56 +66,55 @@ frg_stream_input_t* frg_stream_input_new_buffer_with_length(
     frg_assert_pointer_non_null(text);
     frg_assert((flags & FRG_STREAM_INPUT_FLAG_LENGTH_SET) == 0);
 
-    frg_stream_input_t* source = frg_safe_malloc(sizeof(frg_stream_input_t));
+    frg_stream_input_t* source = frg_malloc(sizeof(frg_stream_input_t));
     
-    source->flags = flags | FRG_STREAM_INPUT_FLAG_LENGTH_SET;
-    source->file = NULL;
-    source->text = text;
-    source->length = length;
-    source->text_offset = text;
+    source->_flags = flags | FRG_STREAM_INPUT_FLAG_LENGTH_SET;
+    source->_file = NULL;
+    source->_text = text;
+    source->_length = length;
+    source->_text_offset = text;
 
     return source;
 }
 
-void frg_stream_input_destroy(frg_stream_input_t** input) {
+void frg_stream_input_destroy(frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
-    frg_assert_pointer_non_null(*input);
 
-    if ((*input)->file != NULL && ((*input)->flags & FRG_STREAM_INPUT_FLAG_OWNED)) {
-        fclose((*input)->file);
+    if (input->_file != NULL && (input->_flags & FRG_STREAM_INPUT_FLAG_OWNED)) {
+        fclose(input->_file);
     }
 
-    if ((*input)->text != NULL && ((*input)->flags & FRG_STREAM_INPUT_FLAG_OWNED)) {
-        frg_safe_free((void**)&(*input)->text);
+    if (input->_text != NULL && (input->_flags & FRG_STREAM_INPUT_FLAG_OWNED)) {
+        frg_free(input->_text);
     }
 
-    frg_safe_free((void**)input);
+    frg_free(input);
 }
 
 bool frg_stream_input_is_buffer(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
 
-    return input->text != NULL && input->file == NULL;
+    return input->_text != NULL && input->_file == NULL;
 }
 
 bool frg_stream_input_is_file(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
 
-    return input->text == NULL && input->file != NULL;
+    return input->_text == NULL && input->_file != NULL;
 }
 
 bool _frg_stream_input_is_at_end_buffer(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
     frg_assert(frg_stream_input_is_buffer(input));
 
-    return input->text_offset >= input->text + input->length;
+    return input->_text_offset >= input->_text + input->_length;
 }
 
 bool _frg_stream_input_is_at_end_file(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
     frg_assert(frg_stream_input_is_file(input));
 
-    return feof(input->file);
+    return feof(input->_file);
 }
 
 bool frg_stream_input_is_at_end(const frg_stream_input_t* input) {
@@ -132,15 +131,15 @@ bool _frg_stream_input_has_error_buffer(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
     frg_assert(frg_stream_input_is_buffer(input));
 
-    return input->text_offset < input->text ||
-        input->text_offset > input->text + input->length;
+    return input->_text_offset < input->_text ||
+        input->_text_offset > input->_text + input->_length;
 }
 
 bool _frg_stream_input_has_error_file(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
     frg_assert(frg_stream_input_is_file(input));
 
-    return ferror(input->file);
+    return ferror(input->_file);
 }
 
 bool frg_stream_input_has_error(const frg_stream_input_t* input) {
@@ -153,49 +152,49 @@ bool frg_stream_input_has_error(const frg_stream_input_t* input) {
     }
 }
 
-char _frg_stream_input_peek_char_buffer(const frg_stream_input_t* input) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_buffer(input));
+char _frg_stream_input_peek_char_buffer(frg_stream_input_t* mut_input) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_buffer(mut_input));
     
-    return *input->text_offset;
+    return *mut_input->_text_offset;
 }
 
-char _frg_stream_input_peek_char_file(const frg_stream_input_t* input) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_file(input));
+char _frg_stream_input_peek_char_file(frg_stream_input_t* mut_input) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_file(mut_input));
 
-    int result = getc(input->file);
+    int result = getc(mut_input->_file);
     if (result < 0) {
         return 0;
     }
 
-    ungetc(result, input->file);
+    ungetc(result, mut_input->_file);
 
     return result;
 }
 
-char frg_stream_input_peek_char(const frg_stream_input_t* input) {
-    if (frg_stream_input_is_buffer(input)) {
-        return _frg_stream_input_peek_char_buffer(input);
-    } else if (frg_stream_input_is_file(input)) {
-        return _frg_stream_input_peek_char_file(input);
+char frg_stream_input_peek_character(frg_stream_input_t* mut_input) {
+    if (frg_stream_input_is_buffer(mut_input)) {
+        return _frg_stream_input_peek_char_buffer(mut_input);
+    } else if (frg_stream_input_is_file(mut_input)) {
+        return _frg_stream_input_peek_char_file(mut_input);
     } else {
-        frg_die("'input' is incorrectly initialized (looks like both a file and a buffer stream)");
+        frg_die("'mut_input' is incorrectly initialized (looks like both a file and a buffer stream)");
     }
 }
 
-char _frg_stream_input_read_char_buffer(frg_stream_input_t* input) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_buffer(input));
+char _frg_stream_input_read_char_buffer(frg_stream_input_t* mut_input) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_buffer(mut_input));
 
-    return *(input->text_offset++);
+    return *(mut_input->_text_offset++);
 }
 
-char _frg_stream_input_read_char_file(frg_stream_input_t* input) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_file(input));
+char _frg_stream_input_read_char_file(frg_stream_input_t* mut_input) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_file(mut_input));
 
-    int result = getc(input->file);
+    int result = getc(mut_input->_file);
     if (result < 0) {
         return 0;
     }
@@ -203,57 +202,57 @@ char _frg_stream_input_read_char_file(frg_stream_input_t* input) {
     return result;
 }
 
-char frg_stream_input_read_char(frg_stream_input_t* input) {
-    if (frg_stream_input_is_buffer(input)) {
-        return _frg_stream_input_read_char_buffer(input);
-    } else if (frg_stream_input_is_file(input)) {
-        return _frg_stream_input_read_char_file(input);
+char frg_stream_input_read_character(frg_stream_input_t* mut_input) {
+    if (frg_stream_input_is_buffer(mut_input)) {
+        return _frg_stream_input_read_char_buffer(mut_input);
+    } else if (frg_stream_input_is_file(mut_input)) {
+        return _frg_stream_input_read_char_file(mut_input);
     } else {
-        frg_die("'input' is incorrectly initialized (looks like both a file and a buffer stream)");
+        frg_die("'mut_input' is incorrectly initialized (looks like both a file and a buffer stream)");
     }
 }
 
-size_t _frg_stream_input_read_buffer_buffer(
-    frg_stream_input_t* input,
-    char* buffer,
+size_t _frg_stream_input_read_into_buffer_buffer(
+    frg_stream_input_t* mut_input,
+    char* mut_buffer,
     size_t length
 ) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_buffer(input));
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_buffer(mut_input));
 
-    length = MIN(length, input->text + input->length - input->text_offset);
+    length = MIN(length, mut_input->_text + mut_input->_length - mut_input->_text_offset);
 
     if (length > 0) {
-        memcpy(buffer, input->text_offset, length);
+        memcpy(mut_buffer, mut_input->_text_offset, length);
     }
 
-    input->text_offset += length;
+    mut_input->_text_offset += length;
 
     return length;
 }
 
-size_t _frg_stream_input_read_buffer_file(
-    frg_stream_input_t* input,
-    char* buffer,
+size_t _frg_stream_input_read_into_buffer_file(
+    frg_stream_input_t* mut_input,
+    char* mut_buffer,
     size_t length
 ) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_file(input));
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_file(mut_input));
 
-    return fread(buffer, 1, length, input->file);
+    return fread(mut_buffer, 1, length, mut_input->_file);
 }
 
-size_t frg_stream_input_read_buffer(
-    frg_stream_input_t* input,
-    char* buffer,
+size_t frg_stream_input_read_into_buffer(
+    frg_stream_input_t* mut_input,
+    char* mut_buffer,
     size_t length
 ) {
-    if (frg_stream_input_is_buffer(input)) {
-        return _frg_stream_input_read_buffer_buffer(input, buffer, length);
-    } else if (frg_stream_input_is_file(input)) {
-        return _frg_stream_input_read_buffer_file(input, buffer, length);
+    if (frg_stream_input_is_buffer(mut_input)) {
+        return _frg_stream_input_read_into_buffer_buffer(mut_input, mut_buffer, length);
+    } else if (frg_stream_input_is_file(mut_input)) {
+        return _frg_stream_input_read_into_buffer_file(mut_input, mut_buffer, length);
     } else {
-        frg_die("'input' is incorrectly initialized (looks like both a file and a buffer stream)");
+        frg_die("'mut_input' is incorrectly initialized (looks like both a file and a buffer stream)");
     }
 }
 
@@ -261,14 +260,14 @@ size_t _frg_stream_input_get_offset_buffer(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
     frg_assert(frg_stream_input_is_buffer(input));
 
-    return input->text_offset - input->text;
+    return input->_text_offset - input->_text;
 }
 
 size_t _frg_stream_input_get_offset_file(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
     frg_assert(frg_stream_input_is_file(input));
 
-    return ftell(input->file);
+    return ftell(input->_file);
 }
 
 size_t frg_stream_input_get_offset(const frg_stream_input_t* input) {
@@ -281,60 +280,60 @@ size_t frg_stream_input_get_offset(const frg_stream_input_t* input) {
     }
 }
 
-void _frg_stream_input_seek_to_offset_buffer(frg_stream_input_t* input, size_t offset) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_buffer(input));
-    frg_assert_int_ge(offset, 0);
-    frg_assert_int_le(offset, input->length);
+void _frg_stream_input_seek_to_offset_buffer(frg_stream_input_t* mut_input, size_t offset) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_buffer(mut_input));
+    frg_assert_int_greater_than_or_equal_to(offset, 0);
+    frg_assert_int_less_than_or_equal_to(offset, mut_input->_length);
 
-    offset = MIN(offset, input->length);
+    offset = MIN(offset, mut_input->_length);
 
-    input->text_offset = input->text + offset;
+    mut_input->_text_offset = mut_input->_text + offset;
 }
 
-void _frg_stream_input_seek_to_offset_file(frg_stream_input_t* input, size_t offset) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_file(input));
+void _frg_stream_input_seek_to_offset_file(frg_stream_input_t* mut_input, size_t offset) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_file(mut_input));
 
-    fseek(input->file, offset, SEEK_SET);
+    fseek(mut_input->_file, offset, SEEK_SET);
 }
 
-void frg_stream_input_seek_to_offset(frg_stream_input_t* input, size_t offset) {
-    if (frg_stream_input_is_buffer(input)) {
-        _frg_stream_input_seek_to_offset_buffer(input, offset);
-    } else if (frg_stream_input_is_file(input)) {
-        _frg_stream_input_seek_to_offset_file(input, offset);
+void frg_stream_input_seek_to_offset(frg_stream_input_t* mut_input, size_t offset) {
+    if (frg_stream_input_is_buffer(mut_input)) {
+        _frg_stream_input_seek_to_offset_buffer(mut_input, offset);
+    } else if (frg_stream_input_is_file(mut_input)) {
+        _frg_stream_input_seek_to_offset_file(mut_input, offset);
     } else {
-        frg_die("'input' is incorrectly initialized (looks like both a file and a buffer stream)");
+        frg_die("'mut_input' is incorrectly initialized (looks like both a file and a buffer stream)");
     }
 }
 
 size_t frg_stream_get_length(const frg_stream_input_t* input) {
     frg_assert_pointer_non_null(input);
 
-    if ((input->flags & FRG_STREAM_INPUT_FLAG_LENGTH_SET) == 0 && frg_stream_input_is_file(input)) {
+    if ((input->_flags & FRG_STREAM_INPUT_FLAG_LENGTH_SET) == 0 && frg_stream_input_is_file(input)) {
         size_t current_offset = frg_stream_input_get_offset(input);
-        fseek(input->file, 0, SEEK_END);
-        ((frg_stream_input_t*)input)->length = ftell(input->file);
+        fseek(input->_file, 0, SEEK_END);
+        ((frg_stream_input_t*)input)->_length = ftell(input->_file);
         frg_stream_input_seek_to_offset((frg_stream_input_t*)input, current_offset);
-        ((frg_stream_input_t*)input)->flags |= FRG_STREAM_INPUT_FLAG_LENGTH_SET;
+        ((frg_stream_input_t*)input)->_flags |= FRG_STREAM_INPUT_FLAG_LENGTH_SET;
     }
 
-    frg_assert((input->flags & FRG_STREAM_INPUT_FLAG_LENGTH_SET) != 0);
+    frg_assert((input->_flags & FRG_STREAM_INPUT_FLAG_LENGTH_SET) != 0);
 
-    return input->length;
+    return input->_length;
 }
 
-char* frg_stream_get_buffer(frg_stream_input_t* input) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_buffer(input));
+char* frg_stream_get_buffer(frg_stream_input_t* mut_input) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_buffer(mut_input));
 
-    return input->text;
+    return mut_input->_text;
 }
 
-FILE* frg_stream_get_file(frg_stream_input_t* input) {
-    frg_assert_pointer_non_null(input);
-    frg_assert(frg_stream_input_is_file(input));
+FILE* frg_stream_get_file(frg_stream_input_t* mut_input) {
+    frg_assert_pointer_non_null(mut_input);
+    frg_assert(frg_stream_input_is_file(mut_input));
 
-    return input->file;
+    return mut_input->_file;
 }

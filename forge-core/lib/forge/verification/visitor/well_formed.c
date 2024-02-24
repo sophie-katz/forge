@@ -16,9 +16,9 @@
 #include <forge/verification/visitor/well_formed.h>
 #include <forge/verification/verifier.h>
 #include <forge/messages/codes.h>
-#include <forge/common/error.h>
+#include <forge/assert.h>
 #include <utf8proc.h>
-#include <forge/ast/kind_info.h>
+#include <forge/ast/node_kind_info.h>
 
 bool _frg_verification_well_formed_is_valid_symbol_codepoint_first(utf8proc_int32_t codepoint) {
     if (codepoint == '_') {
@@ -79,26 +79,26 @@ bool _frg_verification_well_formed_is_valid_symbol(const GString* name) {
     return true;
 }
 
-frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_symbol(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_symbol(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_SYMBOL);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_SYMBOL);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_die_ast_kind_not_yet_supported((*ast)->kind);
+    frg_die_ast_kind_not_yet_supported((*mut_node)->kind);
 
-    // frg_ast_ty_symbol_t* ty_symbol = (frg_ast_ty_symbol_t*)*ast;
+    // frg_ast_type_symbol_t* ty_symbol = (frg_ast_type_symbol_t*)*mut_node;
     // frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
     // if (ty_symbol->name == NULL) {
     //     frg_message_emit_is_5_ast_property_null(
     //         verifier->message_buffer,
-    //         &(*ast)->source_range,
-    //         (*ast)->kind,
+    //         &(*mut_node)->source_range,
+    //         (*mut_node)->kind,
     //         "name"
     //     );
 
@@ -108,8 +108,8 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_symbol(
     // if (ty_symbol->name->len == 0) {
     //     frg_message_emit_is_6_ast_property_empty_string(
     //         verifier->message_buffer,
-    //         &(*ast)->source_range,
-    //         (*ast)->kind,
+    //         &(*mut_node)->source_range,
+    //         (*mut_node)->kind,
     //         "name"
     //     );
 
@@ -119,8 +119,8 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_symbol(
     // if (!_frg_verification_well_formed_is_valid_symbol(ty_symbol->name)) {
     //     frg_message_emit_is_6_ast_property_invalid_symbol(
     //         verifier->message_buffer,
-    //         &(*ast)->source_range,
-    //         (*ast)->kind,
+    //         &(*mut_node)->source_range,
+    //         (*mut_node)->kind,
     //         "name"
     //     );
 
@@ -130,26 +130,26 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_symbol(
     // return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_pointer(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_pointer(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_POINTER);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_POINTER);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_die_ast_kind_not_yet_supported((*ast)->kind);
+    frg_die_ast_kind_not_yet_supported((*mut_node)->kind);
 
-    // frg_ast_ty_pointer_t* ty_pointer = (frg_ast_ty_pointer_t*)*ast;
+    // frg_ast_type_pointer_t* ty_pointer = (frg_ast_type_pointer_t*)*mut_node;
     // frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
     // if (ty_pointer->value == NULL) {
     //     frg_message_emit_is_5_ast_property_null(
     //         verifier->message_buffer,
-    //         &(*ast)->source_range,
-    //         (*ast)->kind,
+    //         &(*mut_node)->source_range,
+    //         (*mut_node)->kind,
     //         "value"
     //     );
 
@@ -159,30 +159,30 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_pointer(
     // return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_fn(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_function(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_FN);
-    frg_assert_pointer_non_null(user_data);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
+    frg_assert_pointer_non_null(mut_user_data);
 
-    frg_die_ast_kind_not_yet_supported((*ast)->kind);
+    frg_die_ast_kind_not_yet_supported((*mut_node)->kind);
 
-    // frg_ast_ty_fn_t* ty_fn = (frg_ast_ty_fn_t*)*ast;
+    // frg_ast_type_function_t* ty_function = (frg_ast_type_function_t*)*mut_node;
     // frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)user_data;
 
     // size_t index = 0;
-    // for (GList* iter = ty_fn->args; iter != NULL; iter = iter->next) {
-    //     frg_ast_t* arg = (frg_ast_t*)iter->data;
+    // for (GList* iter = ty_function->args; iter != NULL; iter = iter->next) {
+    //     frg_ast_node_t* arg = (frg_ast_node_t*)iter->data;
 
     //     if (arg == NULL) {
     //         frg_message_emit_is_8_ast_property_null_element(
     //             verifier->message_buffer,
-    //             &(*ast)->source_range,
-    //             (*ast)->kind,
+    //             &(*mut_node)->source_range,
+    //             (*mut_node)->kind,
     //             "args",
     //             index
     //         );
@@ -190,11 +190,11 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_fn(
     //         return FRG_AST_VISITOR_STATUS_SKIP;
     //     }
 
-    //     if (arg->kind != FRG_AST_KIND_DECL_FN_ARG) {
+    //     if (arg->kind != FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARG) {
     //         frg_message_emit_is_9_ast_property_unexpected_element(
     //             verifier->message_buffer,
-    //             &(*ast)->source_range,
-    //             (*ast)->kind,
+    //             &(*mut_node)->source_range,
+    //             (*mut_node)->kind,
     //             "args",
     //             index
     //         );
@@ -202,16 +202,16 @@ frg_ast_visitor_status_t frg_verification_well_formed_callback_ty_fn(
     //         return FRG_AST_VISITOR_STATUS_SKIP;
     //     }
 
-    //     frg_ast_decl_fn_arg_t* decl_fn_arg = (frg_ast_decl_fn_arg_t*)arg;
+    //     frg_ast_declaration_function_argument_t* decl_function_arg = (frg_ast_declaration_function_argument_t*)arg;
 
-    //     if (decl_fn_arg->flags & FRG_AST_DECL_FN_ARG_FLAG_KW) {
+    //     if (decl_function_arg->flags & FRG_AST_DECLARATION_FUNCTION_ARG_FLAG_KW) {
     //         frg_die_message_no_code_yet();
     //     }
 
     //     index++;
     // }
 
-    // if (ty_fn->var_pos_args != NULL) {
+    // if (ty_function->var_positional_arguments != NULL) {
     //     // TODO: Keep implementing this function
     // }
 

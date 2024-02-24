@@ -13,22 +13,23 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/error.h>
+#include <forge/assert.h>
 #include <forge/cli/program.h>
 #include <unity.h>
 
-int callback_command(frg_message_buffer_t* message_buffer, const struct frg_cli_program_t* program,
-    void* user_data,
-    GList* pos_args
+int callback_command(frg_message_buffer_t* mut_message_buffer,
+    void* mut_user_data,
+    const frg_cli_program_t* program,
+    const GList* positional_arguments
 ) {
     return 0;
 }
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-void test_get_command(void) {
+void test_get_command() {
     frg_cli_program_t* program = frg_cli_program_new(
         "Test",
         "test",
@@ -66,10 +67,10 @@ void test_get_command(void) {
     TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "asd"));
     TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "b"));
 
-    frg_cli_program_destroy(&program);
+    frg_cli_program_destroy(program);
 }
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_get_command);
     return UNITY_END();

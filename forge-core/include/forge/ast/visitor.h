@@ -15,48 +15,44 @@
 
 #pragma once
 
-#include <forge/ast/ast.h>
+#include <forge/ast/node.h>
 
 typedef frg_ast_visitor_status_t (*frg_ast_visitor_callback_t)(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 );
 
 typedef struct {
-    frg_ast_visitor_callback_t callback_pre;
-    frg_ast_visitor_callback_t callback_post;
-} frg_ast_visitor_entry_item_t;
+    frg_ast_visitor_callback_t event_callbacks[FRG_AST_VISITOR_EVENT_COUNT];
+} frg_ast_visitor_handler_t;
 
-frg_ast_visitor_entry_item_t* frg_ast_visitor_entry_item_new(
-    frg_ast_visitor_callback_t callback_pre,
-    frg_ast_visitor_callback_t callback_post
-);
+frg_ast_visitor_handler_t* frg_ast_visitor_handler_new();
 
-void frg_ast_visitor_entry_item_destroy(frg_ast_visitor_entry_item_t** item);
+void frg_ast_visitor_handler_destroy(frg_ast_visitor_handler_t* handler);
 
 typedef struct {
-    GList* items;
-} frg_ast_visitor_entry_t;
-
-typedef struct {
-    frg_ast_visitor_entry_t entries[FRG_AST_KIND_COUNT];
-    void* user_data;
+    GList* _handlers[FRG_AST_NODE_KIND_COUNT];
+    void* _mut_user_data;
 } frg_ast_visitor_t;
 
-frg_ast_visitor_t* frg_ast_visitor_new(void* user_data);
-void frg_ast_visitor_destroy(frg_ast_visitor_t** visitor);
+frg_ast_visitor_t* frg_ast_visitor_new(void* mut_user_data);
 
-void frg_ast_visitor_add_entry(
-    frg_ast_visitor_t* visitor,
-    frg_ast_kind_t kind,
-    frg_ast_visitor_callback_t callback_pre,
-    frg_ast_visitor_callback_t callback_post
+void frg_ast_visitor_destroy(frg_ast_visitor_t* visitor);
+
+frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(
+    frg_ast_visitor_t* mut_visitor,
+    frg_ast_node_kind_t node_kind
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_call_entry(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast,
-    bool pre
+frg_ast_visitor_status_t frg_ast_visitor_handle_event(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents,
+    frg_ast_visitor_event_t event
+);
+
+frg_ast_visitor_status_t frg_ast_accept(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor
 );

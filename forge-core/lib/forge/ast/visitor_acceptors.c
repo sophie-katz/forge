@@ -15,39 +15,40 @@
 
 #include <forge/ast/visitor_acceptors.h>
 #include <forge/ast/visitor.h>
-#include <forge/ast/kind_info.h>
-#include <forge/common/error.h>
+#include <forge/ast/node_kind_info.h>
+#include <forge/assert.h>
 
+// Defined in visitor.c
 frg_ast_visitor_status_t _frg_ast_accept_recursive(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t _frg_ast_accept_recursive_list(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    GList** list
+frg_ast_visitor_status_t _frg_ast_visitor_acceptor_recursive_list(
+    GList** mut_list,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
+    frg_assert_pointer_non_null(mut_list);
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(list);
     
-    GList* iter = *list;
+    GList* iter = *mut_list;
     while (iter != NULL) {
-        frg_ast_t* ast = iter->data;
+        frg_ast_node_t* node = iter->data;
         frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+            &node,
             visitor,
-            parents,
-            &ast
+            parents
         );
         if (status != FRG_AST_VISITOR_STATUS_OK) {
             return status;
-        } else if (ast == NULL) {
+        } else if (node == NULL) {
             GList* next = iter->next;
-            *list = g_list_delete_link(*list, iter);
+            *mut_list = g_list_delete_link(*mut_list, iter);
             iter = next;
         } else {
-            iter->data = ast;
+            iter->data = node;
             iter = iter->next;
         }
     }
@@ -55,20 +56,20 @@ frg_ast_visitor_status_t _frg_ast_accept_recursive_list(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_ty_pointer(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_type_pointer(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_POINTER);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_POINTER);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_type_pointer_t*)*mut_node)->value,
         visitor,
-        parents,
-        &((frg_ast_ty_pointer_t*)*ast)->value
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -77,47 +78,47 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_ty_pointer(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_ty_fn(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_type_function(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_TY_FN);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
 
-    frg_ast_visitor_status_t status = status = _frg_ast_accept_recursive_list(
+    frg_ast_visitor_status_t status = status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_type_function_t*)*mut_node)->arguments,
         visitor,
-        parents,
-        &((frg_ast_ty_fn_t*)*ast)->args
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_type_function_t*)*mut_node)->variadic_positional_arguments,
         visitor,
-        parents,
-        &((frg_ast_ty_fn_t*)*ast)->var_pos_args
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_type_function_t*)*mut_node)->variadic_keyword_arguments,
         visitor,
-        parents,
-        &((frg_ast_ty_fn_t*)*ast)->var_kw_args
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_type_function_t*)*mut_node)->return_type,
         visitor,
-        parents,
-        &((frg_ast_ty_fn_t*)*ast)->return_ty
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -126,20 +127,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_ty_fn(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_union(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_union(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_UNION);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
 
-    frg_ast_visitor_status_t status = status = _frg_ast_accept_recursive_list(
+    frg_ast_visitor_status_t status = status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_declaration_union_t*)*mut_node)->properties,
         visitor,
-        parents,
-        &((frg_ast_decl_union_t*)*ast)->props
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -148,20 +149,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_union(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_struct(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_structure(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_STRUCT);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
 
-    frg_ast_visitor_status_t status = status = _frg_ast_accept_recursive_list(
+    frg_ast_visitor_status_t status = status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_declaration_structure_t*)*mut_node)->declarations,
         visitor,
-        parents,
-        &((frg_ast_decl_struct_t*)*ast)->decls
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -170,20 +171,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_struct(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_prop(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_property(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_PROP);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_declaration_property_t*)*mut_node)->type,
         visitor,
-        parents,
-        &((frg_ast_decl_prop_t*)*ast)->ty
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -192,29 +193,29 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_prop(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_iface(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_interface(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_IFACE);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
 
-    frg_ast_visitor_status_t status = _frg_ast_accept_recursive_list(
+    frg_ast_visitor_status_t status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_declaration_interface_t*)*mut_node)->extends,
         visitor,
-        parents,
-        &((frg_ast_decl_iface_t*)*ast)->extends
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
-    status = _frg_ast_accept_recursive_list(
+    status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_declaration_interface_t*)*mut_node)->declarations,
         visitor,
-        parents,
-        &((frg_ast_decl_iface_t*)*ast)->decls
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -223,29 +224,29 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_iface(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_fn_arg(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_function_argument(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_FN_ARG);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        (frg_ast_node_t**)&((frg_ast_node_declaration_function_argument_t*)*mut_node)->property,
         visitor,
-        parents,
-        (frg_ast_t**)&((frg_ast_decl_fn_arg_t*)*ast)->prop
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_declaration_function_argument_t*)*mut_node)->default_value,
         visitor,
-        parents,
-        &((frg_ast_decl_fn_arg_t*)*ast)->default_value
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -254,29 +255,29 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_fn_arg(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_fn(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_function(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_FN);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        (frg_ast_node_t**)&((frg_ast_node_declaration_function_t*)*mut_node)->type,
         visitor,
-        parents,
-        (frg_ast_t**)&((frg_ast_decl_fn_t*)*ast)->ty
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_declaration_function_t*)*mut_node)->body,
         visitor,
-        parents,
-        &((frg_ast_decl_fn_t*)*ast)->body
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -285,29 +286,29 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_fn(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_var(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_variable(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_VAR);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        (frg_ast_node_t**)&((frg_ast_node_declaration_variable_t*)*mut_node)->property,
         visitor,
-        parents,
-        (frg_ast_t**)&((frg_ast_decl_var_t*)*ast)->prop
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_declaration_variable_t*)*mut_node)->initial_value,
         visitor,
-        parents,
-        &((frg_ast_decl_var_t*)*ast)->initial_value
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -316,20 +317,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_var(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_block(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_block(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_DECL_BLOCK);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_BLOCK);
 
-    frg_ast_visitor_status_t status = _frg_ast_accept_recursive_list(
+    frg_ast_visitor_status_t status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_declaration_block_t*)*mut_node)->declarations,
         visitor,
-        parents,
-        &((frg_ast_decl_block_t*)*ast)->decls
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -338,20 +339,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_block(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_return(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_return(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_STMT_RETURN);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_STATEMENT_RETURN);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_statement_return_t*)*mut_node)->value,
         visitor,
-        parents,
-        &((frg_ast_stmt_return_t*)*ast)->value
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -360,38 +361,38 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_return(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_if(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_if(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_STMT_IF);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_STATEMENT_IF);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_statement_if_t*)*mut_node)->condition,
         visitor,
-        parents,
-        &((frg_ast_stmt_if_t*)*ast)->condition
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_statement_if_t*)*mut_node)->then_clause,
         visitor,
-        parents,
-        &((frg_ast_stmt_if_t*)*ast)->then_clause
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_statement_if_t*)*mut_node)->else_clause,
         visitor,
-        parents,
-        &((frg_ast_stmt_if_t*)*ast)->else_clause
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -400,29 +401,29 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_if(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_while(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_while(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_STMT_WHILE);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_STATEMENT_WHILE);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_statement_while_t*)*mut_node)->condition,
         visitor,
-        parents,
-        &((frg_ast_stmt_while_t*)*ast)->condition
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_statement_while_t*)*mut_node)->body,
         visitor,
-        parents,
-        &((frg_ast_stmt_while_t*)*ast)->body
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -432,20 +433,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_while(
 }
 
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_block(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_block(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_STMT_BLOCK);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_STATEMENT_BLOCK);
 
-    frg_ast_visitor_status_t status = _frg_ast_accept_recursive_list(
+    frg_ast_visitor_status_t status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_statement_block_t*)*mut_node)->statements,
         visitor,
-        parents,
-        &((frg_ast_stmt_block_t*)*ast)->stmts
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -454,64 +455,20 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_block(
     return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_int(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call_keyword_argument(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_INT);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_CALL_KEYWORD_ARGUMENT);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_value_call_keyword_argument_t*)*mut_node)->value,
         visitor,
-        parents,
-        &((frg_ast_value_int_t*)*ast)->ty
-    );
-    if (status != FRG_AST_VISITOR_STATUS_OK) {
-        return status;
-    }
-
-    return FRG_AST_VISITOR_STATUS_OK;
-}
-
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_float(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
-) {
-    frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_FLOAT);
-
-    frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
-        visitor,
-        parents,
-        &((frg_ast_value_float_t*)*ast)->ty
-    );
-    if (status != FRG_AST_VISITOR_STATUS_OK) {
-        return status;
-    }
-
-    return FRG_AST_VISITOR_STATUS_OK;
-}
-
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call_kw_arg(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
-) {
-    frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CALL_KW_ARG);
-
-    frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
-        visitor,
-        parents,
-        &((frg_ast_value_call_kw_arg_t*)*ast)->value
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -521,37 +478,37 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call_kw_arg(
 }
 
 frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert_int_eq((*ast)->kind, FRG_AST_KIND_VALUE_CALL);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_CALL);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_value_call_t*)*mut_node)->callee,
         visitor,
-        parents,
-        &((frg_ast_value_call_t*)*ast)->callee
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
-    status = _frg_ast_accept_recursive_list(
+    status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_value_call_t*)*mut_node)->arguments,
         visitor,
-        parents,
-        &((frg_ast_value_call_t*)*ast)->args
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
-    status = _frg_ast_accept_recursive_list(
+    status = _frg_ast_visitor_acceptor_recursive_list(
+        &((frg_ast_node_value_call_t*)*mut_node)->keyword_arguments,
         visitor,
-        parents,
-        &((frg_ast_value_call_t*)*ast)->kw_args
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -561,19 +518,19 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call(
 }
 
 frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_unary(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert(frg_ast_kind_info_get((*ast)->kind)->flags & FRG_AST_KIND_FLAG_VALUE_UNARY);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert(frg_ast_node_kind_info_get((*mut_node)->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_UNARY);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_value_unary_t*)*mut_node)->operand,
         visitor,
-        parents,
-        &((frg_ast_value_unary_t*)*ast)->operand
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
@@ -583,28 +540,28 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_unary(
 }
 
 frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_binary(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 ) {
     frg_assert_pointer_non_null(visitor);
-    frg_assert_pointer_non_null(ast);
-    frg_assert_pointer_non_null(*ast);
-    frg_assert(frg_ast_kind_info_get((*ast)->kind)->flags & FRG_AST_KIND_FLAG_VALUE_BINARY);
+    frg_assert_pointer_non_null(mut_node);
+    frg_assert_pointer_non_null(*mut_node);
+    frg_assert(frg_ast_node_kind_info_get((*mut_node)->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_BINARY);
 
     frg_ast_visitor_status_t status = _frg_ast_accept_recursive(
+        &((frg_ast_node_value_binary_t*)*mut_node)->left,
         visitor,
-        parents,
-        &((frg_ast_value_binary_t*)*ast)->left
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;
     }
 
     status = _frg_ast_accept_recursive(
+        &((frg_ast_node_value_binary_t*)*mut_node)->right,
         visitor,
-        parents,
-        &((frg_ast_value_binary_t*)*ast)->right
+        parents
     );
     if (status != FRG_AST_VISITOR_STATUS_OK) {
         return status;

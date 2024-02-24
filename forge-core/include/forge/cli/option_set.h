@@ -16,7 +16,7 @@
 #pragma once
 
 #include <glib.h>
-#include <forge/common/enums.h>
+#include <forge/enums.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/cli/option.h>
 #include <forge/streams/output.h>
@@ -24,45 +24,49 @@
 /// \brief The maximum number of option short names possible.
 ///
 /// There are 26 for lowercase ASCII letters and 26 more for uppercase.
-#define FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT 52
+#define FRG_CLI_OPTION_SET_SHORT_NAME_COUNT_MAX 52
 
 typedef struct {
-    GList* options;
-    frg_cli_option_t* options_by_short_name[FRG_CLI_OPTION_SHORT_NAME_MAX_COUNT];
-    GHashTable* options_by_long_name;
+    GList* _options;
+    frg_cli_option_t* _options_index_by_short_name[FRG_CLI_OPTION_SET_SHORT_NAME_COUNT_MAX];
+    GHashTable* _options_index_by_long_name;
 } frg_cli_option_set_t;
 
 frg_cli_option_set_t* frg_cli_option_set_new();
 
 void frg_cli_option_set_destroy(
-    frg_cli_option_set_t** option_set
+    frg_cli_option_set_t* option_set
+);
+
+bool frg_cli_option_set_is_empty(
+    const frg_cli_option_set_t* option_set
 );
 
 void frg_cli_option_set_add_option(
-    frg_cli_option_set_t* option_set,
+    frg_cli_option_set_t* mut_option_set,
     frg_cli_option_t* option
 );
 
 frg_cli_option_t* frg_cli_option_set_get_option_by_long_name(
-    frg_cli_option_set_t* option_set,
+    frg_cli_option_set_t* mut_option_set,
     const char* name
 );
 
 frg_cli_option_t* frg_cli_option_set_get_option_by_short_name(
-    frg_cli_option_set_t* option_set,
+    frg_cli_option_set_t* mut_option_set,
     char name
 );
 
 void frg_cli_option_set_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_option_set_t* option_set
 );
 
 bool frg_cli_option_set_parse_next(
-    frg_message_buffer_t* message_buffer,
+    frg_message_buffer_t* mut_message_buffer,
+    int* mut_argi,
+    void* mut_user_data,
     const frg_cli_option_set_t* option_set,
-    int* argi,
     int argc,
-    const char** argv,
-    void* user_data
+    const char** argv
 );

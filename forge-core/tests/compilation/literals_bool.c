@@ -18,30 +18,30 @@
 
 #include "test.h"
 
-void setUp(void) {
+void setUp() {
     frg_stream_output_init();
 }
 
-void tearDown(void) {
+void tearDown() {
     frg_stream_output_cleanup();
 }
 
 void _callback_return_true(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 
-    bool (*return_true)(void) = frg_test_compilation_get_function(
-        shared_library,
+    bool (*return_true)() = frg_test_compilation_get_function(
+        mut_shared_library,
         "return_true"
     );
     
     TEST_ASSERT(return_true());
 }
 
-void test_return_true(void) {
+void test_return_true() {
     frg_test_compilation(
         "return_true",
         // Source
@@ -49,17 +49,18 @@ void test_return_true(void) {
         "  return true;\n"
         "}\n",
         // AST debug
-        "[decl-block]\n"
-        "  decls[0] = [decl-fn]\n"
+        "[declaration-block]\n"
+        "  declarations[0] = [declaration-function]\n"
         "    flags = none\n"
         "    name = \"return_true\"\n"
-        "    ty = [ty-fn]\n"
-        "      var-pos-args = [null]\n"
-        "      var-kw-args = [null]\n"
-        "      return-ty = [ty-bool]\n"
-        "    body = [stmt-block]\n"
-        "      stmts[0] = [stmt-return]\n"
-        "        value = [value-true]",
+        "    type = [type-function]\n"
+        "      variadic-positional-arguments = [null]\n"
+        "      variadic-keyword-arguments = [null]\n"
+        "      return-type = [type-bool]\n"
+        "    body = [statement-block]\n"
+        "      statements[0] = [statement-return]\n"
+        "        value = [value-bool]\n"
+        "          value = true",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n"
@@ -75,20 +76,20 @@ void test_return_true(void) {
 
 void _callback_return_false(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 
-    bool (*return_false)(void) = frg_test_compilation_get_function(
-        shared_library,
+    bool (*return_false)() = frg_test_compilation_get_function(
+        mut_shared_library,
         "return_false"
     );
     
     TEST_ASSERT_FALSE(return_false());
 }
 
-void test_return_false(void) {
+void test_return_false() {
     frg_test_compilation(
         "return_false",
         // Source
@@ -96,17 +97,18 @@ void test_return_false(void) {
         "  return false;\n"
         "}\n",
         // AST debug
-        "[decl-block]\n"
-        "  decls[0] = [decl-fn]\n"
+        "[declaration-block]\n"
+        "  declarations[0] = [declaration-function]\n"
         "    flags = none\n"
         "    name = \"return_false\"\n"
-        "    ty = [ty-fn]\n"
-        "      var-pos-args = [null]\n"
-        "      var-kw-args = [null]\n"
-        "      return-ty = [ty-bool]\n"
-        "    body = [stmt-block]\n"
-        "      stmts[0] = [stmt-return]\n"
-        "        value = [value-false]",
+        "    type = [type-function]\n"
+        "      variadic-positional-arguments = [null]\n"
+        "      variadic-keyword-arguments = [null]\n"
+        "      return-type = [type-bool]\n"
+        "    body = [statement-block]\n"
+        "      statements[0] = [statement-return]\n"
+        "        value = [value-bool]\n"
+        "          value = false",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n"
@@ -120,7 +122,7 @@ void test_return_false(void) {
     );
 }
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_return_true);
     RUN_TEST(test_return_false);

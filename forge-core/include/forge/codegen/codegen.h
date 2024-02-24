@@ -19,26 +19,26 @@
 extern "C" {
 #endif
 
-#include <forge/ast/ast.h>
+#include <forge/ast/node.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/streams/output.h>
 
-typedef struct frg_llvm_module_t frg_llvm_module_t;
+typedef struct frg_codegen_module_t frg_codegen_module_t;
 
-frg_llvm_module_t* frg_codegen(const frg_ast_t* ast);
+void frg_codegen_module_destroy(frg_codegen_module_t* module);
 
-bool frg_codegen_write_object_file(
-    frg_message_buffer_t* message_buffer,
-    const frg_llvm_module_t* llvm_module,
+void frg_codegen_module_print(
+    frg_stream_output_t* mut_stream,
+    const frg_codegen_module_t* module
+);
+
+bool frg_codegen_module_write_object_file(
+    frg_message_buffer_t* mut_message_buffer,
+    const frg_codegen_module_t* module,
     const char* path
 );
 
-void frg_codegen_destroy_module(frg_llvm_module_t** llvm_module);
-
-void frg_codegen_print_module(
-    frg_stream_output_t* stream,
-    const frg_llvm_module_t* llvm_module
-);
+frg_codegen_module_t* frg_codegen(const frg_ast_node_t* node);
 
 #ifdef __cplusplus
 }

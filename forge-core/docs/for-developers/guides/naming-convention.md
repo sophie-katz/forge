@@ -24,6 +24,7 @@ not, see <https://www.gnu.org/licenses/>.
 - [Private symbols](#private-symbols)
 - [Exceptions to the rules](#exceptions-to-the-rules)
 - [A note about C++](#a-note-about-c)
+- [Function arguments](#function-arguments)
 - [Local variables](#local-variables)
 
 These naming conventions should be used by all symbols in the codebase.
@@ -40,9 +41,6 @@ These are general guidelines, but there are exceptions described below:
     - So all symbols declared within the `forge/ast/**` directory would have the prefix `frg_ast_`.
     - There are no nested modules, so symbols declared within `forge/ast/kind_info.h` would not have the prefix `frg_ast_kind_info_`.
     - Symbols that only contain the module name are usually not allowed; for example a symbol like `frg_ast` is not allowed.
-- **All symbols should be in noun-verb order**
-    - Instead of writing a symbol like `add_node`, write `node_add`.
-    - This helps to group related symbols together better.
 - **All symbols should be in the singular form**
     - Instead of writing a symbol like `nodes_add`, write `node_add`.
     - This also helps to group related symbols together better.
@@ -86,7 +84,7 @@ typedef enum {
 Macros are always in `SCREAMING_SNAKE_CASE` and begin with the module name. For example:
 
 ```c
-#define FRG_COMMON_DEFAULT_DEBUG_STREAM stdout
+#define FRG_AST_KIND_COUNT ...
 ```
 
 This does not include functional macros, which follow the same rules as functions:
@@ -97,11 +95,44 @@ This does not include functional macros, which follow the same rules as function
 
 ## Global variables and macros
 
-Global variables and macros are always in `SCREAMING_SNAKE_CASE` and begin with the prefix `FRG_<MODULE NAME>_GLOBAL_`. For example:
+Global variables and macros that reference them are always in `SCREAMING_SNAKE_CASE` and begin with the prefix `FRG_<MODULE NAME>_GLOBAL_`. For example:
 
 ```c
 frg_ast_kind_info_t FRG_AST_GLOBAL_KIND_INFO_TABLE[FRG_AST_KIND_COUNT];
 ```
+
+## Function arguments
+
+All function arguments are, by default, assumed to either:
+- Be passed into the function as constant.
+- Be passed into the function as mutable, but the function takes ownership.
+
+If an argument is passed in as a mutable reference, meaning that its value may be modified by the function but it is not taking ownership, then the argument should be prefixed with `mut_`. For example:
+
+```c
+void frg_print_something(
+    frg_stream_output_t* mut_output,
+);
+```
+
+If an argument is only used as an additional output for the function, then it should be prefixed with `out_`. For example:
+
+```c
+bool frg_parse_character(
+    frg_message_buffer_t* mut_message_buffer,
+    frg_character_t* out_value,
+    frg_parsing_token_reader_t* mut_reader
+);
+```
+
+### Ordering
+
+Function arguments should be ordered by:
+
+1. Output arguments prefixed with `out_`.
+2. Mutable arguments prefixed with `mut_`.
+3. Input arguments: values on which the function operates.
+4. Configuration arguments: values that change the behavior of the function.
 
 ## Private symbols
 
@@ -115,8 +146,9 @@ GList* _frg_ast_list_clone(GList* list);
 
 Some symbols can omit the module name prefix if they are ubiquitous to their usage.
 
-- For example, the `frg_assert_*` macros are used everywhere. To add in the module name `common` would only imply that there may be assertions defined in other modules and add confusion.
+- Symbols that are not in a module, such as those defined in `assert.h` can lack the module prefix.
 - `frg_parse` is an obvious part of the compilation process that it can safely lack the module name `parsing`.
+- etc.
 
 ## A note about C++
 

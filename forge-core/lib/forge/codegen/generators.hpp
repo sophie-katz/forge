@@ -20,33 +20,33 @@
 #include <llvm/IR/Type.h>
 
 extern "C" {
-#include <forge/ast/ast.h>
+#include <forge/ast/node.h>
 #include <forge/ast/scope.h>
 
-llvm::Type* _frg_generate_type(
+llvm::Type* _frg_codegen_generate_type(
     llvm::LLVMContext& ctx,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 );
 
-void _frg_generate_decl_fn(
+void _frg_codegen_generate_declaration_function(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
     llvm::Module& module,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 );
 
-void _frg_generate_stmt(
+void _frg_codegen_generate_statement(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 );
 
-llvm::Value* _frg_generate_value(
+llvm::Value* _frg_codegen_generate_value(
     llvm::LLVMContext& ctx,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 );
 }

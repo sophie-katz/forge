@@ -13,123 +13,127 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/color.h>
+#include <forge/streams/output.h>
 #include <stdio.h>
 
-int main(void) {
-    printf("Font styles:\n");
+int main() {
+    frg_stream_output_init();
 
-    frg_color_set(stdout, FRG_COLOR_BOLD);
-    printf("  bold\n");
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "Font styles:\n");
 
-    frg_color_set(stdout, FRG_COLOR_RESET);
-    frg_color_set(stdout, FRG_COLOR_DIM);
-    printf("  dim\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BOLD);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bold\n");
 
-    frg_color_set(stdout, FRG_COLOR_RESET);
-    frg_color_set(stdout, FRG_COLOR_ITALIC);
-    printf("  italic\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RESET);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_DIM);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dim\n");
 
-    frg_color_set(stdout, FRG_COLOR_RESET);
-    printf("  ");
-    frg_color_set(stdout, FRG_COLOR_UNDERLINE);
-    printf("underline");
-    frg_color_set(stdout, FRG_COLOR_RESET);
-    printf("\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RESET);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_ITALIC);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  italic\n");
 
-    printf("\nColors:\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RESET);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  ");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_UNDERLINE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "underline");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RESET);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "\n");
 
-    frg_color_set(stdout, FRG_COLOR_RED);
-    printf("  red\n");
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "\nColors:\n");
 
-    frg_color_set(stdout, FRG_COLOR_GREEN);
-    printf("  green\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RED);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  red\n");
 
-    frg_color_set(stdout, FRG_COLOR_YELLOW);
-    printf("  yellow\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_GREEN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  green\n");
 
-    frg_color_set(stdout, FRG_COLOR_BLUE);
-    printf("  blue\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_YELLOW);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_MAGENTA);
-    printf("  magenta\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BLUE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_CYAN);
-    printf("  cyan\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_MAGENTA);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_WHITE);
-    printf("  white\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_CYAN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLACK);
-    printf("  bright black\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_WHITE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  white\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_RED);
-    printf("  bright red\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLACK);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright black\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_GREEN);
-    printf("  bright green\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_RED);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright red\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_YELLOW);
-    printf("  bright yellow\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_GREEN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright green\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLUE);
-    printf("  bright blue\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_MAGENTA);
-    printf("  bright magenta\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLUE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_CYAN);
-    printf("  bright cyan\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_MAGENTA);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_WHITE);
-    printf("  bright white\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_CYAN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_DIM);
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_WHITE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  bright white\n");
 
-    frg_color_set(stdout, FRG_COLOR_RED);
-    printf("  dimmed red\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_DIM);
 
-    frg_color_set(stdout, FRG_COLOR_GREEN);
-    printf("  dimmed green\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RED);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed red\n");
 
-    frg_color_set(stdout, FRG_COLOR_YELLOW);
-    printf("  dimmed yellow\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_GREEN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed green\n");
 
-    frg_color_set(stdout, FRG_COLOR_BLUE);
-    printf("  dimmed blue\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_YELLOW);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_MAGENTA);
-    printf("  dimmed magenta\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BLUE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_CYAN);
-    printf("  dimmed cyan\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_MAGENTA);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_WHITE);
-    printf("  dimmed white\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_CYAN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed cyan\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLACK);
-    printf("  dimmed bright black\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_WHITE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed white\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_RED);
-    printf("  dimmed bright red\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLACK);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright black\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_GREEN);
-    printf("  dimmed bright green\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_RED);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright red\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_YELLOW);
-    printf("  dimmed bright yellow\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_GREEN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright green\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_BLUE);
-    printf("  dimmed bright blue\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright yellow\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_MAGENTA);
-    printf("  dimmed bright magenta\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLUE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright blue\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_CYAN);
-    printf("  dimmed bright cyan\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_MAGENTA);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright magenta\n");
 
-    frg_color_set(stdout, FRG_COLOR_BRIGHT_WHITE);
-    printf("  dimmed bright white\n");
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_CYAN);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright cyan\n");
+
+    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_WHITE);
+    frg_stream_output_write_string(frg_stream_output_get_stdout(), "  dimmed bright white\n");
+
+    frg_stream_output_cleanup();
 
     return 0;
 }

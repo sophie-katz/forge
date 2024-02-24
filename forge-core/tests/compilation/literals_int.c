@@ -18,30 +18,30 @@
 
 #include "test.h"
 
-void setUp(void) {
+void setUp() {
     frg_stream_output_init();
 }
 
-void tearDown(void) {
+void tearDown() {
     frg_stream_output_cleanup();
 }
 
 void _callback_return_i64(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 
-    int64_t (*return_i64)(void) = frg_test_compilation_get_function(
-        shared_library,
+    int64_t (*return_i64)() = frg_test_compilation_get_function(
+        mut_shared_library,
         "return_i64"
     );
     
     TEST_ASSERT_EQUAL(0, return_i64());
 }
 
-void test_return_i64(void) {
+void test_return_i64() {
     frg_test_compilation(
         "return_i64",
         // Source
@@ -49,19 +49,23 @@ void test_return_i64(void) {
         "  return 0i64;\n"
         "}\n",
         // AST debug
-        "[decl-block]\n"
-        "  decls[0] = [decl-fn]\n"
+        "[declaration-block]\n"
+        "  declarations[0] = [declaration-function]\n"
         "    flags = none\n"
         "    name = \"return_i64\"\n"
-        "    ty = [ty-fn]\n"
-        "      var-pos-args = [null]\n"
-        "      var-kw-args = [null]\n"
-        "      return-ty = [ty-i64]\n"
-        "    body = [stmt-block]\n"
-        "      stmts[0] = [stmt-return]\n"
+        "    type = [type-function]\n"
+        "      variadic-positional-arguments = [null]\n"
+        "      variadic-keyword-arguments = [null]\n"
+        "      return-type = [type-int]\n"
+        "        flags = none\n"
+        "        bit-width = 64\n"
+        "    body = [statement-block]\n"
+        "      statements[0] = [statement-return]\n"
         "        value = [value-int]\n"
-        "          ty = [ty-i64]\n"
-        "          value = 0",
+        "          type = [type-int]\n"
+        "            flags = none\n"
+        "            bit-width = 64\n"
+        "          value = 0i64",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n"
@@ -77,20 +81,20 @@ void test_return_i64(void) {
 
 void _callback_return_i32(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 
-    int32_t (*return_i32)(void) = frg_test_compilation_get_function(
-        shared_library,
+    int32_t (*return_i32)() = frg_test_compilation_get_function(
+        mut_shared_library,
         "return_i32"
     );
     
     TEST_ASSERT_EQUAL(0, return_i32());
 }
 
-void test_return_i32(void) {
+void test_return_i32() {
     frg_test_compilation(
         "return_i32",
         // Source
@@ -98,19 +102,23 @@ void test_return_i32(void) {
         "  return 0i32;\n"
         "}\n",
         // AST debug
-        "[decl-block]\n"
-        "  decls[0] = [decl-fn]\n"
+        "[declaration-block]\n"
+        "  declarations[0] = [declaration-function]\n"
         "    flags = none\n"
         "    name = \"return_i32\"\n"
-        "    ty = [ty-fn]\n"
-        "      var-pos-args = [null]\n"
-        "      var-kw-args = [null]\n"
-        "      return-ty = [ty-i32]\n"
-        "    body = [stmt-block]\n"
-        "      stmts[0] = [stmt-return]\n"
+        "    type = [type-function]\n"
+        "      variadic-positional-arguments = [null]\n"
+        "      variadic-keyword-arguments = [null]\n"
+        "      return-type = [type-int]\n"
+        "        flags = none\n"
+        "        bit-width = 32\n"
+        "    body = [statement-block]\n"
+        "      statements[0] = [statement-return]\n"
         "        value = [value-int]\n"
-        "          ty = [ty-i32]\n"
-        "          value = 0",
+        "          type = [type-int]\n"
+        "            flags = none\n"
+        "            bit-width = 32\n"
+        "          value = 0i32",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n"
@@ -126,20 +134,20 @@ void test_return_i32(void) {
 
 void _callback_return_u8(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 
-    int32_t (*return_u8)(void) = frg_test_compilation_get_function(
-        shared_library,
+    int32_t (*return_u8)() = frg_test_compilation_get_function(
+        mut_shared_library,
         "return_u8"
     );
     
     TEST_ASSERT_EQUAL(0, return_u8());
 }
 
-void test_return_u8(void) {
+void test_return_u8() {
     frg_test_compilation(
         "return_u8",
         // Source
@@ -147,19 +155,23 @@ void test_return_u8(void) {
         "  return 0u8;\n"
         "}\n",
         // AST debug
-        "[decl-block]\n"
-        "  decls[0] = [decl-fn]\n"
+        "[declaration-block]\n"
+        "  declarations[0] = [declaration-function]\n"
         "    flags = none\n"
         "    name = \"return_u8\"\n"
-        "    ty = [ty-fn]\n"
-        "      var-pos-args = [null]\n"
-        "      var-kw-args = [null]\n"
-        "      return-ty = [ty-u8]\n"
-        "    body = [stmt-block]\n"
-        "      stmts[0] = [stmt-return]\n"
+        "    type = [type-function]\n"
+        "      variadic-positional-arguments = [null]\n"
+        "      variadic-keyword-arguments = [null]\n"
+        "      return-type = [type-int]\n"
+        "        flags = unsigned\n"
+        "        bit-width = 8\n"
+        "    body = [statement-block]\n"
+        "      statements[0] = [statement-return]\n"
         "        value = [value-int]\n"
-        "          ty = [ty-u8]\n"
-        "          value = 0",
+        "          type = [type-int]\n"
+        "            flags = unsigned\n"
+        "            bit-width = 8\n"
+        "          value = 0u8",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n"
@@ -175,20 +187,20 @@ void test_return_u8(void) {
 
 void _callback_return_implicit(
     const frg_message_buffer_t* message_buffer,
-    void* shared_library
+    void* mut_shared_library
 ) {
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 
-    int32_t (*return_implicit)(void) = frg_test_compilation_get_function(
-        shared_library,
+    int32_t (*return_implicit)() = frg_test_compilation_get_function(
+        mut_shared_library,
         "return_implicit"
     );
     
     TEST_ASSERT_EQUAL(0, return_implicit());
 }
 
-void test_return_implicit(void) {
+void test_return_implicit() {
     frg_test_compilation(
         "return_implicit",
         // Source
@@ -196,19 +208,23 @@ void test_return_implicit(void) {
         "  return 0;\n"
         "}\n",
         // AST debug
-        "[decl-block]\n"
-        "  decls[0] = [decl-fn]\n"
+        "[declaration-block]\n"
+        "  declarations[0] = [declaration-function]\n"
         "    flags = none\n"
         "    name = \"return_implicit\"\n"
-        "    ty = [ty-fn]\n"
-        "      var-pos-args = [null]\n"
-        "      var-kw-args = [null]\n"
-        "      return-ty = [ty-u64]\n"
-        "    body = [stmt-block]\n"
-        "      stmts[0] = [stmt-return]\n"
+        "    type = [type-function]\n"
+        "      variadic-positional-arguments = [null]\n"
+        "      variadic-keyword-arguments = [null]\n"
+        "      return-type = [type-int]\n"
+        "        flags = unsigned\n"
+        "        bit-width = 64\n"
+        "    body = [statement-block]\n"
+        "      statements[0] = [statement-return]\n"
         "        value = [value-int]\n"
-        "          ty = [ty-u64]\n"
-        "          value = 0",
+        "          type = [type-int]\n"
+        "            flags = unsigned\n"
+        "            bit-width = 64\n"
+        "          value = 0u64",
         // LLVM IR
         "; ModuleID = 'forge'\n"
         "source_filename = \"forge\"\n"
@@ -222,7 +238,7 @@ void test_return_implicit(void) {
     );
 }
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_return_i64);
     RUN_TEST(test_return_i32);

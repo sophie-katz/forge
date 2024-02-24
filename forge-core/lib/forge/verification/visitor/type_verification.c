@@ -14,13 +14,13 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/verification/visitor/type_verification.h>
-#include <forge/ast/kind_info.h>
-#include <forge/common/error.h>
+#include <forge/ast/node_kind_info.h>
+#include <forge/assert.h>
 
-frg_ast_visitor_status_t frg_verification_type_verification_callback_ty_symbol(
-    GList* parents,
-    frg_ast_t** ast,
-    void* user_data
+frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_type_symbol(
+    frg_ast_node_t** mut_node,
+    void* mut_user_data,
+    const GList* parents
 ) {
-    frg_die_ast_kind_not_yet_supported((*ast)->kind);
+    frg_die_ast_kind_not_yet_supported((*mut_node)->kind);
 }

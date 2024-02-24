@@ -15,22 +15,22 @@
 
 #pragma once
 
-#include <forge/common/types.h>
+#include <forge/types.h>
 #include <stddef.h>
 
 typedef struct {
     const char* path;
     size_t offset;
-    frg_lineno_t lineno;
-    frg_columnno_t columnno;
+    frg_line_number_t line_number;
+    frg_column_number_t column_number;
 } frg_parsing_location_t;
 
 typedef struct {
     frg_parsing_location_t start;
-    frg_columnno_t length;
+    frg_column_number_t length;
 } frg_parsing_range_t;
 
-extern const frg_parsing_range_t frg_parsing_range_null;
+extern const frg_parsing_range_t frg_global_parsing_range_null;
 
 frg_parsing_range_t frg_parsing_range_get_span(
     const frg_parsing_range_t* first,

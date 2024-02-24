@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/common/error.h>
-#include <forge/common/memory.h>
+#include <forge/assert.h>
+#include <forge/memory.h>
 #include <forge/cli/option_set.h>
 #include <forge/messages/codes.h>
 
@@ -29,122 +29,129 @@ int _frg_cli_get_short_name_index(char short_name) {
 }
 
 frg_cli_option_set_t* frg_cli_option_set_new() {
-    frg_cli_option_set_t* option_set = frg_safe_malloc(sizeof(frg_cli_option_set_t));
+    frg_cli_option_set_t* option_set = frg_malloc(sizeof(frg_cli_option_set_t));
 
-    option_set->options = NULL;
-    memset(option_set->options_by_short_name, 0, sizeof(option_set->options_by_short_name));
-    option_set->options_by_long_name = g_hash_table_new(g_str_hash, g_str_equal);
+    option_set->_options = NULL;
+    memset(option_set->_options_index_by_short_name, 0, sizeof(option_set->_options_index_by_short_name));
+    option_set->_options_index_by_long_name = g_hash_table_new((GHashFunc)g_str_hash, (GEqualFunc)g_str_equal);
 
     return option_set;
 }
 
 void frg_cli_option_set_destroy(
-    frg_cli_option_set_t** option_set
+    frg_cli_option_set_t* option_set
 ) {
     frg_assert_pointer_non_null(option_set);
-    frg_assert_pointer_non_null(*option_set);
 
-    for (GList* option = (*option_set)->options; option != NULL; option = option->next) {
-        frg_cli_option_destroy((frg_cli_option_t**)&option->data);
+    for (GList* option = option_set->_options; option != NULL; option = option->next) {
+        frg_cli_option_destroy(option->data);
     }
 
-    g_list_free((*option_set)->options);
+    g_list_free(option_set->_options);
 
-    g_hash_table_destroy((*option_set)->options_by_long_name);
+    g_hash_table_destroy(option_set->_options_index_by_long_name);
 
-    frg_safe_free((void**)option_set);
+    frg_free(option_set);
+}
+
+bool frg_cli_option_set_is_empty(
+    const frg_cli_option_set_t* option_set
+) {
+    frg_assert_pointer_non_null(option_set);
+
+    return option_set->_options == NULL;
 }
 
 void frg_cli_option_set_add_option(
-    frg_cli_option_set_t* option_set,
+    frg_cli_option_set_t* mut_option_set,
     frg_cli_option_t* option
 ) {
-    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(mut_option_set);
     frg_assert_pointer_non_null(option);
 
-    option_set->options = g_list_append(option_set->options, option);
+    mut_option_set->_options = g_list_append(mut_option_set->_options, option);
 
     if (option->short_name != FRG_CLI_OPTION_SHORT_NAME_NULL) {
         int index = _frg_cli_get_short_name_index(option->short_name);
 
-        if (option_set->options_by_short_name[index] != NULL) {
-            frg_die("short option already set for '%c'", option->short_name);
+        if (mut_option_set->_options_index_by_short_name[index] != NULL) {
+            frg_die("short option already added for '%c'", option->short_name);
         }
 
-        option_set->options_by_short_name[index] = option;
+        mut_option_set->_options_index_by_short_name[index] = option;
     }
 
-    if (g_hash_table_contains(option_set->options_by_long_name, option->long_name)) {
-        frg_die("long option already set for '%s'", option->long_name);
+    if (g_hash_table_contains(mut_option_set->_options_index_by_long_name, option->long_name)) {
+        frg_die("long option already added for '%s'", option->long_name);
     } else {
-        g_hash_table_insert(option_set->options_by_long_name, (void*)option->long_name, option);
+        g_hash_table_insert(mut_option_set->_options_index_by_long_name, (void*)option->long_name, option);
     }
 }
 
 frg_cli_option_t* frg_cli_option_set_get_option_by_long_name(
-    frg_cli_option_set_t* option_set,
+    frg_cli_option_set_t* mut_option_set,
     const char* name
 ) {
-    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(mut_option_set);
     frg_assert_string_non_empty(name);
-    frg_assert_int_ne(name[0], '-');
+    frg_assert_int_not_equal_to(name[0], '-');
 
-    return (frg_cli_option_t*)g_hash_table_lookup(option_set->options_by_long_name, name);
+    return (frg_cli_option_t*)g_hash_table_lookup(mut_option_set->_options_index_by_long_name, name);
 }
 
 frg_cli_option_t* frg_cli_option_set_get_option_by_short_name(
-    frg_cli_option_set_t* option_set,
+    frg_cli_option_set_t* mut_option_set,
     char name
 ) {
-    frg_assert_pointer_non_null(option_set);
+    frg_assert_pointer_non_null(mut_option_set);
     frg_assert(frg_cli_is_valid_short_name(name));
 
-    return option_set->options_by_short_name[_frg_cli_get_short_name_index(name)];
+    return mut_option_set->_options_index_by_short_name[_frg_cli_get_short_name_index(name)];
 }
 
 void frg_cli_option_set_print_help(
-    frg_stream_output_t* stream,
+    frg_stream_output_t* mut_stream,
     const frg_cli_option_set_t* option_set
 ) {
     frg_assert_pointer_non_null(option_set);
 
     bool first = true;
 
-    for (GList* option = option_set->options; option != NULL; option = option->next) {
+    for (GList* option = option_set->_options; option != NULL; option = option->next) {
         if (first) {
             first = false;
         } else {
-            frg_stream_output_write_char(stream, '\n');
+            frg_stream_output_write_character(mut_stream, '\n');
         }
 
-        frg_cli_option_print_help(stream, (const frg_cli_option_t*)option->data);
+        frg_cli_option_print_help(mut_stream, (const frg_cli_option_t*)option->data);
     }
 }
 
 bool _frg_cli_option_set_parse_next_long(
-    frg_message_buffer_t* message_buffer,
+    frg_message_buffer_t* mut_message_buffer,
+    int* mut_argi,
+    void* mut_user_data,
     const frg_cli_option_set_t* option_set,
-    int* argi,
     int argc,
     const char** argv,
-    void* user_data,
     const char* name
 ) {
     // Error checking
     frg_assert_pointer_non_null(option_set);
-    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(mut_argi);
     frg_assert_pointer_non_null(argv);
-    frg_assert_int_ge(*argi, 0);
-    frg_assert_int_gt(argc, 0);
-    frg_assert_int_lt(*argi, argc);
-    frg_assert_string_non_empty(argv[*argi]);
-    frg_assert_int_eq(argv[*argi][0], '-');
-    frg_assert_int_eq(argv[*argi][1], '-');
+    frg_assert_int_greater_than_or_equal_to(*mut_argi, 0);
+    frg_assert_int_greater_than(argc, 0);
+    frg_assert_int_less_than_or_equal_toss_than(*mut_argi, argc);
+    frg_assert_string_non_empty(argv[*mut_argi]);
+    frg_assert_int_equal_to(argv[*mut_argi][0], '-');
+    frg_assert_int_equal_to(argv[*mut_argi][1], '-');
     frg_assert_pointer_non_null(name);
 
     if (name[0] == 0) {
         frg_message_emit_fc_7_invalid_argument_dash_dash(
-            message_buffer
+            mut_message_buffer
         );
         return false;
     }
@@ -156,40 +163,40 @@ bool _frg_cli_option_set_parse_next_long(
 
     if (option == NULL) {
         frg_message_emit_fc_9_unknown_long_argument(
-            message_buffer,
+            mut_message_buffer,
             name
         );
         return false;
     }
 
     return frg_cli_option_parse_next(
-        message_buffer,
+        mut_message_buffer,
+        mut_argi,
+        mut_user_data,
         option,
-        argi,
         argc,
-        argv,
-        user_data
+        argv
     );
 }
 
 bool _frg_cli_option_set_parse_next_short(
-    frg_message_buffer_t* message_buffer,
+    frg_message_buffer_t* mut_message_buffer,
+    int* mut_argi,
+    void* mut_user_data,
     const frg_cli_option_set_t* option_set,
-    int* argi,
     int argc,
     const char** argv,
-    void* user_data,
     char name
 ) {
     // Error checking
     frg_assert_pointer_non_null(option_set);
-    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(mut_argi);
     frg_assert_pointer_non_null(argv);
-    frg_assert_int_ge(*argi, 0);
-    frg_assert_int_gt(argc, 0);
-    frg_assert_int_lt(*argi, argc);
-    frg_assert_string_non_empty(argv[*argi]);
-    frg_assert_int_eq(argv[*argi][0], '-');
+    frg_assert_int_greater_than_or_equal_to(*mut_argi, 0);
+    frg_assert_int_greater_than(argc, 0);
+    frg_assert_int_less_than_or_equal_toss_than(*mut_argi, argc);
+    frg_assert_string_non_empty(argv[*mut_argi]);
+    frg_assert_int_equal_to(argv[*mut_argi][0], '-');
 
     frg_cli_option_t* option = frg_cli_option_set_get_option_by_short_name(
         (frg_cli_option_set_t*)option_set,
@@ -198,7 +205,7 @@ bool _frg_cli_option_set_parse_next_short(
 
     if (option == NULL) {
         frg_message_emit_fc_9_unknown_long_argument(
-            message_buffer,
+            mut_message_buffer,
             name
         );
 
@@ -206,64 +213,64 @@ bool _frg_cli_option_set_parse_next_short(
     }
 
     return frg_cli_option_parse_next(
-        message_buffer,
+        mut_message_buffer,
+        mut_argi,
+        mut_user_data,
         option,
-        argi,
         argc,
-        argv,
-        user_data
+        argv
     );
 }
 
 bool frg_cli_option_set_parse_next(
-    frg_message_buffer_t* message_buffer,
+    frg_message_buffer_t* mut_message_buffer,
+    int* mut_argi,
+    void* mut_user_data,
     const frg_cli_option_set_t* option_set,
-    int* argi,
     int argc,
-    const char** argv,
-    void* user_data
+    const char** argv
 ) {
     // Error checking
     frg_assert_pointer_non_null(option_set);
-    frg_assert_pointer_non_null(argi);
+    frg_assert_pointer_non_null(mut_argi);
     frg_assert_pointer_non_null(argv);
-    frg_assert_int_ge(*argi, 0);
-    frg_assert_int_gt(argc, 0);
-    frg_assert_int_lt(*argi, argc);
-    frg_assert_string_non_empty(argv[*argi]);
-    frg_assert_int_eq(argv[*argi][0], '-');
+    frg_assert_int_greater_than_or_equal_to(*mut_argi, 0);
+    frg_assert_int_greater_than(argc, 0);
+    frg_assert_int_less_than_or_equal_toss_than(*mut_argi, argc);
+    frg_assert_string_non_empty(argv[*mut_argi]);
+    frg_assert_int_equal_to(argv[*mut_argi][0], '-');
 
     // Try to parse the next argument
-    if (argv[*argi][1] == '-') {
+    if (argv[*mut_argi][1] == '-') {
         // It is a long argument like --argument
         return _frg_cli_option_set_parse_next_long(
-            message_buffer,
+            mut_message_buffer,
+            mut_argi,
+            mut_user_data,
             option_set,
-            argi,
             argc,
             argv,
-            user_data,
-            argv[*argi] + 2
+            argv[*mut_argi] + 2
         );
     } else {
-        if (argv[*argi][2] != 0) {
+        if (argv[*mut_argi][2] != 0) {
             // It is a short argument like -abc
             frg_message_emit_fc_10_long_argument_with_single_dash(
-                message_buffer,
-                argv[*argi]
+                mut_message_buffer,
+                argv[*mut_argi]
             );
             return false;
         }
 
         // It is a short argument like -a
         return _frg_cli_option_set_parse_next_short(
-            message_buffer,
+            mut_message_buffer,
+            mut_argi,
+            mut_user_data,
             option_set,
-            argi,
             argc,
             argv,
-            user_data,
-            argv[*argi][1]
+            argv[*mut_argi][1]
         );
     }
 }

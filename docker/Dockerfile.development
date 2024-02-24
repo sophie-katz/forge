@@ -14,6 +14,7 @@
 # not, see <https://www.gnu.org/licenses/>.
 
 ARG DEBIAN_TAG=bookworm-slim
+ARG ENABLE_NODE=
 
 FROM debian:${DEBIAN_TAG}
 
@@ -23,6 +24,7 @@ RUN apt-get update -y && \
     apt-get install -y \
         bison \
         cmake \
+        curl \
         doxygen \
         flex \
         git \
@@ -80,6 +82,16 @@ RUN useradd -m -s /bin/bash dev && \
     chown -R dev:dev /workspace && \
     git config --global --add safe.directory /workspace
 
+# Install Node.JS
+RUN if [ -n "${ENABLE_NODE}" ]; then \
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash; \
+
+        . /home/dev/.nvm/nvm.sh && \
+        nvm install v20 && \
+        corepack enable; \
+    fi
+
+# Entrypoint
 WORKDIR /workspace
 
 ENTRYPOINT ["/bin/bash"]

@@ -19,47 +19,45 @@
 #include <llvm/IR/TypedPointerType.h>
 
 extern "C" {
-#include <forge/common/error.h>
+#include <forge/assert.h>
+#include <forge/ast/node_kind_info.h>
 
-llvm::Type* _frg_generate_type(
+llvm::Type* _frg_codegen_generate_type(
     llvm::LLVMContext& ctx,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(node);
 
     llvm::Type* value = NULL;
     
-    switch (ast->kind) {
-        case FRG_AST_KIND_TY_BOOL:
+    switch (node->kind) {
+        case FRG_AST_NODE_KIND_TYPE_BOOL:
             return llvm::Type::getInt1Ty(ctx);
-        case FRG_AST_KIND_TY_U8:
-        case FRG_AST_KIND_TY_I8:
-            return llvm::Type::getInt8Ty(ctx);
-        case FRG_AST_KIND_TY_U16:
-        case FRG_AST_KIND_TY_I16:
-            return llvm::Type::getInt16Ty(ctx);
-        case FRG_AST_KIND_TY_U32:
-        case FRG_AST_KIND_TY_I32:
-            return llvm::Type::getInt32Ty(ctx);
-        case FRG_AST_KIND_TY_U64:
-        case FRG_AST_KIND_TY_I64:
-            return llvm::Type::getInt64Ty(ctx);
-        case FRG_AST_KIND_TY_F32:
-            return llvm::Type::getFloatTy(ctx);
-        case FRG_AST_KIND_TY_F64:
-            return llvm::Type::getDoubleTy(ctx);
-        case FRG_AST_KIND_TY_SYMBOL:
-            return (llvm::Type*)frg_ast_scope_get_ir(
-                scope,
-                ((frg_ast_ty_symbol_t*)ast)->name->str
-            );
-        case FRG_AST_KIND_TY_POINTER:
-            value = _frg_generate_type(
+        case FRG_AST_NODE_KIND_TYPE_INT:
+            return llvm::Type::getIntNTy(
                 ctx,
-                scope,
-                ((frg_ast_ty_pointer_t*)ast)->value
+                ((frg_ast_node_type_int_t*)node)->bit_width
+            );
+        case FRG_AST_NODE_KIND_TYPE_FLOAT:
+            if (((frg_ast_node_type_float_t*)node)->bit_width == 32) {
+                return llvm::Type::getFloatTy(ctx);
+            } else if (((frg_ast_node_type_float_t*)node)->bit_width == 64) {
+                return llvm::Type::getDoubleTy(ctx);
+            } else {
+                frg_die("Unsupported floating point bit width %u", ((frg_ast_node_type_float_t*)node)->bit_width);
+            }
+        case FRG_AST_NODE_KIND_TYPE_SYMBOL:
+            return (llvm::Type*)frg_ast_scope_get_ir(
+                mut_scope,
+                ((const frg_ast_node_type_symbol_t*)node)->name->str
+            );
+        case FRG_AST_NODE_KIND_TYPE_POINTER:
+            value = _frg_codegen_generate_type(
+                ctx,
+                mut_scope,
+                ((const frg_ast_node_type_pointer_t*)node)->value
             );
 
             return llvm::TypedPointerType::get(
@@ -67,38 +65,37 @@ llvm::Type* _frg_generate_type(
                 0
             );
         default:
-            frg_die_unexpected_enum_value(ast->kind);
+            frg_die_ast_kind_not_yet_supported(node->kind);
     }
 }
 
-void _frg_generate_decl_fn(
+void _frg_codegen_generate_declaration_function(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
     llvm::Module& module,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(ast);
-
-    frg_ast_decl_fn_t* decl_fn = frg_ast_try_cast_decl_fn(ast);
-    frg_assert_pointer_non_null(decl_fn);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(node);
+    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
 
     // Generate return type
-    llvm::Type* return_ty = _frg_generate_type(
+    llvm::Type* return_ty = _frg_codegen_generate_type(
         ctx,
-        scope,
-        decl_fn->ty->return_ty
+        mut_scope,
+        ((const frg_ast_node_declaration_function_t*)node)->type->return_type
     );
 
     // Generate argument types
     std::vector<llvm::Type*> arg_types;
 
-    for (GList* it = decl_fn->ty->args; it != NULL; it = it->next) {
-        llvm::Type* arg_ty = _frg_generate_type(
+    for (const GList* it = ((const frg_ast_node_declaration_function_t*)node)->type->arguments; it != NULL; it = it->next) {
+        frg_assert_int_equal_to(((const frg_ast_node_t*)it->data)->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
+        llvm::Type* arg_ty = _frg_codegen_generate_type(
             ctx,
-            scope,
-            ((frg_ast_decl_prop_t*)((frg_ast_decl_fn_arg_t*)it->data)->prop)->ty
+            mut_scope,
+            ((frg_ast_node_declaration_property_t*)((frg_ast_node_declaration_function_argument_t*)it->data)->property)->type
         );
 
         arg_types.push_back(arg_ty);
@@ -115,16 +112,18 @@ void _frg_generate_decl_fn(
     llvm::Function* fn = llvm::Function::Create(
         fn_type,
         llvm::Function::ExternalLinkage,
-        decl_fn->name->str,
+        ((const frg_ast_node_declaration_function_t*)node)->name->str,
         module
     );
 
-    GList* it_ast = decl_fn->ty->args;
+    GList* it_ast = ((const frg_ast_node_declaration_function_t*)node)->type->arguments;
     auto it_ir = fn->arg_begin();
     while (it_ast != NULL && it_ir != fn->arg_end()) {
-        frg_ast_decl_fn_arg_t* arg = (frg_ast_decl_fn_arg_t*)it_ast->data;
+        frg_assert_int_equal_to(((const frg_ast_node_t*)it_ast->data)->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
 
-        it_ir->setName(((frg_ast_decl_prop_t*)arg->prop)->name->str);
+        frg_ast_node_declaration_function_argument_t* arg = (frg_ast_node_declaration_function_argument_t*)it_ast->data;
+
+        it_ir->setName(((frg_ast_node_declaration_property_t*)arg->property)->name->str);
 
         it_ast = it_ast->next;
         it_ir++;
@@ -134,200 +133,156 @@ void _frg_generate_decl_fn(
     llvm::BasicBlock* basic_block = llvm::BasicBlock::Create(ctx, "entry", fn);
     builder.SetInsertPoint(basic_block);
 
-    _frg_generate_stmt(
+    _frg_codegen_generate_statement(
         builder,
         ctx,
-        scope,
-        decl_fn->body
+        mut_scope,
+        ((const frg_ast_node_declaration_function_t*)node)->body
     );
 }
 
-void _frg_generate_stmt(
+void _frg_codegen_generate_statement(
     llvm::IRBuilder<>& builder,
     llvm::LLVMContext& ctx,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(node);
 
     llvm::Value* value = NULL;
 
-    switch (ast->kind) {
-        case FRG_AST_KIND_STMT_RETURN:
-            value = _frg_generate_value(
-                ctx,
-                scope,
-                ((frg_ast_stmt_return_t*)ast)->value
-            );
-
-            builder.CreateRet(value);
-
-            break;
-        case FRG_AST_KIND_STMT_BLOCK:
-            frg_ast_scope_push_frame(
-                scope
-            );
-
-            for (GList* it = ((frg_ast_stmt_block_t*)ast)->stmts; it != NULL; it = it->next) {
-                _frg_generate_stmt(
-                    builder,
+    if ((frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_STATEMENT) != 0) {
+        switch (node->kind) {
+            case FRG_AST_NODE_KIND_STATEMENT_RETURN:
+                value = _frg_codegen_generate_value(
                     ctx,
-                    scope,
-                    (frg_ast_t*)it->data
+                    mut_scope,
+                    ((const frg_ast_node_statement_return_t*)node)->value
                 );
-            }
 
-            frg_ast_scope_pop_frame(
-                scope
-            );
+                builder.CreateRet(value);
 
-            break;
-        case FRG_AST_KIND_VALUE_TRUE:
-        case FRG_AST_KIND_VALUE_FALSE:
-        case FRG_AST_KIND_VALUE_INT:
-        case FRG_AST_KIND_VALUE_FLOAT:
-        case FRG_AST_KIND_VALUE_CHAR:
-        case FRG_AST_KIND_VALUE_STR:
-        case FRG_AST_KIND_VALUE_SYMBOL:
-        case FRG_AST_KIND_VALUE_DEREF:
-        case FRG_AST_KIND_VALUE_GETADDR:
-        case FRG_AST_KIND_VALUE_CALL_KW_ARG:
-        case FRG_AST_KIND_VALUE_CALL:
-        case FRG_AST_KIND_VALUE_ACCESS:
-        case FRG_AST_KIND_VALUE_BIT_NOT:
-        case FRG_AST_KIND_VALUE_BIT_AND:
-        case FRG_AST_KIND_VALUE_BIT_OR:
-        case FRG_AST_KIND_VALUE_BIT_XOR:
-        case FRG_AST_KIND_VALUE_BIT_SHL:
-        case FRG_AST_KIND_VALUE_BIT_SHR:
-        case FRG_AST_KIND_VALUE_NEG:
-        case FRG_AST_KIND_VALUE_ADD:
-        case FRG_AST_KIND_VALUE_SUB:
-        case FRG_AST_KIND_VALUE_MUL:
-        case FRG_AST_KIND_VALUE_DIV:
-        case FRG_AST_KIND_VALUE_DIV_INT:
-        case FRG_AST_KIND_VALUE_MOD:
-        case FRG_AST_KIND_VALUE_EXP:
-        case FRG_AST_KIND_VALUE_EQ:
-        case FRG_AST_KIND_VALUE_NE:
-        case FRG_AST_KIND_VALUE_LT:
-        case FRG_AST_KIND_VALUE_LE:
-        case FRG_AST_KIND_VALUE_GT:
-        case FRG_AST_KIND_VALUE_GE:
-        case FRG_AST_KIND_VALUE_LOG_NOT:
-        case FRG_AST_KIND_VALUE_LOG_AND:
-        case FRG_AST_KIND_VALUE_LOG_OR:
-        case FRG_AST_KIND_VALUE_ASSIGN:
-        case FRG_AST_KIND_VALUE_BIT_AND_ASSIGN:
-        case FRG_AST_KIND_VALUE_BIT_OR_ASSIGN:
-        case FRG_AST_KIND_VALUE_BIT_XOR_ASSIGN:
-        case FRG_AST_KIND_VALUE_BIT_SHL_ASSIGN:
-        case FRG_AST_KIND_VALUE_BIT_SHR_ASSIGN:
-        case FRG_AST_KIND_VALUE_ADD_ASSIGN:
-        case FRG_AST_KIND_VALUE_INC:
-        case FRG_AST_KIND_VALUE_SUB_ASSIGN:
-        case FRG_AST_KIND_VALUE_DEC:
-        case FRG_AST_KIND_VALUE_MUL_ASSIGN:
-        case FRG_AST_KIND_VALUE_DIV_ASSIGN:
-        case FRG_AST_KIND_VALUE_DIV_INT_ASSIGN:
-        case FRG_AST_KIND_VALUE_MOD_ASSIGN:
-        case FRG_AST_KIND_VALUE_EXP_ASSIGN:
-        case FRG_AST_KIND_VALUE_LOG_AND_ASSIGN:
-        case FRG_AST_KIND_VALUE_LOG_OR_ASSIGN:
-            value = _frg_generate_value(
-                ctx,
-                scope,
-                ast
-            );
+                break;
+            case FRG_AST_NODE_KIND_STATEMENT_BLOCK:
+                frg_ast_scope_push_frame(
+                    mut_scope
+                );
 
-            builder.Insert(value);
+                for (GList* it = ((const frg_ast_node_statement_block_t*)node)->statements; it != NULL; it = it->next) {
+                    _frg_codegen_generate_statement(
+                        builder,
+                        ctx,
+                        mut_scope,
+                        (frg_ast_node_t*)it->data
+                    );
+                }
 
-            break;
-        default:
-            frg_die_unexpected_enum_value(ast->kind);
+                frg_ast_scope_pop_frame(
+                    mut_scope
+                );
+
+                break;
+            default:
+                frg_die_ast_kind_not_yet_supported(node->kind);
+        }
+    } else if ((frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_STATEMENT) != 0) {
+        value = _frg_codegen_generate_value(
+            ctx,
+            mut_scope,
+            node
+        );
+
+        builder.Insert(value);
+    } else {
+        frg_die_ast_kind_not_yet_supported(node->kind);
     }
 }
 
-llvm::Value* _frg_generate_value(
+llvm::Value* _frg_codegen_generate_value(
     llvm::LLVMContext& ctx,
-    frg_ast_scope_t* scope,
-    frg_ast_t* ast
+    frg_ast_scope_t* mut_scope,
+    const frg_ast_node_t* node
 ) {
-    frg_assert_pointer_non_null(scope);
-    frg_assert_pointer_non_null(ast);
+    frg_assert_pointer_non_null(mut_scope);
+    frg_assert_pointer_non_null(node);
 
-    frg_ast_value_int_t* value_int = NULL;
-
-    switch (ast->kind) {
-        case FRG_AST_KIND_VALUE_TRUE:
-            return llvm::ConstantInt::getTrue(ctx);
-        case FRG_AST_KIND_VALUE_FALSE:
-            return llvm::ConstantInt::getFalse(ctx);
-        case FRG_AST_KIND_VALUE_INT:
-            value_int = (frg_ast_value_int_t*)ast;
-            switch (value_int->ty->kind) {
-                case FRG_AST_KIND_TY_U8:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt8Ty(ctx),
-                        value_int->value.u8,
-                        false
-                    );
-                    break;
-                case FRG_AST_KIND_TY_U16:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt16Ty(ctx),
-                        value_int->value.u16,
-                        false
-                    );
-                    break;
-                case FRG_AST_KIND_TY_U32:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt32Ty(ctx),
-                        value_int->value.u32,
-                        false
-                    );
-                    break;
-                case FRG_AST_KIND_TY_U64:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt64Ty(ctx),
-                        value_int->value.u64,
-                        false
-                    );
-                    break;
-                case FRG_AST_KIND_TY_I8:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt8Ty(ctx),
-                        value_int->value.i8,
-                        true
-                    );
-                    break;
-                case FRG_AST_KIND_TY_I16:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt16Ty(ctx),
-                        value_int->value.i16,
-                        true
-                    );
-                    break;
-                case FRG_AST_KIND_TY_I32:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt32Ty(ctx),
-                        value_int->value.i32,
-                        true
-                    );
-                    break;
-                case FRG_AST_KIND_TY_I64:
-                    return llvm::ConstantInt::get(
-                        llvm::Type::getInt64Ty(ctx),
-                        value_int->value.i64,
-                        true
-                    );
-                    break;
-                default:
-                    frg_die_unexpected_enum_value(value_int->ty->kind);
+    switch (node->kind) {
+        case FRG_AST_NODE_KIND_VALUE_BOOL:
+            if (((const frg_ast_node_value_bool_t*)node)->value)
+                return llvm::ConstantInt::getTrue(ctx);
+            else
+                return llvm::ConstantInt::getFalse(ctx);
+        case FRG_AST_NODE_KIND_VALUE_INT:
+            if ((((const frg_ast_node_value_int_t*)node)->type.flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) != 0) {
+                switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
+                    case 8:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt8Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_u8,
+                            false
+                        );
+                        break;
+                    case 16:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt16Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_u16,
+                            false
+                        );
+                        break;
+                    case 32:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt32Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_u32,
+                            false
+                        );
+                        break;
+                    case 64:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt64Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_u64,
+                            false
+                        );
+                        break;
+                    default:
+                        frg_die("Unsupported unsigned integer bit width %u", ((const frg_ast_node_value_int_t*)node)->type.bit_width);
+                }
+            } else {
+                switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
+                    case 8:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt8Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_i8,
+                            false
+                        );
+                        break;
+                    case 16:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt16Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_i16,
+                            false
+                        );
+                        break;
+                    case 32:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt32Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_i32,
+                            false
+                        );
+                        break;
+                    case 64:
+                        return llvm::ConstantInt::get(
+                            llvm::Type::getInt64Ty(ctx),
+                            ((const frg_ast_node_value_int_t*)node)->value.as_i64,
+                            false
+                        );
+                        break;
+                    default:
+                        frg_die("Unsupported unsigned integer bit width %u", ((const frg_ast_node_value_int_t*)node)->type.bit_width);
+                }
             }
         default:
-            frg_die_unexpected_enum_value(ast->kind);
+            frg_die_ast_kind_not_yet_supported(node->kind);
     }
 }
 }

@@ -15,125 +15,113 @@
 
 #pragma once
 
-#include <forge/ast/ast.h>
+#include <forge/ast/node.h>
 #include <forge/ast/visitor.h>
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_ty_pointer(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_type_pointer(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_ty_fn(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_type_function(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_union(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_union(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_struct(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_structure(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_prop(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_property(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_iface(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_interface(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_fn_arg(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_function_argument(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_fn(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_function(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_var(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_variable(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_decl_block(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_block(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_return(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_return(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_if(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_if(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_while(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_while(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_stmt_block(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_statement_block(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_int(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
-);
-
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_float(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
-);
-
-frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call_kw_arg(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call_keyword_argument(
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
 frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_call(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
 frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_unary(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );
 
 frg_ast_visitor_status_t frg_ast_visitor_acceptor_value_binary(
-    frg_ast_visitor_t* visitor,
-    GList* parents,
-    frg_ast_t** ast
+    frg_ast_node_t** mut_node,
+    const frg_ast_visitor_t* visitor,
+    const GList* parents
 );

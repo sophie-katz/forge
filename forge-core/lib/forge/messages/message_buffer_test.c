@@ -16,70 +16,70 @@
 #include <forge/messages/message_buffer.h>
 #include <unity.h>
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-void test_counts(void) {
+void test_counts() {
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_DEBUG, NULL, "Hi");
 
-    TEST_ASSERT_EQUAL(1, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(1, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_NOTE, NULL, "Hi");
 
-    TEST_ASSERT_EQUAL(2, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(2, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_WARNING, NULL, "Hi");
 
-    TEST_ASSERT_EQUAL(3, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(0, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(3, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(1, message_buffer->warning_count);
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_ERROR, NULL, "Hi");
 
-    TEST_ASSERT_EQUAL(4, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(1, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(4, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(1, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(1, message_buffer->warning_count);
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_FATAL_ERROR, NULL, "Hi");
 
-    TEST_ASSERT_EQUAL(5, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(2, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(5, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(2, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(1, message_buffer->warning_count);
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_INTERNAL_ERROR, NULL, "Hi");
 
-    TEST_ASSERT_EQUAL(6, frg_message_buffer_get_message_count(message_buffer));
-    TEST_ASSERT_EQUAL(3, frg_message_buffer_get_error_count(message_buffer));
-    TEST_ASSERT_EQUAL(1, frg_message_buffer_get_warning_count(message_buffer));
+    TEST_ASSERT_EQUAL(6, message_buffer->message_count);
+    TEST_ASSERT_EQUAL(3, message_buffer->error_count);
+    TEST_ASSERT_EQUAL(1, message_buffer->warning_count);
 
-    frg_message_buffer_destroy(&message_buffer);
+    frg_message_buffer_destroy(message_buffer);
 }
 
-void test_has_message_with_text(void) {
+void test_has_message_with_text() {
     frg_message_buffer_t* message_buffer = frg_message_buffer_new();
 
     frg_message_emit(message_buffer, FRG_MESSAGE_SEVERITY_ERROR, NULL, "Hi");
 
-    TEST_ASSERT(frg_message_buffer_has_message_with_text(message_buffer, "Hi"));
-    TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text(message_buffer, "Bye"));
-    TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text(message_buffer, "Hii"));
-    TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text(message_buffer, "H"));
+    TEST_ASSERT(frg_message_buffer_has_message_with_text_equal_to(message_buffer, "Hi"));
+    TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text_equal_to(message_buffer, "Bye"));
+    TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text_equal_to(message_buffer, "Hii"));
+    TEST_ASSERT_FALSE(frg_message_buffer_has_message_with_text_equal_to(message_buffer, "H"));
 
-    frg_message_buffer_destroy(&message_buffer);
+    frg_message_buffer_destroy(message_buffer);
 }
 
-int main(void) {
+int main() {
     UNITY_BEGIN();
     RUN_TEST(test_counts);
     RUN_TEST(test_has_message_with_text);

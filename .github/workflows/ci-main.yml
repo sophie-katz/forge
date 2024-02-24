@@ -20,8 +20,8 @@ on:
     branches:
       - main
     paths:
-      - '.github/**'
-      - 'forge-core/**'
+      - ".github/**"
+      - "forge-core/**"
   workflow_dispatch:
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
               valgrind \
               wget \
           ;
-      
+
       - name: Install LLVM and Clang
         run: |
           echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main" > /etc/apt/sources.list.d/apt.llvm.org.list && \
@@ -100,6 +100,8 @@ jobs:
           update-alternatives --install /usr/bin/cc cc /usr/bin/clang-17 100 && \
           update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100 && \
           update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-17 100 && \
+          update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-17 100 && \
+          update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 100 && \
           update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-17 100 && \
           update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-17 100 && \
           update-alternatives --install /usr/bin/lld lld /usr/bin/lld-17 100 && \
@@ -138,7 +140,7 @@ jobs:
               valgrind \
               wget \
           ;
-      
+
       - name: Install LLVM and Clang
         run: |
           echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-17 main" > /etc/apt/sources.list.d/apt.llvm.org.list && \
@@ -171,6 +173,8 @@ jobs:
           update-alternatives --install /usr/bin/cc cc /usr/bin/clang-17 100 && \
           update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100 && \
           update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-17 100 && \
+          update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-17 100 && \
+          update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 100 && \
           update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-17 100 && \
           update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-17 100 && \
           update-alternatives --install /usr/bin/lld lld /usr/bin/lld-17 100 && \
@@ -178,4 +182,3 @@ jobs:
 
       - name: Run CI
         uses: ./.github/actions/ci
-  

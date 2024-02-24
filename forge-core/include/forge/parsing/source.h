@@ -15,26 +15,22 @@
 
 #pragma once
 
-#include <stdio.h>
+#include <forge/enums.h>
 #include <forge/parsing/domain.h>
+#include <forge/streams/input.h>
 #include <glib.h>
 #include <stdbool.h>
-#include <forge/enums.h>
-#include <forge/streams/input.h>
+#include <stdio.h>
 
 typedef struct {
-    const char* path;
-    frg_stream_input_t* stream;
+  const char* path;
+  frg_stream_input_t* stream;
 } frg_parsing_source_t;
 
-frg_parsing_source_t* frg_parsing_source_new(
-    const char* path,
-    frg_stream_input_t* stream
-);
+frg_parsing_source_t* frg_parsing_source_new(const char* path,
+                                             frg_stream_input_t* stream);
 
 void frg_parsing_source_destroy(frg_parsing_source_t* source);
 
-GString* frg_parsing_source_load_range(
-    frg_parsing_source_t* mut_source,
-    const frg_parsing_range_t* range
-);
+GString* frg_parsing_source_load_range(frg_parsing_source_t* mut_source,
+                                       const frg_parsing_range_t* range);

@@ -21,190 +21,220 @@ void setUp() {}
 void tearDown() {}
 
 void test_simple() {
-    frg_parsing_location_t start = {
-        .path = "--",
-        .offset = 0,
-        .line_number = 1,
-        .column_number = 1
-    };
+  frg_parsing_location_t start
+    = { .path = "--", .offset = 0, .line_number = 1, .column_number = 1 };
 
-    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        &start,
-        "abc"
-    );
+  frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(&start, "abc");
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('a', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    1, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('a', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    2, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('c', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    3, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('c', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(4, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    4, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(4, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    4, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_destroy(reader);
+  frg_parsing_token_reader_destroy(reader);
 }
 
 void test_multiline() {
-    frg_parsing_location_t start = {
-        .path = "--",
-        .offset = 0,
-        .line_number = 1,
-        .column_number = 1
-    };
+  frg_parsing_location_t start
+    = { .path = "--", .offset = 0, .line_number = 1, .column_number = 1 };
 
-    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        &start,
-        "abc\ndef"
-    );
+  frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(&start, "abc\ndef");
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('a', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    1, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('a', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    2, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('c', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    3, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('c', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(4, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('\n', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    4, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('\n', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(4, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('d', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(4, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(2,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    1, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('d', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(5, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('e', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(5, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(2,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    2, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('e', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(6, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('f', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(6, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(2,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    3, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('f', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(7, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(4, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(7, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(2,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    4, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_destroy(reader);
+  frg_parsing_token_reader_destroy(reader);
 }
 
 void test_save_and_restore() {
-    frg_parsing_location_t start = {
-        .path = "--",
-        .offset = 0,
-        .line_number = 1,
-        .column_number = 1
-    };
+  frg_parsing_location_t start
+    = { .path = "--", .offset = 0, .line_number = 1, .column_number = 1 };
 
-    frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(
-        &start,
-        "abc"
-    );
+  frg_parsing_token_reader_t* reader = frg_parsing_token_reader_new(&start, "abc");
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('a', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(0, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    1, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('a', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    frg_parsing_token_reader_t* state = frg_parsing_token_reader_clone(reader);
+  frg_parsing_token_reader_t* state = frg_parsing_token_reader_clone(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    2, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_step(reader);
+  frg_parsing_token_reader_step(reader);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(3, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('c', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    3, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('c', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_restore(reader, state);
+  frg_parsing_token_reader_restore(reader, state);
 
-    TEST_ASSERT_EQUAL_STRING("--", frg_parsing_token_reader_get_current_location(reader)->path);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
-    TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->line_number);
-    TEST_ASSERT_EQUAL(2, frg_parsing_token_reader_get_current_location(reader)->column_number);
-    TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
+  TEST_ASSERT_EQUAL_STRING("--",
+                           frg_parsing_token_reader_get_current_location(reader)->path);
+  TEST_ASSERT_EQUAL(1, frg_parsing_token_reader_get_current_location(reader)->offset);
+  TEST_ASSERT_EQUAL(1,
+                    frg_parsing_token_reader_get_current_location(reader)->line_number);
+  TEST_ASSERT_EQUAL(
+    2, frg_parsing_token_reader_get_current_location(reader)->column_number);
+  TEST_ASSERT_EQUAL('b', frg_parsing_token_reader_get_current_character(reader));
 
-    frg_parsing_token_reader_destroy(reader);
-    frg_parsing_token_reader_destroy(state);
+  frg_parsing_token_reader_destroy(reader);
+  frg_parsing_token_reader_destroy(state);
 }
 
 int main() {
-    UNITY_BEGIN();
-    RUN_TEST(test_simple);
-    RUN_TEST(test_multiline);
-    RUN_TEST(test_save_and_restore);
-    return UNITY_END();
+  UNITY_BEGIN();
+  RUN_TEST(test_simple);
+  RUN_TEST(test_multiline);
+  RUN_TEST(test_save_and_restore);
+  return UNITY_END();
 }

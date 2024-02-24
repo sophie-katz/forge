@@ -13,44 +13,39 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <unity.h>
-#include <forge/streams/output.h>
-
 #include "test.h"
+#include <forge/streams/output.h>
+#include <unity.h>
 
 void setUp() {
-    frg_stream_output_init();
+  frg_stream_output_init();
 }
 
 void tearDown() {
-    frg_stream_output_cleanup();
+  frg_stream_output_cleanup();
 }
 
-void _callback_empty(
-    const frg_message_buffer_t* message_buffer,
-    void* mut_shared_library
-) {
-    TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
-    TEST_ASSERT_EQUAL(0, message_buffer->error_count);
+void _callback_empty(const frg_message_buffer_t* message_buffer,
+                     void* mut_shared_library) {
+  TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
+  TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 }
 
 void test_empty() {
-    frg_test_compilation(
-        "empty",
-        // Source
-        "",
-        // AST debug
-        "[declaration-block]",
-        // LLVM IR
-        "; ModuleID = 'forge'\n"
-        "source_filename = \"forge\"\n",
-        // Callback
-        _callback_empty
-    );
+  frg_test_compilation("empty",
+                       // Source
+                       "",
+                       // AST debug
+                       "[declaration-block]",
+                       // LLVM IR
+                       "; ModuleID = 'forge'\n"
+                       "source_filename = \"forge\"\n",
+                       // Callback
+                       _callback_empty);
 }
 
 int main() {
-    UNITY_BEGIN();
-    RUN_TEST(test_empty);
-    return UNITY_END();
+  UNITY_BEGIN();
+  RUN_TEST(test_empty);
+  return UNITY_END();
 }

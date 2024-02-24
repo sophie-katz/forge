@@ -17,13 +17,9 @@
 
 #include <forge/ast/scope.h>
 
-frg_ast_node_t* frg_verification_get_numeric_containing_type(
-    const frg_ast_node_t* a,
-    const frg_ast_node_t* b
-);
+frg_ast_node_t* frg_verification_get_numeric_containing_type(const frg_ast_node_t* a,
+                                                             const frg_ast_node_t* b);
 
-frg_ast_node_t* frg_verification_resolve_type(
-    frg_message_buffer_t* mut_message_buffer,
-    const frg_ast_scope_t* scope,
-    const frg_ast_node_t* node
-);
+frg_ast_node_t* frg_verification_resolve_type(frg_message_buffer_t* mut_message_buffer,
+                                              const frg_ast_scope_t* scope,
+                                              const frg_ast_node_t* node);

@@ -18,118 +18,102 @@
 #include <forge/messages/message.h>
 
 typedef struct {
-    GList* _messages;
-    frg_line_number_t _max_line_number;
-    frg_message_count_t message_count;
-    frg_message_count_t error_count;
-    frg_message_count_t warning_count;
+  GList* _messages;
+  frg_line_number_t _max_line_number;
+  frg_message_count_t message_count;
+  frg_message_count_t error_count;
+  frg_message_count_t warning_count;
 } frg_message_buffer_t;
 
 frg_message_buffer_t* frg_message_buffer_new();
 
 void frg_message_buffer_destroy(frg_message_buffer_t* message_buffer);
 
-void frg_message_buffer_print(
-    frg_stream_output_t* mut_stream,
-    frg_parsing_source_context_t* mut_source_context,
-    frg_message_buffer_t* mut_message_buffer,
-    frg_message_severity_t minimum_severity,
-    frg_message_count_t max_messages
-);
+void frg_message_buffer_print(frg_stream_output_t* mut_stream,
+                              frg_parsing_source_context_t* mut_source_context,
+                              frg_message_buffer_t* mut_message_buffer,
+                              frg_message_severity_t minimum_severity,
+                              frg_message_count_t max_messages);
 
 bool frg_message_buffer_has_message_with_text_equal_to(
-    const frg_message_buffer_t* message_buffer,
-    const char* text
-);
+  const frg_message_buffer_t* message_buffer, const char* text);
 
-frg_message_t* _frg_message_emit(
-    frg_message_buffer_t* mut_message_buffer,
-    const char* log_path,
-    frg_line_number_t log_line_number,
-    frg_message_severity_t severity,
-    const char* code,
-    const char* format,
-    ...
-);
+frg_message_t* _frg_message_emit(frg_message_buffer_t* mut_message_buffer,
+                                 const char* log_path,
+                                 frg_line_number_t log_line_number,
+                                 frg_message_severity_t severity,
+                                 const char* code,
+                                 const char* format,
+                                 ...);
 
-#define frg_message_emit(mut_message_buffer, severity, code, format, ...) \
-    _frg_message_emit( \
-        (mut_message_buffer), \
-        __FILE__, \
-        __LINE__, \
-        (severity), \
-        (code), \
-        (format), \
-        ##__VA_ARGS__ \
-    )
+#define frg_message_emit(mut_message_buffer, severity, code, format, ...)              \
+  _frg_message_emit((mut_message_buffer),                                              \
+                    __FILE__,                                                          \
+                    __LINE__,                                                          \
+                    (severity),                                                        \
+                    (code),                                                            \
+                    (format),                                                          \
+                    ##__VA_ARGS__)
 
 frg_message_t* _frg_message_emit_from_source_range(
-    frg_message_buffer_t* mut_message_buffer,
-    const char* log_path,
-    frg_line_number_t log_line_number,
-    const frg_parsing_range_t* source_range,
-    frg_message_severity_t severity,
-    const char* code,
-    const char* format,
-    ...
-);
+  frg_message_buffer_t* mut_message_buffer,
+  const char* log_path,
+  frg_line_number_t log_line_number,
+  const frg_parsing_range_t* source_range,
+  frg_message_severity_t severity,
+  const char* code,
+  const char* format,
+  ...);
 
-#define frg_message_emit_from_source_range(mut_message_buffer, source_range, severity, code, format, ...) \
-    _frg_message_emit_from_source_range( \
-        (mut_message_buffer), \
-        __FILE__, \
-        __LINE__, \
-        (source_range), \
-        (severity), \
-        (code), \
-        (format), \
-        ##__VA_ARGS__ \
-    )
+#define frg_message_emit_from_source_range(                                            \
+  mut_message_buffer, source_range, severity, code, format, ...)                       \
+  _frg_message_emit_from_source_range((mut_message_buffer),                            \
+                                      __FILE__,                                        \
+                                      __LINE__,                                        \
+                                      (source_range),                                  \
+                                      (severity),                                      \
+                                      (code),                                          \
+                                      (format),                                        \
+                                      ##__VA_ARGS__)
 
-void _frg_message_emit_child(
-    frg_message_buffer_t* mut_message_buffer,
-    frg_message_t* mut_parent,
-    const char* log_path,
-    frg_line_number_t log_line_number,
-    frg_message_severity_t severity,
-    const char* code,
-    const char* format,
-    ...
-);
+void _frg_message_emit_child(frg_message_buffer_t* mut_message_buffer,
+                             frg_message_t* mut_parent,
+                             const char* log_path,
+                             frg_line_number_t log_line_number,
+                             frg_message_severity_t severity,
+                             const char* code,
+                             const char* format,
+                             ...);
 
-#define frg_message_emit_child(mut_message_buffer, mut_parent, severity, code, format, ...) \
-    _frg_message_emit_child( \
-        (mut_message_buffer), \
-        (mut_parent), \
-        __FILE__, \
-        __LINE__, \
-        (severity), \
-        (code), \
-        (format), \
-        ##__VA_ARGS__ \
-    )
+#define frg_message_emit_child(                                                        \
+  mut_message_buffer, mut_parent, severity, code, format, ...)                         \
+  _frg_message_emit_child((mut_message_buffer),                                        \
+                          (mut_parent),                                                \
+                          __FILE__,                                                    \
+                          __LINE__,                                                    \
+                          (severity),                                                  \
+                          (code),                                                      \
+                          (format),                                                    \
+                          ##__VA_ARGS__)
 
-void _frg_message_emit_child_from_source_range(
-    frg_message_buffer_t* mut_message_buffer,
-    frg_message_t* mut_parent,
-    const char* log_path,
-    frg_line_number_t log_line_number,
-    const frg_parsing_range_t* source_range,
-    frg_message_severity_t severity,
-    const char* code,
-    const char* format,
-    ...
-);
+void _frg_message_emit_child_from_source_range(frg_message_buffer_t* mut_message_buffer,
+                                               frg_message_t* mut_parent,
+                                               const char* log_path,
+                                               frg_line_number_t log_line_number,
+                                               const frg_parsing_range_t* source_range,
+                                               frg_message_severity_t severity,
+                                               const char* code,
+                                               const char* format,
+                                               ...);
 
-#define frg_message_emit_child_from_source_range(mut_message_buffer, mut_parent, source_range, severity, code, format, ...) \
-    _frg_message_emit_child_from_source_range( \
-        (mut_message_buffer), \
-        (mut_parent), \
-        __FILE__, \
-        __LINE__, \
-        (source_range), \
-        (severity), \
-        (code), \
-        (format), \
-        ##__VA_ARGS__ \
-    )
+#define frg_message_emit_child_from_source_range(                                      \
+  mut_message_buffer, mut_parent, source_range, severity, code, format, ...)           \
+  _frg_message_emit_child_from_source_range((mut_message_buffer),                      \
+                                            (mut_parent),                              \
+                                            __FILE__,                                  \
+                                            __LINE__,                                  \
+                                            (source_range),                            \
+                                            (severity),                                \
+                                            (code),                                    \
+                                            (format),                                  \
+                                            ##__VA_ARGS__)

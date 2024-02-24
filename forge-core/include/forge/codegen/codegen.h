@@ -27,16 +27,12 @@ typedef struct frg_codegen_module_t frg_codegen_module_t;
 
 void frg_codegen_module_destroy(frg_codegen_module_t* module);
 
-void frg_codegen_module_print(
-    frg_stream_output_t* mut_stream,
-    const frg_codegen_module_t* module
-);
+void frg_codegen_module_print(frg_stream_output_t* mut_stream,
+                              const frg_codegen_module_t* module);
 
-bool frg_codegen_module_write_object_file(
-    frg_message_buffer_t* mut_message_buffer,
-    const frg_codegen_module_t* module,
-    const char* path
-);
+bool frg_codegen_module_write_object_file(frg_message_buffer_t* mut_message_buffer,
+                                          const frg_codegen_module_t* module,
+                                          const char* path);
 
 frg_codegen_module_t* frg_codegen(const frg_ast_node_t* node);
 

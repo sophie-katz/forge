@@ -19,20 +19,18 @@
 #include <stddef.h>
 
 typedef struct {
-    const char* path;
-    size_t offset;
-    frg_line_number_t line_number;
-    frg_column_number_t column_number;
+  const char* path;
+  size_t offset;
+  frg_line_number_t line_number;
+  frg_column_number_t column_number;
 } frg_parsing_location_t;
 
 typedef struct {
-    frg_parsing_location_t start;
-    frg_column_number_t length;
+  frg_parsing_location_t start;
+  frg_column_number_t length;
 } frg_parsing_range_t;
 
 extern const frg_parsing_range_t frg_global_parsing_range_null;
 
-frg_parsing_range_t frg_parsing_range_get_span(
-    const frg_parsing_range_t* first,
-    const frg_parsing_range_t* last
-);
+frg_parsing_range_t frg_parsing_range_get_span(const frg_parsing_range_t* first,
+                                               const frg_parsing_range_t* last);

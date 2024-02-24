@@ -18,20 +18,16 @@
 #include <forge/ast/node.h>
 
 typedef struct {
-    frg_indentation_t indentation;
-    frg_recursion_depth_t max_depth;
-    frg_ast_node_count_t max_list_length;
+  frg_indentation_t indentation;
+  frg_recursion_depth_t max_depth;
+  frg_ast_node_count_t max_list_length;
 } frg_ast_print_debug_options_t;
 
 extern const frg_ast_print_debug_options_t frg_ast_print_debug_options_default;
 
 frg_ast_print_debug_options_t frg_ast_print_debug_options_get_next(
-    const frg_ast_print_debug_options_t* options,
-    frg_indentation_t indentation
-);
+  const frg_ast_print_debug_options_t* options, frg_indentation_t indentation);
 
-void frg_ast_print_debug(
-    frg_stream_output_t* mut_stream,
-    const frg_ast_node_t* node,
-    const frg_ast_print_debug_options_t* options
-);
+void frg_ast_print_debug(frg_stream_output_t* mut_stream,
+                         const frg_ast_node_t* node,
+                         const frg_ast_print_debug_options_t* options);

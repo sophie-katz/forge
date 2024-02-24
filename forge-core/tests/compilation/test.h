@@ -18,19 +18,12 @@
 #include <forge/codegen/codegen.h>
 
 typedef void (*frg_test_compilation_callback)(
-    const frg_message_buffer_t* message_buffer,
-    void* mut_shared_library
-);
+  const frg_message_buffer_t* message_buffer, void* mut_shared_library);
 
-void frg_test_compilation(
-    const char* name,
-    const char* source_text,
-    const char* ast_debug,
-    const char* llvm_ir,
-    frg_test_compilation_callback callback
-);
+void frg_test_compilation(const char* name,
+                          const char* source_text,
+                          const char* ast_debug,
+                          const char* llvm_ir,
+                          frg_test_compilation_callback callback);
 
-void* frg_test_compilation_get_function(
-    void* mut_shared_library,
-    const char* name
-);
+void* frg_test_compilation_get_function(void* mut_shared_library, const char* name);

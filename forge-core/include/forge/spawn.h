@@ -17,17 +17,13 @@
 
 #include <forge/messages/message_buffer.h>
 
-const gchar** frg_spawn_convert_arguments_to_argv(
-    const char* executable,
-    const GList* arguments
-);
+const gchar** frg_spawn_convert_arguments_to_argv(const char* executable,
+                                                  const GList* arguments);
 
 void frg_spawn_free_argv(const gchar** argv);
 
-GError* frg_spawn(
-    frg_message_buffer_t* mut_message_buffer,
-    int* exit_status,
-    const char* working_directory,
-    const char* executable,
-    const gchar** argv
-);
+GError* frg_spawn(frg_message_buffer_t* mut_message_buffer,
+                  int* exit_status,
+                  const char* working_directory,
+                  const char* executable,
+                  const gchar** argv);

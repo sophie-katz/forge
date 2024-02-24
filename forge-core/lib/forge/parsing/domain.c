@@ -16,23 +16,15 @@
 #include <forge/parsing/domain.h>
 
 const frg_parsing_range_t frg_global_parsing_range_null = {
-    .start = {
-        .path = NULL,
-        .offset = 0,
-        .line_number = 0,
-        .column_number = 0
-    },
-    .length = 0
+  .start  = {.path = NULL, .offset = 0, .line_number = 0, .column_number = 0},
+  .length = 0
 };
 
-frg_parsing_range_t frg_parsing_range_get_span(
-    const frg_parsing_range_t* first,
-    const frg_parsing_range_t* last
-) {
-    frg_parsing_range_t range = {
-        .start = first->start,
-        .length = last->start.offset + last->length - first->start.offset
-    };
+frg_parsing_range_t frg_parsing_range_get_span(const frg_parsing_range_t* first,
+                                               const frg_parsing_range_t* last) {
+  frg_parsing_range_t range
+    = { .start  = first->start,
+        .length = last->start.offset + last->length - first->start.offset };
 
-    return range;
+  return range;
 }

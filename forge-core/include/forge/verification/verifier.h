@@ -19,17 +19,14 @@
 #include <forge/ast/visitor.h>
 
 typedef struct {
-    frg_message_buffer_t* mut_message_buffer;
-    frg_ast_scope_t* mut_scope;
+  frg_message_buffer_t* mut_message_buffer;
+  frg_ast_scope_t* mut_scope;
 } frg_verification_verifier_t;
 
 frg_verification_verifier_t* frg_verification_verifier_new(
-    frg_message_buffer_t* mut_message_buffer,
-    frg_ast_scope_t* mut_scope
-);
+  frg_message_buffer_t* mut_message_buffer, frg_ast_scope_t* mut_scope);
 
 void frg_verification_verifier_destroy(frg_verification_verifier_t* verifier);
 
 frg_ast_visitor_t* frg_verification_verifier_new_visitor(
-    frg_verification_verifier_t* mut_verifier
-);
+  frg_verification_verifier_t* mut_verifier);

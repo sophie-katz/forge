@@ -19,20 +19,13 @@
 #include <forge/streams/output.h>
 
 typedef struct {
-    const char* name;
-    const char* help;
+  const char* name;
+  const char* help;
 } frg_cli_choice_t;
 
-frg_cli_choice_t* frg_cli_choice_new(
-    const char* name,
-    const char* help
-);
+frg_cli_choice_t* frg_cli_choice_new(const char* name, const char* help);
 
-void frg_cli_choice_destroy(
-    frg_cli_choice_t* choice
-);
+void frg_cli_choice_destroy(frg_cli_choice_t* choice);
 
-void frg_cli_choice_print_help(
-    frg_stream_output_t* mut_stream,
-    const frg_cli_choice_t* choice
-);
+void frg_cli_choice_print_help(frg_stream_output_t* mut_stream,
+                               const frg_cli_choice_t* choice);

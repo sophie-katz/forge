@@ -17,14 +17,12 @@
 
 #include <forge/ast/node.h>
 #include <forge/enums.h>
-#include <forge/parsing/source.h>
 #include <forge/messages/message_buffer.h>
+#include <forge/parsing/source.h>
 #include <stdio.h>
 
 /// Parse code from \a source.
 ///
 /// Note that this is not thread safe!
-frg_ast_node_t* frg_parse(
-    frg_message_buffer_t* mut_message_buffer,
-    frg_parsing_source_t* mut_source
-);
+frg_ast_node_t* frg_parse(frg_message_buffer_t* mut_message_buffer,
+                          frg_parsing_source_t* mut_source);

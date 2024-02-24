@@ -15,35 +15,24 @@
 
 #pragma once
 
-#include <forge/streams/output.h>
 #include <forge/enums.h>
+#include <forge/streams/output.h>
 
-void frg_message_severity_print(
-    frg_stream_output_t* mut_stream,
-    frg_message_severity_t severity
-);
+void frg_message_severity_print(frg_stream_output_t* mut_stream,
+                                frg_message_severity_t severity);
 
-void frg_ast_node_type_int_flags_print(
-    frg_stream_output_t* mut_stream,
-    frg_ast_node_type_int_flags_t flags
-);
+void frg_ast_node_type_int_flags_print(frg_stream_output_t* mut_stream,
+                                       frg_ast_node_type_int_flags_t flags);
 
 void frg_ast_node_declaration_property_flags_print(
-    frg_stream_output_t* mut_stream,
-    frg_ast_node_declaration_property_flags_t flags
-);
+  frg_stream_output_t* mut_stream, frg_ast_node_declaration_property_flags_t flags);
 
 void frg_ast_node_declaration_interface_flags_print(
-    frg_stream_output_t* mut_stream,
-    frg_ast_node_declaration_interface_flags_t flags
-);
+  frg_stream_output_t* mut_stream, frg_ast_node_declaration_interface_flags_t flags);
 
 void frg_ast_node_declaration_function_argument_flags_print(
-    frg_stream_output_t* mut_stream,
-    frg_ast_node_declaration_function_argument_flags_t flags
-);
+  frg_stream_output_t* mut_stream,
+  frg_ast_node_declaration_function_argument_flags_t flags);
 
 void frg_ast_node_declaration_function_flags_print(
-    frg_stream_output_t* mut_stream,
-    frg_ast_node_declaration_function_flags_t flags
-);
+  frg_stream_output_t* mut_stream, frg_ast_node_declaration_function_flags_t flags);

@@ -1,0 +1,10 @@
+include/**/*.h
+lib/**/*.h
+lib/**/*.c
+lib/**/*.cpp
+src/**/*.h
+src/**/*.c
+src/**/*.cpp
+tests/**/*.h
+tests/**/*.c
+tests/**/*.cpp

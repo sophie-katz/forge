@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef int32_t frg_line_number_t;
 typedef int32_t frg_column_number_t;

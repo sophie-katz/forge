@@ -18,47 +18,37 @@
 #include <forge/ast/node.h>
 
 typedef struct {
-    GHashTable* _map_ast;
-    GHashTable* _map_ir;
+  GHashTable* _map_ast;
+  GHashTable* _map_ir;
 } frg_ast_scope_frame_t;
 
 frg_ast_scope_frame_t* frg_ast_scope_frame_new();
 
 void frg_ast_scope_frame_destroy(frg_ast_scope_frame_t* scope_frame);
 
-void frg_ast_scope_frame_add_ast(
-    frg_ast_scope_frame_t* mut_scope_frame,
-    frg_ast_node_t* node
-);
+void frg_ast_scope_frame_add_ast(frg_ast_scope_frame_t* mut_scope_frame,
+                                 frg_ast_node_t* node);
 
-frg_ast_node_t* frg_ast_scope_frame_get_ast(
-    frg_ast_scope_frame_t* mut_scope_frame,
-    const char* name
-);
+frg_ast_node_t* frg_ast_scope_frame_get_ast(frg_ast_scope_frame_t* mut_scope_frame,
+                                            const char* name);
 
-void frg_ast_scope_frame_add_ir(
-    frg_ast_scope_frame_t* mut_scope_frame,
-    const char* name,
-    void* ir
-);
+void frg_ast_scope_frame_add_ir(frg_ast_scope_frame_t* mut_scope_frame,
+                                const char* name,
+                                void* ir);
 
-void* frg_ast_scope_frame_get_ir(
-    frg_ast_scope_frame_t* mut_scope_frame,
-    const char* name
-);
+void* frg_ast_scope_frame_get_ir(frg_ast_scope_frame_t* mut_scope_frame,
+                                 const char* name);
 
 void frg_ast_scope_frame_load_declaration_block(
-    frg_ast_scope_frame_t* mut_scope_frame,
-    const frg_ast_node_declaration_block_t* block
-);
+  frg_ast_scope_frame_t* mut_scope_frame,
+  const frg_ast_node_declaration_block_t* block);
 
 void frg_ast_scope_frame_load_declaration_function_args(
-    frg_ast_scope_frame_t* mut_scope_frame,
-    const frg_ast_node_declaration_function_t* function
-);
+  frg_ast_scope_frame_t* mut_scope_frame,
+  const frg_ast_node_declaration_function_t* function);
 
 typedef struct {
-    GList* _frames;
+  GList* _frames;
 } frg_ast_scope_t;
 
 frg_ast_scope_t* frg_ast_scope_new();
@@ -69,37 +59,18 @@ void frg_ast_scope_push_frame(frg_ast_scope_t* mut_scope);
 
 void frg_ast_scope_pop_frame(frg_ast_scope_t* mut_scope);
 
-frg_ast_scope_frame_t* frg_ast_scope_get_current_frame(
-    frg_ast_scope_t* mut_scope
-);
+frg_ast_scope_frame_t* frg_ast_scope_get_current_frame(frg_ast_scope_t* mut_scope);
 
-void frg_ast_scope_add_ast(
-    frg_ast_scope_t* mut_scope,
-    frg_ast_node_t* node
-);
+void frg_ast_scope_add_ast(frg_ast_scope_t* mut_scope, frg_ast_node_t* node);
 
-frg_ast_node_t* frg_ast_scope_get_ast(
-    frg_ast_scope_t* mut_scope,
-    const char* name
-);
+frg_ast_node_t* frg_ast_scope_get_ast(frg_ast_scope_t* mut_scope, const char* name);
 
-void frg_ast_scope_add_ir(
-    frg_ast_scope_t* mut_scope,
-    const char* name,
-    void* ir
-);
+void frg_ast_scope_add_ir(frg_ast_scope_t* mut_scope, const char* name, void* ir);
 
-void* frg_ast_scope_get_ir(
-    frg_ast_scope_t* mut_scope,
-    const char* name
-);
+void* frg_ast_scope_get_ir(frg_ast_scope_t* mut_scope, const char* name);
 
 void frg_ast_scope_load_declaration_block(
-    frg_ast_scope_t* mut_scope,
-    const frg_ast_node_declaration_block_t* block
-);
+  frg_ast_scope_t* mut_scope, const frg_ast_node_declaration_block_t* block);
 
 void frg_ast_scope_load_declaration_function_args(
-    frg_ast_scope_t* mut_scope,
-    const frg_ast_node_declaration_function_t* function
-);
+  frg_ast_scope_t* mut_scope, const frg_ast_node_declaration_function_t* function);

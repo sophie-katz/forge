@@ -17,68 +17,46 @@
 
 #include <forge/ast/visitor.h>
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_type_function(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_type_function(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_union(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_declaration_union(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_property(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_declaration_property(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_interface(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_declaration_interface(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_function_argument(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_declaration_function_argument(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_declaration_function(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_declaration_function(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_character(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_value_character(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_string(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_value_string(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_call_keyword_argument(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_value_call_keyword_argument(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_value_call(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_value_call(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
-frg_ast_visitor_status_t frg_verification_supported_language_features_handle_enter_operator(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+frg_ast_visitor_status_t
+  frg_verification_supported_language_features_handle_enter_operator(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);

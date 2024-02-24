@@ -27,7 +27,8 @@ frg_ast_node_t* frg_ast_cloner_declaration_union(const frg_ast_node_t* node);
 frg_ast_node_t* frg_ast_cloner_declaration_structure(const frg_ast_node_t* node);
 frg_ast_node_t* frg_ast_cloner_declaration_property(const frg_ast_node_t* node);
 frg_ast_node_t* frg_ast_cloner_declaration_interface(const frg_ast_node_t* node);
-frg_ast_node_t* frg_ast_cloner_declaration_function_argument(const frg_ast_node_t* node);
+frg_ast_node_t* frg_ast_cloner_declaration_function_argument(
+  const frg_ast_node_t* node);
 frg_ast_node_t* frg_ast_cloner_declaration_function(const frg_ast_node_t* node);
 frg_ast_node_t* frg_ast_cloner_declaration_variable(const frg_ast_node_t* node);
 frg_ast_node_t* frg_ast_cloner_declaration_block(const frg_ast_node_t* node);

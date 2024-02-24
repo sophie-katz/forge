@@ -16,13 +16,13 @@
 #include <forge/types.h>
 
 bool frg_is_valid_base(frg_int_base_t base) {
-    return base == 2 || base == 8 || base == 10 || base == 16;
+  return base == 2 || base == 8 || base == 10 || base == 16;
 }
 
 bool frg_is_valid_bit_width_int(frg_bit_width_t bit_width) {
-    return bit_width == 8 || bit_width == 16 || bit_width == 32 || bit_width == 64;
+  return bit_width == 8 || bit_width == 16 || bit_width == 32 || bit_width == 64;
 }
 
 bool frg_is_valid_bit_width_float(frg_bit_width_t bit_width) {
-    return bit_width == 32 || bit_width == 64;
+  return bit_width == 32 || bit_width == 64;
 }

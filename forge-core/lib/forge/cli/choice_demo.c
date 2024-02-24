@@ -16,18 +16,16 @@
 #include <forge/cli/choice.h>
 
 int main() {
-    frg_stream_output_init();
+  frg_stream_output_init();
 
-    frg_cli_choice_t* choice = frg_cli_choice_new(
-        "option-name",
-        "A description of the choice"
-    );
-    
-    frg_cli_choice_print_help(frg_stream_output_get_stdout(), choice);
+  frg_cli_choice_t* choice
+    = frg_cli_choice_new("option-name", "A description of the choice");
 
-    frg_cli_choice_destroy(choice);
+  frg_cli_choice_print_help(frg_stream_output_get_stdout(), choice);
 
-    frg_stream_output_cleanup();
+  frg_cli_choice_destroy(choice);
 
-    return 0;
+  frg_stream_output_cleanup();
+
+  return 0;
 }

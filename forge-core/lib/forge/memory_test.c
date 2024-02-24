@@ -21,20 +21,20 @@ void setUp() {}
 void tearDown() {}
 
 void test_1_byte() {
-    void* ptr = frg_malloc(1);
-    TEST_ASSERT_NOT_NULL(ptr);
-    frg_free(ptr);
+  void* ptr = frg_malloc(1);
+  TEST_ASSERT_NOT_NULL(ptr);
+  frg_free(ptr);
 }
 
 void test_10_bytes() {
-    void* ptr = frg_malloc(10);
-    TEST_ASSERT_NOT_NULL(ptr);
-    frg_free(ptr);
+  void* ptr = frg_malloc(10);
+  TEST_ASSERT_NOT_NULL(ptr);
+  frg_free(ptr);
 }
 
 int main() {
-    UNITY_BEGIN();
-    RUN_TEST(test_1_byte);
-    RUN_TEST(test_10_bytes);
-    return UNITY_END();
+  UNITY_BEGIN();
+  RUN_TEST(test_1_byte);
+  RUN_TEST(test_10_bytes);
+  return UNITY_END();
 }

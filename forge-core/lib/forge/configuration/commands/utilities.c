@@ -17,23 +17,17 @@
 #include <forge/messages/codes.h>
 
 const char* frg_configuration_get_single_source_file_from_positional_arguments(
-    frg_message_buffer_t* mut_message_buffer,
-    const GList* positional_arguments
-) {
-    if (positional_arguments == NULL) {
-        frg_message_emit_fc_4_expects_source_file(
-            mut_message_buffer
-        );
+  frg_message_buffer_t* mut_message_buffer, const GList* positional_arguments) {
+  if (positional_arguments == NULL) {
+    frg_message_emit_fc_4_expects_source_file(mut_message_buffer);
 
-        return NULL;
-    } else if (positional_arguments->next != NULL) {
-        frg_message_emit_fc_5_expects_only_one_source_file(
-            mut_message_buffer,
-            (const char*)positional_arguments->next->data
-        );
+    return NULL;
+  } else if (positional_arguments->next != NULL) {
+    frg_message_emit_fc_5_expects_only_one_source_file(
+      mut_message_buffer, (const char*)positional_arguments->next->data);
 
-        return NULL;
-    } else {
-        return (const char*)positional_arguments->data;
-    }
+    return NULL;
+  } else {
+    return (const char*)positional_arguments->data;
+  }
 }

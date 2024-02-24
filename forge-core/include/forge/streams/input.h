@@ -15,33 +15,26 @@
 
 #pragma once
 
+#include <forge/enums.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <forge/enums.h>
 
 typedef struct {
-    frg_stream_input_flags_t _flags;
-    FILE* _file;
-    char* _text;
-    size_t _length;
-    char* _text_offset;
+  frg_stream_input_flags_t _flags;
+  FILE* _file;
+  char* _text;
+  size_t _length;
+  char* _text_offset;
 } frg_stream_input_t;
 
-frg_stream_input_t* frg_stream_input_new_file(
-    FILE* file,
-    frg_stream_input_flags_t flags
-);
+frg_stream_input_t* frg_stream_input_new_file(FILE* file,
+                                              frg_stream_input_flags_t flags);
 
-frg_stream_input_t* frg_stream_input_new_buffer(
-    char* text,
-    frg_stream_input_flags_t flags
-);
+frg_stream_input_t* frg_stream_input_new_buffer(char* text,
+                                                frg_stream_input_flags_t flags);
 
 frg_stream_input_t* frg_stream_input_new_buffer_with_length(
-    char* text,
-    size_t length,
-    frg_stream_input_flags_t flags
-);
+  char* text, size_t length, frg_stream_input_flags_t flags);
 
 void frg_stream_input_destroy(frg_stream_input_t* input);
 
@@ -57,11 +50,9 @@ char frg_stream_input_peek_character(frg_stream_input_t* mut_input);
 
 char frg_stream_input_read_character(frg_stream_input_t* mut_input);
 
-size_t frg_stream_input_read_into_buffer(
-    frg_stream_input_t* mut_input,
-    char* mut_buffer,
-    size_t length
-);
+size_t frg_stream_input_read_into_buffer(frg_stream_input_t* mut_input,
+                                         char* mut_buffer,
+                                         size_t length);
 
 size_t frg_stream_input_get_offset(const frg_stream_input_t* input);
 

@@ -13,49 +13,51 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/ast/declaration_name_getters.h>
 #include <forge/assert.h>
+#include <forge/ast/declaration_name_getters.h>
 #include <forge/memory.h>
 
 const char* frg_ast_declaration_name_getter_union(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
 
-    return ((const frg_ast_node_declaration_union_t*)node)->name->str;
+  return ((const frg_ast_node_declaration_union_t*)node)->name->str;
 }
 
 const char* frg_ast_declaration_name_getter_structure(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
 
-    return ((const frg_ast_node_declaration_structure_t*)node)->name->str;
+  return ((const frg_ast_node_declaration_structure_t*)node)->name->str;
 }
 
 const char* frg_ast_declaration_name_getter_property(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
 
-    return ((const frg_ast_node_declaration_property_t*)node)->name->str;
+  return ((const frg_ast_node_declaration_property_t*)node)->name->str;
 }
 
 const char* frg_ast_declaration_name_getter_interface(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
 
-    return ((const frg_ast_node_declaration_interface_t*)node)->name->str;
+  return ((const frg_ast_node_declaration_interface_t*)node)->name->str;
 }
 
 const char* frg_ast_declaration_name_getter_function(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
 
-    return ((const frg_ast_node_declaration_function_t*)node)->name->str;
+  return ((const frg_ast_node_declaration_function_t*)node)->name->str;
 }
 
 const char* frg_ast_declaration_name_getter_variable(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
 
-    return ((const frg_ast_node_declaration_property_t*)(((const frg_ast_node_declaration_variable_t*)node)->property))->name->str;
+  return ((const frg_ast_node_declaration_property_t*)(((const frg_ast_node_declaration_variable_t*)
+                                                          node)
+                                                         ->property))
+    ->name->str;
 }
-

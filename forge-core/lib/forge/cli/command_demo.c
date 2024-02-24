@@ -15,34 +15,30 @@
 
 #include <forge/cli/command.h>
 
-int callback_command(
-    frg_message_buffer_t* mut_message_buffer,
-    void* mut_user_data,
-    const frg_cli_program_t* program,
-    const GList* positional_arguments
-) {
-    return 0;
+int callback_command(frg_message_buffer_t* mut_message_buffer,
+                     void* mut_user_data,
+                     const frg_cli_program_t* program,
+                     const GList* positional_arguments) {
+  return 0;
 }
 
-bool callback_option(frg_message_buffer_t* mut_message_buffer, void* mut_user_data, const char* value) {
-    return true;
+bool callback_option(frg_message_buffer_t* mut_message_buffer,
+                     void* mut_user_data,
+                     const char* value) {
+  return true;
 }
 
 int main() {
-    frg_stream_output_init();
+  frg_stream_output_init();
 
-    frg_cli_command_t* command = frg_cli_command_new(
-        "command",
-        NULL,
-        "A description of the command",
-        callback_command
-    );
+  frg_cli_command_t* command = frg_cli_command_new(
+    "command", NULL, "A description of the command", callback_command);
 
-    frg_cli_command_print_help(frg_stream_output_get_stdout(), command);
+  frg_cli_command_print_help(frg_stream_output_get_stdout(), command);
 
-    frg_cli_command_destroy(command);
+  frg_cli_command_destroy(command);
 
-    frg_stream_output_cleanup();
+  frg_stream_output_cleanup();
 
-    return 0;
+  return 0;
 }

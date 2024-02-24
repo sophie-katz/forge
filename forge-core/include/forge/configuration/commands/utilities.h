@@ -20,6 +20,4 @@
 #include <glib.h>
 
 const char* frg_configuration_get_single_source_file_from_positional_arguments(
-    frg_message_buffer_t* mut_message_buffer,
-    const GList* positional_arguments
-);
+  frg_message_buffer_t* mut_message_buffer, const GList* positional_arguments);

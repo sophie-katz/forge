@@ -21,19 +21,19 @@ void setUp() {}
 void tearDown() {}
 
 void test_get_uint32_digit_count() {
-    TEST_ASSERT_EQUAL(1, frg_get_uint32_digit_count(0));
-    TEST_ASSERT_EQUAL(1, frg_get_uint32_digit_count(1));
-    TEST_ASSERT_EQUAL(1, frg_get_uint32_digit_count(9));
-    TEST_ASSERT_EQUAL(2, frg_get_uint32_digit_count(10));
-    TEST_ASSERT_EQUAL(2, frg_get_uint32_digit_count(99));
-    TEST_ASSERT_EQUAL(3, frg_get_uint32_digit_count(100));
-    TEST_ASSERT_EQUAL(3, frg_get_uint32_digit_count(999));
-    TEST_ASSERT_EQUAL(4, frg_get_uint32_digit_count(1000));
-    TEST_ASSERT_EQUAL(10, frg_get_uint32_digit_count(UINT32_MAX));
+  TEST_ASSERT_EQUAL(1, frg_get_uint32_digit_count(0));
+  TEST_ASSERT_EQUAL(1, frg_get_uint32_digit_count(1));
+  TEST_ASSERT_EQUAL(1, frg_get_uint32_digit_count(9));
+  TEST_ASSERT_EQUAL(2, frg_get_uint32_digit_count(10));
+  TEST_ASSERT_EQUAL(2, frg_get_uint32_digit_count(99));
+  TEST_ASSERT_EQUAL(3, frg_get_uint32_digit_count(100));
+  TEST_ASSERT_EQUAL(3, frg_get_uint32_digit_count(999));
+  TEST_ASSERT_EQUAL(4, frg_get_uint32_digit_count(1000));
+  TEST_ASSERT_EQUAL(10, frg_get_uint32_digit_count(UINT32_MAX));
 }
 
 int main() {
-    UNITY_BEGIN();
-    RUN_TEST(test_get_uint32_digit_count);
-    return UNITY_END();
+  UNITY_BEGIN();
+  RUN_TEST(test_get_uint32_digit_count);
+  return UNITY_END();
 }

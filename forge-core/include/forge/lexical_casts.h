@@ -16,77 +16,61 @@
 #pragma once
 
 #include <forge/enums.h>
+#include <forge/messages/message_buffer.h>
+#include <forge/parsing/token_reader.h>
 #include <forge/types.h>
 #include <glib.h>
-#include <forge/parsing/token_reader.h>
-#include <forge/messages/message_buffer.h>
 
 bool frg_is_char_printable(frg_character_t value);
 
 void frg_print_character(frg_stream_output_t* mut_stream, frg_character_t value);
 
-bool frg_parse_character(
-    frg_character_t* out_value,
-    frg_message_buffer_t* mut_message_buffer,
-    frg_parsing_token_reader_t* mut_reader
-);
+bool frg_parse_character(frg_character_t* out_value,
+                         frg_message_buffer_t* mut_message_buffer,
+                         frg_parsing_token_reader_t* mut_reader);
 
 void frg_print_string(frg_stream_output_t* mut_stream, const char* value);
 
-bool frg_parse_string(
-    GString** out_value,
-    frg_message_buffer_t* mut_message_buffer,
-    frg_parsing_token_reader_t* mut_reader
-);
+bool frg_parse_string(GString** out_value,
+                      frg_message_buffer_t* mut_message_buffer,
+                      frg_parsing_token_reader_t* mut_reader);
 
-void frg_print_uint(
-    frg_stream_output_t* mut_stream,
-    uint64_t value,
-    frg_int_base_t base
-);
+void frg_print_uint(frg_stream_output_t* mut_stream,
+                    uint64_t value,
+                    frg_int_base_t base);
 
-void frg_print_uint_with_suffix(
-    frg_stream_output_t* mut_stream,
-    uint64_t value,
-    frg_int_base_t base,
-    bool is_signed,
-    frg_bit_width_t bit_width
-);
+void frg_print_uint_with_suffix(frg_stream_output_t* mut_stream,
+                                uint64_t value,
+                                frg_int_base_t base,
+                                bool is_signed,
+                                frg_bit_width_t bit_width);
 
 typedef struct {
-    uint64_t value;
-    bool is_signed;
-    frg_bit_width_t bit_width;
+  uint64_t value;
+  bool is_signed;
+  frg_bit_width_t bit_width;
 } frg_parse_uint_result_t;
 
-bool frg_parse_uint(
-    frg_parse_uint_result_t* out_result,
-    frg_message_buffer_t* mut_message_buffer,
-    frg_parsing_token_reader_t* mut_reader
-);
+bool frg_parse_uint(frg_parse_uint_result_t* out_result,
+                    frg_message_buffer_t* mut_message_buffer,
+                    frg_parsing_token_reader_t* mut_reader);
 
-void frg_print_float(
-    frg_stream_output_t* mut_stream,
-    frg_f64_t value,
-    frg_int_base_t base,
-    bool scientific_notation
-);
+void frg_print_float(frg_stream_output_t* mut_stream,
+                     frg_f64_t value,
+                     frg_int_base_t base,
+                     bool scientific_notation);
 
-void frg_print_float_with_suffix(
-    frg_stream_output_t* mut_stream,
-    frg_f64_t value,
-    frg_int_base_t base,
-    bool scientific_notation,
-    frg_bit_width_t bit_width
-);
+void frg_print_float_with_suffix(frg_stream_output_t* mut_stream,
+                                 frg_f64_t value,
+                                 frg_int_base_t base,
+                                 bool scientific_notation,
+                                 frg_bit_width_t bit_width);
 
 typedef struct {
-    frg_f64_t value;
-    frg_bit_width_t bit_width;
+  frg_f64_t value;
+  frg_bit_width_t bit_width;
 } frg_parse_float_result_t;
 
-bool frg_parse_float(
-    frg_parse_float_result_t* out_result,
-    frg_message_buffer_t* mut_message_buffer,
-    frg_parsing_token_reader_t* mut_reader
-);
+bool frg_parse_float(frg_parse_float_result_t* out_result,
+                     frg_message_buffer_t* mut_message_buffer,
+                     frg_parsing_token_reader_t* mut_reader);

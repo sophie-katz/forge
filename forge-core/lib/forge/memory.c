@@ -13,23 +13,23 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/memory.h>
 #include <forge/assert.h>
-#include <stdlib.h>
+#include <forge/memory.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void* frg_malloc(size_t size) {
-    void* ptr = malloc(size);
+  void* ptr = malloc(size);
 
-    if (ptr == NULL) {
-        frg_die("out of memory");
-    }
+  if (ptr == NULL) {
+    frg_die("out of memory");
+  }
 
-    return ptr;
+  return ptr;
 }
 
 void frg_free(void* ptr) {
-    frg_assert_pointer_non_null(ptr);
+  frg_assert_pointer_non_null(ptr);
 
-    free(ptr);
+  free(ptr);
 }

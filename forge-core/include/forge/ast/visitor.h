@@ -18,13 +18,10 @@
 #include <forge/ast/node.h>
 
 typedef frg_ast_visitor_status_t (*frg_ast_visitor_callback_t)(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+  frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
 typedef struct {
-    frg_ast_visitor_callback_t event_callbacks[FRG_AST_VISITOR_EVENT_COUNT];
+  frg_ast_visitor_callback_t event_callbacks[FRG_AST_VISITOR_EVENT_COUNT];
 } frg_ast_visitor_handler_t;
 
 frg_ast_visitor_handler_t* frg_ast_visitor_handler_new();
@@ -32,27 +29,21 @@ frg_ast_visitor_handler_t* frg_ast_visitor_handler_new();
 void frg_ast_visitor_handler_destroy(frg_ast_visitor_handler_t* handler);
 
 typedef struct {
-    GList* _handlers[FRG_AST_NODE_KIND_COUNT];
-    void* _mut_user_data;
+  GList* _handlers[FRG_AST_NODE_KIND_COUNT];
+  void* _mut_user_data;
 } frg_ast_visitor_t;
 
 frg_ast_visitor_t* frg_ast_visitor_new(void* mut_user_data);
 
 void frg_ast_visitor_destroy(frg_ast_visitor_t* visitor);
 
-frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(
-    frg_ast_visitor_t* mut_visitor,
-    frg_ast_node_kind_t node_kind
-);
+frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(frg_ast_visitor_t* mut_visitor,
+                                                       frg_ast_node_kind_t node_kind);
 
-frg_ast_visitor_status_t frg_ast_visitor_handle_event(
-    frg_ast_node_t** mut_node,
-    const frg_ast_visitor_t* visitor,
-    const GList* parents,
-    frg_ast_visitor_event_t event
-);
+frg_ast_visitor_status_t frg_ast_visitor_handle_event(frg_ast_node_t** mut_node,
+                                                      const frg_ast_visitor_t* visitor,
+                                                      const GList* parents,
+                                                      frg_ast_visitor_event_t event);
 
-frg_ast_visitor_status_t frg_ast_accept(
-    frg_ast_node_t** mut_node,
-    const frg_ast_visitor_t* visitor
-);
+frg_ast_visitor_status_t frg_ast_accept(frg_ast_node_t** mut_node,
+                                        const frg_ast_visitor_t* visitor);

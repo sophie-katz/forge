@@ -18,7 +18,4 @@
 #include <forge/ast/visitor.h>
 
 frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_type_symbol(
-    frg_ast_node_t** mut_node,
-    void* mut_user_data,
-    const GList* parents
-);
+  frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);

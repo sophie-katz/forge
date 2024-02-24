@@ -20,10 +20,8 @@
 #include <forge/messages/message_buffer.h>
 #include <glib.h>
 
-bool frg_link(
-    frg_message_buffer_t* mut_message_buffer,
-    const frg_linking_configuration_t* configuration,
-    frg_linking_mode_t mode,
-    const char* output_path,
-    const GList* objects
-);
+bool frg_link(frg_message_buffer_t* mut_message_buffer,
+              const frg_linking_configuration_t* configuration,
+              frg_linking_mode_t mode,
+              const char* output_path,
+              const GList* objects);

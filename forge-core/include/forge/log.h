@@ -22,18 +22,9 @@ extern bool frg_global_log_enabled;
 frg_stream_output_t* frg_log_stream_get();
 
 bool _frg_log_event(
-    const char* file,
-    int line_number,
-    const char* function,
-    const char* format,
-    ...
-);
+  const char* file, int line_number, const char* function, const char* format, ...);
 
-#define frg_log_event(format, ...) \
-    _frg_log_event(__FILE__, __LINE__, __func__, format, ##__VA_ARGS__)
+#define frg_log_event(format, ...)                                                     \
+  _frg_log_event(__FILE__, __LINE__, __func__, format, ##__VA_ARGS__)
 
-void frg_log_property(
-    const char* name,
-    const char* format,
-    ...
-);
+void frg_log_property(const char* name, const char* format, ...);

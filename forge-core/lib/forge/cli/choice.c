@@ -14,50 +14,36 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/assert.h>
-#include <forge/memory.h>
 #include <forge/cli/choice.h>
+#include <forge/memory.h>
 
-frg_cli_choice_t* frg_cli_choice_new(
-    const char* name,
-    const char* help
-) {
-    frg_assert_string_non_empty(name);
-    frg_assert_string_non_empty(help);
+frg_cli_choice_t* frg_cli_choice_new(const char* name, const char* help) {
+  frg_assert_string_non_empty(name);
+  frg_assert_string_non_empty(help);
 
-    frg_cli_choice_t* choice = frg_malloc(
-        sizeof(frg_cli_choice_t)
-    );
+  frg_cli_choice_t* choice = frg_malloc(sizeof(frg_cli_choice_t));
 
-    choice->name = name;
-    choice->help = help;
+  choice->name             = name;
+  choice->help             = help;
 
-    return choice;
+  return choice;
 }
 
-void frg_cli_choice_destroy(
-    frg_cli_choice_t* choice
-) {
-    frg_free(choice);
+void frg_cli_choice_destroy(frg_cli_choice_t* choice) {
+  frg_free(choice);
 }
 
-void frg_cli_choice_print_help(
-    frg_stream_output_t* mut_stream,
-    const frg_cli_choice_t* choice
-) {
-    frg_assert_pointer_non_null(choice);
+void frg_cli_choice_print_help(frg_stream_output_t* mut_stream,
+                               const frg_cli_choice_t* choice) {
+  frg_assert_pointer_non_null(choice);
 
-    frg_stream_output_write_printf(
-        mut_stream,
-        "      %s ",
-        frg_stream_output_choose_ascii_or_unicode(
-            mut_stream,
-            "-",
-            "•"
-        )
-    );
+  frg_stream_output_write_printf(
+    mut_stream,
+    "      %s ",
+    frg_stream_output_choose_ascii_or_unicode(mut_stream, "-", "•"));
 
-    frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
-    frg_stream_output_write_string(mut_stream, choice->name);
-    frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);
-    frg_stream_output_write_printf(mut_stream, " (%s)\n", choice->help);
+  frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BOLD);
+  frg_stream_output_write_string(mut_stream, choice->name);
+  frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);
+  frg_stream_output_write_printf(mut_stream, " (%s)\n", choice->help);
 }

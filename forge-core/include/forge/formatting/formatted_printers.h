@@ -15,53 +15,39 @@
 
 #pragma once
 
-#include <forge/streams/output.h>
 #include <forge/ast/node.h>
+#include <forge/streams/output.h>
 
-void frg_formatting_formatted_printer_type_bool(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_formatted_printer_type_bool(frg_stream_output_t* mut_stream,
+                                                const frg_ast_node_t* node,
+                                                frg_indentation_t indentation);
 
-void frg_formatting_formatted_printer_type_int(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_formatted_printer_type_int(frg_stream_output_t* mut_stream,
+                                               const frg_ast_node_t* node,
+                                               frg_indentation_t indentation);
 
-void frg_formatting_formatted_printer_type_float(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_formatted_printer_type_float(frg_stream_output_t* mut_stream,
+                                                 const frg_ast_node_t* node,
+                                                 frg_indentation_t indentation);
 
-void frg_formatting_formatted_printer_type_symbol(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_formatted_printer_type_symbol(frg_stream_output_t* mut_stream,
+                                                  const frg_ast_node_t* node,
+                                                  frg_indentation_t indentation);
 
-void frg_formatting_formatted_printer_type_pointer(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_formatted_printer_type_pointer(frg_stream_output_t* mut_stream,
+                                                   const frg_ast_node_t* node,
+                                                   frg_indentation_t indentation);
 
-void frg_formatting_formatted_printer_type_function(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_formatted_printer_type_function(frg_stream_output_t* mut_stream,
+                                                    const frg_ast_node_t* node,
+                                                    frg_indentation_t indentation);
 
 void frg_formatting_formatted_printer_declaration_property(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  frg_indentation_t indentation);
 
 void frg_formatting_formatted_printer_declaration_function_argument(
-    frg_stream_output_t *mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  frg_indentation_t indentation);

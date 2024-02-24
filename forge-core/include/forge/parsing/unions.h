@@ -19,16 +19,16 @@
 #include <forge/parsing/domain.h>
 
 typedef struct {
-    frg_parsing_range_t source_range;
-    frg_parse_uint_result_t value;
+  frg_parsing_range_t source_range;
+  frg_parse_uint_result_t value;
 } frg_parsing_union_uint_t;
 
 typedef struct {
-    frg_parsing_range_t source_range;
-    frg_parse_float_result_t value;
+  frg_parsing_range_t source_range;
+  frg_parse_float_result_t value;
 } frg_parsing_union_float_t;
 
 typedef struct {
-    frg_parsing_range_t source_range;
-    GString* value;
+  frg_parsing_range_t source_range;
+  GString* value;
 } frg_parsing_union_symbol_t;

@@ -13,391 +13,453 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/assert.h>
 #include <forge/ast/cloners.h>
 #include <forge/ast/node_kind_info.h>
-#include <forge/assert.h>
-#include <forge/memory.h>
 #include <forge/ast/utilities.h>
+#include <forge/memory.h>
 
 GList* _frg_ast_cloner_clone_list(const GList* list) {
-    GList* clone = NULL;
+  GList* clone = NULL;
 
-    for (const GList* it = list; it != NULL; it = it->next) {
-        clone = g_list_append(clone, frg_ast_clone((frg_ast_node_t*)it->data));
-    }
+  for (const GList* it = list; it != NULL; it = it->next) {
+    clone = g_list_append(clone, frg_ast_clone((frg_ast_node_t*)it->data));
+  }
 
-    return clone;
+  return clone;
 }
 
 frg_ast_node_t* frg_ast_cloner_type_bool(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_BOOL);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_BOOL);
 
-    frg_ast_node_t* result = frg_malloc(sizeof(frg_ast_node_t));
+  frg_ast_node_t* result = frg_malloc(sizeof(frg_ast_node_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    return result;
+  return result;
 }
 
 frg_ast_node_t* frg_ast_cloner_type_int(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_INT);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_INT);
 
-    frg_ast_node_type_int_t* result = frg_malloc(sizeof(frg_ast_node_type_int_t));
+  frg_ast_node_type_int_t* result = frg_malloc(sizeof(frg_ast_node_type_int_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_type_int_t));
+  memcpy(result, node, sizeof(frg_ast_node_type_int_t));
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_type_float(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FLOAT);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FLOAT);
 
-    frg_ast_node_type_float_t* result = frg_malloc(sizeof(frg_ast_node_type_float_t));
+  frg_ast_node_type_float_t* result = frg_malloc(sizeof(frg_ast_node_type_float_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_type_float_t));
+  memcpy(result, node, sizeof(frg_ast_node_type_float_t));
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_type_symbol(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_SYMBOL);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_SYMBOL);
 
-    frg_ast_node_type_symbol_t* result = frg_malloc(sizeof(frg_ast_node_type_symbol_t));
+  frg_ast_node_type_symbol_t* result = frg_malloc(sizeof(frg_ast_node_type_symbol_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->name = g_string_new_len(((const frg_ast_node_type_symbol_t*)node)->name->str, ((const frg_ast_node_type_symbol_t*)node)->name->len);
+  result->name = g_string_new_len(((const frg_ast_node_type_symbol_t*)node)->name->str,
+                                  ((const frg_ast_node_type_symbol_t*)node)->name->len);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_type_pointer(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_POINTER);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_POINTER);
 
-    frg_ast_node_type_pointer_t* result = frg_malloc(sizeof(frg_ast_node_type_pointer_t));
+  frg_ast_node_type_pointer_t* result = frg_malloc(sizeof(frg_ast_node_type_pointer_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->value = frg_ast_clone(((const frg_ast_node_type_pointer_t*)node)->value);
+  result->value = frg_ast_clone(((const frg_ast_node_type_pointer_t*)node)->value);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_type_function(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
 
-    frg_ast_node_type_function_t* result = frg_malloc(sizeof(frg_ast_node_type_function_t));
+  frg_ast_node_type_function_t* result
+    = frg_malloc(sizeof(frg_ast_node_type_function_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->arguments = _frg_ast_cloner_clone_list(((const frg_ast_node_type_function_t*)node)->arguments);
-    result->variadic_positional_arguments = frg_ast_clone(((const frg_ast_node_type_function_t*)node)->variadic_positional_arguments);
-    result->variadic_keyword_arguments = frg_ast_clone(((const frg_ast_node_type_function_t*)node)->variadic_keyword_arguments);
-    result->return_type = frg_ast_clone(((const frg_ast_node_type_function_t*)node)->return_type);
+  result->arguments = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_type_function_t*)node)->arguments);
+  result->variadic_positional_arguments = frg_ast_clone(
+    ((const frg_ast_node_type_function_t*)node)->variadic_positional_arguments);
+  result->variadic_keyword_arguments = frg_ast_clone(
+    ((const frg_ast_node_type_function_t*)node)->variadic_keyword_arguments);
+  result->return_type
+    = frg_ast_clone(((const frg_ast_node_type_function_t*)node)->return_type);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_union(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
 
-    frg_ast_node_declaration_union_t* result = frg_malloc(sizeof(frg_ast_node_declaration_union_t));
+  frg_ast_node_declaration_union_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_union_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->name = g_string_new_len(((const frg_ast_node_declaration_union_t*)node)->name->str, ((const frg_ast_node_declaration_union_t*)node)->name->len);
-    result->properties = _frg_ast_cloner_clone_list(((const frg_ast_node_declaration_union_t*)node)->properties);
+  result->name
+    = g_string_new_len(((const frg_ast_node_declaration_union_t*)node)->name->str,
+                       ((const frg_ast_node_declaration_union_t*)node)->name->len);
+  result->properties = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_declaration_union_t*)node)->properties);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_structure(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
 
-    frg_ast_node_declaration_structure_t* result = frg_malloc(sizeof(frg_ast_node_declaration_structure_t));
+  frg_ast_node_declaration_structure_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_structure_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->name = g_string_new_len(((const frg_ast_node_declaration_structure_t*)node)->name->str, ((const frg_ast_node_declaration_structure_t*)node)->name->len);
-    result->declarations = _frg_ast_cloner_clone_list(((const frg_ast_node_declaration_structure_t*)node)->declarations);
+  result->name
+    = g_string_new_len(((const frg_ast_node_declaration_structure_t*)node)->name->str,
+                       ((const frg_ast_node_declaration_structure_t*)node)->name->len);
+  result->declarations = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_declaration_structure_t*)node)->declarations);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_property(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_PROPERTY);
 
-    frg_ast_node_declaration_property_t* result = frg_malloc(sizeof(frg_ast_node_declaration_property_t));
+  frg_ast_node_declaration_property_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_property_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->flags = ((const frg_ast_node_declaration_property_t*)node)->flags;
-    result->name = g_string_new_len(((const frg_ast_node_declaration_property_t*)node)->name->str, ((const frg_ast_node_declaration_property_t*)node)->name->len);
-    result->type = frg_ast_clone(((const frg_ast_node_declaration_property_t*)node)->type);
+  result->flags = ((const frg_ast_node_declaration_property_t*)node)->flags;
+  result->name
+    = g_string_new_len(((const frg_ast_node_declaration_property_t*)node)->name->str,
+                       ((const frg_ast_node_declaration_property_t*)node)->name->len);
+  result->type
+    = frg_ast_clone(((const frg_ast_node_declaration_property_t*)node)->type);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_interface(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_INTERFACE);
 
-    frg_ast_node_declaration_interface_t* result = frg_malloc(sizeof(frg_ast_node_declaration_interface_t));
+  frg_ast_node_declaration_interface_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_interface_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->flags = ((const frg_ast_node_declaration_interface_t*)node)->flags;
-    result->name = g_string_new_len(((const frg_ast_node_declaration_interface_t*)node)->name->str, ((const frg_ast_node_declaration_interface_t*)node)->name->len);
-    result->extends = _frg_ast_cloner_clone_list(((const frg_ast_node_declaration_interface_t*)node)->extends);
-    result->declarations = _frg_ast_cloner_clone_list(((const frg_ast_node_declaration_interface_t*)node)->declarations);
+  result->flags = ((const frg_ast_node_declaration_interface_t*)node)->flags;
+  result->name
+    = g_string_new_len(((const frg_ast_node_declaration_interface_t*)node)->name->str,
+                       ((const frg_ast_node_declaration_interface_t*)node)->name->len);
+  result->extends = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_declaration_interface_t*)node)->extends);
+  result->declarations = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_declaration_interface_t*)node)->declarations);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
-frg_ast_node_t* frg_ast_cloner_declaration_function_argument(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
+frg_ast_node_t* frg_ast_cloner_declaration_function_argument(
+  const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT);
 
-    frg_ast_node_declaration_function_argument_t* result = frg_malloc(sizeof(frg_ast_node_declaration_function_argument_t));
+  frg_ast_node_declaration_function_argument_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_function_argument_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->flags = ((const frg_ast_node_declaration_function_argument_t*)node)->flags;
-    result->property = (frg_ast_node_declaration_property_t*)frg_ast_clone((const frg_ast_node_t*)((const frg_ast_node_declaration_function_argument_t*)node)->property);
-    result->default_value = frg_ast_clone(((const frg_ast_node_declaration_function_argument_t*)node)->default_value);
+  result->flags    = ((const frg_ast_node_declaration_function_argument_t*)node)->flags;
+  result->property = (frg_ast_node_declaration_property_t*)frg_ast_clone(
+    (const frg_ast_node_t*)((const frg_ast_node_declaration_function_argument_t*)node)
+      ->property);
+  result->default_value = frg_ast_clone(
+    ((const frg_ast_node_declaration_function_argument_t*)node)->default_value);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_function(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
 
-    frg_ast_node_declaration_function_t* result = frg_malloc(sizeof(frg_ast_node_declaration_function_t));
+  frg_ast_node_declaration_function_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_function_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->flags = ((const frg_ast_node_declaration_function_t*)node)->flags;
-    result->name = g_string_new_len(((const frg_ast_node_declaration_function_t*)node)->name->str, ((const frg_ast_node_declaration_function_t*)node)->name->len);
-    result->type = (frg_ast_node_type_function_t*)frg_ast_clone((const frg_ast_node_t*)((const frg_ast_node_declaration_function_t*)node)->type);
-    result->body = frg_ast_clone(((const frg_ast_node_declaration_function_t*)node)->body);
+  result->flags = ((const frg_ast_node_declaration_function_t*)node)->flags;
+  result->name
+    = g_string_new_len(((const frg_ast_node_declaration_function_t*)node)->name->str,
+                       ((const frg_ast_node_declaration_function_t*)node)->name->len);
+  result->type = (frg_ast_node_type_function_t*)frg_ast_clone(
+    (const frg_ast_node_t*)((const frg_ast_node_declaration_function_t*)node)->type);
+  result->body
+    = frg_ast_clone(((const frg_ast_node_declaration_function_t*)node)->body);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_variable(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
 
-    frg_ast_node_declaration_variable_t* result = frg_malloc(sizeof(frg_ast_node_declaration_variable_t));
+  frg_ast_node_declaration_variable_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_variable_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->property = (frg_ast_node_declaration_property_t*)frg_ast_clone((const frg_ast_node_t*)((const frg_ast_node_declaration_variable_t*)node)->property);
-    result->initial_value = frg_ast_clone(((const frg_ast_node_declaration_variable_t*)node)->initial_value);
+  result->property = (frg_ast_node_declaration_property_t*)frg_ast_clone(
+    (const frg_ast_node_t*)((const frg_ast_node_declaration_variable_t*)node)
+      ->property);
+  result->initial_value
+    = frg_ast_clone(((const frg_ast_node_declaration_variable_t*)node)->initial_value);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_declaration_block(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_BLOCK);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_BLOCK);
 
-    frg_ast_node_declaration_block_t* result = frg_malloc(sizeof(frg_ast_node_declaration_block_t));
+  frg_ast_node_declaration_block_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_block_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->declarations = _frg_ast_cloner_clone_list(((const frg_ast_node_declaration_block_t*)node)->declarations);
+  result->declarations = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_declaration_block_t*)node)->declarations);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_statement_return(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_RETURN);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_RETURN);
 
-    frg_ast_node_statement_return_t* result = frg_malloc(sizeof(frg_ast_node_statement_return_t));
+  frg_ast_node_statement_return_t* result
+    = frg_malloc(sizeof(frg_ast_node_statement_return_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->value = frg_ast_clone(((const frg_ast_node_statement_return_t*)node)->value);
+  result->value = frg_ast_clone(((const frg_ast_node_statement_return_t*)node)->value);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_statement_if(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_IF);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_IF);
 
-    frg_ast_node_statement_if_t* result = frg_malloc(sizeof(frg_ast_node_statement_if_t));
+  frg_ast_node_statement_if_t* result = frg_malloc(sizeof(frg_ast_node_statement_if_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->condition = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->condition);
-    result->then_clause = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->then_clause);
-    result->else_clause = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->else_clause);
+  result->condition
+    = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->condition);
+  result->then_clause
+    = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->then_clause);
+  result->else_clause
+    = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->else_clause);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_statement_while(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_WHILE);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_WHILE);
 
-    frg_ast_node_statement_while_t* result = frg_malloc(sizeof(frg_ast_node_statement_while_t));
+  frg_ast_node_statement_while_t* result
+    = frg_malloc(sizeof(frg_ast_node_statement_while_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->condition = frg_ast_clone(((const frg_ast_node_statement_while_t*)node)->condition);
-    result->body = frg_ast_clone(((const frg_ast_node_statement_while_t*)node)->body);
+  result->condition
+    = frg_ast_clone(((const frg_ast_node_statement_while_t*)node)->condition);
+  result->body = frg_ast_clone(((const frg_ast_node_statement_while_t*)node)->body);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_statement_block(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_BLOCK);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_BLOCK);
 
-    frg_ast_node_statement_block_t* result = frg_malloc(sizeof(frg_ast_node_statement_block_t));
+  frg_ast_node_statement_block_t* result
+    = frg_malloc(sizeof(frg_ast_node_statement_block_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->statements = _frg_ast_cloner_clone_list(((const frg_ast_node_statement_block_t*)node)->statements);
+  result->statements = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_statement_block_t*)node)->statements);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_bool(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_BOOL);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_BOOL);
 
-    frg_ast_node_value_bool_t* result = frg_malloc(sizeof(frg_ast_node_value_bool_t));
+  frg_ast_node_value_bool_t* result = frg_malloc(sizeof(frg_ast_node_value_bool_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_value_bool_t));
+  memcpy(result, node, sizeof(frg_ast_node_value_bool_t));
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_int(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_INT);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_INT);
 
-    frg_ast_node_value_int_t* result = frg_malloc(sizeof(frg_ast_node_value_int_t));
+  frg_ast_node_value_int_t* result = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_value_int_t));
+  memcpy(result, node, sizeof(frg_ast_node_value_int_t));
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_float(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_FLOAT);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_FLOAT);
 
-    frg_ast_node_value_float_t* result = frg_malloc(sizeof(frg_ast_node_value_float_t));
+  frg_ast_node_value_float_t* result = frg_malloc(sizeof(frg_ast_node_value_float_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_value_float_t));
+  memcpy(result, node, sizeof(frg_ast_node_value_float_t));
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_character(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CHARACTER);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CHARACTER);
 
-    frg_ast_node_value_character_t* result = frg_malloc(sizeof(frg_ast_node_value_character_t));
+  frg_ast_node_value_character_t* result
+    = frg_malloc(sizeof(frg_ast_node_value_character_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_value_character_t));
+  memcpy(result, node, sizeof(frg_ast_node_value_character_t));
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_string(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_STRING);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_STRING);
 
-    frg_ast_node_value_string_t* result = frg_malloc(sizeof(frg_ast_node_value_string_t));
+  frg_ast_node_value_string_t* result = frg_malloc(sizeof(frg_ast_node_value_string_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->value = g_string_new_len(((const frg_ast_node_value_string_t*)node)->value->str, ((const frg_ast_node_value_string_t*)node)->value->len);
+  result->value
+    = g_string_new_len(((const frg_ast_node_value_string_t*)node)->value->str,
+                       ((const frg_ast_node_value_string_t*)node)->value->len);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_symbol(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_SYMBOL);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_SYMBOL);
 
-    frg_ast_node_value_symbol_t* result = frg_malloc(sizeof(frg_ast_node_value_symbol_t));
+  frg_ast_node_value_symbol_t* result = frg_malloc(sizeof(frg_ast_node_value_symbol_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->name = g_string_new_len(((const frg_ast_node_value_symbol_t*)node)->name->str, ((const frg_ast_node_value_symbol_t*)node)->name->len);
+  result->name
+    = g_string_new_len(((const frg_ast_node_value_symbol_t*)node)->name->str,
+                       ((const frg_ast_node_value_symbol_t*)node)->name->len);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_call_keyword_argument(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CALL_KEYWORD_ARGUMENT);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CALL_KEYWORD_ARGUMENT);
 
-    frg_ast_node_value_call_keyword_argument_t* result = frg_malloc(sizeof(frg_ast_node_value_call_keyword_argument_t));
+  frg_ast_node_value_call_keyword_argument_t* result
+    = frg_malloc(sizeof(frg_ast_node_value_call_keyword_argument_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->name = g_string_new_len(((const frg_ast_node_value_call_keyword_argument_t*)node)->name->str, ((const frg_ast_node_value_call_keyword_argument_t*)node)->name->len);
-    result->value = frg_ast_clone(((const frg_ast_node_value_call_keyword_argument_t*)node)->value);
+  result->name = g_string_new_len(
+    ((const frg_ast_node_value_call_keyword_argument_t*)node)->name->str,
+    ((const frg_ast_node_value_call_keyword_argument_t*)node)->name->len);
+  result->value
+    = frg_ast_clone(((const frg_ast_node_value_call_keyword_argument_t*)node)->value);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_call(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CALL);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CALL);
 
-    frg_ast_node_value_call_t* result = frg_malloc(sizeof(frg_ast_node_value_call_t));
+  frg_ast_node_value_call_t* result = frg_malloc(sizeof(frg_ast_node_value_call_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->callee = frg_ast_clone(((const frg_ast_node_value_call_t*)node)->callee);
-    result->arguments = _frg_ast_cloner_clone_list(((const frg_ast_node_value_call_t*)node)->arguments);
-    result->keyword_arguments = _frg_ast_cloner_clone_list(((const frg_ast_node_value_call_t*)node)->keyword_arguments);
+  result->callee = frg_ast_clone(((const frg_ast_node_value_call_t*)node)->callee);
+  result->arguments
+    = _frg_ast_cloner_clone_list(((const frg_ast_node_value_call_t*)node)->arguments);
+  result->keyword_arguments = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_value_call_t*)node)->keyword_arguments);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_unary(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert((frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_UNARY) != 0);
+  frg_assert_pointer_non_null(node);
+  frg_assert(
+    (frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_UNARY)
+    != 0);
 
-    frg_ast_node_value_unary_t* result = frg_malloc(sizeof(frg_ast_node_value_unary_t));
+  frg_ast_node_value_unary_t* result = frg_malloc(sizeof(frg_ast_node_value_unary_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->operand = frg_ast_clone(((const frg_ast_node_value_unary_t*)node)->operand);
+  result->operand = frg_ast_clone(((const frg_ast_node_value_unary_t*)node)->operand);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }
 
 frg_ast_node_t* frg_ast_cloner_value_binary(const frg_ast_node_t* node) {
-    frg_assert_pointer_non_null(node);
-    frg_assert((frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_VALUE_BINARY) != 0);
+  frg_assert_pointer_non_null(node);
+  frg_assert((frg_ast_node_kind_info_get(node->kind)->flags
+              & FRG_AST_NODE_KIND_FLAG_VALUE_BINARY)
+             != 0);
 
-    frg_ast_node_value_binary_t* result = frg_malloc(sizeof(frg_ast_node_value_binary_t));
+  frg_ast_node_value_binary_t* result = frg_malloc(sizeof(frg_ast_node_value_binary_t));
 
-    memcpy(result, node, sizeof(frg_ast_node_t));
+  memcpy(result, node, sizeof(frg_ast_node_t));
 
-    result->left = frg_ast_clone(((const frg_ast_node_value_binary_t*)node)->left);
-    result->right = frg_ast_clone(((const frg_ast_node_value_binary_t*)node)->right);
+  result->left  = frg_ast_clone(((const frg_ast_node_value_binary_t*)node)->left);
+  result->right = frg_ast_clone(((const frg_ast_node_value_binary_t*)node)->right);
 
-    return (frg_ast_node_t*)result;
+  return (frg_ast_node_t*)result;
 }

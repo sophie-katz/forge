@@ -20,28 +20,22 @@
 #include <glib.h>
 
 typedef struct {
-    bool version_short;
-    const char* compile_output_path;
-    frg_message_severity_t minimum_message_severity;
+  bool version_short;
+  const char* compile_output_path;
+  frg_message_severity_t minimum_message_severity;
 } frg_configuration_options_t;
 
 frg_configuration_options_t* frg_configuration_options_new_default();
 
 void frg_configuration_options_destroy(frg_configuration_options_t* options);
 
-int frg_configuration_options_parse_cli(
-    frg_message_buffer_t* mut_message_buffer,
-    frg_configuration_options_t* mut_options,
-    int argc,
-    const char** argv
-);
+int frg_configuration_options_parse_cli(frg_message_buffer_t* mut_message_buffer,
+                                        frg_configuration_options_t* mut_options,
+                                        int argc,
+                                        const char** argv);
 
 bool frg_configuration_options_parse_environment(
-    frg_message_buffer_t* mut_message_buffer,
-    frg_configuration_options_t* mut_options
-);
+  frg_message_buffer_t* mut_message_buffer, frg_configuration_options_t* mut_options);
 
 void frg_configuration_options_emit_message_debug(
-    frg_message_buffer_t* mut_message_buffer,
-    const frg_configuration_options_t* options
-);
+  frg_message_buffer_t* mut_message_buffer, const frg_configuration_options_t* options);

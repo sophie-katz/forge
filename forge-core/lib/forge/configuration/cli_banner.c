@@ -17,13 +17,17 @@
 #include <forge/streams/output.h>
 
 void frg_configuration_print_cli_banner() {
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BOLD);
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
-    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "\n       \\ | / ,\n");
-    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "     `\n");
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_BRIGHT_RED);
-    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "---------------\n");
-    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "  ----.      /\n");
-    frg_stream_output_write_printf(frg_stream_output_get_stdout(), "      /___^__\\\n\n");
-    frg_stream_output_set_color(frg_stream_output_get_stdout(), FRG_STREAM_OUTPUT_COLOR_RESET);
+  frg_stream_output_set_color(frg_stream_output_get_stdout(),
+                              FRG_STREAM_OUTPUT_COLOR_BOLD);
+  frg_stream_output_set_color(frg_stream_output_get_stdout(),
+                              FRG_STREAM_OUTPUT_COLOR_BRIGHT_YELLOW);
+  frg_stream_output_write_printf(frg_stream_output_get_stdout(), "\n       \\ | / ,\n");
+  frg_stream_output_write_printf(frg_stream_output_get_stdout(), "     `\n");
+  frg_stream_output_set_color(frg_stream_output_get_stdout(),
+                              FRG_STREAM_OUTPUT_COLOR_BRIGHT_RED);
+  frg_stream_output_write_printf(frg_stream_output_get_stdout(), "---------------\n");
+  frg_stream_output_write_printf(frg_stream_output_get_stdout(), "  ----.      /\n");
+  frg_stream_output_write_printf(frg_stream_output_get_stdout(), "      /___^__\\\n\n");
+  frg_stream_output_set_color(frg_stream_output_get_stdout(),
+                              FRG_STREAM_OUTPUT_COLOR_RESET);
 }

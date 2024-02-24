@@ -17,8 +17,6 @@
 
 #include <forge/ast/node.h>
 
-void frg_formatting_print_formatted(
-    frg_stream_output_t* mut_stream,
-    const frg_ast_node_t* node,
-    frg_indentation_t indentation
-);
+void frg_formatting_print_formatted(frg_stream_output_t* mut_stream,
+                                    const frg_ast_node_t* node,
+                                    frg_indentation_t indentation);

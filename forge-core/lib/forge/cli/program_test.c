@@ -18,11 +18,10 @@
 #include <unity.h>
 
 int callback_command(frg_message_buffer_t* mut_message_buffer,
-    void* mut_user_data,
-    const frg_cli_program_t* program,
-    const GList* positional_arguments
-) {
-    return 0;
+                     void* mut_user_data,
+                     const frg_cli_program_t* program,
+                     const GList* positional_arguments) {
+  return 0;
 }
 
 void setUp() {}
@@ -30,48 +29,28 @@ void setUp() {}
 void tearDown() {}
 
 void test_get_command() {
-    frg_cli_program_t* program = frg_cli_program_new(
-        "Test",
-        "test",
-        NULL,
-        0,
-        1,
-        0,
-        NULL,
-        NULL,
-        NULL
-    );
+  frg_cli_program_t* program
+    = frg_cli_program_new("Test", "test", NULL, 0, 1, 0, NULL, NULL, NULL);
 
-    frg_cli_program_add_command(
-        program,
-        frg_cli_command_new(
-            "a",
-            NULL,
-            "A description of the command",
-            callback_command
-        )
-    );
+  frg_cli_program_add_command(
+    program,
+    frg_cli_command_new("a", NULL, "A description of the command", callback_command));
 
-    frg_cli_program_add_command(
-        program,
-        frg_cli_command_new(
-            "asdf",
-            NULL,
-            "A description of the command",
-            callback_command
-        )
-    );
+  frg_cli_program_add_command(
+    program,
+    frg_cli_command_new(
+      "asdf", NULL, "A description of the command", callback_command));
 
-    TEST_ASSERT_NOT_NULL(frg_cli_program_get_command_by_name(program, "a"));
-    TEST_ASSERT_NOT_NULL(frg_cli_program_get_command_by_name(program, "asdf"));
-    TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "asd"));
-    TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "b"));
+  TEST_ASSERT_NOT_NULL(frg_cli_program_get_command_by_name(program, "a"));
+  TEST_ASSERT_NOT_NULL(frg_cli_program_get_command_by_name(program, "asdf"));
+  TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "asd"));
+  TEST_ASSERT_NULL(frg_cli_program_get_command_by_name(program, "b"));
 
-    frg_cli_program_destroy(program);
+  frg_cli_program_destroy(program);
 }
 
 int main() {
-    UNITY_BEGIN();
-    RUN_TEST(test_get_command);
-    return UNITY_END();
+  UNITY_BEGIN();
+  RUN_TEST(test_get_command);
+  return UNITY_END();
 }

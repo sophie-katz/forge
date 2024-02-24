@@ -15,57 +15,43 @@
 
 #pragma once
 
-#include <glib.h>
-#include <forge/enums.h>
 #include <forge/cli/command.h>
-#include <forge/streams/output.h>
 #include <forge/cli/program_forward.h>
+#include <forge/enums.h>
+#include <forge/streams/output.h>
+#include <glib.h>
 
-frg_cli_program_t* frg_cli_program_new(
-    const char* name,
-    const char* binary_name,
-    const char* positional_arguments_name,
-    int version_major,
-    int version_minor,
-    int version_patch,
-    const char* version_label,
-    GString* version_details,
-    frg_cli_program_callback_t callback
-);
+frg_cli_program_t* frg_cli_program_new(const char* name,
+                                       const char* binary_name,
+                                       const char* positional_arguments_name,
+                                       int version_major,
+                                       int version_minor,
+                                       int version_patch,
+                                       const char* version_label,
+                                       GString* version_details,
+                                       frg_cli_program_callback_t callback);
 
 void frg_cli_program_destroy(frg_cli_program_t* program);
 
-void frg_cli_program_add_command(
-    frg_cli_program_t* mut_program,
-    frg_cli_command_t* command
-);
+void frg_cli_program_add_command(frg_cli_program_t* mut_program,
+                                 frg_cli_command_t* command);
 
-frg_cli_command_t* frg_cli_program_get_command_by_name(
-    frg_cli_program_t* mut_program,
-    const char* name
-);
+frg_cli_command_t* frg_cli_program_get_command_by_name(frg_cli_program_t* mut_program,
+                                                       const char* name);
 
-bool frg_cli_program_try_print_help(
-    frg_stream_output_t* mut_stream,
-    frg_message_buffer_t* mut_message_buffer,
-    const frg_cli_program_t* program,
-    const char* command_name
-);
+bool frg_cli_program_try_print_help(frg_stream_output_t* mut_stream,
+                                    frg_message_buffer_t* mut_message_buffer,
+                                    const frg_cli_program_t* program,
+                                    const char* command_name);
 
-void frg_cli_program_print_version_long(
-    frg_stream_output_t* mut_stream,
-    const frg_cli_program_t* program
-);
+void frg_cli_program_print_version_long(frg_stream_output_t* mut_stream,
+                                        const frg_cli_program_t* program);
 
-void frg_cli_program_print_version_short(
-    frg_stream_output_t* mut_stream,
-    const frg_cli_program_t* program
-);
+void frg_cli_program_print_version_short(frg_stream_output_t* mut_stream,
+                                         const frg_cli_program_t* program);
 
-int frg_cli_program_parse(
-    frg_message_buffer_t* mut_message_buffer,
-    void* mut_user_data,
-    const frg_cli_program_t* program,
-    int argc,
-    const char** argv
-);
+int frg_cli_program_parse(frg_message_buffer_t* mut_message_buffer,
+                          void* mut_user_data,
+                          const frg_cli_program_t* program,
+                          int argc,
+                          const char** argv);

@@ -85,10 +85,32 @@ fswatch -o .. | xargs -n1 -I{} bash -c "clear && ./build/forge dump-ast ../examp
 
 ## Generating code coverage
 
-Run this command:
-
 ```shell
 meson compile -C build && \
     meson test -C build && \
     ninja coverage-html -C build
 ```
+
+## Formatting
+
+```shell
+ninja clang-format -C build
+```
+
+## Linting
+
+```shell
+for file in $(find include -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
+    $(find lib -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
+    $(find src -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
+    $(find tests -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp'); do
+    clang-tidy --warnings-as-errors --config-file=.clang-tidy "$file" -- -Iinclude -Ibuild -Isubprojects/utf8proc -Isubprojects/Unity/src $(pkg-config --cflags glib-2.0) $(llvm-config --cflags)
+
+    if [ $? -ne 0 ]; then
+        break
+    fi
+done
+```
+
+> [!NOTE]  
+> This is very much not complete and is just a POC.

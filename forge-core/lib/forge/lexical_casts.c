@@ -354,7 +354,7 @@ GString* _frg_parse_string_with_quote_character(
       break;
     }
 
-    frg_character_t current_character;
+    frg_character_t current_character = 0;
     if (!_frg_parse_char_unquoted(
           &current_character, mut_message_buffer, mut_reader, quote)) {
       return NULL;
@@ -444,7 +444,6 @@ void frg_print_string(frg_stream_output_t* mut_stream, const char* value) {
     // If the character is an invalid UTF-8 sequence, we just read it as a standalone
     // byte value
     if (bytes_read < 0) {
-      bytes_read = 1;
       codepoint  = *iter & 0xff;
       iter++;
     } else {

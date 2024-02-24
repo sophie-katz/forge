@@ -71,7 +71,7 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_type_function(
   frg_assert_pointer_non_null(*mut_node);
   frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
 
-  frg_ast_visitor_status_t status = status = _frg_ast_visitor_acceptor_recursive_list(
+  frg_ast_visitor_status_t status = _frg_ast_visitor_acceptor_recursive_list(
     &((frg_ast_node_type_function_t*)*mut_node)->arguments, visitor, parents);
   if (status != FRG_AST_VISITOR_STATUS_OK) {
     return status;
@@ -109,7 +109,7 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_union(
   frg_assert_pointer_non_null(*mut_node);
   frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_UNION);
 
-  frg_ast_visitor_status_t status = status = _frg_ast_visitor_acceptor_recursive_list(
+  frg_ast_visitor_status_t status = _frg_ast_visitor_acceptor_recursive_list(
     &((frg_ast_node_declaration_union_t*)*mut_node)->properties, visitor, parents);
   if (status != FRG_AST_VISITOR_STATUS_OK) {
     return status;
@@ -125,7 +125,7 @@ frg_ast_visitor_status_t frg_ast_visitor_acceptor_declaration_structure(
   frg_assert_pointer_non_null(*mut_node);
   frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_DECLARATION_STRUCTURE);
 
-  frg_ast_visitor_status_t status = status = _frg_ast_visitor_acceptor_recursive_list(
+  frg_ast_visitor_status_t status = _frg_ast_visitor_acceptor_recursive_list(
     &((frg_ast_node_declaration_structure_t*)*mut_node)->declarations,
     visitor,
     parents);

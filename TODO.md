@@ -17,7 +17,6 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [ ] Add formatter and linter if possible
 - [ ] Add reference types (for internal use)
     - [ ] Create unary type operators
 - [ ] Add `void` type
@@ -125,3 +124,4 @@ not, see <https://www.gnu.org/licenses/>.
     - [x] Match implementation code to headers
         - [x] Make sure all `frg_free` calls are for single pointers
     - [x] Make sure all private symbols have a good reason to be
+- [x] Add formatter and linter if possible

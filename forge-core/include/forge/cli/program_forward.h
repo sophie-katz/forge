@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <forge/cli/command.h>
+#include <forge/cli/option_set.h>
 #include <forge/enums.h>
 #include <forge/streams/output.h>
 #include <glib.h>

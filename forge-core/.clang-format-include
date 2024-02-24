@@ -1,10 +1,14 @@
 include/**/*.h
+include/**/*.hpp
 lib/**/*.h
+lib/**/*.hpp
 lib/**/*.c
 lib/**/*.cpp
 src/**/*.h
+src/**/*.hpp
 src/**/*.c
 src/**/*.cpp
 tests/**/*.h
+tests/**/*.hpp
 tests/**/*.c
 tests/**/*.cpp

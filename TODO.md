@@ -18,53 +18,46 @@ not, see <https://www.gnu.org/licenses/>.
 # High priority
 
 - [ ] Add reference types (for internal use)
-    - [ ] Create unary type operators
+  - [ ] Create unary type operators
 - [ ] Add `void` type
 - [ ] Add stack allocation for structs
 - [ ] Use `elif` instead of `else if`
 - [ ] Add in heap allocation with `new` and `free`
 - [ ] Add in array types
 - [ ] Add in allocation for arrays
-    - [ ] Stack
-    - [ ] Heap
+  - [ ] Stack
+  - [ ] Heap
 - [ ] Add in casting
 - [ ] Add in verification logic
-    - [ ] Verify that AST is well-formed
-    - [x] Add in a way to verify that AST is simplified and can be passed directly to the code generator
-    - [ ] Type verification
-    - [ ] Constant/mutable verification
-    - [ ] Scope verification
+  - [ ] Verify that AST is well-formed
+  - [x] Add in a way to verify that AST is simplified and can be passed directly to the code generator
+  - [ ] Type verification
+  - [ ] Constant/mutable verification
+  - [ ] Scope verification
 
 # Low priority
 
-- [ ] Create tests for AST kind info coverage
 - [ ] Create tests for visitor AST kind coverage
 - [ ] Look over LLVM codegen and see if there's anything there that should be added to the language
 - [ ] Add in test matrix to dockerfile so we can get better arch/OS support **(requires GitHub teams)**
-- [ ] Create a shared compilation function to use for the three now-missing CLI commands
 
 # Backlog
 
 - [x] Add in a feature not yet implemented error and a specific error message to indicate that a requirement or proposal is not yet implemented
-    - [ ] Ideally reference a documentation URL
+  - [ ] Ideally reference a documentation URL
 - [ ] When printing errors for AST nodes
-    - [x] Print the token range if possible
-    - [ ] Otherwise, print the token tree up until the first token range if one exists
+  - [x] Print the token range if possible
+  - [ ] Otherwise, print the token tree up until the first token range if one exists
 - [ ] Make sure all paths are absolute so we don't accidentally open a file twice
 - [ ] Reorganize cli and config to be better
 - [ ] Use `G_GNUC_WARN_UNUSED_RESULT`
-    - [ ] Look into other attributes to use
+  - [ ] Look into other attributes to use
+  - [ ] Output arguments
+  - [ ] Unused arguments
 - [ ] Add in "operator overloading" for values being passed into functions
 - [ ] Make statement and declaration blocks parse more similarly
-- [ ] Rename `error.h` to `assert.h`
-- [ ] Create and conform to naming guidelines
 - [ ] Cross-link documentation to code
-- [ ] Find a better way to organize code so that not everything is in the AST module
-- [ ] Break up AST switch statements
-    - [x] Visitor acceptors
-    - [x] Type resolvers
-    - [ ] Formatters
-- [ ] Create stricter types for IR
+- [ ] Use specified streams instead of stdout and stderr to test CLI in integration tests
 
 # Completed
 
@@ -88,40 +81,50 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Move `stream.h` into `streams/utilities.h`
 - [x] Have AST constructors return their specific type
 - [x] Write at least one code generator integration test.
-    - [x] See if we can do LLVM IR comparison easier to help with testing
-    - [x] Maybe parse LLVM IR from text?
+  - [x] See if we can do LLVM IR comparison easier to help with testing
+  - [x] Maybe parse LLVM IR from text?
 - [x] Implement integer literals of all sizes and signednesses
 - [x] Implement boolean literals
 - [x] Implement floating point literals of all sizes and signednesses
 - [x] Standardize message types
-    - [x] Add in error codes
+  - [x] Add in error codes
 - [x] Add in token ranges for AST nodes
 - [x] Create placeholder requirements for missing features
 - [x] Add in formatting for at least types
 - [x] Enforce all errors start with a capital letter and do not end with punctuation
 - [x] Add in memory leak detection into automated tests.
 - [x] Refactor code to meet new conventions
+  - [x] Declaration style
+  - [x] Destructors with single pointers
+  - [x] Method functions
+  - [x] Private fields
+  - [x] Getters and setters
+    - [x] Usage
     - [x] Declaration style
-    - [x] Destructors with single pointers
-    - [x] Method functions
-    - [x] Private fields
-    - [x] Getters and setters
-        - [x] Usage
-        - [x] Declaration style
-    - [x] Recursive structs
-    - [x] Forward declarations
-        - [x] Circular file dependencies
-        - [x] Circular struct dependencies
-    - [x] Abbreviations
-    - [x] Module name prefixes
-    - [x] No nested modules
-    - [x] Symbols not just the module name
-    - [x] Singular form
-    - [x] Global variables
-    - [x] Mutable and output function arguments
-    - [x] Function argument order
-    - [x] Private symbols
-    - [x] Match implementation code to headers
-        - [x] Make sure all `frg_free` calls are for single pointers
-    - [x] Make sure all private symbols have a good reason to be
+  - [x] Recursive structs
+  - [x] Forward declarations
+    - [x] Circular file dependencies
+    - [x] Circular struct dependencies
+  - [x] Abbreviations
+  - [x] Module name prefixes
+  - [x] No nested modules
+  - [x] Symbols not just the module name
+  - [x] Singular form
+  - [x] Global variables
+  - [x] Mutable and output function arguments
+  - [x] Function argument order
+  - [x] Private symbols
+  - [x] Match implementation code to headers
+    - [x] Make sure all `frg_free` calls are for single pointers
+  - [x] Make sure all private symbols have a good reason to be
 - [x] Add formatter and linter if possible
+- [x] Rename `error.h` to `assert.h`
+- [x] Create and conform to naming guidelines
+- [x] Find a better way to organize code so that not everything is in the AST module
+- [x] Break up AST switch statements
+  - [x] Visitor acceptors
+  - [x] Type resolvers
+  - [x] Formatters
+- [x] Create stricter types for IR
+- [x] Create a shared compilation function to use for the three now-missing CLI commands
+- [x] Create tests for AST kind info coverage

@@ -13,8 +13,18 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <forge/streams/output.h>
+#include <stdio.h>
 
-#include <forge/cli/command.h>
+int main() {
+  frg_stream_output_init();
 
-frg_cli_command_t* frg_configuration_new_command_dump_ir();
+  frg_stream_output_write_string(
+    frg_stream_output_get_stdout(),
+    frg_stream_output_choose_ascii_or_unicode(
+      frg_stream_output_get_stdout(), "Unicode disabled\n", "Unicode enabled\n"));
+
+  frg_stream_output_cleanup();
+
+  return 0;
+}

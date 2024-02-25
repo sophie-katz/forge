@@ -15,6 +15,6 @@
 
 #pragma once
 
-#include <forge/cli/command.h>
-
-frg_cli_command_t* frg_configuration_new_command_dump_ast();
+typedef struct frg_codegen_type_t frg_codegen_type_t;
+typedef struct frg_codegen_value_t frg_codegen_value_t;
+typedef struct frg_codegen_module_t frg_codegen_module_t;

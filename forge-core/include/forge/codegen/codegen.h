@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 #include <forge/ast/node.h>
+#include <forge/codegen/types.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/streams/output.h>
 

@@ -21,8 +21,15 @@
 
 typedef struct {
   bool version_short;
-  const char* compile_output_path;
   frg_message_severity_t minimum_message_severity;
+
+  struct {
+    bool print_ast;
+    bool codegen;
+    bool print_ir;
+    bool write_object_file;
+    const char* object_file_path;
+  } compilation;
 } frg_configuration_options_t;
 
 frg_configuration_options_t* frg_configuration_options_new_default();

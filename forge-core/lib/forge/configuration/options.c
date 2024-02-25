@@ -19,6 +19,7 @@
 #include <forge/configuration/cli_program.h>
 #include <forge/configuration/options.h>
 #include <forge/enum_printing.h>
+#include <forge/log.h>
 #include <forge/memory.h>
 #include <forge/messages/codes.h>
 
@@ -26,9 +27,13 @@ frg_configuration_options_t* frg_configuration_options_new_default() {
   frg_configuration_options_t* options
     = frg_malloc(sizeof(frg_configuration_options_t));
 
-  options->version_short            = false;
-  options->compile_output_path      = NULL;
-  options->minimum_message_severity = FRG_MESSAGE_SEVERITY_NOTE;
+  options->version_short                 = false;
+  options->minimum_message_severity      = FRG_MESSAGE_SEVERITY_NOTE;
+  options->compilation.print_ast         = false;
+  options->compilation.codegen           = true;
+  options->compilation.print_ir          = false;
+  options->compilation.write_object_file = true;
+  options->compilation.object_file_path  = NULL;
 
   return options;
 }
@@ -91,6 +96,7 @@ bool _frg_configuration_options_parse_environment_debug(
 
     if (debug_value) {
       mut_options->minimum_message_severity = FRG_MESSAGE_SEVERITY_DEBUG;
+      frg_global_log_enabled                = true;
     }
   }
 
@@ -175,8 +181,30 @@ void frg_configuration_options_emit_message_debug(
                                  options->version_short ? "true" : "false");
 
   frg_stream_output_write_printf(stream,
-                                 "\n  options.compile_output_path == \"%s\"\n",
-                                 options->compile_output_path);
+                                 "\n  options.compilation.print_ast == %s\n",
+                                 options->compilation.print_ast ? "true" : "false");
+
+  frg_stream_output_write_printf(stream,
+                                 "\n  options.compilation.codegen == %s\n",
+                                 options->compilation.codegen ? "true" : "false");
+
+  frg_stream_output_write_printf(stream,
+                                 "\n  options.compilation.print_ir == %s\n",
+                                 options->compilation.print_ir ? "true" : "false");
+
+  frg_stream_output_write_printf(stream,
+                                 "\n  options.compilation.write_object_file == %s\n",
+                                 options->compilation.write_object_file ? "true"
+                                                                        : "false");
+
+  frg_stream_output_write_printf(
+    stream,
+    "\n  options.compilation.object_file_path == %s%s%s\n",
+    options->compilation.object_file_path == NULL ? "" : "\"",
+    options->compilation.object_file_path == NULL
+      ? "null"
+      : options->compilation.object_file_path,
+    options->compilation.object_file_path == NULL ? "" : "\"");
 
   frg_stream_output_write_string(stream, "\n  options.minimum_message_severity == \"");
 

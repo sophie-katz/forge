@@ -16,6 +16,7 @@
 #pragma once
 
 #include <forge/ast/node.h>
+#include <forge/codegen/types.h>
 
 typedef struct {
   GHashTable* _map_ast;
@@ -27,17 +28,17 @@ frg_ast_scope_frame_t* frg_ast_scope_frame_new();
 void frg_ast_scope_frame_destroy(frg_ast_scope_frame_t* scope_frame);
 
 void frg_ast_scope_frame_add_ast(frg_ast_scope_frame_t* mut_scope_frame,
-                                 frg_ast_node_t* node);
+                                 frg_ast_node_t* mut_node);
 
 frg_ast_node_t* frg_ast_scope_frame_get_ast(frg_ast_scope_frame_t* mut_scope_frame,
                                             const char* name);
 
 void frg_ast_scope_frame_add_ir(frg_ast_scope_frame_t* mut_scope_frame,
                                 const char* name,
-                                void* ir);
+                                frg_codegen_type_t* mut_ir);
 
-void* frg_ast_scope_frame_get_ir(frg_ast_scope_frame_t* mut_scope_frame,
-                                 const char* name);
+frg_codegen_type_t* frg_ast_scope_frame_get_ir(frg_ast_scope_frame_t* mut_scope_frame,
+                                               const char* name);
 
 void frg_ast_scope_frame_load_declaration_block(
   frg_ast_scope_frame_t* mut_scope_frame,
@@ -61,13 +62,15 @@ void frg_ast_scope_pop_frame(frg_ast_scope_t* mut_scope);
 
 frg_ast_scope_frame_t* frg_ast_scope_get_current_frame(frg_ast_scope_t* mut_scope);
 
-void frg_ast_scope_add_ast(frg_ast_scope_t* mut_scope, frg_ast_node_t* node);
+void frg_ast_scope_add_ast(frg_ast_scope_t* mut_scope, frg_ast_node_t* mut_node);
 
 frg_ast_node_t* frg_ast_scope_get_ast(frg_ast_scope_t* mut_scope, const char* name);
 
-void frg_ast_scope_add_ir(frg_ast_scope_t* mut_scope, const char* name, void* ir);
+void frg_ast_scope_add_ir(frg_ast_scope_t* mut_scope,
+                          const char* name,
+                          frg_codegen_type_t* mut_ir);
 
-void* frg_ast_scope_get_ir(frg_ast_scope_t* mut_scope, const char* name);
+frg_codegen_type_t* frg_ast_scope_get_ir(frg_ast_scope_t* mut_scope, const char* name);
 
 void frg_ast_scope_load_declaration_block(
   frg_ast_scope_t* mut_scope, const frg_ast_node_declaration_block_t* block);

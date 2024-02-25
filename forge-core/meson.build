@@ -272,9 +272,7 @@ forge_library_core = static_library(
     'lib/forge/configuration/cli_banner.c',
     'lib/forge/configuration/cli_program.c',
     'lib/forge/configuration/commands/utilities.c',
-    # 'lib/forge/config/commands/compile.c',
-    # 'lib/forge/config/commands/dump_ast.c',
-    # 'lib/forge/config/commands/dump_ir.c',
+    'lib/forge/configuration/commands/compile.c',
     'lib/forge/configuration/commands/help.c',
     'lib/forge/configuration/commands/link.c',
     'lib/forge/configuration/commands/version.c',
@@ -705,6 +703,27 @@ if forge_should_build_tests
         timeout: forge_test_timeout_seconds,
         is_parallel: forge_test_is_parallel,
     )
+
+    forge_integration_test_nodes = executable(
+        'test-integration-nodes',
+        'tests/nodes.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_library_core],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test(
+        'tests/nodes.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_integration_test_nodes
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
 endif
 
 # Demos
@@ -725,6 +744,25 @@ if forge_should_build_tests
         args: [
             forge_test_wrapper,
             forge_demo_streams_color
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
+
+    forge_demo_streams_unicode = executable(
+        'demo-streams-unicode',
+        'lib/forge/streams/unicode_demo.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_library_core],
+        dependencies: forge_dependencies
+    )
+
+    test(
+        'streams/unicode_demo.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_demo_streams_unicode
         ],
         timeout: forge_test_timeout_seconds,
         is_parallel: forge_test_is_parallel,

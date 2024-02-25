@@ -60,8 +60,9 @@ typedef enum {
   FRG_AST_NODE_KIND_FLAG_VALUE        = 1 << 3,
   FRG_AST_NODE_KIND_FLAG_VALUE_UNARY  = 1 << 4,
   FRG_AST_NODE_KIND_FLAG_VALUE_BINARY = 1 << 5,
+  FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN = 1 << 6,
 
-  FRG_AST_NODE_KIND_FLAG_MAX          = FRG_AST_NODE_KIND_FLAG_VALUE_BINARY,
+  FRG_AST_NODE_KIND_FLAG_MAX          = FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN,
 } frg_ast_node_kind_flags_t;
 
 /// @brief The list of possible types of AST nodes.

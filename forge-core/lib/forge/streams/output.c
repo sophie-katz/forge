@@ -93,64 +93,52 @@ bool _frg_stream_output_detect_unicode() {
     const char* value;
 
 #ifdef G_OS_WIN32
-    value = g_getenv("WT_SESSION");
+    _frg_global_stream_output_detect_unicode_result = false;
+
+    value                                           = g_getenv("WT_SESSION");
     if (value != NULL && *value != 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     }
 
     value = g_getenv("TERMINUS_SUBLIME");
     if (value != NULL && *value != 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     }
 
     value = g_getenv("ConEmuTask");
     if (value != NULL && strcmp(value, "{cmd::Cmder}") == 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     }
 
     value = g_getenv("TERM_PROGRAM");
     if (value != NULL && strcmp(value, "Terminus-Sublime") == 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     } else if (value != NULL && strcmp(value, "vscode") == 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     }
 
     value = g_getenv("TERM");
     if (value != NULL && strcmp(value, "xterm-256color") == 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     } else if (value != NULL && strcmp(value, "alacritty") == 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     }
 
     value = g_getenv("TERMINAL_EMULATOR");
     if (value != NULL && strcmp(value, "JetBrains-JediTerm") == 0) {
       _frg_global_stream_output_detect_unicode_result = true;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return true;
     }
 #else
-    value = g_getenv("TERM");
+    _frg_global_stream_output_detect_unicode_result = true;
+
+    value                                           = g_getenv("TERM");
     if (value != NULL && strcmp(value, "linux") == 0) {
       // Linux console (kernel)
       _frg_global_stream_output_detect_unicode_result = false;
-      _frg_global_stream_output_has_detected_unicode  = true;
-      return false;
     }
 #endif
+
+    _frg_global_stream_output_has_detected_unicode = true;
   }
 
   return _frg_global_stream_output_detect_unicode_result;

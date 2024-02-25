@@ -41,7 +41,7 @@ void test_frame() {
 
   TEST_ASSERT_NULL(frg_ast_scope_frame_get_ast(frame, "Fdsa"));
 
-  frg_ast_scope_frame_add_ir(frame, "Asdf", &ir);
+  frg_ast_scope_frame_add_ir(frame, "Asdf", (frg_codegen_type_t*)&ir);
 
   TEST_ASSERT_EQUAL_PTR(&ir, frg_ast_scope_frame_get_ir(frame, "Asdf"));
 
@@ -160,7 +160,7 @@ void test_scope() {
 
   TEST_ASSERT_NULL(frg_ast_scope_get_ast(scope, "y"));
 
-  frg_ast_scope_add_ir(scope, "x", &ir);
+  frg_ast_scope_add_ir(scope, "x", (frg_codegen_type_t*)&ir);
 
   TEST_ASSERT_EQUAL_PTR(&ir, frg_ast_scope_get_ir(scope, "x"));
 
@@ -182,7 +182,7 @@ void test_scope() {
 
   TEST_ASSERT_NULL(frg_ast_scope_get_ast(scope, "z"));
 
-  frg_ast_scope_add_ir(scope, "y", &ir);
+  frg_ast_scope_add_ir(scope, "y", (frg_codegen_type_t*)&ir);
 
   TEST_ASSERT_EQUAL_PTR(&ir, frg_ast_scope_get_ir(scope, "x"));
 

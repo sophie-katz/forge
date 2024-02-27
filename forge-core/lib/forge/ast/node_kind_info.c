@@ -21,6 +21,7 @@
 #include <forge/ast/node_kind_info.h>
 #include <forge/ast/visitor_acceptors.h>
 #include <forge/formatting/formatted_printers.h>
+#include <forge/verification/type_resolvers.h>
 
 bool _frg_ast_node_kind_info_table_initialized = false;
 frg_ast_node_kind_info_t _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_COUNT];
@@ -113,6 +114,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_declaration_union;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_UNION]._visitor_acceptor
     = frg_ast_visitor_acceptor_declaration_union;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_UNION]._type_resolver
+    = frg_verification_type_resolver_declaration_union;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_STRUCTURE].name
     = "declaration-structure";
@@ -130,6 +133,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_STRUCTURE]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_declaration_structure;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_STRUCTURE]._type_resolver
+    = frg_verification_type_resolver_declaration_structure;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_PROPERTY].name
     = "declaration-property";
@@ -150,6 +155,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_PROPERTY]
     ._formatted_printer
     = frg_formatting_formatted_printer_declaration_property;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_PROPERTY]._type_resolver
+    = frg_verification_type_resolver_declaration_property;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_INTERFACE].name
     = "declaration-interface";
@@ -167,6 +174,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_INTERFACE]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_declaration_interface;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_INTERFACE]._type_resolver
+    = frg_verification_type_resolver_declaration_interface;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT].name
     = "declaration-function-argument";
@@ -186,6 +195,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT]
     ._formatted_printer
     = frg_formatting_formatted_printer_declaration_function_argument;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT]
+    ._type_resolver
+    = frg_verification_type_resolver_declaration_function_argument;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION].name
     = "declaration-function";
@@ -203,6 +215,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_declaration_function;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION]._type_resolver
+    = frg_verification_type_resolver_declaration_function;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE].name
     = "declaration-variable";
@@ -220,11 +234,13 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_declaration_variable;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]._type_resolver
+    = frg_verification_type_resolver_declaration_variable;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_BLOCK].name
     = "declaration-block";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_BLOCK].flags
-    = FRG_AST_NODE_KIND_FLAG_DECLARATION | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+    = FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_BLOCK]._destructor
     = frg_ast_destructor_declaration_block;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_BLOCK]._cloner
@@ -275,7 +291,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_BLOCK].name
     = "statement-block";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_BLOCK].flags
-    = FRG_AST_NODE_KIND_FLAG_STATEMENT | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+    = FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_BLOCK]._destructor
     = frg_ast_destructor_statement_block;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_BLOCK]._cloner
@@ -292,6 +308,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_cloner_value_bool;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BOOL]._debug_printer
     = frg_ast_debug_printer_value_bool;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BOOL]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INT].name = "value-int";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INT].flags
@@ -300,6 +318,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_cloner_value_int;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INT]._debug_printer
     = frg_ast_debug_printer_value_int;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INT]._type_resolver
+    = frg_verification_type_resolver_value_int;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_FLOAT].name = "value-float";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_FLOAT].flags
@@ -308,6 +328,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_cloner_value_float;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_FLOAT]._debug_printer
     = frg_ast_debug_printer_value_float;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_FLOAT]._type_resolver
+    = frg_verification_type_resolver_value_float;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CHARACTER].name
     = "value-character";
@@ -317,6 +339,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_cloner_value_character;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CHARACTER]._debug_printer
     = frg_ast_debug_printer_value_character;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CHARACTER]._type_resolver
+    = frg_verification_type_resolver_value_character;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRING].name = "value-string";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRING].flags
@@ -327,6 +351,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_cloner_value_string;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRING]._debug_printer
     = frg_ast_debug_printer_value_string;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRING]._type_resolver
+    = frg_verification_type_resolver_value_string;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SYMBOL].name = "value-symbol";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SYMBOL].flags
@@ -337,6 +363,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_cloner_value_symbol;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SYMBOL]._debug_printer
     = frg_ast_debug_printer_value_symbol;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SYMBOL]._type_resolver
+    = frg_verification_type_resolver_value_symbol;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE].name
     = "value-dereference";
@@ -351,6 +379,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE]._type_resolver
+    = frg_verification_type_resolver_value_dereference;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS].name
     = "value-get-address";
@@ -365,6 +395,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS]._type_resolver
+    = frg_verification_type_resolver_value_get_address;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CALL_KEYWORD_ARGUMENT].name
     = "value-call-keyword-argument";
@@ -393,6 +425,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_call;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CALL]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_call;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CALL]._type_resolver
+    = frg_verification_type_resolver_value_call;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS].name = "value-access";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS].flags
@@ -406,6 +440,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS]._type_resolver
+    = frg_verification_type_resolver_value_access;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT].name = "value-bit-not";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT].flags
@@ -419,6 +455,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT]._type_resolver
+    = frg_verification_type_resolver_value_unary_ident;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND].name = "value-bit-and";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND].flags
@@ -432,6 +470,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR].name = "value-bit-or";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR].flags
@@ -445,6 +485,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR].name = "value-bit-xor";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR].flags
@@ -458,6 +500,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT].name
     = "value-bit-shift-left";
@@ -473,6 +517,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT].name
     = "value-bit-shift-right";
@@ -488,6 +534,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE].name = "value-negate";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE].flags
@@ -501,6 +549,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._type_resolver
+    = frg_verification_type_resolver_value_unary_ident;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].name = "value-add";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].flags
@@ -514,6 +564,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT].name
     = "value-subtract";
@@ -528,6 +580,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY].name
     = "value-multiply";
@@ -542,6 +596,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE].name = "value-divide";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE].flags
@@ -555,6 +611,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT].name
     = "value-divide-int";
@@ -569,6 +627,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO].name = "value-modulo";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO].flags
@@ -582,6 +642,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE].name
     = "value-exponentiate";
@@ -596,6 +658,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE]._type_resolver
+    = frg_verification_type_resolver_value_binary_containing;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS].name = "value-equals";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS].flags
@@ -609,6 +673,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS].name
     = "value-not-equals";
@@ -623,6 +689,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN].name
     = "value-is-less-than";
@@ -637,6 +705,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO].name
     = "value-is-less-than-or-equal-to";
@@ -655,6 +725,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO]
+    ._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN].name
     = "value-is-greater-than";
@@ -670,6 +743,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN_OR_EQUAL_TO]
     .name
@@ -690,6 +765,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN_OR_EQUAL_TO]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN_OR_EQUAL_TO]
+    ._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT].name
     = "value-logical-not";
@@ -704,6 +782,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND].name
     = "value-logical-and";
@@ -718,6 +798,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR].name
     = "value-logical-or";
@@ -732,6 +814,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR]._type_resolver
+    = frg_verification_type_resolver_as_type_bool;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN].name = "value-assign";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN].flags
@@ -745,6 +829,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN].name
     = "value-bit-and-assign";
@@ -760,6 +846,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN].name
     = "value-bit-or-assign";
@@ -774,6 +862,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN].name
     = "value-bit-xor-assign";
@@ -789,6 +879,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT_ASSIGN].name
     = "value-bit-shift-left-assign";
@@ -806,6 +898,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT_ASSIGN]
+    ._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT_ASSIGN].name
     = "value-bit-shift-right-assign";
@@ -823,6 +918,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT_ASSIGN]
+    ._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN].name
     = "value-add-assign";
@@ -837,6 +935,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT].name
     = "value-increment";
@@ -851,6 +951,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT]._type_resolver
+    = frg_verification_type_resolver_value_unary_ident;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN].name
     = "value-subtract-assign";
@@ -866,6 +968,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT].name
     = "value-decrement";
@@ -880,6 +984,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT]._type_resolver
+    = frg_verification_type_resolver_value_unary_ident;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN].name
     = "value-multiply-assign";
@@ -895,6 +1001,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN].name
     = "value-divide-assign";
@@ -909,6 +1017,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN].name
     = "value-divide-int-assign";
@@ -925,6 +1035,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN]
+    ._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN].name
     = "value-modulo-assign";
@@ -939,6 +1052,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN]._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN].name
     = "value-exponentiate-assign";
@@ -955,6 +1070,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN]
+    ._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN].name
     = "value-logical-and-assign";
@@ -971,6 +1089,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN]
+    ._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN].name
     = "value-logical-or-assign";
@@ -987,6 +1108,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN]
     ._visitor_acceptor
     = frg_ast_visitor_acceptor_value_binary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN]
+    ._type_resolver
+    = frg_verification_type_resolver_value_binary_left;
 
   _frg_ast_node_kind_info_table_initialized = true;
 }

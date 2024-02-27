@@ -302,3 +302,6 @@ frg_ast_visitor_status_t
 
   return FRG_AST_VISITOR_STATUS_SKIP;
 }
+
+void frg_verification_supported_language_features_add_handlers(
+  frg_ast_visitor_t* mut_visitor) {}

@@ -116,13 +116,9 @@ void test_node_kind_info() {
 
     TEST_ASSERT_NOT_NULL_MESSAGE(info->_cloner, "all node kinds must have a cloner");
 
-    if (kind == FRG_AST_NODE_KIND_DECLARATION_BLOCK) {
-      TEST_ASSERT_NULL_MESSAGE(info->_declaration_name_getter,
-                               "declaration-block must not have a name getter");
-    } else if (info->flags & FRG_AST_NODE_KIND_FLAG_DECLARATION) {
-      TEST_ASSERT_NOT_NULL_MESSAGE(
-        info->_declaration_name_getter,
-        "all declarations must have a name getter (except special cases)");
+    if (info->flags & FRG_AST_NODE_KIND_FLAG_DECLARATION) {
+      TEST_ASSERT_NOT_NULL_MESSAGE(info->_declaration_name_getter,
+                                   "all declarations must have a name getter");
     } else {
       TEST_ASSERT_NULL_MESSAGE(info->_declaration_name_getter,
                                "only declarations can have a name getter");
@@ -151,17 +147,18 @@ void test_node_kind_info() {
         "node kinds without children do not have visitor acceptorss");
     }
 
-    // TODO: Add type resolvers
-    // if ((info->flags & FRG_AST_NODE_KIND_FLAG_DECLARATION)
-    //     || (info->flags & FRG_AST_NODE_KIND_FLAG_VALUE)) {
-    //   TEST_ASSERT_NOT_NULL_MESSAGE(
-    //     info->_type_resolver, "all declarations and values must have a type
-    //     resolver");
-    // } else {
-    //   TEST_ASSERT_NULL_MESSAGE(info->_type_resolver,
-    //                            "only declarations and values can have a type
-    //                            resolver");
-    // }
+    if (kind == FRG_AST_NODE_KIND_DECLARATION_FUNCTION_ARGUMENT) {
+      TEST_ASSERT_NOT_NULL_MESSAGE(
+        info->_type_resolver,
+        "declaration-function-argument must have a type resolver");
+    } else if ((info->flags & FRG_AST_NODE_KIND_FLAG_DECLARATION)
+               || (info->flags & FRG_AST_NODE_KIND_FLAG_VALUE)) {
+      TEST_ASSERT_NOT_NULL_MESSAGE(
+        info->_type_resolver, "all declarations and values must have a type resolver");
+    } else {
+      TEST_ASSERT_NULL_MESSAGE(info->_type_resolver,
+                               "only declarations and values can have a type resolver");
+    }
 
     printf("Node kind %s passed\n", info->name);
   }

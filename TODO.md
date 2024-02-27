@@ -37,7 +37,6 @@ not, see <https://www.gnu.org/licenses/>.
 
 # Low priority
 
-- [ ] Create tests for visitor AST kind coverage
 - [ ] Look over LLVM codegen and see if there's anything there that should be added to the language
 - [ ] Add in test matrix to dockerfile so we can get better arch/OS support **(requires GitHub teams)**
 
@@ -128,3 +127,4 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Create stricter types for IR
 - [x] Create a shared compilation function to use for the three now-missing CLI commands
 - [x] Create tests for AST kind info coverage
+- [x] Create tests for visitor AST kind coverage

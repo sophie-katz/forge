@@ -134,8 +134,20 @@ void _frg_codegen_generate_statement(llvm::IRBuilder<>& builder,
 
   llvm::Value* value = NULL;
 
-  if ((frg_ast_node_kind_info_get(node->kind)->flags & FRG_AST_NODE_KIND_FLAG_STATEMENT)
-      != 0) {
+  if (node->kind == FRG_AST_NODE_KIND_STATEMENT_BLOCK) {
+    frg_ast_scope_push_frame(mut_scope);
+
+    for (GList* it = ((const frg_ast_node_statement_block_t*)node)->statements;
+         it != NULL;
+         it = it->next) {
+      _frg_codegen_generate_statement(
+        builder, ctx, mut_scope, (frg_ast_node_t*)it->data);
+    }
+
+    frg_ast_scope_pop_frame(mut_scope);
+  } else if ((frg_ast_node_kind_info_get(node->kind)->flags
+              & FRG_AST_NODE_KIND_FLAG_STATEMENT)
+             != 0) {
     switch (node->kind) {
     case FRG_AST_NODE_KIND_STATEMENT_RETURN:
       value = _frg_codegen_generate_value(
@@ -144,24 +156,11 @@ void _frg_codegen_generate_statement(llvm::IRBuilder<>& builder,
       builder.CreateRet(value);
 
       break;
-    case FRG_AST_NODE_KIND_STATEMENT_BLOCK:
-      frg_ast_scope_push_frame(mut_scope);
-
-      for (GList* it = ((const frg_ast_node_statement_block_t*)node)->statements;
-           it != NULL;
-           it = it->next) {
-        _frg_codegen_generate_statement(
-          builder, ctx, mut_scope, (frg_ast_node_t*)it->data);
-      }
-
-      frg_ast_scope_pop_frame(mut_scope);
-
-      break;
     default:
       frg_die_ast_kind_not_yet_supported(node->kind);
     }
   } else if ((frg_ast_node_kind_info_get(node->kind)->flags
-              & FRG_AST_NODE_KIND_FLAG_STATEMENT)
+              & FRG_AST_NODE_KIND_FLAG_VALUE)
              != 0) {
     value = _frg_codegen_generate_value(ctx, mut_scope, node);
 

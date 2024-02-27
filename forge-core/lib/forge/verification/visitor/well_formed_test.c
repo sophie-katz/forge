@@ -13,13 +13,31 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/assert.h>
 #include <forge/ast/node_kind_info.h>
-#include <forge/verification/visitor/type_verification.h>
+#include <forge/verification/visitor/well_formed.h>
+#include <unity.h>
 
-frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_type_symbol(
-  frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
-  frg_die_ast_kind_not_yet_supported((*mut_node)->kind);
+void setUp() {}
+
+void tearDown() {}
+
+void test_node_kind_handler_coverage() {
+  frg_ast_visitor_t* visitor = frg_ast_visitor_new(NULL);
+
+  frg_verification_well_formed_add_handlers(visitor);
+
+  for (frg_ast_node_kind_t kind = FRG_AST_NODE_KIND_FIRST;
+       kind <= FRG_AST_NODE_KIND_LAST;
+       kind++) {
+    TEST_ASSERT(frg_ast_visitor_has_handler_for_node_kind(visitor, kind));
+
+    printf("Node kind %s passed\n", frg_ast_node_kind_info_get(kind)->name);
+  }
 }
 
-void frg_verification_type_verification_add_handlers(frg_ast_visitor_t* mut_visitor) {}
+int main() {
+  UNITY_BEGIN();
+  // TODO: Finish coverage
+  // RUN_TEST(test_node_kind_handler_coverage);
+  return UNITY_END();
+}

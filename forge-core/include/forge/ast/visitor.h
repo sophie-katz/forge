@@ -40,6 +40,9 @@ void frg_ast_visitor_destroy(frg_ast_visitor_t* visitor);
 frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(frg_ast_visitor_t* mut_visitor,
                                                        frg_ast_node_kind_t node_kind);
 
+bool frg_ast_visitor_has_handler_for_node_kind(const frg_ast_visitor_t* visitor,
+                                               frg_ast_node_kind_t node_kind);
+
 frg_ast_visitor_status_t frg_ast_visitor_handle_event(frg_ast_node_t** mut_node,
                                                       const frg_ast_visitor_t* visitor,
                                                       const GList* parents,

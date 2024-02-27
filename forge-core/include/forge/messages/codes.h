@@ -783,18 +783,18 @@
     frg_stream_output_t* __frg_it_1_stream_a                                           \
       = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
                                                                                        \
-    frg_format(__frg_it_1_stream_a, (type_a), 0);                                      \
+    frg_formatting_print_formatted(__frg_it_1_stream_a, (type_a), 0);                  \
                                                                                        \
     GString* __frg_it_1_buffer_a                                                       \
-      = frg_stream_output_destroy_take_buffer(&__frg_it_1_stream_a);                   \
+      = frg_stream_output_destroy_take_buffer(__frg_it_1_stream_a);                    \
                                                                                        \
     frg_stream_output_t* __frg_it_1_stream_b                                           \
       = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
                                                                                        \
-    frg_format(__frg_it_1_stream_b, (type_b), 0);                                      \
+    frg_formatting_print_formatted(__frg_it_1_stream_b, (type_b), 0);                  \
                                                                                        \
     GString* __frg_it_1_buffer_b                                                       \
-      = frg_stream_output_destroy_take_buffer(&__frg_it_1_stream_b);                   \
+      = frg_stream_output_destroy_take_buffer(__frg_it_1_stream_b);                    \
                                                                                        \
     frg_message_emit_from_source_range(                                                \
       (message_buffer),                                                                \
@@ -824,10 +824,10 @@
     frg_stream_output_t* __frg_et_2_stream                                             \
       = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
                                                                                        \
-    frg_format(__frg_et_2_stream, (type), 0);                                          \
+    frg_formatting_print_formatted(__frg_et_2_stream, (type), 0);                      \
                                                                                        \
     GString* __frg_et_2_buffer                                                         \
-      = frg_stream_output_destroy_take_buffer(&__frg_et_2_stream);                     \
+      = frg_stream_output_destroy_take_buffer(__frg_et_2_stream);                      \
                                                                                        \
     frg_message_emit_from_source_range((message_buffer),                               \
                                        (source_range),                                 \
@@ -845,10 +845,10 @@
     frg_stream_output_t* __frg_et_3_stream                                             \
       = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
                                                                                        \
-    frg_format(__frg_et_3_stream, (type), 0);                                          \
+    frg_formatting_print_formatted(__frg_et_3_stream, (type), 0);                      \
                                                                                        \
     GString* __frg_et_3_buffer                                                         \
-      = frg_stream_output_destroy_take_buffer(&__frg_et_3_stream);                     \
+      = frg_stream_output_destroy_take_buffer(__frg_et_3_stream);                      \
                                                                                        \
     frg_message_emit_from_source_range((message_buffer),                               \
                                        (source_range),                                 \

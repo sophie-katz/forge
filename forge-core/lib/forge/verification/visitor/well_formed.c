@@ -208,3 +208,5 @@ frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_function
 
   // return FRG_AST_VISITOR_STATUS_OK;
 }
+
+void frg_verification_well_formed_add_handlers(frg_ast_visitor_t* mut_visitor) {}

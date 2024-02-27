@@ -636,6 +636,48 @@ if forge_should_build_tests
         is_parallel: forge_test_is_parallel,
     )
 
+    forge_unit_test_verification_type_operations = executable(
+        'test-unit-verification-type-operations',
+        'lib/forge/verification/type_operations_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_library_core],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test(
+        'verification/type_operations_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_verification_type_operations
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
+
+    forge_unit_test_verification_visitor_well_formed = executable(
+        'test-unit-verification-visitor-well-formed',
+        'lib/forge/verification/visitor/well_formed_test.c',
+        include_directories: forge_include_directories,
+        link_with: [forge_library_core],
+        dependencies: forge_dependencies + [
+            forge_dependency_unity
+        ]
+    )
+
+    test(
+        'verification/visitor/well_formed_test.c',
+        program_bash,
+        args: [
+            forge_test_wrapper,
+            forge_unit_test_verification_visitor_well_formed
+        ],
+        timeout: forge_test_timeout_seconds,
+        is_parallel: forge_test_is_parallel,
+    )
+
     # Integration
 
     forge_integration_test_compilation_empty = executable(

@@ -237,6 +237,11 @@ void test_resolve_type_declaration_property() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_declaration_function_argument() {
@@ -265,6 +270,11 @@ void test_resolve_type_declaration_function_argument() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_declaration_function_i32_none() {
@@ -309,6 +319,11 @@ void test_resolve_type_declaration_function_i32_none() {
       ->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_declaration_function_i32_i32_i32() {
@@ -379,6 +394,11 @@ void test_resolve_type_declaration_function_i32_i32_i32() {
       ->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_declaration_variable() {
@@ -405,6 +425,11 @@ void test_resolve_type_declaration_variable() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_bool() {
@@ -421,6 +446,11 @@ void test_resolve_type_value_bool() {
   TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_TYPE_BOOL, resolved->kind);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_i32() {
@@ -440,6 +470,11 @@ void test_resolve_type_value_i32() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_u16() {
@@ -459,6 +494,11 @@ void test_resolve_type_value_u16() {
   TEST_ASSERT_EQUAL(16, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_f32() {
@@ -476,6 +516,11 @@ void test_resolve_type_value_f32() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_float_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_f64() {
@@ -493,6 +538,11 @@ void test_resolve_type_value_f64() {
   TEST_ASSERT_EQUAL(64, ((frg_ast_node_type_float_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_symbol_undefined() {
@@ -509,6 +559,10 @@ void test_resolve_type_value_symbol_undefined() {
 
   TEST_ASSERT_EQUAL(1, message_buffer->message_count);
   TEST_ASSERT_EQUAL(1, message_buffer->error_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
 }
 
 void test_resolve_type_value_symbol() {
@@ -516,17 +570,17 @@ void test_resolve_type_value_symbol() {
 
   frg_ast_scope_t* scope               = frg_ast_scope_new();
 
-  frg_ast_scope_add_ast(
-    scope,
-    (frg_ast_node_t*)frg_ast_node_declaration_variable_new(
+  frg_ast_node_t* declaration = (frg_ast_node_t*)frg_ast_node_declaration_variable_new(
+    &frg_global_parsing_range_null,
+    frg_ast_node_declaration_property_new(
       &frg_global_parsing_range_null,
-      frg_ast_node_declaration_property_new(
-        &frg_global_parsing_range_null,
-        FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
-        g_string_new("x"),
-        (frg_ast_node_t*)frg_ast_node_type_int_new(
-          &frg_global_parsing_range_null, FRG_AST_NODE_TYPE_INT_FLAG_NONE, 32)),
-      NULL));
+      FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,
+      g_string_new("x"),
+      (frg_ast_node_t*)frg_ast_node_type_int_new(
+        &frg_global_parsing_range_null, FRG_AST_NODE_TYPE_INT_FLAG_NONE, 32)),
+    NULL);
+
+  frg_ast_scope_add_ast(scope, declaration);
 
   frg_ast_node_t* node = (frg_ast_node_t*)frg_ast_node_value_symbol_new(
     &frg_global_parsing_range_null, g_string_new("x"));
@@ -540,6 +594,12 @@ void test_resolve_type_value_symbol() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(declaration);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_bit_not_i32() {
@@ -561,6 +621,11 @@ void test_resolve_type_value_bit_not_i32() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_bit_not_u64() {
@@ -582,6 +647,11 @@ void test_resolve_type_value_bit_not_u64() {
   TEST_ASSERT_EQUAL(64, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_add_i32_i64() {
@@ -604,6 +674,11 @@ void test_resolve_type_value_add_i32_i64() {
   TEST_ASSERT_EQUAL(64, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 void test_resolve_type_value_add_assign_i32_i64() {
@@ -626,6 +701,11 @@ void test_resolve_type_value_add_assign_i32_i64() {
   TEST_ASSERT_EQUAL(32, ((frg_ast_node_type_int_t*)resolved)->bit_width);
 
   TEST_ASSERT_EQUAL(0, message_buffer->message_count);
+
+  frg_message_buffer_destroy(message_buffer);
+  frg_ast_scope_destroy(scope);
+  frg_ast_node_destroy(node);
+  frg_ast_node_destroy(resolved);
 }
 
 int main() {

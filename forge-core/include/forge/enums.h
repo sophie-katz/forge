@@ -20,6 +20,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+int frg_get_enum_mask_from_max(int max);
+
 /// A mode for whether or not to use color for console output
 typedef enum {
   /// Do not use color output
@@ -142,6 +144,15 @@ typedef enum {
 } frg_ast_node_kind_t;
 
 #define FRG_AST_NODE_KIND_COUNT (FRG_AST_NODE_KIND_LAST - FRG_AST_NODE_KIND_FIRST + 1)
+
+typedef enum {
+  FRG_AST_NODE_TYPE_POINTER_FLAG_NONE                 = 0,
+  FRG_AST_NODE_TYPE_POINTER_FLAG_CONSTANT             = 1,
+  FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE = 1 << 1,
+
+  FRG_AST_NODE_TYPE_POINTER_FLAG_MAX
+    = FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE,
+} frg_ast_node_type_pointer_flags_t;
 
 typedef enum {
   FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE         = 0,

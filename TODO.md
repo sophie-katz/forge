@@ -32,8 +32,8 @@ not, see <https://www.gnu.org/licenses/>.
   - [ ] Verify that AST is well-formed
   - [x] Add in a way to verify that AST is simplified and can be passed directly to the code generator
   - [ ] Type verification
-  - [ ] Constant/mutable verification
-  - [ ] Scope verification
+    - [ ] Constant/mutable verification
+    - [ ] Scope verification
 
 # Low priority
 

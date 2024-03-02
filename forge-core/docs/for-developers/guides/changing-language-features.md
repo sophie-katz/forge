@@ -20,43 +20,45 @@ not, see <https://www.gnu.org/licenses/>.
 Changing even simple language features often results in many changes in many places in the codebase. These are all of the places that you may have to update:
 
 - [AST](#ast)
-    - [ID enum](#id-enum)
-    - [Structs](#structs)
-    - [Debug printing](#debug-printing)
-    - [Type resolution](#type-resolution)
+  - [Node kind enumerator](#node-kind-enumerator)
+  - [Structs](#structs)
+  - [Node kind info](#node-kind-info)
 - [Code generation](#code-generation)
 - [Parsing](#parsing)
-    - [Lexer](#lexer)
-    - [Parser](#parser)
+  - [Lexer](#lexer)
+  - [Parser](#parser)
 
 ## AST
 
-### ID enum
+### Node kind enumerator
 
-The ID enumerator is the list of all the different types of AST nodes that can exist. This is defined in the [`forge/common/enums.h`](../../../forge-core/include/forge/common/enums.h) file. See the `frg_ast_kind_t` enumerator for details.
+The node kind enumerator is the list of all the different kinds of AST nodes that can exist. This is defined in the [`forge/enums.h`](../../../include/forge/enums.h) file. See the `frg_ast_node_kind_t` enumerator for details.
 
 ### Structs
 
-The structures are stored in [`forge/ast/ast.h`](../../../forge-core/include/forge/ast/ast.h). Make sure to update any relevant functions as well as the structs.
+The structures are stored in [`forge/ast/node.h`](../../../include/forge/ast/node.h). Make sure to update any relevant functions as well as the structs.
 
-### Debug printing
+### Node kind info
 
-Debug printing is implemented in [`forge/ast/debug.h`](../../../forge-core/include/forge/ast/debug.h).
+Nodes kinds have metadata associated with them, which is defined in [`forge/ast/node_kind_info.h`](../../../include/forge/ast/node_kind_info.h).
 
-### Type resolution
+This may involve changing functions associated with the relevant node kinds, which may live in other modules.
 
-Debug printing is implemented in [`forge/ast/type_resolution.h`](../../../forge-core/include/forge/ast/type_resolution.h).
+## Verification
+
+> [!NOTE]  
+> **TODO:** Add in instructions for updating verification code.
 
 ## Code generation
 
-The generators are defined in [`forge/codegen/generators.hpp`](../../../forge-core/lib/forge/codegen/generators.hpp).
+The generators are defined in [`forge/codegen/generators.hpp`](../../../lib/forge/codegen/generators.hpp).
 
 ## Parsing
 
 ### Lexer
 
-The lexer is defined in [`forge/parsing/forge.l`](../../../forge-core/lib/forge/parsing/forge.l).
+The lexer is defined in [`forge/parsing/forge.l`](../../../lib/forge/parsing/forge.l).
 
 ### Parser
 
-The parser is defined in [`forge/parsing/forge.y`](../../../forge-core/lib/forge/parsing/forge.y).
+The parser is defined in [`forge/parsing/forge.y`](../../../lib/forge/parsing/forge.y).

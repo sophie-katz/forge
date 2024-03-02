@@ -84,6 +84,7 @@ frg_ast_node_t* frg_ast_cloner_type_pointer(const frg_ast_node_t* node) {
 
   memcpy(result, node, sizeof(frg_ast_node_t));
 
+  result->flags = ((const frg_ast_node_type_pointer_t*)node)->flags;
   result->value = frg_ast_clone(((const frg_ast_node_type_pointer_t*)node)->value);
 
   return (frg_ast_node_t*)result;

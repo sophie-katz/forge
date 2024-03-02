@@ -62,6 +62,35 @@ void frg_ast_node_type_int_flags_print(frg_stream_output_t* mut_stream,
   }
 }
 
+void frg_ast_node_type_pointer_flags_print(frg_stream_output_t* mut_stream,
+                                           frg_ast_node_type_pointer_flags_t flags) {
+  bool first = true;
+
+  if (flags & FRG_AST_NODE_TYPE_POINTER_FLAG_CONSTANT) {
+    if (!first) {
+      frg_stream_output_write_character(mut_stream, ',');
+    }
+
+    frg_stream_output_write_printf(mut_stream, "constant");
+
+    first = false;
+  }
+
+  if (flags & FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE) {
+    if (!first) {
+      frg_stream_output_write_character(mut_stream, ',');
+    }
+
+    frg_stream_output_write_printf(mut_stream, "implicit-dereference");
+
+    first = false;
+  }
+
+  if (first) {
+    frg_stream_output_write_printf(mut_stream, "none");
+  }
+}
+
 void frg_ast_node_declaration_property_flags_print(
   frg_stream_output_t* mut_stream, frg_ast_node_declaration_property_flags_t flags) {
   bool first = true;

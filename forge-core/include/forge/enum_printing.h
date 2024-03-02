@@ -24,6 +24,9 @@ void frg_message_severity_print(frg_stream_output_t* mut_stream,
 void frg_ast_node_type_int_flags_print(frg_stream_output_t* mut_stream,
                                        frg_ast_node_type_int_flags_t flags);
 
+void frg_ast_node_type_pointer_flags_print(frg_stream_output_t* mut_stream,
+                                           frg_ast_node_type_pointer_flags_t flags);
+
 void frg_ast_node_declaration_property_flags_print(
   frg_stream_output_t* mut_stream, frg_ast_node_declaration_property_flags_t flags);
 

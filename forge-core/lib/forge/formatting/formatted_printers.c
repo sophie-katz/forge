@@ -79,7 +79,18 @@ void frg_formatting_formatted_printer_type_pointer(frg_stream_output_t* mut_stre
   frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_POINTER);
   frg_assert_int_non_negative(indentation);
 
-  frg_stream_output_write_character(mut_stream, '*');
+  if (((const frg_ast_node_type_pointer_t*)node)->flags
+      & FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE) {
+    frg_stream_output_write_character(mut_stream, '&');
+  } else {
+    frg_stream_output_write_character(mut_stream, '*');
+  }
+
+  if (((const frg_ast_node_type_pointer_t*)node)->flags
+      & FRG_AST_NODE_TYPE_POINTER_FLAG_CONSTANT) {
+    frg_stream_output_write_string(mut_stream, "const ");
+  }
+
   frg_formatting_print_formatted(
     mut_stream, ((const frg_ast_node_type_pointer_t*)node)->value, indentation);
 }

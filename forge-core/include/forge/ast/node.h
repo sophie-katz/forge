@@ -46,6 +46,7 @@ typedef struct {
 
 typedef struct {
   frg_ast_node_t base;
+  frg_ast_node_type_pointer_flags_t flags;
   frg_ast_node_t* value;
 } frg_ast_node_type_pointer_t;
 
@@ -217,7 +218,9 @@ frg_ast_node_type_symbol_t* frg_ast_node_type_symbol_new(
   const frg_parsing_range_t* source_range, GString* name);
 
 frg_ast_node_type_pointer_t* frg_ast_node_type_pointer_new(
-  const frg_parsing_range_t* source_range, frg_ast_node_t* value);
+  const frg_parsing_range_t* source_range,
+  frg_ast_node_type_pointer_flags_t flags,
+  frg_ast_node_t* value);
 
 frg_ast_node_type_function_t* frg_ast_node_type_function_new(
   const frg_parsing_range_t* source_range,

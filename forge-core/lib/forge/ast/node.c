@@ -75,7 +75,9 @@ frg_ast_node_type_symbol_t* frg_ast_node_type_symbol_new(
 }
 
 frg_ast_node_type_pointer_t* frg_ast_node_type_pointer_new(
-  const frg_parsing_range_t* source_range, frg_ast_node_t* value) {
+  const frg_parsing_range_t* source_range,
+  frg_ast_node_type_pointer_flags_t flags,
+  frg_ast_node_t* value) {
   frg_assert_pointer_non_null(source_range);
   frg_assert_pointer_non_null(value);
 
@@ -83,6 +85,7 @@ frg_ast_node_type_pointer_t* frg_ast_node_type_pointer_new(
 
   node->base.kind                   = FRG_AST_NODE_KIND_TYPE_POINTER;
   node->base.source_range           = *source_range;
+  node->flags                       = flags;
   node->value                       = value;
 
   return node;

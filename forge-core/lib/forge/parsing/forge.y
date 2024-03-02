@@ -337,9 +337,58 @@ ty_primary : ty_bool
     $$ = $1;
 };
 
-ty_pointer: MULTIPLY ty_primary
+ty_pointer: MULTIPLY ty_pointer
 {
-    $$ = frg_ast_node_type_pointer_new(&$1, $2);
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &((frg_ast_node_t*)$2)->source_range
+    );
+
+    $$ = frg_ast_node_type_pointer_new(
+        &source_range,
+        FRG_AST_NODE_TYPE_POINTER_FLAG_NONE,
+        $2
+    );
+}
+| BIT_AND ty_pointer
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &((frg_ast_node_t*)$2)->source_range
+    );
+
+    $$ = frg_ast_node_type_pointer_new(
+        &source_range,
+        FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE,
+        $2
+    );
+}
+| MULTIPLY KEYWORD_CONST ty_pointer
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &((frg_ast_node_t*)$3)->source_range
+    );
+
+    $$ = frg_ast_node_type_pointer_new(
+        &source_range,
+        FRG_AST_NODE_TYPE_POINTER_FLAG_CONSTANT,
+        $3
+    );
+}
+| BIT_AND KEYWORD_CONST ty_pointer
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &((frg_ast_node_t*)$3)->source_range
+    );
+
+    $$ = frg_ast_node_type_pointer_new(
+        &source_range,
+        FRG_AST_NODE_TYPE_POINTER_FLAG_CONSTANT
+            | FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE,
+        $3
+    );
 }
 | ty_primary
 {

@@ -102,6 +102,11 @@ void frg_ast_debug_printer_type_pointer(frg_stream_output_t* mut_stream,
     = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
 
   frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "flags", NULL);
+  frg_ast_node_type_pointer_flags_print(
+    mut_stream, ((const frg_ast_node_type_pointer_t*)node)->flags);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
   frg_ast_print_debug(
     mut_stream, ((const frg_ast_node_type_pointer_t*)node)->value, &options_next);
 }

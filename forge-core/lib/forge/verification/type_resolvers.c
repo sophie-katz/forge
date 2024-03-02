@@ -240,7 +240,9 @@ frg_ast_node_t* frg_verification_type_resolver_value_dereference(
     return NULL;
   }
 
-  if (resolved_type->kind != FRG_AST_NODE_KIND_TYPE_POINTER) {
+  if (resolved_type->kind != FRG_AST_NODE_KIND_TYPE_POINTER
+      || ((const frg_ast_node_type_pointer_t*)resolved_type)->flags
+           & FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE) {
     frg_emit_message_et_2_cannot_dereference_non_pointer(
       mut_message_buffer, &node->source_range, resolved_type);
 
@@ -249,7 +251,11 @@ frg_ast_node_t* frg_verification_type_resolver_value_dereference(
 
   frg_assert_pointer_non_null(((frg_ast_node_type_pointer_t*)resolved_type)->value);
 
-  return frg_ast_clone(((frg_ast_node_type_pointer_t*)resolved_type)->value);
+  return (frg_ast_node_t*)frg_ast_node_type_pointer_new(
+    &frg_global_parsing_range_null,
+    ((frg_ast_node_type_pointer_t*)resolved_type)->flags
+      | FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE,
+    frg_ast_clone(((frg_ast_node_type_pointer_t*)resolved_type)->value));
 }
 
 frg_ast_node_t* frg_verification_type_resolver_value_get_address(
@@ -268,8 +274,17 @@ frg_ast_node_t* frg_verification_type_resolver_value_get_address(
     return NULL;
   }
 
-  return (frg_ast_node_t*)frg_ast_node_type_pointer_new(&frg_global_parsing_range_null,
-                                                        resolved_type);
+  if (resolved_type->kind != FRG_AST_NODE_KIND_TYPE_POINTER
+      || !(((const frg_ast_node_type_pointer_t*)resolved_type)->flags
+           & FRG_AST_NODE_TYPE_POINTER_FLAG_IMPLICIT_DEREFERENCE)) {
+    frg_emit_message_et_4_cannot_get_address_non_reference(
+      mut_message_buffer, &node->source_range, resolved_type);
+
+    return NULL;
+  }
+
+  return (frg_ast_node_t*)frg_ast_node_type_pointer_new(
+    &frg_global_parsing_range_null, FRG_AST_NODE_TYPE_POINTER_FLAG_NONE, resolved_type);
 }
 
 frg_ast_node_t* frg_verification_type_resolver_value_call(

@@ -430,38 +430,38 @@
     "IS-4",                                                                            \
     "Cannot parse string without '.' as float literal")
 
-#define frg_message_emit_is_5_ast_property_null(                                       \
-  message_buffer, source_range, ast_kind, property_name)                               \
+#define frg_message_emit_is_5_ast_node_property_null(                                  \
+  message_buffer, source_range, ast_node_kind, property_name)                          \
   frg_message_emit_from_source_range((message_buffer),                                 \
                                      (source_range),                                   \
                                      FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,              \
                                      "IS-5",                                           \
                                      "AST node '%s' cannot have null '%s'",            \
-                                     frg_ast_kind_to_string(ast_kind),                 \
+                                     frg_ast_node_kind_info_get(ast_node_kind)->name,  \
                                      (property_name))
 
-#define frg_message_emit_is_6_ast_property_empty_string(                               \
-  message_buffer, source_range, ast_kind, property_name)                               \
+#define frg_message_emit_is_6_ast_node_property_empty_string(                          \
+  message_buffer, source_range, ast_node_kind, property_name)                          \
   frg_message_emit_from_source_range(                                                  \
     (message_buffer),                                                                  \
     (source_range),                                                                    \
     FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,                                               \
     "IS-6",                                                                            \
     "AST node '%s' cannot have '%s' that is an empty string",                          \
-    frg_ast_kind_to_string(ast_kind),                                                  \
+    frg_ast_node_kind_info_get(ast_node_kind)->name,                                   \
     (property_name))
 
 #define frg_message_emit_is_7_invalid_symbol(                                          \
-  message_buffer, source_range, ast_kind, property_name)                               \
+  message_buffer, source_range, ast_node_kind, property_name)                          \
   {                                                                                    \
-    frg_message_t* __frg_is_7_message                                                  \
-      = frg_message_emit_from_source_range((message_buffer),                           \
-                                           (source_range),                             \
-                                           FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,        \
-                                           "IS-7",                                     \
-                                           "Symbol '%s' is invalid",                   \
-                                           frg_ast_kind_to_string(ast_kind),           \
-                                           (property_name));                           \
+    frg_message_t* __frg_is_7_message = frg_message_emit_from_source_range(            \
+      (message_buffer),                                                                \
+      (source_range),                                                                  \
+      FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,                                             \
+      "IS-7",                                                                          \
+      "Symbol '%s' is invalid",                                                        \
+      frg_ast_node_kind_info_get(ast_node_kind)->name,                                 \
+      (property_name));                                                                \
                                                                                        \
     frg_message_emit_child(                                                            \
       (message_buffer),                                                                \
@@ -472,27 +472,27 @@
       "letters, and numbers");                                                         \
   }
 
-#define frg_message_emit_is_8_ast_property_null_element(                               \
-  message_buffer, source_range, ast_kind, property_name, index)                        \
+#define frg_message_emit_is_8_ast_node_property_null_element(                          \
+  message_buffer, source_range, ast_node_kind, property_name, index)                   \
   frg_message_emit_from_source_range(                                                  \
     (message_buffer),                                                                  \
     (source_range),                                                                    \
     FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,                                               \
     "IS-8",                                                                            \
     "AST node '%s' property '%s' has invalid null element at index %i",                \
-    frg_ast_kind_to_string(ast_kind),                                                  \
+    frg_ast_node_kind_info_get(ast_node_kind)->name,                                   \
     (property_name),                                                                   \
     (index))
 
-#define frg_message_emit_is_9_ast_property_unexpected_element(                         \
-  message_buffer, source_range, ast_kind, property_name, index)                        \
+#define frg_message_emit_is_9_ast_node_property_unexpected_element(                    \
+  message_buffer, source_range, ast_node_kind, property_name, index)                   \
   frg_message_emit_from_source_range(                                                  \
     (message_buffer),                                                                  \
     (source_range),                                                                    \
     FRG_MESSAGE_SEVERITY_INTERNAL_ERROR,                                               \
     "IS-9",                                                                            \
     "AST node '%s' property '%s' has element of unexpected AST kind at index %i",      \
-    frg_ast_kind_to_string(ast_kind),                                                  \
+    frg_ast_node_kind_info_get(ast_node_kind)->name,                                   \
     (property_name),                                                                   \
     (index))
 
@@ -858,4 +858,26 @@
                                        __frg_et_3_buffer->str);                        \
                                                                                        \
     g_string_free(__frg_et_3_buffer, TRUE);                                            \
+  }
+
+#define frg_emit_message_et_4_cannot_get_address_non_reference(                        \
+  message_buffer, source_range, type)                                                  \
+  {                                                                                    \
+    frg_stream_output_t* __frg_et_4_stream                                             \
+      = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
+                                                                                       \
+    frg_formatting_print_formatted(__frg_et_4_stream, (type), 0);                      \
+                                                                                       \
+    GString* __frg_et_4_buffer                                                         \
+      = frg_stream_output_destroy_take_buffer(__frg_et_4_stream);                      \
+                                                                                       \
+    frg_message_emit_from_source_range(                                                \
+      (message_buffer),                                                                \
+      (source_range),                                                                  \
+      FRG_MESSAGE_SEVERITY_ERROR,                                                      \
+      "ET-4",                                                                          \
+      "Cannot get address of value with non-reference type '%s'",                      \
+      __frg_et_4_buffer->str);                                                         \
+                                                                                       \
+    g_string_free(__frg_et_4_buffer, TRUE);                                            \
   }

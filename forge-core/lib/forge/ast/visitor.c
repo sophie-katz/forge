@@ -41,9 +41,7 @@ frg_ast_visitor_t* frg_ast_visitor_new(void* mut_user_data) {
 void frg_ast_visitor_destroy(frg_ast_visitor_t* visitor) {
   frg_assert_pointer_non_null(visitor);
 
-  for (frg_ast_node_kind_t kind = FRG_AST_NODE_KIND_FIRST;
-       kind <= FRG_AST_NODE_KIND_LAST;
-       kind++) {
+  for (frg_ast_node_kind_t kind = 0; kind <= FRG_AST_NODE_KIND_LAST; kind++) {
     if (visitor->_handlers[kind] != NULL) {
       for (GList* iter = visitor->_handlers[kind]; iter != NULL; iter = iter->next) {
         frg_ast_visitor_handler_destroy((frg_ast_visitor_handler_t*)iter->data);
@@ -59,7 +57,7 @@ void frg_ast_visitor_destroy(frg_ast_visitor_t* visitor) {
 frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(frg_ast_visitor_t* mut_visitor,
                                                        frg_ast_node_kind_t node_kind) {
   frg_assert_pointer_non_null(mut_visitor);
-  frg_assert_int_greater_than_or_equal_to(node_kind, FRG_AST_NODE_KIND_FIRST);
+  frg_assert_int_greater_than_or_equal_to(node_kind, 0);
   frg_assert_int_less_than_or_equal_to(node_kind, FRG_AST_NODE_KIND_LAST);
 
   frg_ast_visitor_handler_t* handler = frg_ast_visitor_handler_new();
@@ -73,7 +71,7 @@ frg_ast_visitor_handler_t* frg_ast_visitor_add_handler(frg_ast_visitor_t* mut_vi
 bool frg_ast_visitor_has_handler_for_node_kind(const frg_ast_visitor_t* visitor,
                                                frg_ast_node_kind_t node_kind) {
   frg_assert_pointer_non_null(visitor);
-  frg_assert_int_greater_than_or_equal_to(node_kind, FRG_AST_NODE_KIND_FIRST);
+  frg_assert_int_greater_than_or_equal_to(node_kind, 0);
   frg_assert_int_less_than_or_equal_to(node_kind, FRG_AST_NODE_KIND_LAST);
 
   return (visitor->_handlers[node_kind] != NULL);

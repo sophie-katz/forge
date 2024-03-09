@@ -48,7 +48,7 @@ frg_ast_node_t* frg_verification_type_resolver_declaration_function(
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node);
 
-frg_ast_node_t* frg_verification_type_resolver_declaration_variable(
+frg_ast_node_t* frg_verification_type_resolver_declaration_assignment(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node);
@@ -78,6 +78,16 @@ frg_ast_node_t* frg_verification_type_resolver_value_string(
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node);
 
+frg_ast_node_t* frg_verification_type_resolver_value_array(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node);
+
+frg_ast_node_t* frg_verification_type_resolver_value_array_repeated(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node);
+
 frg_ast_node_t* frg_verification_type_resolver_value_symbol(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,
@@ -94,6 +104,11 @@ frg_ast_node_t* frg_verification_type_resolver_value_get_address(
   const frg_ast_node_t* node);
 
 frg_ast_node_t* frg_verification_type_resolver_value_call(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node);
+
+frg_ast_node_t* frg_verification_type_resolver_value_cast(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node);

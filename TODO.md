@@ -17,17 +17,11 @@ not, see <https://www.gnu.org/licenses/>.
 
 # High priority
 
-- [ ] Add reference types (for internal use)
-  - [ ] Create unary type operators
-- [ ] Add `void` type
 - [ ] Add stack allocation for structs
-- [ ] Use `elif` instead of `else if`
 - [ ] Add in heap allocation with `new` and `free`
-- [ ] Add in array types
 - [ ] Add in allocation for arrays
-  - [ ] Stack
+  - [x] Stack
   - [ ] Heap
-- [ ] Add in casting
 - [ ] Add in verification logic
   - [ ] Verify that AST is well-formed
   - [x] Add in a way to verify that AST is simplified and can be passed directly to the code generator
@@ -128,3 +122,8 @@ not, see <https://www.gnu.org/licenses/>.
 - [x] Create a shared compilation function to use for the three now-missing CLI commands
 - [x] Create tests for AST kind info coverage
 - [x] Create tests for visitor AST kind coverage
+- [x] Add reference types (for internal use)
+- [x] Add `void` type
+- [x] Use `elif` instead of `else if`
+- [x] Add in array types
+- [x] Add in casting

@@ -63,7 +63,7 @@ void test_frame_load_declaration_block() {
 
   decls                        = g_list_append(
     decls,
-    frg_ast_node_declaration_variable_new(
+    frg_ast_node_declaration_assignment_new(
       &frg_global_parsing_range_null,
       frg_ast_node_declaration_property_new(&frg_global_parsing_range_null,
                                             FRG_AST_NODE_DECLARATION_PROPERTY_FLAG_NONE,

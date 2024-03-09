@@ -29,9 +29,11 @@ GList* _frg_ast_cloner_clone_list(const GList* list) {
   return clone;
 }
 
-frg_ast_node_t* frg_ast_cloner_type_bool(const frg_ast_node_t* node) {
+frg_ast_node_t* frg_ast_cloner_type_primary(const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
-  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_BOOL);
+  frg_assert((frg_ast_node_kind_info_get(node->kind)->flags
+              & FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY)
+             != 0);
 
   frg_ast_node_t* result = frg_malloc(sizeof(frg_ast_node_t));
 
@@ -86,6 +88,20 @@ frg_ast_node_t* frg_ast_cloner_type_pointer(const frg_ast_node_t* node) {
 
   result->flags = ((const frg_ast_node_type_pointer_t*)node)->flags;
   result->value = frg_ast_clone(((const frg_ast_node_type_pointer_t*)node)->value);
+
+  return (frg_ast_node_t*)result;
+}
+
+frg_ast_node_t* frg_ast_cloner_type_array(const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_ARRAY);
+
+  frg_ast_node_type_array_t* result = frg_malloc(sizeof(frg_ast_node_type_array_t));
+
+  memcpy(result, node, sizeof(frg_ast_node_t));
+
+  result->length = ((const frg_ast_node_type_array_t*)node)->length;
+  result->value  = frg_ast_clone(((const frg_ast_node_type_array_t*)node)->value);
 
   return (frg_ast_node_t*)result;
 }
@@ -228,20 +244,20 @@ frg_ast_node_t* frg_ast_cloner_declaration_function(const frg_ast_node_t* node) 
   return (frg_ast_node_t*)result;
 }
 
-frg_ast_node_t* frg_ast_cloner_declaration_variable(const frg_ast_node_t* node) {
+frg_ast_node_t* frg_ast_cloner_declaration_assignment(const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
-  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT);
 
-  frg_ast_node_declaration_variable_t* result
-    = frg_malloc(sizeof(frg_ast_node_declaration_variable_t));
+  frg_ast_node_declaration_assignment_t* result
+    = frg_malloc(sizeof(frg_ast_node_declaration_assignment_t));
 
   memcpy(result, node, sizeof(frg_ast_node_t));
 
   result->property = (frg_ast_node_declaration_property_t*)frg_ast_clone(
-    (const frg_ast_node_t*)((const frg_ast_node_declaration_variable_t*)node)
+    (const frg_ast_node_t*)((const frg_ast_node_declaration_assignment_t*)node)
       ->property);
-  result->initial_value
-    = frg_ast_clone(((const frg_ast_node_declaration_variable_t*)node)->initial_value);
+  result->value
+    = frg_ast_clone(((const frg_ast_node_declaration_assignment_t*)node)->value);
 
   return (frg_ast_node_t*)result;
 }
@@ -275,6 +291,25 @@ frg_ast_node_t* frg_ast_cloner_statement_return(const frg_ast_node_t* node) {
   return (frg_ast_node_t*)result;
 }
 
+frg_ast_node_t* frg_ast_cloner_statement_if_conditional_clause(
+  const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind,
+                          FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE);
+
+  frg_ast_node_statement_if_conditional_clause_t* result
+    = frg_malloc(sizeof(frg_ast_node_statement_if_conditional_clause_t));
+
+  memcpy(result, node, sizeof(frg_ast_node_t));
+
+  result->condition = frg_ast_clone(
+    ((const frg_ast_node_statement_if_conditional_clause_t*)node)->condition);
+  result->body = frg_ast_clone(
+    ((const frg_ast_node_statement_if_conditional_clause_t*)node)->body);
+
+  return (frg_ast_node_t*)result;
+}
+
 frg_ast_node_t* frg_ast_cloner_statement_if(const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
   frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_IF);
@@ -283,10 +318,9 @@ frg_ast_node_t* frg_ast_cloner_statement_if(const frg_ast_node_t* node) {
 
   memcpy(result, node, sizeof(frg_ast_node_t));
 
-  result->condition
-    = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->condition);
-  result->then_clause
-    = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->then_clause);
+  result->conditional_clauses = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_statement_if_t*)node)->conditional_clauses);
+
   result->else_clause
     = frg_ast_clone(((const frg_ast_node_statement_if_t*)node)->else_clause);
 
@@ -384,6 +418,51 @@ frg_ast_node_t* frg_ast_cloner_value_string(const frg_ast_node_t* node) {
   return (frg_ast_node_t*)result;
 }
 
+frg_ast_node_t* frg_ast_cloner_value_array(const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY);
+
+  frg_ast_node_value_array_t* result = frg_malloc(sizeof(frg_ast_node_value_array_t));
+
+  memcpy(result, node, sizeof(frg_ast_node_t));
+
+  result->elements
+    = _frg_ast_cloner_clone_list(((const frg_ast_node_value_array_t*)node)->elements);
+
+  return (frg_ast_node_t*)result;
+}
+
+frg_ast_node_t* frg_ast_cloner_value_array_repeated(const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED);
+
+  frg_ast_node_value_array_repeated_t* result
+    = frg_malloc(sizeof(frg_ast_node_value_array_repeated_t));
+
+  memcpy(result, node, sizeof(frg_ast_node_t));
+
+  result->length = ((const frg_ast_node_value_array_repeated_t*)node)->length;
+  result->element
+    = frg_ast_clone(((const frg_ast_node_value_array_repeated_t*)node)->element);
+
+  return (frg_ast_node_t*)result;
+}
+
+frg_ast_node_t* frg_ast_cloner_value_structure(const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_STRUCTURE);
+
+  frg_ast_node_value_structure_t* result
+    = frg_malloc(sizeof(frg_ast_node_value_structure_t));
+
+  memcpy(result, node, sizeof(frg_ast_node_t));
+
+  result->assignments = _frg_ast_cloner_clone_list(
+    ((const frg_ast_node_value_structure_t*)node)->assignments);
+
+  return (frg_ast_node_t*)result;
+}
+
 frg_ast_node_t* frg_ast_cloner_value_symbol(const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
   frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_SYMBOL);
@@ -430,6 +509,20 @@ frg_ast_node_t* frg_ast_cloner_value_call(const frg_ast_node_t* node) {
     = _frg_ast_cloner_clone_list(((const frg_ast_node_value_call_t*)node)->arguments);
   result->keyword_arguments = _frg_ast_cloner_clone_list(
     ((const frg_ast_node_value_call_t*)node)->keyword_arguments);
+
+  return (frg_ast_node_t*)result;
+}
+
+frg_ast_node_t* frg_ast_cloner_value_cast(const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CAST);
+
+  frg_ast_node_value_cast_t* result = frg_malloc(sizeof(frg_ast_node_value_cast_t));
+
+  memcpy(result, node, sizeof(frg_ast_node_t));
+
+  result->value = frg_ast_clone(((const frg_ast_node_value_cast_t*)node)->value);
+  result->type  = frg_ast_clone(((const frg_ast_node_value_cast_t*)node)->type);
 
   return (frg_ast_node_t*)result;
 }

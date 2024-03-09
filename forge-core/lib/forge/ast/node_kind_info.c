@@ -31,11 +31,19 @@ void _frg_ast_node_kind_info_table_init() {
 
   memset(_frg_ast_node_kind_info_table, 0, sizeof(_frg_ast_node_kind_info_table));
 
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID].name = "type-void";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID].flags
+    = FRG_AST_NODE_KIND_FLAG_TYPE | FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID]._cloner
+    = frg_ast_cloner_type_primary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID]._formatted_printer
+    = frg_formatting_formatted_printer_type_void;
+
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL].name = "type-bool";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL].flags
-    = FRG_AST_NODE_KIND_FLAG_TYPE;
+    = FRG_AST_NODE_KIND_FLAG_TYPE | FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL]._cloner
-    = frg_ast_cloner_type_bool;
+    = frg_ast_cloner_type_primary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL]._formatted_printer
     = frg_formatting_formatted_printer_type_bool;
 
@@ -84,6 +92,20 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_visitor_acceptor_type_pointer;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_POINTER]._formatted_printer
     = frg_formatting_formatted_printer_type_pointer;
+
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY].name = "type-array";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY].flags
+    = FRG_AST_NODE_KIND_FLAG_TYPE | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._destructor
+    = frg_ast_destructor_type_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._cloner
+    = frg_ast_cloner_type_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._debug_printer
+    = frg_ast_debug_printer_type_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._visitor_acceptor
+    = frg_ast_visitor_acceptor_type_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._formatted_printer
+    = frg_formatting_formatted_printer_type_array;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FUNCTION].name = "type-function";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FUNCTION].flags
@@ -218,24 +240,24 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_FUNCTION]._type_resolver
     = frg_verification_type_resolver_declaration_function;
 
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE].name
-    = "declaration-variable";
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE].flags
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT].name
+    = "declaration-assignment";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT].flags
     = FRG_AST_NODE_KIND_FLAG_DECLARATION | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]._destructor
-    = frg_ast_destructor_declaration_variable;
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]._cloner
-    = frg_ast_cloner_declaration_variable;
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT]._destructor
+    = frg_ast_destructor_declaration_assignment;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT]._cloner
+    = frg_ast_cloner_declaration_assignment;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT]
     ._declaration_name_getter
-    = frg_ast_declaration_name_getter_variable;
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]._debug_printer
-    = frg_ast_debug_printer_declaration_variable;
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]
+    = frg_ast_declaration_name_getter_assignment;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT]._debug_printer
+    = frg_ast_debug_printer_declaration_assignment;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT]
     ._visitor_acceptor
-    = frg_ast_visitor_acceptor_declaration_variable;
-  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_VARIABLE]._type_resolver
-    = frg_verification_type_resolver_declaration_variable;
+    = frg_ast_visitor_acceptor_declaration_assignment;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT]._type_resolver
+    = frg_verification_type_resolver_declaration_assignment;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_DECLARATION_BLOCK].name
     = "declaration-block";
@@ -262,6 +284,23 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_debug_printer_statement_return;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_RETURN]._visitor_acceptor
     = frg_ast_visitor_acceptor_statement_return;
+
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE].name
+    = "statement-if-conditional-clause";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE].flags
+    = FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE]
+    ._destructor
+    = frg_ast_destructor_statement_if_conditional_clause;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE]
+    ._cloner
+    = frg_ast_cloner_statement_if_conditional_clause;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE]
+    ._debug_printer
+    = frg_ast_debug_printer_statement_if_conditional_clause;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE]
+    ._visitor_acceptor
+    = frg_ast_visitor_acceptor_statement_if_conditional_clause;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF].name = "statement-if";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_STATEMENT_IF].flags
@@ -354,6 +393,49 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRING]._type_resolver
     = frg_verification_type_resolver_value_string;
 
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY].name = "value-array";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY].flags
+    = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY]._destructor
+    = frg_ast_destructor_value_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY]._cloner
+    = frg_ast_cloner_value_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY]._debug_printer
+    = frg_ast_debug_printer_value_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY]._visitor_acceptor
+    = frg_ast_visitor_acceptor_value_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY]._type_resolver
+    = frg_verification_type_resolver_value_array;
+
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED].name
+    = "value-array-repeated";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED].flags
+    = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED]._destructor
+    = frg_ast_destructor_value_array_repeated;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED]._cloner
+    = frg_ast_cloner_value_array_repeated;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED]._debug_printer
+    = frg_ast_debug_printer_value_array_repeated;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED]
+    ._visitor_acceptor
+    = frg_ast_visitor_acceptor_value_array_repeated;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED]._type_resolver
+    = frg_verification_type_resolver_value_array_repeated;
+
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRUCTURE].name
+    = "value-structure";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRUCTURE].flags
+    = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRUCTURE]._destructor
+    = frg_ast_destructor_value_structure;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRUCTURE]._cloner
+    = frg_ast_cloner_value_structure;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRUCTURE]._debug_printer
+    = frg_ast_debug_printer_value_structure;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_STRUCTURE]._visitor_acceptor
+    = frg_ast_visitor_acceptor_value_structure;
+
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SYMBOL].name = "value-symbol";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SYMBOL].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE;
@@ -427,6 +509,20 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_visitor_acceptor_value_call;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CALL]._type_resolver
     = frg_verification_type_resolver_value_call;
+
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST].name = "value-cast";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST].flags
+    = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST]._destructor
+    = frg_ast_destructor_value_cast;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST]._cloner
+    = frg_ast_cloner_value_cast;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST]._debug_printer
+    = frg_ast_debug_printer_value_cast;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST]._visitor_acceptor
+    = frg_ast_visitor_acceptor_value_cast;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_CAST]._type_resolver
+    = frg_verification_type_resolver_value_cast;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS].name = "value-access";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS].flags

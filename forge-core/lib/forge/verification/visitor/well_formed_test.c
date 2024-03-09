@@ -26,9 +26,7 @@ void test_node_kind_handler_coverage() {
 
   frg_verification_well_formed_add_handlers(visitor);
 
-  for (frg_ast_node_kind_t kind = FRG_AST_NODE_KIND_FIRST;
-       kind <= FRG_AST_NODE_KIND_LAST;
-       kind++) {
+  for (frg_ast_node_kind_t kind = 0; kind <= FRG_AST_NODE_KIND_LAST; kind++) {
     TEST_ASSERT(frg_ast_visitor_has_handler_for_node_kind(visitor, kind));
 
     printf("Node kind %s passed\n", frg_ast_node_kind_info_get(kind)->name);

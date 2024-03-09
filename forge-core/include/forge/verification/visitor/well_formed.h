@@ -17,7 +17,7 @@
 
 #include <forge/ast/visitor.h>
 
-frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_bool(
+frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_primary(
   frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
 frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_int(

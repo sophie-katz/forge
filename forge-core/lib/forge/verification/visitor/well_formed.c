@@ -134,18 +134,19 @@ bool _frg_verification_well_formed_verify_valid_symbol(
   return true;
 }
 
-frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_bool(
+frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_primary(
   frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
   frg_assert_pointer_non_null(mut_node);
   frg_assert_pointer_non_null(*mut_node);
-  frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_TYPE_BOOL);
+  frg_assert(frg_ast_node_kind_info_get((*mut_node)->kind)->flags
+             & FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY);
   frg_assert_pointer_non_null(mut_user_data);
 
-  frg_ast_node_t* type_bool             = (frg_ast_node_t*)*mut_node;
+  frg_ast_node_t* type_primary          = (frg_ast_node_t*)*mut_node;
   frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
   if (!_frg_verification_well_formed_verify_node_base(verifier->mut_message_buffer,
-                                                      type_bool)) {
+                                                      type_primary)) {
     return FRG_AST_VISITOR_STATUS_SKIP;
   }
 
@@ -387,10 +388,15 @@ frg_ast_visitor_status_t frg_verification_well_formed_handle_enter_type_function
 }
 
 void frg_verification_well_formed_add_handlers(frg_ast_visitor_t* mut_visitor) {
+  frg_ast_visitor_handler_t* handler_type_void
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_TYPE_VOID);
+  handler_type_void->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_well_formed_handle_enter_type_primary;
+
   frg_ast_visitor_handler_t* handler_type_bool
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_TYPE_BOOL);
   handler_type_bool->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_well_formed_handle_enter_type_bool;
+    = frg_verification_well_formed_handle_enter_type_primary;
 
   frg_ast_visitor_handler_t* handler_type_int
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_TYPE_INT);

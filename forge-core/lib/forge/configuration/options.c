@@ -76,7 +76,8 @@ bool _frg_configuration_options_parse_environment_bool(
     *out_result = false;
     return true;
   } else {
-    frg_message_emit_fc_12_invalid_boolean_env_variable(mut_message_buffer, key, text);
+    frg_message_emit_fc_12_invalid_boolean_shell_environment_variable(
+      mut_message_buffer, key, text);
 
     return false;
   }

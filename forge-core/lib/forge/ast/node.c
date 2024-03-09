@@ -21,12 +21,15 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-frg_ast_node_t* frg_ast_node_type_bool_new(const frg_parsing_range_t* source_range) {
+frg_ast_node_t* frg_ast_node_type_primary_new(const frg_parsing_range_t* source_range,
+                                              frg_ast_node_kind_t kind) {
   frg_assert_pointer_non_null(source_range);
+  frg_assert(frg_ast_node_kind_info_get(kind)->flags
+             & FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY);
 
   frg_ast_node_t* node = frg_malloc(sizeof(frg_ast_node_t));
   node->source_range   = *source_range;
-  node->kind           = FRG_AST_NODE_KIND_TYPE_BOOL;
+  node->kind           = kind;
 
   return node;
 }
@@ -87,6 +90,21 @@ frg_ast_node_type_pointer_t* frg_ast_node_type_pointer_new(
   node->base.source_range           = *source_range;
   node->flags                       = flags;
   node->value                       = value;
+
+  return node;
+}
+
+frg_ast_node_type_array_t* frg_ast_node_type_array_new(
+  const frg_parsing_range_t* source_range, size_t length, frg_ast_node_t* value) {
+  frg_assert_pointer_non_null(source_range);
+  frg_assert_pointer_non_null(value);
+
+  frg_ast_node_type_array_t* node = frg_malloc(sizeof(frg_ast_node_type_array_t));
+
+  node->base.kind                 = FRG_AST_NODE_KIND_TYPE_ARRAY;
+  node->base.source_range         = *source_range;
+  node->length                    = length;
+  node->value                     = value;
 
   return node;
 }
@@ -230,20 +248,20 @@ frg_ast_node_declaration_function_t* frg_ast_node_declaration_function_new(
   return node;
 }
 
-frg_ast_node_declaration_variable_t* frg_ast_node_declaration_variable_new(
+frg_ast_node_declaration_assignment_t* frg_ast_node_declaration_assignment_new(
   const frg_parsing_range_t* source_range,
   frg_ast_node_declaration_property_t* property,
-  frg_ast_node_t* initial_value) {
+  frg_ast_node_t* value) {
   frg_assert_pointer_non_null(source_range);
   frg_assert_pointer_non_null(property);
 
-  frg_ast_node_declaration_variable_t* node
-    = frg_malloc(sizeof(frg_ast_node_declaration_variable_t));
+  frg_ast_node_declaration_assignment_t* node
+    = frg_malloc(sizeof(frg_ast_node_declaration_assignment_t));
 
-  node->base.kind         = FRG_AST_NODE_KIND_DECLARATION_VARIABLE;
+  node->base.kind         = FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT;
   node->base.source_range = *source_range;
   node->property          = property;
-  node->initial_value     = initial_value;
+  node->value             = value;
 
   return node;
 }
@@ -276,21 +294,38 @@ frg_ast_node_statement_return_t* frg_ast_node_statement_return_new(
   return node;
 }
 
-frg_ast_node_statement_if_t* frg_ast_node_statement_if_new(
-  const frg_parsing_range_t* source_range,
-  frg_ast_node_t* condition,
-  frg_ast_node_t* then_clause,
-  frg_ast_node_t* else_clause) {
+frg_ast_node_statement_if_conditional_clause_t*
+  frg_ast_node_statement_if_conditional_clause_new(
+    const frg_parsing_range_t* source_range,
+    frg_ast_node_t* condition,
+    frg_ast_node_t* body) {
   frg_assert_pointer_non_null(source_range);
   frg_assert_pointer_non_null(condition);
-  frg_assert_pointer_non_null(then_clause);
+  frg_assert_pointer_non_null(body);
+
+  frg_ast_node_statement_if_conditional_clause_t* node
+    = frg_malloc(sizeof(frg_ast_node_statement_if_conditional_clause_t));
+
+  node->base.kind         = FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE;
+  node->base.source_range = *source_range;
+  node->condition         = condition;
+  node->body              = body;
+
+  return node;
+}
+
+frg_ast_node_statement_if_t* frg_ast_node_statement_if_new(
+  const frg_parsing_range_t* source_range,
+  GList* conditional_clauses,
+  frg_ast_node_t* else_clause) {
+  frg_assert_pointer_non_null(source_range);
+  frg_assert_pointer_non_null(conditional_clauses);
 
   frg_ast_node_statement_if_t* node = frg_malloc(sizeof(frg_ast_node_statement_if_t));
 
   node->base.kind                   = FRG_AST_NODE_KIND_STATEMENT_IF;
   node->base.source_range           = *source_range;
-  node->condition                   = condition;
-  node->then_clause                 = then_clause;
+  node->conditional_clauses         = conditional_clauses;
   node->else_clause                 = else_clause;
 
   return node;
@@ -585,6 +620,50 @@ frg_ast_node_value_string_t* frg_ast_node_value_string_new(
   return node;
 }
 
+frg_ast_node_value_array_t* frg_ast_node_value_array_new(
+  const frg_parsing_range_t* source_range, GList* elements) {
+  frg_assert_pointer_non_null(source_range);
+
+  frg_ast_node_value_array_t* node = frg_malloc(sizeof(frg_ast_node_value_array_t));
+
+  node->base.kind                  = FRG_AST_NODE_KIND_VALUE_ARRAY;
+  node->base.source_range          = *source_range;
+  node->elements                   = elements;
+
+  return node;
+}
+
+frg_ast_node_value_array_repeated_t* frg_ast_node_value_array_repeated_new(
+  const frg_parsing_range_t* source_range, size_t length, frg_ast_node_t* element) {
+  frg_assert_pointer_non_null(source_range);
+  frg_assert_int_positive(length);
+  frg_assert_pointer_non_null(element);
+
+  frg_ast_node_value_array_repeated_t* node
+    = frg_malloc(sizeof(frg_ast_node_value_array_repeated_t));
+
+  node->base.kind         = FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED;
+  node->base.source_range = *source_range;
+  node->length            = length;
+  node->element           = element;
+
+  return node;
+}
+
+frg_ast_node_value_structure_t* frg_ast_node_value_structure_new(
+  const frg_parsing_range_t* source_range, GList* assignments) {
+  frg_assert_pointer_non_null(source_range);
+
+  frg_ast_node_value_structure_t* node
+    = frg_malloc(sizeof(frg_ast_node_value_structure_t));
+
+  node->base.kind         = FRG_AST_NODE_KIND_VALUE_STRUCTURE;
+  node->base.source_range = *source_range;
+  node->assignments       = assignments;
+
+  return node;
+}
+
 frg_ast_node_value_symbol_t* frg_ast_node_value_symbol_new(
   const frg_parsing_range_t* source_range, GString* name) {
   frg_assert_pointer_non_null(source_range);
@@ -633,6 +712,24 @@ frg_ast_node_value_call_t* frg_ast_node_value_call_new(
   node->callee                    = callee;
   node->arguments                 = arguments;
   node->keyword_arguments         = keyword_arguments;
+
+  return node;
+}
+
+frg_ast_node_value_cast_t* frg_ast_node_value_cast_new(
+  const frg_parsing_range_t* source_range,
+  frg_ast_node_t* value,
+  frg_ast_node_t* type) {
+  frg_assert_pointer_non_null(source_range);
+  frg_assert_pointer_non_null(value);
+  frg_assert_pointer_non_null(type);
+
+  frg_ast_node_value_cast_t* node = frg_malloc(sizeof(frg_ast_node_value_cast_t));
+
+  node->base.kind                 = FRG_AST_NODE_KIND_VALUE_CAST;
+  node->base.source_range         = *source_range;
+  node->value                     = value;
+  node->type                      = type;
 
   return node;
 }

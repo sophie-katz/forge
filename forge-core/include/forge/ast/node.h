@@ -52,6 +52,12 @@ typedef struct {
 
 typedef struct {
   frg_ast_node_t base;
+  size_t length;
+  frg_ast_node_t* value;
+} frg_ast_node_type_array_t;
+
+typedef struct {
+  frg_ast_node_t base;
   GList* arguments;
   frg_ast_node_t* variadic_positional_arguments;
   frg_ast_node_t* variadic_keyword_arguments;
@@ -103,8 +109,8 @@ typedef struct {
 typedef struct {
   frg_ast_node_t base;
   frg_ast_node_declaration_property_t* property;
-  frg_ast_node_t* initial_value;
-} frg_ast_node_declaration_variable_t;
+  frg_ast_node_t* value;
+} frg_ast_node_declaration_assignment_t;
 
 typedef struct {
   frg_ast_node_t base;
@@ -119,7 +125,12 @@ typedef struct {
 typedef struct {
   frg_ast_node_t base;
   frg_ast_node_t* condition;
-  frg_ast_node_t* then_clause;
+  frg_ast_node_t* body;
+} frg_ast_node_statement_if_conditional_clause_t;
+
+typedef struct {
+  frg_ast_node_t base;
+  GList* conditional_clauses;
   frg_ast_node_t* else_clause;
 } frg_ast_node_statement_if_t;
 
@@ -177,6 +188,22 @@ typedef struct {
 
 typedef struct {
   frg_ast_node_t base;
+  GList* elements;
+} frg_ast_node_value_array_t;
+
+typedef struct {
+  frg_ast_node_t base;
+  size_t length;
+  frg_ast_node_t* element;
+} frg_ast_node_value_array_repeated_t;
+
+typedef struct {
+  frg_ast_node_t base;
+  GList* assignments;
+} frg_ast_node_value_structure_t;
+
+typedef struct {
+  frg_ast_node_t base;
   GString* name;
 } frg_ast_node_value_symbol_t;
 
@@ -195,6 +222,12 @@ typedef struct {
 
 typedef struct {
   frg_ast_node_t base;
+  frg_ast_node_t* value;
+  frg_ast_node_t* type;
+} frg_ast_node_value_cast_t;
+
+typedef struct {
+  frg_ast_node_t base;
   frg_ast_node_t* operand;
 } frg_ast_node_value_unary_t;
 
@@ -204,7 +237,8 @@ typedef struct {
   frg_ast_node_t* right;
 } frg_ast_node_value_binary_t;
 
-frg_ast_node_t* frg_ast_node_type_bool_new(const frg_parsing_range_t* source_range);
+frg_ast_node_t* frg_ast_node_type_primary_new(const frg_parsing_range_t* source_range,
+                                              frg_ast_node_kind_t kind);
 
 frg_ast_node_type_int_t* frg_ast_node_type_int_new(
   const frg_parsing_range_t* source_range,
@@ -221,6 +255,9 @@ frg_ast_node_type_pointer_t* frg_ast_node_type_pointer_new(
   const frg_parsing_range_t* source_range,
   frg_ast_node_type_pointer_flags_t flags,
   frg_ast_node_t* value);
+
+frg_ast_node_type_array_t* frg_ast_node_type_array_new(
+  const frg_parsing_range_t* source_range, size_t length, frg_ast_node_t* value);
 
 frg_ast_node_type_function_t* frg_ast_node_type_function_new(
   const frg_parsing_range_t* source_range,
@@ -262,10 +299,10 @@ frg_ast_node_declaration_function_t* frg_ast_node_declaration_function_new(
   frg_ast_node_type_function_t* type,
   frg_ast_node_t* body);
 
-frg_ast_node_declaration_variable_t* frg_ast_node_declaration_variable_new(
+frg_ast_node_declaration_assignment_t* frg_ast_node_declaration_assignment_new(
   const frg_parsing_range_t* source_range,
   frg_ast_node_declaration_property_t* property,
-  frg_ast_node_t* initial_value);
+  frg_ast_node_t* value);
 
 frg_ast_node_declaration_block_t* frg_ast_node_declaration_block_new(
   const frg_parsing_range_t* source_range, GList* declarations);
@@ -273,10 +310,15 @@ frg_ast_node_declaration_block_t* frg_ast_node_declaration_block_new(
 frg_ast_node_statement_return_t* frg_ast_node_statement_return_new(
   const frg_parsing_range_t* source_range, frg_ast_node_t* value);
 
+frg_ast_node_statement_if_conditional_clause_t*
+  frg_ast_node_statement_if_conditional_clause_new(
+    const frg_parsing_range_t* source_range,
+    frg_ast_node_t* condition,
+    frg_ast_node_t* body);
+
 frg_ast_node_statement_if_t* frg_ast_node_statement_if_new(
   const frg_parsing_range_t* source_range,
-  frg_ast_node_t* condition,
-  frg_ast_node_t* then_clause,
+  GList* conditional_clauses,
   frg_ast_node_t* else_clause);
 
 frg_ast_node_statement_while_t* frg_ast_node_statement_while_new(
@@ -332,8 +374,22 @@ frg_ast_node_value_character_t* frg_ast_node_value_character_new(
 frg_ast_node_value_string_t* frg_ast_node_value_string_new(
   const frg_parsing_range_t* source_range, GString* value);
 
+frg_ast_node_value_array_t* frg_ast_node_value_array_new(
+  const frg_parsing_range_t* source_range, GList* elements);
+
+frg_ast_node_value_array_repeated_t* frg_ast_node_value_array_repeated_new(
+  const frg_parsing_range_t* source_range, size_t length, frg_ast_node_t* element);
+
+frg_ast_node_value_structure_t* frg_ast_node_value_structure_new(
+  const frg_parsing_range_t* source_range, GList* assignments);
+
 frg_ast_node_value_symbol_t* frg_ast_node_value_symbol_new(
   const frg_parsing_range_t* source_range, GString* name);
+
+frg_ast_node_value_call_keyword_argument_t*
+  frg_ast_node_value_call_keyword_argument_new(const frg_parsing_range_t* source_range,
+                                               GString* name,
+                                               frg_ast_node_t* value);
 
 frg_ast_node_value_call_keyword_argument_t*
   frg_ast_node_value_call_keyword_argument_new(const frg_parsing_range_t* source_range,
@@ -345,6 +401,9 @@ frg_ast_node_value_call_t* frg_ast_node_value_call_new(
   frg_ast_node_t* callee,
   GList* arguments,
   GList* keyword_arguments);
+
+frg_ast_node_value_cast_t* frg_ast_node_value_cast_new(
+  const frg_parsing_range_t* source_range, frg_ast_node_t* value, frg_ast_node_t* type);
 
 frg_ast_node_value_unary_t* frg_ast_node_value_unary_new(
   const frg_parsing_range_t* source_range,

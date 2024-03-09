@@ -49,6 +49,15 @@ void frg_ast_destructor_type_pointer(frg_ast_node_t* node) {
   }
 }
 
+void frg_ast_destructor_type_array(frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_ARRAY);
+
+  if (((frg_ast_node_type_array_t*)node)->value != NULL) {
+    frg_ast_node_destroy((frg_ast_node_t*)((frg_ast_node_type_array_t*)node)->value);
+  }
+}
+
 void frg_ast_destructor_type_function(frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
   frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_FUNCTION);
@@ -154,18 +163,18 @@ void frg_ast_destructor_declaration_function(frg_ast_node_t* node) {
   }
 }
 
-void frg_ast_destructor_declaration_variable(frg_ast_node_t* node) {
+void frg_ast_destructor_declaration_assignment(frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
-  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT);
 
-  if (((frg_ast_node_declaration_variable_t*)node)->property != NULL) {
+  if (((frg_ast_node_declaration_assignment_t*)node)->property != NULL) {
     frg_ast_node_destroy(
-      (frg_ast_node_t*)((frg_ast_node_declaration_variable_t*)node)->property);
+      (frg_ast_node_t*)((frg_ast_node_declaration_assignment_t*)node)->property);
   }
 
-  if (((frg_ast_node_declaration_variable_t*)node)->initial_value != NULL) {
+  if (((frg_ast_node_declaration_assignment_t*)node)->value != NULL) {
     frg_ast_node_destroy(
-      (frg_ast_node_t*)((frg_ast_node_declaration_variable_t*)node)->initial_value);
+      (frg_ast_node_t*)((frg_ast_node_declaration_assignment_t*)node)->value);
   }
 }
 
@@ -186,19 +195,28 @@ void frg_ast_destructor_statement_return(frg_ast_node_t* node) {
   }
 }
 
+void frg_ast_destructor_statement_if_conditional_clause(frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind,
+                          FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE);
+
+  if (((frg_ast_node_statement_if_conditional_clause_t*)node)->condition != NULL) {
+    frg_ast_node_destroy(
+      (frg_ast_node_t*)((frg_ast_node_statement_if_conditional_clause_t*)node)
+        ->condition);
+  }
+
+  if (((frg_ast_node_statement_if_conditional_clause_t*)node)->body != NULL) {
+    frg_ast_node_destroy(
+      (frg_ast_node_t*)((frg_ast_node_statement_if_conditional_clause_t*)node)->body);
+  }
+}
+
 void frg_ast_destructor_statement_if(frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
   frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_STATEMENT_IF);
 
-  if (((frg_ast_node_statement_if_t*)node)->condition != NULL) {
-    frg_ast_node_destroy(
-      (frg_ast_node_t*)((frg_ast_node_statement_if_t*)node)->condition);
-  }
-
-  if (((frg_ast_node_statement_if_t*)node)->then_clause != NULL) {
-    frg_ast_node_destroy(
-      (frg_ast_node_t*)((frg_ast_node_statement_if_t*)node)->then_clause);
-  }
+  _frg_ast_destroy_glist(((frg_ast_node_statement_if_t*)node)->conditional_clauses);
 
   if (((frg_ast_node_statement_if_t*)node)->else_clause != NULL) {
     frg_ast_node_destroy(
@@ -237,6 +255,30 @@ void frg_ast_destructor_value_string(frg_ast_node_t* node) {
   }
 }
 
+void frg_ast_destructor_value_array(frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY);
+
+  _frg_ast_destroy_glist(((frg_ast_node_value_array_t*)node)->elements);
+}
+
+void frg_ast_destructor_value_array_repeated(frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED);
+
+  if (((frg_ast_node_value_array_repeated_t*)node)->element != NULL) {
+    frg_ast_node_destroy(
+      (frg_ast_node_t*)((frg_ast_node_value_array_repeated_t*)node)->element);
+  }
+}
+
+void frg_ast_destructor_value_structure(frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_STRING);
+
+  _frg_ast_destroy_glist(((frg_ast_node_value_structure_t*)node)->assignments);
+}
+
 void frg_ast_destructor_value_symbol(frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
   frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_SYMBOL);
@@ -270,6 +312,19 @@ void frg_ast_destructor_value_call(frg_ast_node_t* node) {
 
   _frg_ast_destroy_glist(((frg_ast_node_value_call_t*)node)->arguments);
   _frg_ast_destroy_glist(((frg_ast_node_value_call_t*)node)->keyword_arguments);
+}
+
+void frg_ast_destructor_value_cast(frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CAST);
+
+  if (((frg_ast_node_value_cast_t*)node)->value != NULL) {
+    frg_ast_node_destroy((frg_ast_node_t*)((frg_ast_node_value_cast_t*)node)->value);
+  }
+
+  if (((frg_ast_node_value_cast_t*)node)->type != NULL) {
+    frg_ast_node_destroy((frg_ast_node_t*)((frg_ast_node_value_cast_t*)node)->type);
+  }
 }
 
 void frg_ast_destructor_value_unary(frg_ast_node_t* node) {

@@ -52,11 +52,11 @@ const char* frg_ast_declaration_name_getter_function(const frg_ast_node_t* node)
   return ((const frg_ast_node_declaration_function_t*)node)->name->str;
 }
 
-const char* frg_ast_declaration_name_getter_variable(const frg_ast_node_t* node) {
+const char* frg_ast_declaration_name_getter_assignment(const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
-  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT);
 
-  return ((const frg_ast_node_declaration_property_t*)(((const frg_ast_node_declaration_variable_t*)
+  return ((const frg_ast_node_declaration_property_t*)(((const frg_ast_node_declaration_assignment_t*)
                                                           node)
                                                          ->property))
     ->name->str;

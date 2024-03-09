@@ -74,12 +74,12 @@ fn fib(n: i32) -> i32 {
     }
 }
 
-fn hello_world_array() -> [12 u8] {
+fn hello_world_array() -> [12: u8] {
     return [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 0];
 }
 
 fn hello_world_pointer() -> *u8 {
-    let result: *u8 = new [12 u8];
+    let result: *u8 = new [12: u8];
 
     *result = 72;
     *(result + 1) = 101;
@@ -102,7 +102,7 @@ fn free_hello_world_pointer(pointer: *u8) -> void {
 }
 
 fn casting() -> void {
-    let a: [u8 100];
+    let a: [u8: 100];
 
     let a_as_A = &a as *A;
 }

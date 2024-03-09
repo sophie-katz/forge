@@ -107,8 +107,30 @@ void frg_ast_debug_printer_type_pointer(frg_stream_output_t* mut_stream,
     mut_stream, ((const frg_ast_node_type_pointer_t*)node)->flags);
 
   frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "value", NULL);
   frg_ast_print_debug(
     mut_stream, ((const frg_ast_node_type_pointer_t*)node)->value, &options_next);
+}
+
+void frg_ast_debug_printer_type_array(frg_stream_output_t* mut_stream,
+                                      const frg_ast_node_t* node,
+                                      const frg_ast_print_debug_options_t* options) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_ARRAY);
+  frg_assert_int_non_negative(options->indentation);
+
+  frg_ast_print_debug_options_t options_next
+    = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(
+    mut_stream, "length", "%lu", ((const frg_ast_node_type_array_t*)node)->length);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "value", NULL);
+  frg_ast_print_debug(
+    mut_stream, ((const frg_ast_node_type_array_t*)node)->value, &options_next);
 }
 
 void frg_ast_debug_printer_type_function(frg_stream_output_t* mut_stream,
@@ -329,13 +351,13 @@ void frg_ast_debug_printer_declaration_function(
                       &options_next);
 }
 
-void frg_ast_debug_printer_declaration_variable(
+void frg_ast_debug_printer_declaration_assignment(
   frg_stream_output_t* mut_stream,
   const frg_ast_node_t* node,
   const frg_ast_print_debug_options_t* options) {
   frg_assert_pointer_non_null(mut_stream);
   frg_assert_pointer_non_null(node);
-  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT);
   frg_assert_int_non_negative(options->indentation);
 
   frg_ast_print_debug_options_t options_next
@@ -345,13 +367,14 @@ void frg_ast_debug_printer_declaration_variable(
   frg_debug_print_property(mut_stream, "property", NULL);
   frg_ast_print_debug(
     mut_stream,
-    (const frg_ast_node_t*)((const frg_ast_node_declaration_variable_t*)node)->property,
+    (const frg_ast_node_t*)((const frg_ast_node_declaration_assignment_t*)node)
+      ->property,
     &options_next);
 
   frg_debug_print_newline(mut_stream, options->indentation);
-  frg_debug_print_property(mut_stream, "initial-value", NULL);
+  frg_debug_print_property(mut_stream, "value", NULL);
   frg_ast_print_debug(mut_stream,
-                      ((const frg_ast_node_declaration_variable_t*)node)->initial_value,
+                      ((const frg_ast_node_declaration_assignment_t*)node)->value,
                       &options_next);
 }
 
@@ -392,6 +415,34 @@ void frg_ast_debug_printer_statement_return(
     mut_stream, ((const frg_ast_node_statement_return_t*)node)->value, &options_next);
 }
 
+void frg_ast_debug_printer_statement_if_conditional_clause(
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  const frg_ast_print_debug_options_t* options) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind,
+                          FRG_AST_NODE_KIND_STATEMENT_IF_CONDITIONAL_CLAUSE);
+  frg_assert_int_non_negative(options->indentation);
+
+  frg_ast_print_debug_options_t options_next
+    = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "condition", NULL);
+  frg_ast_print_debug(
+    mut_stream,
+    ((const frg_ast_node_statement_if_conditional_clause_t*)node)->condition,
+    &options_next);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "body", NULL);
+  frg_ast_print_debug(
+    mut_stream,
+    ((const frg_ast_node_statement_if_conditional_clause_t*)node)->body,
+    &options_next);
+}
+
 void frg_ast_debug_printer_statement_if(frg_stream_output_t* mut_stream,
                                         const frg_ast_node_t* node,
                                         const frg_ast_print_debug_options_t* options) {
@@ -403,15 +454,11 @@ void frg_ast_debug_printer_statement_if(frg_stream_output_t* mut_stream,
   frg_ast_print_debug_options_t options_next
     = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
 
-  frg_debug_print_newline(mut_stream, options->indentation);
-  frg_debug_print_property(mut_stream, "condition", NULL);
-  frg_ast_print_debug(
-    mut_stream, ((const frg_ast_node_statement_if_t*)node)->condition, &options_next);
-
-  frg_debug_print_newline(mut_stream, options->indentation);
-  frg_debug_print_property(mut_stream, "then-clause", NULL);
-  frg_ast_print_debug(
-    mut_stream, ((const frg_ast_node_statement_if_t*)node)->then_clause, &options_next);
+  _frg_ast_print_debug_list(
+    mut_stream,
+    ((const frg_ast_node_statement_if_t*)node)->conditional_clauses,
+    "conditional-clauses",
+    &options_next);
 
   frg_debug_print_newline(mut_stream, options->indentation);
   frg_debug_print_property(mut_stream, "else-clause", NULL);
@@ -641,6 +688,67 @@ void frg_ast_debug_printer_value_string(frg_stream_output_t* mut_stream,
   frg_print_string(mut_stream, ((frg_ast_node_value_string_t*)node)->value->str);
 }
 
+void frg_ast_debug_printer_value_array(frg_stream_output_t* mut_stream,
+                                       const frg_ast_node_t* node,
+                                       const frg_ast_print_debug_options_t* options) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY);
+  frg_assert_int_non_negative(options->indentation);
+
+  frg_ast_print_debug_options_t options_next
+    = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "elements", NULL);
+  _frg_ast_print_debug_list(mut_stream,
+                            ((frg_ast_node_value_array_t*)node)->elements,
+                            "elements",
+                            &options_next);
+}
+
+void frg_ast_debug_printer_value_array_repeated(
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  const frg_ast_print_debug_options_t* options) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED);
+  frg_assert_int_non_negative(options->indentation);
+
+  frg_ast_print_debug_options_t options_next
+    = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(
+    mut_stream, "length", "%lu", ((frg_ast_node_value_array_repeated_t*)node)->length);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "element", NULL);
+  frg_ast_print_debug(
+    mut_stream, ((frg_ast_node_value_array_repeated_t*)node)->element, &options_next);
+}
+
+void frg_ast_debug_printer_value_structure(
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  const frg_ast_print_debug_options_t* options) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_STRUCTURE);
+  frg_assert_int_non_negative(options->indentation);
+
+  frg_ast_print_debug_options_t options_next
+    = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "assignments", NULL);
+  _frg_ast_print_debug_list(mut_stream,
+                            ((frg_ast_node_value_structure_t*)node)->assignments,
+                            "assignments",
+                            &options_next);
+}
+
 void frg_ast_debug_printer_value_symbol(frg_stream_output_t* mut_stream,
                                         const frg_ast_node_t* node,
                                         const frg_ast_print_debug_options_t* options) {
@@ -703,6 +811,28 @@ void frg_ast_debug_printer_value_call(frg_stream_output_t* mut_stream,
                             ((frg_ast_node_value_call_t*)node)->keyword_arguments,
                             "keyword-arguments",
                             &options_next);
+}
+
+void frg_ast_debug_printer_value_cast(frg_stream_output_t* mut_stream,
+                                      const frg_ast_node_t* node,
+                                      const frg_ast_print_debug_options_t* options) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CAST);
+  frg_assert_int_non_negative(options->indentation);
+
+  frg_ast_print_debug_options_t options_next
+    = frg_ast_print_debug_options_get_next(options, FRG_DEBUG_INDENTATION_WIDTH);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "value", NULL);
+  frg_ast_print_debug(
+    mut_stream, ((frg_ast_node_value_cast_t*)node)->value, &options_next);
+
+  frg_debug_print_newline(mut_stream, options->indentation);
+  frg_debug_print_property(mut_stream, "type", NULL);
+  frg_ast_print_debug(
+    mut_stream, ((frg_ast_node_value_cast_t*)node)->type, &options_next);
 }
 
 void frg_ast_debug_printer_value_unary(frg_stream_output_t* mut_stream,

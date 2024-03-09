@@ -337,7 +337,7 @@
                            (binary_name));                                             \
   }
 
-#define frg_message_emit_fc_12_invalid_boolean_env_variable(                           \
+#define frg_message_emit_fc_12_invalid_boolean_shell_environment_variable(             \
   message_buffer, variable_name, variable_value)                                       \
   {                                                                                    \
     frg_message_t* __frg_fc_12_message                                                 \

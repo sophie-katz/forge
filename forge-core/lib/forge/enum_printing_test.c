@@ -21,9 +21,7 @@ void setUp() {}
 void tearDown() {}
 
 void test_message_severity() {
-  for (frg_message_severity_t value = FRG_MESSAGE_SEVERITY_FIRST;
-       value <= FRG_MESSAGE_SEVERITY_LAST;
-       value++) {
+  for (frg_message_severity_t value = 0; value <= FRG_MESSAGE_SEVERITY_LAST; value++) {
     frg_stream_output_t* stream
       = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);
     frg_message_severity_print(stream, value);

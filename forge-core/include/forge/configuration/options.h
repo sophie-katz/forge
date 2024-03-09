@@ -41,7 +41,7 @@ int frg_configuration_options_parse_cli(frg_message_buffer_t* mut_message_buffer
                                         int argc,
                                         const char** argv);
 
-bool frg_configuration_options_parse_environment(
+bool frg_configuration_options_parse_shell_environment(
   frg_message_buffer_t* mut_message_buffer, frg_configuration_options_t* mut_options);
 
 void frg_configuration_options_emit_message_debug(

@@ -54,6 +54,10 @@ frg_column_number_t yycolumnno = 1;
 
 #[^\n]*\n ;
 
+void {
+    return KEYWORD_VOID;
+}
+
 bool {
     return KEYWORD_BOOL;
 }
@@ -142,6 +146,10 @@ if {
     return KEYWORD_IF;
 }
 
+elif {
+    return KEYWORD_ELIF;
+}
+
 else {
     return KEYWORD_ELSE;
 }
@@ -156,6 +164,10 @@ true {
 
 false {
     return KEYWORD_FALSE;
+}
+
+as {
+    return KEYWORD_AS;
 }
 
 [a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]* {

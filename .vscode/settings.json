@@ -68,7 +68,8 @@
         "formatted_printers.h": "c",
         "spawn.h": "c",
         "compile.h": "c",
-        "type_operations.h": "c"
+        "type_operations.h": "c",
+        "set": "c"
     },
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [

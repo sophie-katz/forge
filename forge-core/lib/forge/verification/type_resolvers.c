@@ -116,28 +116,29 @@ frg_ast_node_t* frg_verification_type_resolver_declaration_function(
     (frg_ast_node_t*)((frg_ast_node_declaration_function_t*)node)->type);
 }
 
-frg_ast_node_t* frg_verification_type_resolver_declaration_variable(
+frg_ast_node_t* frg_verification_type_resolver_declaration_assignment(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(mut_message_buffer);
   frg_assert_pointer_non_null(scope);
   frg_assert_pointer_non_null(node);
-  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_VARIABLE);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_DECLARATION_ASSIGNMENT);
 
-  frg_assert_pointer_non_null(((frg_ast_node_declaration_variable_t*)node)->property);
+  frg_assert_pointer_non_null(((frg_ast_node_declaration_assignment_t*)node)->property);
 
   return frg_verification_resolve_type(
     mut_message_buffer,
     scope,
-    (frg_ast_node_t*)((frg_ast_node_declaration_variable_t*)node)->property);
+    (frg_ast_node_t*)((frg_ast_node_declaration_assignment_t*)node)->property);
 }
 
 frg_ast_node_t* frg_verification_type_resolver_as_type_bool(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node) {
-  return frg_ast_node_type_bool_new(&frg_global_parsing_range_null);
+  return frg_ast_node_type_primary_new(&frg_global_parsing_range_null,
+                                       FRG_AST_NODE_KIND_TYPE_BOOL);
 }
 
 frg_ast_node_t* frg_verification_type_resolver_value_int(
@@ -197,6 +198,54 @@ frg_ast_node_t* frg_verification_type_resolver_value_string(
     mut_message_buffer, &node->source_range, 4, "String literals");
 
   return NULL;
+}
+
+frg_ast_node_t* frg_verification_type_resolver_value_array(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(mut_message_buffer);
+  frg_assert_pointer_non_null(scope);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY);
+
+  if (((frg_ast_node_value_array_t*)node)->elements == NULL) {
+    frg_die_message_no_code_yet();
+  }
+
+  frg_ast_node_t* element_type = frg_verification_resolve_type(
+    mut_message_buffer, scope, ((frg_ast_node_value_array_t*)node)->elements->data);
+
+  if (element_type == NULL) {
+    return NULL;
+  }
+
+  return (frg_ast_node_t*)frg_ast_node_type_array_new(
+    &frg_global_parsing_range_null,
+    g_list_length(((frg_ast_node_value_array_t*)node)->elements),
+    frg_ast_clone(element_type));
+}
+
+frg_ast_node_t* frg_verification_type_resolver_value_array_repeated(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(mut_message_buffer);
+  frg_assert_pointer_non_null(scope);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_ARRAY_REPEATED);
+
+  frg_ast_node_t* element_type = frg_verification_resolve_type(
+    mut_message_buffer, scope, ((frg_ast_node_value_array_repeated_t*)node)->element);
+
+  if (element_type == NULL) {
+    return NULL;
+  }
+
+  return (frg_ast_node_t*)frg_ast_node_type_array_new(
+    &frg_global_parsing_range_null,
+    ((frg_ast_node_value_array_repeated_t*)node)->length,
+    frg_ast_clone(element_type));
 }
 
 frg_ast_node_t* frg_verification_type_resolver_value_symbol(
@@ -316,6 +365,20 @@ frg_ast_node_t* frg_verification_type_resolver_value_call(
     ((frg_ast_node_type_function_t*)resolved_type)->return_type);
 
   return frg_ast_clone(((frg_ast_node_type_function_t*)resolved_type)->return_type);
+}
+
+frg_ast_node_t* frg_verification_type_resolver_value_cast(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(mut_message_buffer);
+  frg_assert_pointer_non_null(scope);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_CAST);
+
+  frg_assert_pointer_non_null(((frg_ast_node_value_cast_t*)node)->type);
+
+  return frg_ast_clone(((frg_ast_node_value_cast_t*)node)->type);
 }
 
 frg_ast_node_t* frg_verification_type_resolver_value_access(

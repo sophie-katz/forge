@@ -68,6 +68,7 @@ void yyerror(frg_ast_node_t**ast, const char* message) {
     GList* list;
 }
 
+%token <source_range> KEYWORD_VOID "void"
 %token <source_range> KEYWORD_BOOL "bool"
 %token <source_range> KEYWORD_U8 "u8"
 %token <source_range> KEYWORD_U16 "u16"
@@ -90,10 +91,12 @@ void yyerror(frg_ast_node_t**ast, const char* message) {
 %token <source_range> KEYWORD_LET "let"
 %token <source_range> KEYWORD_RETURN "return"
 %token <source_range> KEYWORD_IF "if"
+%token <source_range> KEYWORD_ELIF "elif"
 %token <source_range> KEYWORD_ELSE "else"
 %token <source_range> KEYWORD_WHILE "while"
 %token <source_range> KEYWORD_TRUE "true"
 %token <source_range> KEYWORD_FALSE "false"
+%token <source_range> KEYWORD_AS "as"
 %token <value_symbol> SYMBOL "symbol"
 %token <source_range> CURLY_BRACE_LEFT "{"
 %token <source_range> CURLY_BRACE_RIGHT "}"
@@ -152,6 +155,7 @@ void yyerror(frg_ast_node_t**ast, const char* message) {
 %token <source_range> LOGICAL_AND_ASSIGN "&&="
 %token <source_range> LOGICAL_OR_ASSIGN "||="
 
+%type <node> ty_void
 %type <node> ty_bool
 %type <node> ty_u8
 %type <node> ty_u16
@@ -166,6 +170,7 @@ void yyerror(frg_ast_node_t**ast, const char* message) {
 %type <node> ty_symbol
 %type <node> ty_primary
 %type <node> ty_pointer
+%type <node> ty_array
 %type <node> ty_function
 %type <node> ty
 %type <list> ty_list
@@ -203,6 +208,9 @@ void yyerror(frg_ast_node_t**ast, const char* message) {
 %type <node> value_float
 %type <node> value_char
 %type <node> value_str
+%type <node> value_array
+%type <node> value_array_repeated
+%type <node> value_structure
 %type <node> value_symbol
 %type <node> value_primary
 %type <node> value_deref_getaddr
@@ -222,15 +230,21 @@ void yyerror(frg_ast_node_t**ast, const char* message) {
 %type <node> value_log_and
 %type <node> value_log_or
 %type <node> value_assign
+%type <node> value_cast
 %type <node> value
 %type <list> value_list
 %type <list> value_list_optional
 %type <node> top_level
 
 %%
+ty_void : KEYWORD_VOID
+{
+    $$ = frg_ast_node_type_primary_new(&$1, FRG_AST_NODE_KIND_TYPE_VOID);
+};
+
 ty_bool : KEYWORD_BOOL
 {
-    $$ = frg_ast_node_type_bool_new(&$1);
+    $$ = frg_ast_node_type_primary_new(&$1, FRG_AST_NODE_KIND_TYPE_BOOL);
 };
 
 ty_u8 : KEYWORD_U8
@@ -288,7 +302,21 @@ ty_symbol : SYMBOL
     $$ = frg_ast_node_type_symbol_new(&$1.source_range, $1.value);
 };
 
-ty_primary : ty_bool
+ty_array: SQUARE_BRACKET_LEFT INT COLON ty SQUARE_BRACKET_RIGHT
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &$5
+    );
+
+    $$ = frg_ast_node_type_array_new(&source_range, $2.value.value, $4);
+};
+
+ty_primary : ty_void
+{
+    $$ = $1;
+}
+| ty_bool
 {
     $$ = $1;
 }
@@ -333,6 +361,10 @@ ty_primary : ty_bool
     $$ = $1;
 }
 | ty_symbol
+{
+    $$ = $1;
+}
+| ty_array
 {
     $$ = $1;
 };
@@ -774,7 +806,7 @@ decl_var : KEYWORD_LET decl_prop SEMICOLON
         &$3
     );
 
-    $$ = frg_ast_node_declaration_variable_new(&source_range, $2, NULL);
+    $$ = frg_ast_node_declaration_assignment_new(&source_range, $2, NULL);
 }
 | KEYWORD_LET decl_prop ASSIGN value SEMICOLON
 {
@@ -783,7 +815,7 @@ decl_var : KEYWORD_LET decl_prop SEMICOLON
         &$5
     );
 
-    $$ = frg_ast_node_declaration_variable_new(&source_range, $2, $4);
+    $$ = frg_ast_node_declaration_assignment_new(&source_range, $2, $4);
 };
 
 decl : decl_union
@@ -847,25 +879,50 @@ statement_if : KEYWORD_IF PARENTHESIS_LEFT value PARENTHESIS_RIGHT statement_blo
         &((frg_ast_node_t*)$5)->source_range
     );
 
-    $$ = frg_ast_node_statement_if_new(&source_range, $3, $5, NULL);
-}
-| KEYWORD_IF PARENTHESIS_LEFT value PARENTHESIS_RIGHT statement_block KEYWORD_ELSE statement_if
-{
-    frg_parsing_range_t source_range = frg_parsing_range_get_span(
-        &$1,
-        &((frg_ast_node_t*)$7)->source_range
+    GList* conditional_clauses = g_list_append(
+        NULL,
+        frg_ast_node_statement_if_conditional_clause_new(
+            &source_range,
+            $3,
+            $5
+        )
     );
 
-    $$ = frg_ast_node_statement_if_new(&source_range, $3, $5, $7);
+    $$ = frg_ast_node_statement_if_new(&source_range, conditional_clauses, NULL);
 }
-| KEYWORD_IF PARENTHESIS_LEFT value PARENTHESIS_RIGHT statement_block KEYWORD_ELSE statement_block
+| statement_if KEYWORD_ELIF PARENTHESIS_LEFT value PARENTHESIS_RIGHT statement_block
 {
     frg_parsing_range_t source_range = frg_parsing_range_get_span(
-        &$1,
-        &((frg_ast_node_t*)$7)->source_range
+        &$2,
+        &((frg_ast_node_t*)$6)->source_range
     );
 
-    $$ = frg_ast_node_statement_if_new(&source_range, $3, $5, $7);
+    ((frg_ast_node_t*)$1)->source_range = frg_parsing_range_get_span(
+        &((frg_ast_node_t*)$1)->source_range,
+        &source_range
+    );
+
+    ((frg_ast_node_statement_if_t*)$1)->conditional_clauses = g_list_append(
+        ((frg_ast_node_statement_if_t*)$1)->conditional_clauses,
+        frg_ast_node_statement_if_conditional_clause_new(
+            &source_range,
+            $4,
+            $6
+        )
+    );
+
+    $$ = $1;
+}
+| statement_if KEYWORD_ELSE statement_block
+{
+    ((frg_ast_node_t*)$1)->source_range = frg_parsing_range_get_span(
+        &((frg_ast_node_t*)$1)->source_range,
+        &((frg_ast_node_t*)$3)->source_range
+    );
+
+    ((frg_ast_node_statement_if_t*)$1)->else_clause = $3;
+
+    $$ = $1;
 };
 
 statement_while : KEYWORD_WHILE PARENTHESIS_LEFT value PARENTHESIS_RIGHT SEMICOLON
@@ -976,6 +1033,28 @@ value_str : STRING
     $$ = NULL;
 };
 
+value_array : SQUARE_BRACKET_LEFT value_list_optional SQUARE_BRACKET_RIGHT
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &$3
+    );
+
+    $$ = frg_ast_node_value_array_new(&source_range, $2);
+};
+
+value_array_repeated : SQUARE_BRACKET_LEFT INT COLON value SQUARE_BRACKET_RIGHT
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &$1,
+        &$5
+    );
+
+    $$ = frg_ast_node_value_array_repeated_new(&source_range, $2.value.value, $4);
+};
+
+/* value_structure : CURLY_BRACE_LEFT  */
+
 value_symbol : SYMBOL
 {
     $$ = frg_ast_node_value_symbol_new(&$1.source_range, $1.value);
@@ -1006,6 +1085,14 @@ value_primary : value_true
     $$ = $1;
 }
 | value_symbol
+{
+    $$ = $1;
+}
+| value_array
+{
+    $$ = $1;
+}
+| value_array_repeated
 {
     $$ = $1;
 }
@@ -1495,7 +1582,21 @@ value_assign : value_log_or ASSIGN value_assign
     $$ = $1;
 };
 
-value : value_assign
+value_cast : value_assign KEYWORD_AS ty
+{
+    frg_parsing_range_t source_range = frg_parsing_range_get_span(
+        &((frg_ast_node_t*)$1)->source_range,
+        &((frg_ast_node_t*)$3)->source_range
+    );
+
+    $$ = frg_ast_node_value_cast_new(&source_range, $1, $3);
+}
+| value_assign
+{
+    $$ = $1;
+};
+
+value : value_cast
 {
     $$ = $1;
 };

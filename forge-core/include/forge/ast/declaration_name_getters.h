@@ -22,4 +22,4 @@ const char* frg_ast_declaration_name_getter_structure(const frg_ast_node_t* node
 const char* frg_ast_declaration_name_getter_property(const frg_ast_node_t* node);
 const char* frg_ast_declaration_name_getter_interface(const frg_ast_node_t* node);
 const char* frg_ast_declaration_name_getter_function(const frg_ast_node_t* node);
-const char* frg_ast_declaration_name_getter_variable(const frg_ast_node_t* node);
+const char* frg_ast_declaration_name_getter_assignment(const frg_ast_node_t* node);

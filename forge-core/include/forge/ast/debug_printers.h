@@ -34,6 +34,10 @@ void frg_ast_debug_printer_type_pointer(frg_stream_output_t* mut_stream,
                                         const frg_ast_node_t* node,
                                         const frg_ast_print_debug_options_t* options);
 
+void frg_ast_debug_printer_type_array(frg_stream_output_t* mut_stream,
+                                      const frg_ast_node_t* node,
+                                      const frg_ast_print_debug_options_t* options);
+
 void frg_ast_debug_printer_type_function(frg_stream_output_t* mut_stream,
                                          const frg_ast_node_t* node,
                                          const frg_ast_print_debug_options_t* options);
@@ -68,7 +72,7 @@ void frg_ast_debug_printer_declaration_function(
   const frg_ast_node_t* node,
   const frg_ast_print_debug_options_t* options);
 
-void frg_ast_debug_printer_declaration_variable(
+void frg_ast_debug_printer_declaration_assignment(
   frg_stream_output_t* mut_stream,
   const frg_ast_node_t* node,
   const frg_ast_print_debug_options_t* options);
@@ -79,6 +83,11 @@ void frg_ast_debug_printer_declaration_block(
   const frg_ast_print_debug_options_t* options);
 
 void frg_ast_debug_printer_statement_return(
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  const frg_ast_print_debug_options_t* options);
+
+void frg_ast_debug_printer_statement_if_conditional_clause(
   frg_stream_output_t* mut_stream,
   const frg_ast_node_t* node,
   const frg_ast_print_debug_options_t* options);
@@ -118,6 +127,20 @@ void frg_ast_debug_printer_value_string(frg_stream_output_t* mut_stream,
                                         const frg_ast_node_t* node,
                                         const frg_ast_print_debug_options_t* options);
 
+void frg_ast_debug_printer_value_array(frg_stream_output_t* mut_stream,
+                                       const frg_ast_node_t* node,
+                                       const frg_ast_print_debug_options_t* options);
+
+void frg_ast_debug_printer_value_array_repeated(
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  const frg_ast_print_debug_options_t* options);
+
+void frg_ast_debug_printer_value_structure(
+  frg_stream_output_t* mut_stream,
+  const frg_ast_node_t* node,
+  const frg_ast_print_debug_options_t* options);
+
 void frg_ast_debug_printer_value_symbol(frg_stream_output_t* mut_stream,
                                         const frg_ast_node_t* node,
                                         const frg_ast_print_debug_options_t* options);
@@ -128,6 +151,10 @@ void frg_ast_debug_printer_value_call_keyword_argument(
   const frg_ast_print_debug_options_t* options);
 
 void frg_ast_debug_printer_value_call(frg_stream_output_t* mut_stream,
+                                      const frg_ast_node_t* node,
+                                      const frg_ast_print_debug_options_t* options);
+
+void frg_ast_debug_printer_value_cast(frg_stream_output_t* mut_stream,
                                       const frg_ast_node_t* node,
                                       const frg_ast_print_debug_options_t* options);
 

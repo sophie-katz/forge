@@ -17,6 +17,17 @@
 #include <forge/formatting/formatted_printers.h>
 #include <forge/formatting/print.h>
 
+void frg_formatting_formatted_printer_type_void(frg_stream_output_t* mut_stream,
+                                                const frg_ast_node_t* node,
+                                                frg_indentation_t indentation) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_VOID);
+  frg_assert_int_non_negative(indentation);
+
+  frg_stream_output_write_string(mut_stream, "void");
+}
+
 void frg_formatting_formatted_printer_type_bool(frg_stream_output_t* mut_stream,
                                                 const frg_ast_node_t* node,
                                                 frg_indentation_t indentation) {
@@ -93,6 +104,23 @@ void frg_formatting_formatted_printer_type_pointer(frg_stream_output_t* mut_stre
 
   frg_formatting_print_formatted(
     mut_stream, ((const frg_ast_node_type_pointer_t*)node)->value, indentation);
+}
+
+void frg_formatting_formatted_printer_type_array(frg_stream_output_t* mut_stream,
+                                                 const frg_ast_node_t* node,
+                                                 frg_indentation_t indentation) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_TYPE_ARRAY);
+  frg_assert_int_non_negative(indentation);
+
+  frg_stream_output_write_printf(
+    mut_stream, "[%lu: ", ((const frg_ast_node_type_array_t*)node)->length);
+
+  frg_formatting_print_formatted(
+    mut_stream, ((const frg_ast_node_type_array_t*)node)->value, indentation);
+
+  frg_stream_output_write_character(mut_stream, ']');
 }
 
 void frg_formatting_formatted_printer_type_function(frg_stream_output_t* mut_stream,

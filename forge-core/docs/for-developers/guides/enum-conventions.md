@@ -37,14 +37,13 @@ typedef enum {
     FRG_ENUM_NAME_VALUE_B,
     FRG_ENUM_NAME_VALUE_C,
 
-    FRG_ENUM_NAME_FIRST = FRG_ENUM_NAME_VALUE_A,
     FRG_ENUM_NAME_LAST = FRG_ENUM_NAME_VALUE_C,
 } frg_enum_name_t;
 
-#define FRG_ENUM_NAME_COUNT (FRG_ENUM_NAME_LAST - FRG_ENUM_NAME_FIRST + 1)
+#define FRG_ENUM_NAME_COUNT (FRG_ENUM_NAME_LAST + 1)
 ```
 
-The `*_FIRST` and `*_LAST` values are defined to make it easier to iterate over the enum values. The `*_COUNT` macro is defined to make it easier to get the number of values in the enum. These should be present for all integer enums.
+The `*_LAST` value is defined to make it easier to iterate over the enum values. The `*_COUNT` macro is defined to make it easier to get the number of values in the enum. These should be present for all integer enums.
 
 ## Flag enums
 

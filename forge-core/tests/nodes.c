@@ -21,9 +21,7 @@ void setUp() {}
 void tearDown() {}
 
 void test_node_kind_info() {
-  for (frg_ast_node_kind_t kind = FRG_AST_NODE_KIND_FIRST;
-       kind < FRG_AST_NODE_KIND_LAST;
-       kind++) {
+  for (frg_ast_node_kind_t kind = 0; kind < FRG_AST_NODE_KIND_LAST; kind++) {
     const frg_ast_node_kind_info_t* info = frg_ast_node_kind_info_get(kind);
 
     TEST_ASSERT_NOT_NULL(info);
@@ -124,9 +122,9 @@ void test_node_kind_info() {
                                "only declarations can have a name getter");
     }
 
-    if (kind == FRG_AST_NODE_KIND_TYPE_BOOL) {
+    if (info->flags & FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY) {
       TEST_ASSERT_NULL_MESSAGE(info->_debug_printer,
-                               "type-bool does not have a debug printer");
+                               "primary types do not have debug printers");
     } else {
       TEST_ASSERT_NOT_NULL_MESSAGE(
         info->_debug_printer,
@@ -151,6 +149,9 @@ void test_node_kind_info() {
       TEST_ASSERT_NOT_NULL_MESSAGE(
         info->_type_resolver,
         "declaration-function-argument must have a type resolver");
+    } else if (kind == FRG_AST_NODE_KIND_VALUE_STRUCTURE) {
+      TEST_ASSERT_NULL_MESSAGE(info->_type_resolver,
+                               "value-structure must not have a type resolver");
     } else if ((info->flags & FRG_AST_NODE_KIND_FLAG_DECLARATION)
                || (info->flags & FRG_AST_NODE_KIND_FLAG_VALUE)) {
       TEST_ASSERT_NOT_NULL_MESSAGE(

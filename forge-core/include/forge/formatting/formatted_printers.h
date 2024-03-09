@@ -18,6 +18,10 @@
 #include <forge/ast/node.h>
 #include <forge/streams/output.h>
 
+void frg_formatting_formatted_printer_type_void(frg_stream_output_t* mut_stream,
+                                                const frg_ast_node_t* node,
+                                                frg_indentation_t indentation);
+
 void frg_formatting_formatted_printer_type_bool(frg_stream_output_t* mut_stream,
                                                 const frg_ast_node_t* node,
                                                 frg_indentation_t indentation);
@@ -37,6 +41,10 @@ void frg_formatting_formatted_printer_type_symbol(frg_stream_output_t* mut_strea
 void frg_formatting_formatted_printer_type_pointer(frg_stream_output_t* mut_stream,
                                                    const frg_ast_node_t* node,
                                                    frg_indentation_t indentation);
+
+void frg_formatting_formatted_printer_type_array(frg_stream_output_t* mut_stream,
+                                                 const frg_ast_node_t* node,
+                                                 frg_indentation_t indentation);
 
 void frg_formatting_formatted_printer_type_function(frg_stream_output_t* mut_stream,
                                                     const frg_ast_node_t* node,

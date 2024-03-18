@@ -69,7 +69,8 @@
         "spawn.h": "c",
         "compile.h": "c",
         "type_operations.h": "c",
-        "set": "c"
+        "set": "c",
+        "utilities.h": "c"
     },
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [

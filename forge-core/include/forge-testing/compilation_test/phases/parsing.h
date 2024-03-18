@@ -15,15 +15,21 @@
 
 #pragma once
 
-#include <forge/codegen/codegen.h>
+#include <forge-testing/compilation_test/options.h>
+#include <forge-testing/compilation_test/phases/initialization.h>
+#include <forge/ast/node.h>
+#include <glib.h>
 
-typedef void (*frg_test_compilation_callback)(
-  const frg_message_buffer_t* message_buffer, void* mut_shared_library);
+typedef struct {
+  frg_ast_node_t* ast_node;
+} frg_testing_compilation_test_context_parsed_t;
 
-void frg_test_compilation(const char* name,
-                          const char* source_text,
-                          const char* ast_debug,
-                          const char* llvm_ir,
-                          frg_test_compilation_callback callback);
+frg_testing_compilation_test_context_parsed_t*
+  frg_testing_compilation_test_context_parsed_new(frg_ast_node_t* ast_node);
 
-void* frg_test_compilation_get_function(void* mut_shared_library, const char* name);
+void frg_testing_compilation_test_context_parsed_destroy(
+  frg_testing_compilation_test_context_parsed_t* context_parsed);
+
+frg_testing_compilation_test_context_parsed_t*
+  frg_testing_test_compilation_phase_run_parsing(
+    const frg_testing_compilation_test_context_initialized_t* context_initialized);

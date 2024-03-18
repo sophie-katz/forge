@@ -32,22 +32,22 @@ project(
 # Options
 # --------------------------------------------------------------------------------------
 
-forge_should_build_tests = get_option('test_mode') != 'disabled'
+should_build_tests = get_option('test_mode') != 'disabled'
 
 if get_option('test_mode') == 'fast'
-    forge_test_wrapper = '../scripts/test_wrapper_fast.bash'
-    forge_test_is_parallel = true
+    test_wrapper = '../scripts/test_wrapper_fast.bash'
+    test_is_parallel = true
 elif get_option('test_mode') == 'full'
-    forge_test_wrapper = '../scripts/test_wrapper_full.bash'
-    forge_test_is_parallel = false
+    test_wrapper = '../scripts/test_wrapper_full.bash'
+    test_is_parallel = false
 endif
 
 # Constants
 # --------------------------------------------------------------------------------------
 
-forge_test_timeout_seconds = 120
+test_timeout_seconds = 120
 
-# C arguments
+# C/C++ global arguments
 # --------------------------------------------------------------------------------------
 
 # This is to temporarily fix a bug with Valgrind and recent versions of Clang.
@@ -81,22 +81,10 @@ program_flex = find_program(
     version: ['>=2.6.4', '<2.7']
 )
 
-generator_flex = generator(
-    program_flex,
-    output: '@BASENAME@.yy.c',
-    arguments: ['-o', '@OUTPUT@', '@INPUT@']
-)
-
 program_bison = find_program(
     'bison',
     required: true,
     version: ['>=3.8.2', '<3.9']
-)
-
-generator_bison = generator(
-    program_bison,
-    output: ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
-    arguments: ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@']
 )
 
 program_llvm_config = find_program(
@@ -107,6 +95,21 @@ program_llvm_config = find_program(
 
 message('LLVM version: ' + program_llvm_config.version())
 
+# Generators
+# --------------------------------------------------------------------------------------
+
+generator_flex = generator(
+    program_flex,
+    output: '@BASENAME@.yy.c',
+    arguments: ['-o', '@OUTPUT@', '@INPUT@']
+)
+
+generator_bison = generator(
+    program_bison,
+    output: ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
+    arguments: ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@']
+)
+
 # Dependencies
 # --------------------------------------------------------------------------------------
 
@@ -114,8 +117,8 @@ compiler_c = meson.get_compiler('c')
 cmake = import('cmake')
 
 # Subprojects
-if forge_should_build_tests
-    forge_subproject_unity = subproject(
+if should_build_tests
+    subproject_unity = subproject(
         'Unity',
         required: true,
         default_options: [
@@ -124,25 +127,25 @@ if forge_should_build_tests
     )
 endif
 
-forge_subproject_utf8proc = cmake.subproject('utf8proc')
+subproject_utf8proc = cmake.subproject('utf8proc')
 
 # Dependencies
-if forge_should_build_tests
-    forge_dependency_unity = forge_subproject_unity.get_variable('unity_dep')
+if should_build_tests
+    dependency_unity = subproject_unity.get_variable('unity_dep')
 endif
 
-forge_dependency_utf8proc = forge_subproject_utf8proc.dependency('utf8proc')
-forge_dependency_glib2_0 = dependency('glib-2.0')
-forge_dependency_m = compiler_c.find_library('m', required: true)
+dependency_utf8proc = subproject_utf8proc.dependency('utf8proc')
+dependency_glib2_0 = dependency('glib-2.0')
+dependency_m = compiler_c.find_library('m', required: true)
 
-forge_dependencies = [
-    forge_dependency_utf8proc,
-    forge_dependency_glib2_0,
-    forge_dependency_m
+dependencies = [
+    dependency_utf8proc,
+    dependency_glib2_0,
+    dependency_m
 ]
 
 # LLVM
-forge_cppflags_llvm_config = run_command(
+cppflags_llvm_config = run_command(
     [
         program_llvm_config,
         '--cppflags'
@@ -153,11 +156,11 @@ forge_cppflags_llvm_config = run_command(
 )
 
 add_project_arguments(
-    forge_cppflags_llvm_config.stdout().strip().split(' '),
+    cppflags_llvm_config.stdout().strip().split(' '),
     language: ['cpp']
 )
 
-forge_ldflags_llvm_config = run_command(
+ldflags_llvm_config = run_command(
     [
         program_llvm_config,
         '--ldflags'
@@ -166,7 +169,7 @@ forge_ldflags_llvm_config = run_command(
     check: true
 )
 
-forge_libs_llvm_config = run_command(
+libs_llvm_config = run_command(
     [
         program_llvm_config,
         '--libs'
@@ -176,15 +179,15 @@ forge_libs_llvm_config = run_command(
 )
 
 add_project_link_arguments(
-    forge_ldflags_llvm_config.stdout().strip().split(' ')
-        + forge_libs_llvm_config.stdout().strip().split(' '),
+    ldflags_llvm_config.stdout().strip().split(' ')
+        + libs_llvm_config.stdout().strip().split(' '),
     language: ['c', 'cpp']
 )
 
 # Build configuration
 # --------------------------------------------------------------------------------------
 
-forge_git_commit_sha_result = run_command(
+git_commit_sha_result = run_command(
     [
         'git',
         'rev-parse',
@@ -194,57 +197,57 @@ forge_git_commit_sha_result = run_command(
     check: true
 )
 
-forge_configuration_data = configuration_data()
-forge_configuration_data.set('version_major', '0')
-forge_configuration_data.set('version_minor', '1')
-forge_configuration_data.set('version_patch', '0')
-forge_configuration_data.set('version_label', 'alpha')
-forge_configuration_data.set('git_commit_sha', forge_git_commit_sha_result.stdout().strip())
-forge_configuration_data.set('compiler_id', compiler_c.get_id())
-forge_configuration_data.set('compiler_version', compiler_c.version())
-forge_configuration_data.set('linker_id', compiler_c.get_linker_id())
-forge_configuration_data.set('host_machine_cpu', host_machine.cpu())
-forge_configuration_data.set('host_machine_system', host_machine.system())
+build_configuration_data = configuration_data()
+build_configuration_data.set('version_major', '0')
+build_configuration_data.set('version_minor', '1')
+build_configuration_data.set('version_patch', '0')
+build_configuration_data.set('version_label', 'alpha')
+build_configuration_data.set('git_commit_sha', git_commit_sha_result.stdout().strip())
+build_configuration_data.set('compiler_id', compiler_c.get_id())
+build_configuration_data.set('compiler_version', compiler_c.version())
+build_configuration_data.set('linker_id', compiler_c.get_linker_id())
+build_configuration_data.set('host_machine_cpu', host_machine.cpu())
+build_configuration_data.set('host_machine_system', host_machine.system())
 
 llvm_version = program_llvm_config.version().split('.')
 
-forge_configuration_data.set('llvm_version_major', llvm_version[0])
-forge_configuration_data.set('llvm_version_minor', llvm_version[1])
-forge_configuration_data.set('llvm_version_patch', llvm_version[2])
+build_configuration_data.set('llvm_version_major', llvm_version[0])
+build_configuration_data.set('llvm_version_minor', llvm_version[1])
+build_configuration_data.set('llvm_version_patch', llvm_version[2])
 
-if forge_should_build_tests
-    forge_configuration_data.set('should_build_tests', '1')
+if should_build_tests
+    build_configuration_data.set('should_build_tests', '1')
 else
-    forge_configuration_data.set('should_build_tests', '0')
+    build_configuration_data.set('should_build_tests', '0')
 endif
 
 if get_option('debug')
-    forge_configuration_data.set('should_build_asserts', '1')
-    forge_configuration_data.set('always_print_internal_message_prefix', '1')
+    build_configuration_data.set('should_build_asserts', '1')
+    build_configuration_data.set('always_print_internal_message_prefix', '1')
 else
-    forge_configuration_data.set('should_build_asserts', '0')
-    forge_configuration_data.set('always_print_internal_message_prefix', '0')
+    build_configuration_data.set('should_build_asserts', '0')
+    build_configuration_data.set('always_print_internal_message_prefix', '0')
 endif
 
 configure_file(
     input: 'build_configuration.h.in',
     output: 'build_configuration.h',
-    configuration: forge_configuration_data
+    configuration: build_configuration_data
 )
 
 # Generated files
 # --------------------------------------------------------------------------------------
 
-forge_generated_files_flex = generator_flex.process('lib/forge/parsing/forge.l')
+generated_files_flex = generator_flex.process('lib/forge/parsing/forge.l')
 
-forge_generated_files_bison = generator_bison.process('lib/forge/parsing/forge.y')
+generated_files_bison = generator_bison.process('lib/forge/parsing/forge.y')
 
 # Forge libraries
 # --------------------------------------------------------------------------------------
-forge_include_directories = include_directories('include')
+include_directories = include_directories('include')
 
-forge_library_core = static_library(
-    'forge-core',
+library_forge = static_library(
+    'forge',
     'lib/forge/ast/node.c',
     'lib/forge/ast/node_kind_info.c',
     'lib/forge/ast/utilities.c',
@@ -299,10 +302,31 @@ forge_library_core = static_library(
     'lib/forge/verification/type_operations.c',
     'lib/forge/verification/verifier.c',
     'lib/forge/verification/visitor/well_formed.c',
-    forge_generated_files_flex,
-    forge_generated_files_bison,
-    include_directories: forge_include_directories,
-    dependencies: forge_dependencies,
+    generated_files_flex,
+    generated_files_bison,
+    include_directories: include_directories,
+    dependencies: dependencies,
+    implicit_include_directories: true
+)
+
+library_forge_testing = static_library(
+    'forge-testing',
+    'lib/forge-testing/string_comparison.c',
+    'lib/forge-testing/compilation_test/phases/initialization.c',
+    'lib/forge-testing/compilation_test/options.c',
+    'lib/forge-testing/compilation_test/phases/parsing.c',
+    'lib/forge-testing/compilation_test/phases/linking.c',
+    'lib/forge-testing/compilation_test/auxiliary/ast.c',
+    'lib/forge-testing/compilation_test/auxiliary/llvm_ir.c',
+    'lib/forge-testing/compilation_test/auxiliary/shared_object.c',
+    'lib/forge-testing/compilation_test/utilities.c',
+    'lib/forge-testing/compilation_test/phases/codegen.c',
+    'lib/forge-testing/compilation_test/test.c',
+    include_directories: include_directories,
+    dependencies: dependencies + [
+        dependency_unity
+    ],
+    link_with: library_forge,
     implicit_include_directories: true
 )
 
@@ -312,404 +336,508 @@ forge_library_core = static_library(
 executable(
     'forge',
     'src/forge/main.c',
-    include_directories: forge_include_directories,
-    link_with: forge_library_core,
-    dependencies: forge_dependencies
+    include_directories: include_directories,
+    link_with: library_forge,
+    dependencies: dependencies
 )
 
 # Tests
 # --------------------------------------------------------------------------------------
 
-if forge_should_build_tests
+if should_build_tests
     # Unit
-    forge_unit_test_ast_scope = executable(
-        'test-unit-ast-scope',
+    test_unit_forge_ast_scope = executable(
+        'test-unit-forge-ast-scope',
         'lib/forge/ast/scope_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'ast/scope_test.c',
+        'lib/forge/ast/scope_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_ast_scope
+            test_wrapper,
+            test_unit_forge_ast_scope
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_ast_visitor = executable(
-        'test-unit-ast-visitor',
+    test_unit_forge_ast_debug_printers = executable(
+        'test-unit-forge-ast-debug-printers',
+        'lib/forge/ast/debug_printers_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge/ast/debug_printers_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_ast_debug_printers
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_ast_visitor = executable(
+        'test-unit-forge-ast-visitor',
         'lib/forge/ast/visitor_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'ast/visitor_test.c',
+        'lib/forge/ast/visitor_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_ast_visitor
+            test_wrapper,
+            test_unit_forge_ast_visitor
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_memory = executable(
-        'test-unit-memory',
+    test_unit_forge_memory = executable(
+        'test-unit-forge-memory',
         'lib/forge/memory_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'memory_test.c',
+        'lib/forge/memory_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_memory
+            test_wrapper,
+            test_unit_forge_memory
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_lexical_casts = executable(
-        'test-unit-lexical-casts',
+    test_unit_forge_lexical_casts = executable(
+        'test-unit-forge-lexical-casts',
         'lib/forge/lexical_casts_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'lexical_casts_test.c',
+        'lib/forge/lexical_casts_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_lexical_casts
+            test_wrapper,
+            test_unit_forge_lexical_casts
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_math = executable(
-        'test-unit-math',
+    test_unit_forge_math = executable(
+        'test-unit-forge-math',
         'lib/forge/math_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'math_test.c',
+        'lib/forge/math_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_math
+            test_wrapper,
+            test_unit_forge_math
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_enum_printing = executable(
-        'test-unit-enum-printing',
+    test_unit_forge_enum_printing = executable(
+        'test-unit-forge-enum-printing',
         'lib/forge/enum_printing_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'enum_printing_test.c',
+        'lib/forge/enum_printing_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_enum_printing
+            test_wrapper,
+            test_unit_forge_enum_printing
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_cli_option = executable(
-        'test-unit-cli-option',
+    test_unit_forge_cli_option = executable(
+        'test-unit-forge-cli-option',
         'lib/forge/cli/option_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'cli/option_test.c',
+        'lib/forge/cli/option_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_cli_option
+            test_wrapper,
+            test_unit_forge_cli_option
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_cli_option_set = executable(
-        'test-unit-cli-option-set',
+    test_unit_forge_cli_option_set = executable(
+        'test-unit-forge-cli-option-set',
         'lib/forge/cli/option_set_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'cli/option_set_test.c',
+        'lib/forge/cli/option_set_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_cli_option_set
+            test_wrapper,
+            test_unit_forge_cli_option_set
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_cli_program = executable(
-        'test-unit-cli-program',
+    test_unit_forge_cli_program = executable(
+        'test-unit-forge-cli-program',
         'lib/forge/cli/program_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'cli/program_test.c',
+        'lib/forge/cli/program_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_cli_program
+            test_wrapper,
+            test_unit_forge_cli_program
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_parsing_token_reader = executable(
-        'test-unit-parsing-token-reader',
+    test_unit_forge_parsing_token_reader = executable(
+        'test-unit-forge-parsing-token-reader',
         'lib/forge/parsing/token_reader_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'parsing/token_reader_test.c',
+        'lib/forge/parsing/token_reader_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_parsing_token_reader
+            test_wrapper,
+            test_unit_forge_parsing_token_reader
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_messages_message_buffer = executable(
-        'test-unit-messages-message-buffer',
+    test_unit_forge_messages_message_buffer = executable(
+        'test-unit-forge-messages-message-buffer',
         'lib/forge/messages/message_buffer_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'messages/message_buffer_test.c',
+        'lib/forge/messages/message_buffer_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_messages_message_buffer
+            test_wrapper,
+            test_unit_forge_messages_message_buffer
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_parsing_source = executable(
-        'test-unit-parsing-source',
+    test_unit_forge_parsing_source = executable(
+        'test-unit-forge-parsing-source',
         'lib/forge/parsing/source_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'parsing/source_test.c',
+        'lib/forge/parsing/source_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_parsing_source
+            test_wrapper,
+            test_unit_forge_parsing_source
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_parsing_parse = executable(
-        'test-unit-parsing-parse',
+    test_unit_forge_parsing_parse = executable(
+        'test-unit-forge-parsing-parse',
         'lib/forge/parsing/parse_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'parsing/parse_test.c',
+        'lib/forge/parsing/parse_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_parsing_parse
+            test_wrapper,
+            test_unit_forge_parsing_parse
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_streams_input = executable(
-        'test-unit-streams-input',
+    test_unit_forge_streams_input = executable(
+        'test-unit-forge-streams-input',
         'lib/forge/streams/input_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'streams/input_test.c',
+        'lib/forge/streams/input_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_streams_input
+            test_wrapper,
+            test_unit_forge_streams_input
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_streams_output = executable(
-        'test-unit-streams-output',
+    test_unit_forge_streams_output = executable(
+        'test-unit-forge-streams-output',
         'lib/forge/streams/output_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'streams/output_test.c',
+        'lib/forge/streams/output_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_streams_output
+            test_wrapper,
+            test_unit_forge_streams_output
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_verification_type_operations = executable(
-        'test-unit-verification-type-operations',
+    test_unit_forge_verification_type_operations = executable(
+        'test-unit-forge-verification-type-operations',
         'lib/forge/verification/type_operations_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'verification/type_operations_test.c',
+        'lib/forge/verification/type_operations_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_verification_type_operations
+            test_wrapper,
+            test_unit_forge_verification_type_operations
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_verification_visitor_well_formed = executable(
-        'test-unit-verification-visitor-well-formed',
+    test_unit_forge_verification_visitor_well_formed = executable(
+        'test-unit-forge-verification-visitor-well-formed',
         'lib/forge/verification/visitor/well_formed_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'verification/visitor/well_formed_test.c',
+        'lib/forge/verification/visitor/well_formed_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_verification_visitor_well_formed
+            test_wrapper,
+            test_unit_forge_verification_visitor_well_formed
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_unit_test_enums = executable(
-        'test-unit-enums',
+    test_unit_forge_enums = executable(
+        'test-unit-forge-enums',
         'lib/forge/enums_test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
     test(
-        'enums_test.c',
+        'lib/forge/enums_test.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_unit_test_enums
+            test_wrapper,
+            test_unit_forge_enums
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_testing_string_comparison = executable(
+        'test-unit-forge-testing-string-comparison',
+        'lib/forge-testing/string_comparison_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge-testing/string_comparison_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_testing_string_comparison
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_testing_compilation_test_auxiliary_ast = executable(
+        'test-unit-forge-testing-compilation-test-axuiliary-ast',
+        'lib/forge-testing/compilation_test/auxiliary/ast_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge-testing/compilation_test/auxiliary/ast_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_testing_compilation_test_auxiliary_ast
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_testing_compilation_test_auxiliary_llvm_ir = executable(
+        'test-unit-forge-testing-compilation-test-axuiliary-llvm-ir',
+        'lib/forge-testing/compilation_test/auxiliary/llvm_ir_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge-testing/compilation_test/auxiliary/llvm_ir_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_testing_compilation_test_auxiliary_llvm_ir
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_testing_compilation_test_phases_initialization = executable(
+        'test-unit-forge-testing-compilation-test-phases-initialization',
+        'lib/forge-testing/compilation_test/phases/initialization_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge-testing/compilation_test/phases/initialization_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_testing_compilation_test_phases_initialization
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
     # Integration
 
-    forge_integration_test_compilation_empty = executable(
+    test_integration_compilation_empty = executable(
         'test-integration-compilation-empty',
         'tests/compilation/empty.c',
-        'tests/compilation/test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
@@ -717,21 +845,20 @@ if forge_should_build_tests
         'tests/compilation/empty.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_integration_test_compilation_empty
+            test_wrapper,
+            test_integration_compilation_empty
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_integration_test_compilation_literals_int = executable(
+    test_integration_compilation_literals_int = executable(
         'test-integration-compilation-literals-int',
         'tests/compilation/literals_int.c',
-        'tests/compilation/test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
@@ -739,21 +866,20 @@ if forge_should_build_tests
         'tests/compilation/literals_int.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_integration_test_compilation_literals_int
+            test_wrapper,
+            test_integration_compilation_literals_int
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_integration_test_compilation_literals_bool = executable(
+    test_integration_compilation_literals_bool = executable(
         'test-integration-compilation-literals-bool',
         'tests/compilation/literals_bool.c',
-        'tests/compilation/test.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
@@ -761,20 +887,20 @@ if forge_should_build_tests
         'tests/compilation/literals_bool.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_integration_test_compilation_literals_bool
+            test_wrapper,
+            test_integration_compilation_literals_bool
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_integration_test_nodes = executable(
+    test_integration_nodes = executable(
         'test-integration-nodes',
         'tests/nodes.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies + [
-            forge_dependency_unity
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
         ]
     )
 
@@ -782,186 +908,205 @@ if forge_should_build_tests
         'tests/nodes.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_integration_test_nodes
+            test_wrapper,
+            test_integration_nodes
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 endif
 
 # Demos
 # --------------------------------------------------------------------------------------
 
-if forge_should_build_tests
-    forge_demo_streams_color = executable(
-        'demo-streams-color',
+if should_build_tests
+    demo_forge_streams_color = executable(
+        'demo-forge-streams-color',
         'lib/forge/streams/color_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'streams/color_demo.c',
+        'lib/forge/streams/color_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_streams_color
+            test_wrapper,
+            demo_forge_streams_color
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_streams_unicode = executable(
-        'demo-streams-unicode',
+    demo_forge_streams_unicode = executable(
+        'demo-forge-streams-unicode',
         'lib/forge/streams/unicode_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'streams/unicode_demo.c',
+        'lib/forge/streams/unicode_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_streams_unicode
+            test_wrapper,
+            demo_forge_streams_unicode
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_debug = executable(
-        'demo-debug',
+    demo_forge_debug = executable(
+        'demo-forge-debug',
         'lib/forge/debug_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'debug_demo.c',
+        'lib/forge/debug_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_debug
+            test_wrapper,
+            demo_forge_debug
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_cli_choice = executable(
-        'demo-cli-choice',
+    demo_forge_cli_choice = executable(
+        'demo-forge-cli-choice',
         'lib/forge/cli/choice_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'cli/choice_demo.c',
+        'lib/forge/cli/choice_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_cli_choice
+            test_wrapper,
+            demo_forge_cli_choice
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_cli_option = executable(
-        'demo-cli-option',
+    demo_forge_cli_option = executable(
+        'demo-forge-cli-option',
         'lib/forge/cli/option_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'cli/option_demo.c',
+        'lib/forge/cli/option_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_cli_option
+            test_wrapper,
+            demo_forge_cli_option
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_cli_option_set = executable(
-        'demo-cli-option-set',
+    demo_forge_cli_option_set = executable(
+        'demo-forge-cli-option-set',
         'lib/forge/cli/option_set_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'cli/option_set_demo.c',
+        'lib/forge/cli/option_set_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_cli_option_set
+            test_wrapper,
+            demo_forge_cli_option_set
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_cli_command = executable(
-        'demo-cli-command',
+    demo_forge_cli_command = executable(
+        'demo-forge-cli-command',
         'lib/forge/cli/command_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'cli/command_demo.c',
+        'lib/forge/cli/command_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_cli_command
+            test_wrapper,
+            demo_forge_cli_command
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_cli_program = executable(
-        'demo-cli-program',
+    demo_forge_cli_program = executable(
+        'demo-forge-cli-program',
         'lib/forge/cli/program_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'cli/program_demo.c',
+        'lib/forge/cli/program_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_cli_program
+            test_wrapper,
+            demo_forge_cli_program
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 
-    forge_demo_messages_sourced_messages = executable(
-        'demo-messages-sourced-messages',
+    demo_forge_messages_sourced_messages = executable(
+        'demo-forge-messages-sourced-messages',
         'lib/forge/messages/sourced_messages_demo.c',
-        include_directories: forge_include_directories,
-        link_with: [forge_library_core],
-        dependencies: forge_dependencies
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies
     )
 
     test(
-        'messages/sourced_messages_demo.c',
+        'lib/forge/messages/sourced_messages_demo.c',
         program_bash,
         args: [
-            forge_test_wrapper,
-            forge_demo_messages_sourced_messages
+            test_wrapper,
+            demo_forge_messages_sourced_messages
         ],
-        timeout: forge_test_timeout_seconds,
-        is_parallel: forge_test_is_parallel,
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    demo_forge_testing_string_comparison = executable(
+        'demo-forge-testing-string-comparison',
+        'lib/forge-testing/string_comparison_demo.c',
+        include_directories: include_directories,
+        link_with: [library_forge_testing],
+        dependencies: dependencies
+    )
+
+    test(
+        'lib/forge-testing/string_comparison_demo.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            demo_forge_testing_string_comparison
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
     )
 endif

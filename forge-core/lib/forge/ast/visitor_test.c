@@ -347,12 +347,12 @@ void test_remove_node_in_list() {
 
 int main() {
   UNITY_BEGIN();
-  // RUN_TEST(test_empty);
-  // RUN_TEST(test_enter_and_leave);
-  // RUN_TEST(test_skip);
-  // RUN_TEST(test_stop);
-  // RUN_TEST(test_replace_node);
-  // RUN_TEST(test_replace_node_in_list);
+  RUN_TEST(test_empty);
+  RUN_TEST(test_enter_and_leave);
+  RUN_TEST(test_skip);
+  RUN_TEST(test_stop);
+  RUN_TEST(test_replace_node);
+  RUN_TEST(test_replace_node_in_list);
   RUN_TEST(test_remove_node_in_list);
   return UNITY_END();
 }

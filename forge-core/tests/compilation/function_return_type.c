@@ -82,7 +82,90 @@ void _callback_on_messages_mismatched(const frg_message_buffer_t* message_buffer
 
   frg_message_query_t query = frg_message_query_empty;
   query.with_severity       = FRG_MESSAGE_SEVERITY_ERROR;
-  // query.with_code =
+  query.with_code           = "ET-5";
+
+  frg_message_t* message;
+  TEST_ASSERT_EQUAL(FRG_MESSAGE_BUFFER_QUERY_RESULT_SINGLE,
+                    frg_message_buffer_query_single(&message, message_buffer, &query));
+
+  TEST_ASSERT_EQUAL(2, message->source_range.start.line_number);
+  TEST_ASSERT_EQUAL(10, message->source_range.start.column_number);
+  TEST_ASSERT_EQUAL(4, message->source_range.length);
+  TEST_ASSERT_EQUAL_STRING(
+    "Cannot return value of type 'i32' in function with return type 'bool'",
+    message->text->str);
+  TEST_ASSERT_EQUAL(0, g_list_length(message->children));
+}
+
+void _callback_on_ast_mismatched(const frg_ast_node_t* ast_node, void* mut_user_data) {
+  // Get relevant AST nodes
+  TEST_ASSERT_NOT_NULL(ast_node);
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_DECLARATION_BLOCK, ast_node->kind);
+
+  const frg_ast_node_declaration_block_t* declaration_block
+    = (const frg_ast_node_declaration_block_t*)ast_node;
+
+  TEST_ASSERT_NOT_NULL(declaration_block->declarations);
+  const frg_ast_node_declaration_function_t* declaration_function
+    = (const frg_ast_node_declaration_function_t*)declaration_block->declarations->data;
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_DECLARATION_FUNCTION,
+                    declaration_function->base.kind);
+
+  TEST_ASSERT_NOT_NULL(declaration_function->type->return_type);
+  const frg_ast_node_t* return_type = declaration_function->type->return_type;
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_TYPE_BOOL, return_type->kind);
+
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_STATEMENT_BLOCK,
+                    declaration_function->body->kind);
+  const frg_ast_node_statement_block_t* statement_block
+    = (const frg_ast_node_statement_block_t*)declaration_function->body;
+
+  TEST_ASSERT_NOT_NULL(statement_block->statements);
+  const frg_ast_node_statement_return_t* statement_return
+    = (const frg_ast_node_statement_return_t*)statement_block->statements->data;
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_STATEMENT_RETURN, statement_return->base.kind);
+
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_VALUE_INT, statement_return->value->kind);
+
+  // Check their source locations
+  TEST_ASSERT_EQUAL(0, declaration_block->base.source_range.start.line_number);
+  TEST_ASSERT_EQUAL(0, declaration_block->base.source_range.start.column_number);
+  TEST_ASSERT_EQUAL(0, declaration_block->base.source_range.start.offset);
+  TEST_ASSERT_EQUAL(0, declaration_block->base.source_range.length);
+
+  TEST_ASSERT_EQUAL(1, declaration_function->base.source_range.start.line_number);
+  TEST_ASSERT_EQUAL(1, declaration_function->base.source_range.start.column_number);
+  TEST_ASSERT_EQUAL(0, declaration_function->base.source_range.start.offset);
+  TEST_ASSERT_EQUAL(33, declaration_function->base.source_range.length);
+
+  TEST_ASSERT_EQUAL(1, declaration_function->type->base.source_range.start.line_number);
+  TEST_ASSERT_EQUAL(5,
+                    declaration_function->type->base.source_range.start.column_number);
+  TEST_ASSERT_EQUAL(4, declaration_function->type->base.source_range.start.offset);
+  TEST_ASSERT_EQUAL(10, declaration_function->type->base.source_range.length);
+
+  TEST_ASSERT_EQUAL(
+    1, declaration_function->type->return_type->source_range.start.line_number);
+  TEST_ASSERT_EQUAL(
+    11, declaration_function->type->return_type->source_range.start.column_number);
+  TEST_ASSERT_EQUAL(10,
+                    declaration_function->type->return_type->source_range.start.offset);
+  TEST_ASSERT_EQUAL(4, declaration_function->type->return_type->source_range.length);
+
+  TEST_ASSERT_EQUAL(1, statement_block->base.source_range.start.line_number);
+  TEST_ASSERT_EQUAL(16, statement_block->base.source_range.start.column_number);
+  TEST_ASSERT_EQUAL(15, statement_block->base.source_range.start.offset);
+  TEST_ASSERT_EQUAL(18, statement_block->base.source_range.length);
+
+  TEST_ASSERT_EQUAL(2, statement_return->base.source_range.start.line_number);
+  TEST_ASSERT_EQUAL(3, statement_return->base.source_range.start.column_number);
+  TEST_ASSERT_EQUAL(19, statement_return->base.source_range.start.offset);
+  TEST_ASSERT_EQUAL(12, statement_return->base.source_range.length);
+
+  TEST_ASSERT_EQUAL(2, statement_return->value->source_range.start.line_number);
+  TEST_ASSERT_EQUAL(10, statement_return->value->source_range.start.column_number);
+  TEST_ASSERT_EQUAL(26, statement_return->value->source_range.start.offset);
+  TEST_ASSERT_EQUAL(4, statement_return->value->source_range.length);
 }
 
 void test_mismatched() {
@@ -93,8 +176,9 @@ void test_mismatched() {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY;
+  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
   options->name        = "function-return-type-mismatched";
+  options->on_ast      = _callback_on_ast_mismatched;
   options->on_messages = _callback_on_messages_mismatched;
 
   // clang-format off

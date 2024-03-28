@@ -26,6 +26,30 @@ frg_ast_node_t* frg_ast_clone(const frg_ast_node_t* node) {
   return frg_ast_node_kind_info_get(node->kind)->_cloner(node);
 }
 
+bool frg_ast_compare(const frg_ast_node_t* a, const frg_ast_node_t* b) {
+  if (a == NULL) {
+    if (b == NULL) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    if (b == NULL) {
+      return false;
+    } else {
+      if (a->kind != b->kind) {
+        return false;
+      }
+
+      frg_ast_comparer_t comparer = frg_ast_node_kind_info_get(a->kind)->_comparer;
+
+      frg_assert_pointer_non_null(comparer);
+
+      return comparer(a, b);
+    }
+  }
+}
+
 const char* frg_ast_declaration_name_get(const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(node);
   frg_assert(frg_ast_node_kind_info_get(node->kind)->flags

@@ -253,6 +253,7 @@ library_forge = static_library(
     'lib/forge/ast/utilities.c',
     'lib/forge/ast/cloners.c',
     'lib/forge/ast/debug_printers.c',
+    'lib/forge/ast/comparers.c',
     'lib/forge/ast/print_debug.c',
     'lib/forge/ast/declaration_name_getters.c',
     'lib/forge/ast/destructors.c',
@@ -390,6 +391,27 @@ if should_build_tests
         args: [
             test_wrapper,
             test_unit_forge_ast_debug_printers
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_ast_comparers = executable(
+        'test-unit-forge-ast-comparers',
+        'lib/forge/ast/comparers_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge/ast/comparers_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_ast_comparers
         ],
         timeout: test_timeout_seconds,
         is_parallel: test_is_parallel,

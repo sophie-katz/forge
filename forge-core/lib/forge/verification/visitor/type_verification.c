@@ -15,6 +15,9 @@
 
 #include <forge/assert.h>
 #include <forge/ast/node_kind_info.h>
+#include <forge/ast/utilities.h>
+#include <forge/formatting/print.h>
+#include <forge/messages/codes.h>
 #include <forge/verification/type_operations.h>
 #include <forge/verification/verifier.h>
 #include <forge/verification/visitor/type_verification.h>
@@ -27,7 +30,7 @@ frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_type_sy
 const frg_ast_node_declaration_function_t* _frg_get_surrounding_declaration_function(
   const GList* parents) {
   const frg_ast_node_t* parent = NULL;
-  for (GList* it = parents; it != NULL; it = it->next) {
+  for (const GList* it = parents; it != NULL; it = it->next) {
     parent = it->data;
     if (parent->kind == FRG_AST_NODE_KIND_DECLARATION_FUNCTION) {
       return (const frg_ast_node_declaration_function_t*)parent;
@@ -46,17 +49,30 @@ frg_ast_visitor_status_t
 
   frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
 
-  const frg_ast_node_declaration_function_t* declaration_function
+  const frg_ast_node_statement_return_t* statement_return
+    = (const frg_ast_node_statement_return_t*)(*mut_node);
+
+  const frg_ast_node_declaration_function_t* surrounding_declaration_function
     = _frg_get_surrounding_declaration_function(parents);
 
-  if (declaration_function) {
+  if (surrounding_declaration_function == NULL) {
     frg_die_message_no_code_yet();
   }
 
-  const frg_ast_node_t* expected = declaration_function->type->return_type;
+  const frg_ast_node_t* expected = surrounding_declaration_function->type->return_type;
 
   const frg_ast_node_t* actual   = frg_verification_resolve_type(
-    verifier->mut_message_buffer, verifier->mut_scope, *mut_node);
+    verifier->mut_message_buffer, verifier->mut_scope, statement_return->value);
+
+  if (!frg_ast_compare(expected, actual)) {
+    frg_emit_message_et_5_mismatched_return_type(verifier->mut_message_buffer,
+                                                 &statement_return->value->source_range,
+                                                 expected,
+                                                 actual);
+    return FRG_AST_VISITOR_STATUS_SKIP;
+  }
+
+  return FRG_AST_VISITOR_STATUS_OK;
 }
 
 void frg_verification_type_verification_add_handlers(frg_ast_visitor_t* mut_visitor) {

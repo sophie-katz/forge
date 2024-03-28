@@ -881,3 +881,35 @@
                                                                                        \
     g_string_free(__frg_et_4_buffer, TRUE);                                            \
   }
+
+#define frg_emit_message_et_5_mismatched_return_type(                                  \
+  message_buffer, source_range, expected_type, actual_type)                            \
+  {                                                                                    \
+    frg_stream_output_t* __frg_et_5_stream_expected                                    \
+      = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
+                                                                                       \
+    frg_formatting_print_formatted(__frg_et_5_stream_expected, (expected_type), 0);    \
+                                                                                       \
+    GString* __frg_et_5_buffer_expected                                                \
+      = frg_stream_output_destroy_take_buffer(__frg_et_5_stream_expected);             \
+                                                                                       \
+    frg_stream_output_t* __frg_et_5_stream_actual                                      \
+      = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
+                                                                                       \
+    frg_formatting_print_formatted(__frg_et_5_stream_actual, (actual_type), 0);        \
+                                                                                       \
+    GString* __frg_et_5_buffer_actual                                                  \
+      = frg_stream_output_destroy_take_buffer(__frg_et_5_stream_actual);               \
+                                                                                       \
+    frg_message_emit_from_source_range(                                                \
+      (message_buffer),                                                                \
+      (source_range),                                                                  \
+      FRG_MESSAGE_SEVERITY_ERROR,                                                      \
+      "ET-5",                                                                          \
+      "Cannot return value of type '%s' in function with return type '%s'",            \
+      __frg_et_5_buffer_actual->str,                                                   \
+      __frg_et_5_buffer_expected->str);                                                \
+                                                                                       \
+    g_string_free(__frg_et_5_buffer_expected, TRUE);                                   \
+    g_string_free(__frg_et_5_buffer_actual, TRUE);                                     \
+  }

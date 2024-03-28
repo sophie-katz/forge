@@ -24,6 +24,8 @@ typedef void (*frg_ast_destructor_t)(frg_ast_node_t* node);
 
 typedef frg_ast_node_t* (*frg_ast_cloner_t)(const frg_ast_node_t* node);
 
+typedef bool (*frg_ast_comparer_t)(const frg_ast_node_t* a, const frg_ast_node_t* b);
+
 typedef const char* (*frg_ast_declaration_name_getter_t)(const frg_ast_node_t* node);
 
 typedef void (*frg_ast_debug_printer_t)(frg_stream_output_t* mut_stream,
@@ -47,6 +49,7 @@ typedef struct {
   frg_ast_node_kind_flags_t flags;
   frg_ast_destructor_t _destructor;
   frg_ast_cloner_t _cloner;
+  frg_ast_comparer_t _comparer;
   frg_ast_declaration_name_getter_t _declaration_name_getter;
   frg_ast_debug_printer_t _debug_printer;
   frg_ast_formatting_formatted_printer_t _formatted_printer;

@@ -27,6 +27,8 @@ extern int yylex_destroy();
 const char* _frg_parsing_current_path                     = NULL;
 size_t _frg_parsing_current_offset                        = 0;
 frg_message_buffer_t* _frg_parsing_current_message_buffer = NULL;
+frg_parsing_location_t _frg_parsing_last_location
+  = { .path = NULL, .offset = 0, .line_number = 0, .column_number = 0 };
 
 frg_ast_node_t* frg_parse(frg_message_buffer_t* mut_message_buffer,
                           frg_parsing_source_t* mut_source) {
@@ -35,9 +37,13 @@ frg_ast_node_t* frg_parse(frg_message_buffer_t* mut_message_buffer,
   frg_assert_string_non_empty(mut_source->path);
 
   // Set globals
-  _frg_parsing_current_path           = mut_source->path;
-  _frg_parsing_current_offset         = 0;
-  _frg_parsing_current_message_buffer = mut_message_buffer;
+  _frg_parsing_current_path                = mut_source->path;
+  _frg_parsing_current_offset              = 0;
+  _frg_parsing_current_message_buffer      = mut_message_buffer;
+  _frg_parsing_last_location.path          = mut_source->path;
+  _frg_parsing_last_location.offset        = 0;
+  _frg_parsing_last_location.line_number   = 1;
+  _frg_parsing_last_location.column_number = 1;
 
   if (frg_stream_input_is_buffer(mut_source->stream)) {
     frg_assert_int_greater_than_or_equal_to(frg_stream_get_length(mut_source->stream),

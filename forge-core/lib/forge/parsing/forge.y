@@ -680,8 +680,11 @@ decl_function : KEYWORD_FN SYMBOL PARENTHESIS_LEFT decl_function_argument_list_o
 }
 | KEYWORD_FN SYMBOL PARENTHESIS_LEFT decl_function_argument_list_optional PARENTHESIS_RIGHT decl_function_return_ty statement_block
 {
+    frg_parsing_range_t _1 = $1;
+    frg_parsing_range_t _3 = $3;
+
     frg_parsing_range_t source_range_ty = frg_parsing_range_get_span(
-        &$3,
+        &_3,
         $6 == NULL
             ? &$5
             : &((frg_ast_node_t*)$6)->source_range
@@ -696,7 +699,7 @@ decl_function : KEYWORD_FN SYMBOL PARENTHESIS_LEFT decl_function_argument_list_o
     );
 
     frg_parsing_range_t source_range = frg_parsing_range_get_span(
-        &$1,
+        &_1,
         &((frg_ast_node_t*)$7)->source_range
     );
 

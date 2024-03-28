@@ -20,6 +20,8 @@
 
 frg_ast_node_t* frg_ast_clone(const frg_ast_node_t* node);
 
+bool frg_ast_compare(const frg_ast_node_t* a, const frg_ast_node_t* b);
+
 const char* frg_ast_declaration_name_get(const frg_ast_node_t* node);
 
 const char* frg_ast_declaration_function_argument_name_get(const frg_ast_node_t* node);

@@ -73,7 +73,8 @@
         "utilities.h": "c",
         "initialization.h": "c",
         "lexical_casts.h": "c",
-        "source_context.h": "c"
+        "source_context.h": "c",
+        "sstream": "c"
     },
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [

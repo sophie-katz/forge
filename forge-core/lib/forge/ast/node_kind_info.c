@@ -15,6 +15,7 @@
 
 #include <forge/assert.h>
 #include <forge/ast/cloners.h>
+#include <forge/ast/comparers.h>
 #include <forge/ast/debug_printers.h>
 #include <forge/ast/declaration_name_getters.h>
 #include <forge/ast/destructors.h>
@@ -36,6 +37,8 @@ void _frg_ast_node_kind_info_table_init() {
     = FRG_AST_NODE_KIND_FLAG_TYPE | FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID]._cloner
     = frg_ast_cloner_type_primary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID]._comparer
+    = frg_ast_comparer_always_true;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_VOID]._formatted_printer
     = frg_formatting_formatted_printer_type_void;
 
@@ -44,6 +47,8 @@ void _frg_ast_node_kind_info_table_init() {
     = FRG_AST_NODE_KIND_FLAG_TYPE | FRG_AST_NODE_KIND_FLAG_TYPE_PRIMARY;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL]._cloner
     = frg_ast_cloner_type_primary;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL]._comparer
+    = frg_ast_comparer_always_true;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_BOOL]._formatted_printer
     = frg_formatting_formatted_printer_type_bool;
 
@@ -52,6 +57,8 @@ void _frg_ast_node_kind_info_table_init() {
     = FRG_AST_NODE_KIND_FLAG_TYPE;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_INT]._cloner
     = frg_ast_cloner_type_int;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_INT]._comparer
+    = frg_ast_comparer_type_int;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_INT]._debug_printer
     = frg_ast_debug_printer_type_int;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_INT]._formatted_printer
@@ -62,6 +69,8 @@ void _frg_ast_node_kind_info_table_init() {
     = FRG_AST_NODE_KIND_FLAG_TYPE;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FLOAT]._cloner
     = frg_ast_cloner_type_float;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FLOAT]._comparer
+    = frg_ast_comparer_type_float;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FLOAT]._debug_printer
     = frg_ast_debug_printer_type_float;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FLOAT]._formatted_printer
@@ -74,6 +83,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_destructor_type_symbol;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_SYMBOL]._cloner
     = frg_ast_cloner_type_symbol;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_SYMBOL]._comparer
+    = frg_ast_comparer_type_symbol;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_SYMBOL]._debug_printer
     = frg_ast_debug_printer_type_symbol;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_SYMBOL]._formatted_printer
@@ -86,6 +97,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_destructor_type_pointer;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_POINTER]._cloner
     = frg_ast_cloner_type_pointer;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_POINTER]._comparer
+    = frg_ast_comparer_type_pointer;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_POINTER]._debug_printer
     = frg_ast_debug_printer_type_pointer;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_POINTER]._visitor_acceptor
@@ -100,6 +113,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_destructor_type_array;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._cloner
     = frg_ast_cloner_type_array;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._comparer
+    = frg_ast_comparer_type_array;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._debug_printer
     = frg_ast_debug_printer_type_array;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_ARRAY]._visitor_acceptor
@@ -114,6 +129,8 @@ void _frg_ast_node_kind_info_table_init() {
     = frg_ast_destructor_type_function;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FUNCTION]._cloner
     = frg_ast_cloner_type_function;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FUNCTION]._comparer
+    = frg_ast_comparer_type_function;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FUNCTION]._debug_printer
     = frg_ast_debug_printer_type_function;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_TYPE_FUNCTION]._visitor_acceptor

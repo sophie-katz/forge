@@ -94,20 +94,17 @@ void _callback_on_shared_library_handle(void* mut_shared_library_handle,
   switch (parameters->expected_value.type.bit_width) {
   case 8:
     f_8 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    actual_value.value.as_u8 = f_8();
+    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u8, f_8());
   case 16:
     f_16 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    actual_value.value.as_u16 = f_16();
+    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u16, f_16());
   case 32:
     f_32 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    actual_value.value.as_u32 = f_32();
+    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u32, f_32());
   case 64:
     f_64 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    actual_value.value.as_u64 = f_64();
+    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u64, f_64());
   }
-
-  TEST_ASSERT_EQUAL_MEMORY(
-    &parameters->expected_value.value, &actual_value.value, sizeof(actual_value.value));
 }
 
 void _test_parameters(const frg_test_literals_int_parameters_t* parameters) {

@@ -41,6 +41,8 @@ GString* frg_testing_test_compilation_auxiliary_verification(
 
   frg_verification_verifier_destroy(verifier);
 
+  frg_ast_scope_destroy(scope);
+
   switch (status) {
   case FRG_AST_VISITOR_STATUS_OK:
     return NULL;

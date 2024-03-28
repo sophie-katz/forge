@@ -61,7 +61,7 @@ frg_ast_visitor_status_t
 
   const frg_ast_node_t* expected = surrounding_declaration_function->type->return_type;
 
-  const frg_ast_node_t* actual   = frg_verification_resolve_type(
+  frg_ast_node_t* actual         = frg_verification_resolve_type(
     verifier->mut_message_buffer, verifier->mut_scope, statement_return->value);
 
   if (!frg_ast_compare(expected, actual)) {
@@ -69,8 +69,13 @@ frg_ast_visitor_status_t
                                                  &statement_return->value->source_range,
                                                  expected,
                                                  actual);
+
+    frg_ast_node_destroy(actual);
+
     return FRG_AST_VISITOR_STATUS_SKIP;
   }
+
+  frg_ast_node_destroy(actual);
 
   return FRG_AST_VISITOR_STATUS_OK;
 }

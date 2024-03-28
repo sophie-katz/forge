@@ -18,7 +18,13 @@ valgrind \
     --log-file=valgrind.log \
     $*
 
-if grep -P -q -e "definitely lost: 0 bytes" valgrind.log && \
+if grep -P -q -e "Conditional jump or move depends on uninitialised value" valgrind.log; then
+    echo
+    echo "[test_wrapper_full] ERROR: Test had conditional jump or move depends on uninitialised value"
+    echo
+    cat valgrind.log
+    exit 1
+elif grep -P -q -e "definitely lost: 0 bytes" valgrind.log && \
     grep -P -q -e "indirectly lost: 0 bytes" valgrind.log && \
     grep -P -q -e "possibly lost: 0 bytes" valgrind.log && \
     grep -P -q -e "still reachable: 0 bytes" valgrind.log; then

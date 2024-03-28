@@ -17,36 +17,38 @@
 #include <forge/configuration/options.h>
 
 int main(int argc, char* argv[]) {
-  frg_stream_output_init();
+  // frg_stream_output_init();
 
-  frg_parsing_source_context_t* source_context = frg_parsing_source_context_new();
+  // frg_parsing_source_context_t* source_context = frg_parsing_source_context_new();
 
-  frg_message_buffer_t* message_buffer         = frg_message_buffer_new();
+  // frg_message_buffer_t* message_buffer         = frg_message_buffer_new();
 
-  frg_configuration_options_t* options = frg_configuration_options_new_default();
+  // frg_configuration_options_t* options = frg_configuration_options_new_default();
 
-  int exit_status                      = 0;
-  if (!frg_configuration_options_parse_environment(message_buffer, options)) {
-    exit_status = 1;
-  }
+  // int exit_status                      = 0;
+  // if (!frg_configuration_options_parse_environment(message_buffer, options)) {
+  //   exit_status = 1;
+  // }
 
-  if (exit_status == 0) {
-    exit_status = frg_configuration_options_parse_cli(
-      message_buffer, options, argc, (const char**)argv);
-  }
+  // if (exit_status == 0) {
+  //   exit_status = frg_configuration_options_parse_cli(
+  //     message_buffer, options, argc, (const char**)argv);
+  // }
 
-  frg_message_buffer_print(frg_stream_output_get_stderr(),
-                           source_context,
-                           message_buffer,
-                           options->minimum_message_severity,
-                           5 // TODO: Make this configurable
-  );
+  // frg_message_buffer_print(frg_stream_output_get_stderr(),
+  //                          source_context,
+  //                          message_buffer,
+  //                          options->minimum_message_severity,
+  //                          5 // TODO: Make this configurable
+  // );
 
-  frg_stream_output_cleanup();
+  // frg_stream_output_cleanup();
 
-  frg_message_buffer_destroy(message_buffer);
+  // frg_message_buffer_destroy(message_buffer);
 
-  frg_parsing_source_context_destroy(source_context);
+  // frg_parsing_source_context_destroy(source_context);
 
-  return exit_status;
+  // return exit_status;
+
+  return 0;
 }

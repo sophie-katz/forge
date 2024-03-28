@@ -84,6 +84,8 @@ void _callback_on_shared_library_handle(void* mut_shared_library_handle,
 
   frg_ast_node_value_int_t actual_value;
 
+  memset(&actual_value.value, 0, sizeof(actual_value.value));
+
   uint8_t (*f_8)();
   uint16_t (*f_16)();
   uint32_t (*f_32)();

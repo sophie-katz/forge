@@ -16,6 +16,7 @@
 #pragma once
 
 #include <forge/enums.h>
+#include <forge/messages/query.h>
 #include <forge/parsing/domain.h>
 #include <forge/parsing/source_context.h>
 #include <forge/streams/output.h>
@@ -47,3 +48,6 @@ void frg_message_print(frg_stream_output_t* mut_stream,
                        frg_parsing_source_context_t* mut_source_context,
                        const frg_message_t* message,
                        frg_column_number_t line_number_pad_to_width);
+
+bool frg_message_matches_query(const frg_message_t* message,
+                               const frg_message_query_t* query);

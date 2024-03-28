@@ -25,7 +25,9 @@ void tearDown() {
   frg_stream_output_cleanup();
 }
 
-void _callback_on_messages(const frg_message_buffer_t* message_buffer) {
+void _callback_on_messages(const frg_message_buffer_t* message_buffer,
+                           void* mut_user_data) {
+  TEST_ASSERT_NULL(mut_user_data);
   TEST_ASSERT_EQUAL(0, message_buffer->warning_count);
   TEST_ASSERT_EQUAL(0, message_buffer->error_count);
 }

@@ -75,12 +75,18 @@ GString* frg_testing_test_compilation_auxiliary_ast(
     = _frg_testing_test_compilation_auxiliary_print_ast_debug(context_parsed->ast_node);
 
   if (options->ast_debug != NULL) {
+    GString* ast_debug_expected = frg_testing_string_substituter_run(
+      options->string_substituter, options->ast_debug);
+
     if (!_frg_testing_test_compilation_auxiliary_compare_ast_debug(
           "Compared expected AST against parsed",
-          options->ast_debug,
+          ast_debug_expected->str,
           ast_debug_parsed->str)) {
       g_string_free(ast_debug_parsed, TRUE);
+      g_string_free(ast_debug_expected, TRUE);
       return g_string_new("Parsed AST does not match expected");
+    } else {
+      g_string_free(ast_debug_expected, TRUE);
     }
   }
 
@@ -102,7 +108,7 @@ GString* frg_testing_test_compilation_auxiliary_ast(
 
   // Run callback
   if (options->on_ast != NULL) {
-    options->on_ast(context_parsed->ast_node);
+    options->on_ast(context_parsed->ast_node, options->mut_user_data);
   }
 
   return NULL;

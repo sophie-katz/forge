@@ -15,21 +15,19 @@
 
 #pragma once
 
-#include <forge/lexical_casts/float.h>
-#include <forge/lexical_casts/uint.h>
-#include <forge/parsing/domain.h>
+#include <forge/enums.h>
+#include <forge/messages/message_buffer.h>
+#include <forge/parsing/token_reader.h>
+#include <forge/types.h>
+#include <glib.h>
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_uint_result_t value;
-} frg_parsing_union_uint_t;
+void frg_print_string(frg_stream_output_t* mut_stream, const char* value);
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_float_result_t value;
-} frg_parsing_union_float_t;
+bool frg_parse_string_with_quote_character(GString** out_value,
+                                           frg_message_buffer_t* mut_message_buffer,
+                                           frg_parsing_token_reader_t* mut_reader,
+                                           char quote);
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  GString* value;
-} frg_parsing_union_symbol_t;
+bool frg_parse_string(GString** out_value,
+                      frg_message_buffer_t* mut_message_buffer,
+                      frg_parsing_token_reader_t* mut_reader);

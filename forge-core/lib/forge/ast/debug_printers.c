@@ -19,6 +19,8 @@
 #include <forge/ast/utilities.h>
 #include <forge/debug.h>
 #include <forge/enum_printing.h>
+#include <forge/lexical_casts/character.h>
+#include <forge/lexical_casts/string.h>
 
 // How to correctly indent
 // =====================================================================================

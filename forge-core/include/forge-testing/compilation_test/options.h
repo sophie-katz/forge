@@ -16,17 +16,18 @@
 #pragma once
 
 #include <forge-testing/enums.h>
+#include <forge-testing/string_substitution.h>
 #include <forge/ast/node.h>
 #include <forge/messages/message_buffer.h>
 
 typedef void (*frg_testing_compilation_test_callback_on_ast)(
-  const frg_ast_node_t* ast_node);
+  const frg_ast_node_t* ast_node, void* mut_user_data);
 
 typedef void (*frg_testing_compilation_test_callback_on_messages)(
-  const frg_message_buffer_t* message_buffer);
+  const frg_message_buffer_t* message_buffer, void* mut_user_data);
 
 typedef void (*frg_testing_compilation_test_callback_on_shared_library_handle)(
-  void* mut_shared_library_handle);
+  void* mut_shared_library_handle, void* mut_user_data);
 
 typedef struct {
   frg_testing_compilation_test_kind_t kind;
@@ -38,6 +39,8 @@ typedef struct {
   frg_testing_compilation_test_callback_on_messages on_messages;
   frg_testing_compilation_test_callback_on_shared_library_handle
     on_shared_library_handle;
+  void* mut_user_data;
+  frg_testing_string_substituter_t* string_substituter;
 } frg_testing_compilation_test_options_t;
 
 frg_testing_compilation_test_options_t*

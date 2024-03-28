@@ -35,9 +35,6 @@ void frg_message_buffer_print(frg_stream_output_t* mut_stream,
                               frg_message_severity_t minimum_severity,
                               frg_message_count_t max_messages);
 
-bool frg_message_buffer_has_message_with_text_equal_to(
-  const frg_message_buffer_t* message_buffer, const char* text);
-
 frg_message_t* _frg_message_emit(frg_message_buffer_t* mut_message_buffer,
                                  const char* log_path,
                                  frg_line_number_t log_line_number,
@@ -117,3 +114,14 @@ void _frg_message_emit_child_from_source_range(frg_message_buffer_t* mut_message
                                             (code),                                    \
                                             (format),                                  \
                                             ##__VA_ARGS__)
+
+size_t frg_message_buffer_query_count(const frg_message_buffer_t* message_buffer,
+                                      const frg_message_query_t* query);
+
+frg_message_buffer_query_single_result_t frg_message_buffer_query_single(
+  frg_message_t** out_message,
+  const frg_message_buffer_t* message_buffer,
+  const frg_message_query_t* query);
+
+GList* frg_message_buffer_query(const frg_message_buffer_t* message_buffer,
+                                const frg_message_query_t* query);

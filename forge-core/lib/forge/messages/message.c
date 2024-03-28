@@ -465,3 +465,44 @@ void frg_message_print(frg_stream_output_t* mut_stream,
     frg_message_print(mut_stream, mut_source_context, child, line_number_pad_to_width);
   }
 }
+
+bool frg_message_matches_query(const frg_message_t* message,
+                               const frg_message_query_t* query) {
+  frg_assert_pointer_non_null(message);
+  frg_assert_pointer_non_null(query);
+  frg_assert_gstring_non_empty(message->text);
+
+  if (message->severity != query->with_severity) {
+    return false;
+  }
+
+  if (query->with_code != NULL) {
+    if (message->code == NULL) {
+      return false;
+    } else {
+      if (strcmp(message->code, query->with_code) != 0) {
+        return false;
+      }
+    }
+  }
+
+  if (query->with_text != NULL && strcmp(message->text->str, query->with_text) != 0) {
+    return false;
+  }
+
+  if (query->on_line > 0 && message->source_range.start.line_number != query->on_line) {
+    return false;
+  }
+
+  if (query->from_path != NULL) {
+    if (message->source_range.start.path == NULL) {
+      return false;
+    } else {
+      if (strcmp(message->source_range.start.path, query->from_path) != 0) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}

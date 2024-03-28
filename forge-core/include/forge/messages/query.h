@@ -15,21 +15,14 @@
 
 #pragma once
 
-#include <forge/lexical_casts/float.h>
-#include <forge/lexical_casts/uint.h>
-#include <forge/parsing/domain.h>
+#include <forge/enums.h>
 
 typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_uint_result_t value;
-} frg_parsing_union_uint_t;
+  frg_message_severity_t with_severity;
+  const char* with_code;
+  const char* with_text;
+  frg_line_number_t on_line;
+  const char* from_path;
+} frg_message_query_t;
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_float_result_t value;
-} frg_parsing_union_float_t;
-
-typedef struct {
-  frg_parsing_range_t source_range;
-  GString* value;
-} frg_parsing_union_symbol_t;
+extern const frg_message_query_t frg_message_query_empty;

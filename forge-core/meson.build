@@ -269,7 +269,11 @@ library_forge = static_library(
     'lib/forge/debug.c',
     'lib/forge/enum_printing.c',
     'lib/forge/enums.c',
-    'lib/forge/lexical_casts.c',
+    'lib/forge/lexical_casts/utilities.c',
+    'lib/forge/lexical_casts/character.c',
+    'lib/forge/lexical_casts/uint.c',
+    'lib/forge/lexical_casts/float.c',
+    'lib/forge/lexical_casts/string.c',
     'lib/forge/log.c',
     'lib/forge/math.c',
     'lib/forge/memory.c',
@@ -287,6 +291,7 @@ library_forge = static_library(
     'lib/forge/linking/link.c',
     'lib/forge/messages/message.c',
     'lib/forge/messages/message_buffer.c',
+    'lib/forge/messages/query.c',
     'lib/forge/parsing/domain.c',
     'lib/forge/parsing/parse.c',
     'lib/forge/parsing/source.c',
@@ -312,11 +317,13 @@ library_forge = static_library(
 library_forge_testing = static_library(
     'forge-testing',
     'lib/forge-testing/string_comparison.c',
+    'lib/forge-testing/string_substitution.c',
     'lib/forge-testing/compilation_test/phases/initialization.c',
     'lib/forge-testing/compilation_test/options.c',
     'lib/forge-testing/compilation_test/phases/parsing.c',
     'lib/forge-testing/compilation_test/phases/linking.c',
     'lib/forge-testing/compilation_test/auxiliary/ast.c',
+    'lib/forge-testing/compilation_test/auxiliary/verification.c',
     'lib/forge-testing/compilation_test/auxiliary/llvm_ir.c',
     'lib/forge-testing/compilation_test/auxiliary/shared_object.c',
     'lib/forge-testing/compilation_test/utilities.c',
@@ -430,9 +437,9 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
-    test_unit_forge_lexical_casts = executable(
-        'test-unit-forge-lexical-casts',
-        'lib/forge/lexical_casts_test.c',
+    test_unit_forge_lexical_casts_character = executable(
+        'test-unit-forge-lexical-casts-character',
+        'lib/forge/lexical_casts/character_test.c',
         include_directories: include_directories,
         link_with: [library_forge],
         dependencies: dependencies + [
@@ -441,11 +448,74 @@ if should_build_tests
     )
 
     test(
-        'lib/forge/lexical_casts_test.c',
+        'lib/forge/lexical_casts/character_test.c',
         program_bash,
         args: [
             test_wrapper,
-            test_unit_forge_lexical_casts
+            test_unit_forge_lexical_casts_character
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_lexical_casts_string = executable(
+        'test-unit-forge-lexical-casts-string',
+        'lib/forge/lexical_casts/string_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge/lexical_casts/string_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_lexical_casts_string
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_lexical_casts_uint = executable(
+        'test-unit-forge-lexical-casts-uint',
+        'lib/forge/lexical_casts/uint_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge/lexical_casts/uint_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_lexical_casts_uint
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_lexical_casts_utilities = executable(
+        'test-unit-forge-lexical-casts-utilities',
+        'lib/forge/lexical_casts/utilities_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge/lexical_casts/utilities_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_lexical_casts_utilities
         ],
         timeout: test_timeout_seconds,
         is_parallel: test_is_parallel,
@@ -593,6 +663,27 @@ if should_build_tests
         args: [
             test_wrapper,
             test_unit_forge_messages_message_buffer
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_unit_forge_messages_message = executable(
+        'test-unit-forge-messages-message',
+        'lib/forge/messages/message_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge/messages/message_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_messages_message
         ],
         timeout: test_timeout_seconds,
         is_parallel: test_is_parallel,
@@ -766,6 +857,27 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
+    test_unit_forge_testing_string_substitution = executable(
+        'test-unit-forge-testing-string-substitution',
+        'lib/forge-testing/string_substitution_test.c',
+        include_directories: include_directories,
+        link_with: [library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'lib/forge-testing/string_substitution_test.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_unit_forge_testing_string_substitution
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
     test_unit_forge_testing_compilation_test_auxiliary_ast = executable(
         'test-unit-forge-testing-compilation-test-axuiliary-ast',
         'lib/forge-testing/compilation_test/auxiliary/ast_test.c',
@@ -873,6 +985,27 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
+    test_integration_compilation_literals_float = executable(
+        'test-integration-compilation-literals-float',
+        'tests/compilation/literals_float.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/literals_float.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_literals_float
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
     test_integration_compilation_literals_bool = executable(
         'test-integration-compilation-literals-bool',
         'tests/compilation/literals_bool.c',
@@ -889,6 +1022,27 @@ if should_build_tests
         args: [
             test_wrapper,
             test_integration_compilation_literals_bool
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_function_return_type = executable(
+        'test-integration-compilation-function-return-type',
+        'tests/compilation/function_return_type.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/function_return_type.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_function_return_type
         ],
         timeout: test_timeout_seconds,
         is_parallel: test_is_parallel,

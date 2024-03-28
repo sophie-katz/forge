@@ -13,23 +13,11 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <forge/messages/query.h>
 
-#include <forge/lexical_casts/float.h>
-#include <forge/lexical_casts/uint.h>
-#include <forge/parsing/domain.h>
-
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_uint_result_t value;
-} frg_parsing_union_uint_t;
-
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_float_result_t value;
-} frg_parsing_union_float_t;
-
-typedef struct {
-  frg_parsing_range_t source_range;
-  GString* value;
-} frg_parsing_union_symbol_t;
+const frg_message_query_t frg_message_query_empty
+  = { .with_severity = FRG_MESSAGE_SEVERITY_DEBUG,
+      .with_code     = NULL,
+      .with_text     = NULL,
+      .on_line       = 0,
+      .from_path     = NULL };

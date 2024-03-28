@@ -15,21 +15,11 @@
 
 #pragma once
 
-#include <forge/lexical_casts/float.h>
-#include <forge/lexical_casts/uint.h>
-#include <forge/parsing/domain.h>
+#include <forge-testing/compilation_test/options.h>
+#include <forge-testing/compilation_test/phases/initialization.h>
+#include <forge-testing/compilation_test/phases/parsing.h>
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_uint_result_t value;
-} frg_parsing_union_uint_t;
-
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_float_result_t value;
-} frg_parsing_union_float_t;
-
-typedef struct {
-  frg_parsing_range_t source_range;
-  GString* value;
-} frg_parsing_union_symbol_t;
+GString* frg_testing_test_compilation_auxiliary_verification(
+  const frg_testing_compilation_test_options_t* options,
+  const frg_testing_compilation_test_context_initialized_t* context_initialized,
+  const frg_testing_compilation_test_context_parsed_t* context_parsed);

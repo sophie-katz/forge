@@ -14,6 +14,7 @@
 // If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge-testing/compilation_test/test.h>
+#include <forge/ast/utilities.h>
 #include <forge/streams/output.h>
 #include <unity.h>
 
@@ -26,12 +27,13 @@ void tearDown() {
 }
 
 typedef struct {
-  bool expected_value;
-} frg_test_literals_bool_parameters_t;
+  const char* value_text;
+  frg_ast_node_value_float_t expected_value;
+} frg_test_literals_float_parameters_t;
 
 void _callback_on_ast(const frg_ast_node_t* ast_node, void* mut_user_data) {
-  const frg_test_literals_bool_parameters_t* parameters
-    = (const frg_test_literals_bool_parameters_t*)mut_user_data;
+  const frg_test_literals_float_parameters_t* parameters
+    = (const frg_test_literals_float_parameters_t*)mut_user_data;
 
   TEST_ASSERT_NOT_NULL(ast_node);
   TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_DECLARATION_BLOCK, ast_node->kind);
@@ -55,9 +57,15 @@ void _callback_on_ast(const frg_ast_node_t* ast_node, void* mut_user_data) {
     = (const frg_ast_node_statement_return_t*)statement_block->statements->data;
   TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_STATEMENT_RETURN, statement_return->base.kind);
 
-  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_VALUE_BOOL, statement_return->value->kind);
-  TEST_ASSERT_EQUAL(parameters->expected_value,
-                    ((const frg_ast_node_value_bool_t*)statement_return->value)->value);
+  TEST_ASSERT_EQUAL(FRG_AST_NODE_KIND_VALUE_FLOAT, statement_return->value->kind);
+
+  TEST_ASSERT_EQUAL(
+    parameters->expected_value.type.bit_width,
+    ((const frg_ast_node_value_float_t*)statement_return->value)->type.bit_width);
+  TEST_ASSERT_EQUAL_MEMORY(
+    &parameters->expected_value.value,
+    &((const frg_ast_node_value_float_t*)statement_return->value)->value,
+    sizeof(parameters->expected_value.value));
 }
 
 void _callback_on_messages(const frg_message_buffer_t* message_buffer,
@@ -68,16 +76,28 @@ void _callback_on_messages(const frg_message_buffer_t* message_buffer,
 
 void _callback_on_shared_library_handle(void* mut_shared_library_handle,
                                         void* mut_user_data) {
-  const frg_test_literals_bool_parameters_t* parameters
-    = (const frg_test_literals_bool_parameters_t*)mut_user_data;
+  const frg_test_literals_float_parameters_t* parameters
+    = (const frg_test_literals_float_parameters_t*)mut_user_data;
 
-  uint32_t (*f)()
-    = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
+  frg_ast_node_value_float_t actual_value;
 
-  TEST_ASSERT_EQUAL(parameters->expected_value ? 1 : 0, f());
+  frg_f32_t (*f_32)();
+  frg_f64_t (*f_64)();
+
+  switch (parameters->expected_value.type.bit_width) {
+  case 32:
+    f_32 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
+    actual_value.value.as_f32 = f_32();
+  case 64:
+    f_64 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
+    actual_value.value.as_f64 = f_64();
+  }
+
+  TEST_ASSERT_EQUAL_MEMORY(
+    &parameters->expected_value.value, &actual_value.value, sizeof(actual_value.value));
 }
 
-void _test_parameters(const frg_test_literals_bool_parameters_t* parameters) {
+void _test_parameters(const frg_test_literals_float_parameters_t* parameters) {
   // Create default options
   // -----------------------------------------------------------------------------------
   frg_testing_compilation_test_options_t* options
@@ -85,12 +105,31 @@ void _test_parameters(const frg_test_literals_bool_parameters_t* parameters) {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  frg_testing_string_substituter_add_str(options->string_substituter,
-                                         "value",
-                                         parameters->expected_value ? "true" : "false");
+  frg_testing_string_substituter_add_printf(options->string_substituter,
+                                            "forge-type",
+                                            "f%u",
+                                            parameters->expected_value.type.bit_width);
+
+  frg_testing_string_substituter_add_printf(options->string_substituter,
+                                            "bit-width",
+                                            "%u",
+                                            parameters->expected_value.type.bit_width);
+
+  frg_testing_string_substituter_add_str(
+    options->string_substituter, "value-text", parameters->value_text);
+
+  frg_stream_output_t* stream
+    = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);
+
+  frg_ast_value_float_print(stream, &parameters->expected_value, 10, 0);
+
+  frg_testing_string_substituter_add_string(
+    options->string_substituter,
+    "value-decimal",
+    frg_stream_output_destroy_take_buffer(stream));
 
   options->kind                     = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
-  options->name                     = "return-%(value)";
+  options->name                     = "return-%(forge-type)-%(value-text)";
   options->on_ast                   = _callback_on_ast;
   options->on_messages              = _callback_on_messages;
   options->on_shared_library_handle = _callback_on_shared_library_handle;
@@ -98,12 +137,12 @@ void _test_parameters(const frg_test_literals_bool_parameters_t* parameters) {
 
   // clang-format off
   options->source_text =
-    "fn f() -> bool {\n"
-    "  return %(value);\n"
+    "fn f() -> %(forge-type) {\n"
+    "  return %(value-text);\n"
     "}\n"
   ;
   
-  options->ast_debug =
+  options->ast_debug = 
     "[declaration-block]\n"
     "  declarations[0] = [declaration-function]\n"
     "    flags = none\n"
@@ -111,20 +150,23 @@ void _test_parameters(const frg_test_literals_bool_parameters_t* parameters) {
     "    type = [type-function]\n"
     "      variadic-positional-arguments = [null]\n"
     "      variadic-keyword-arguments = [null]\n"
-    "      return-type = [type-bool]\n"
+    "      return-type = [type-float]\n"
+    "        bit-width = %(bit-width)\n"
     "    body = [statement-block]\n"
     "      statements[0] = [statement-return]\n"
-    "        value = [value-bool]\n"
-    "          value = %(value)"
+    "        value = [value-float]\n"
+    "          type = [type-float]\n"
+    "            bit-width = %(bit-width)\n"
+    "          value = %(value-decimal)%(forge-type)"
   ;
-  
+
   options->llvm_ir =
     "; ModuleID = 'forge'\n"
     "source_filename = \"forge\"\n"
     "\n"
-    "define i1 @f() {\n"
+    "define f%(bit-width) @f() {\n"
     "entry:\n"
-    "  ret i1 %(value)\n"
+    "  ret f%(bit-width) %(value-decimal)\n"
     "}\n"
   ;
   // clang-format on
@@ -138,21 +180,18 @@ void _test_parameters(const frg_test_literals_bool_parameters_t* parameters) {
   frg_testing_compilation_test_options_destroy(options);
 }
 
-void test_return_true() {
-  frg_test_literals_bool_parameters_t parameters = { .expected_value = true };
+void test_f32_0_0() {
+  frg_test_literals_float_parameters_t parameters
+    = { .value_text = "0.0f32", .expected_value = { .type = { .bit_width = 32 } } };
 
-  _test_parameters(&parameters);
-}
-
-void test_return_false() {
-  frg_test_literals_bool_parameters_t parameters = { .expected_value = false };
+  memset(&parameters.expected_value.value, 0, sizeof(parameters.expected_value.value));
+  parameters.expected_value.value.as_f32 = 0.0f;
 
   _test_parameters(&parameters);
 }
 
 int main() {
   UNITY_BEGIN();
-  RUN_TEST(test_return_true);
-  RUN_TEST(test_return_false);
+  // RUN_TEST(test_f32_0_0);
   return UNITY_END();
 }

@@ -43,11 +43,16 @@ GString* frg_testing_test_compilation_auxiliary_llvm_ir(
     GString* llvm_ir_actual
       = _frg_testing_test_compilation_auxiliary_llvm_ir_format(context_codegen);
 
+    GString* llvm_ir_expected = frg_testing_string_substituter_run(
+      options->string_substituter, options->llvm_ir);
+
     frg_testing_string_comparison_result_t* comparison_result_against_expected
       = frg_testing_compare_strings(
-        options->llvm_ir,
+        llvm_ir_expected->str,
         llvm_ir_actual->str,
         FRG_TESTING_STRING_COMPARISON_DEFAULT_CONTEXT_AFTER_FIRST_DIFFERENCE);
+
+    g_string_free(llvm_ir_expected, TRUE);
 
     bool result = true;
 

@@ -22,7 +22,7 @@ not, see <https://www.gnu.org/licenses/>.
 %{
 #include <forge/ast/node.h>
 #include <forge/types.h>
-#include <forge/lexical_casts.h>
+#include <forge/lexical_casts/uint.h>
 #include <forge/messages/message_buffer.h>
 #include <forge/parsing/unions.h>
 #include <stdio.h>

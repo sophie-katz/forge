@@ -24,7 +24,7 @@ typedef int32_t frg_indentation_t;
 typedef float frg_f32_t;
 typedef double frg_f64_t;
 typedef uint32_t frg_character_t;
-typedef uint32_t frg_int_base_t;
+typedef uint32_t frg_base_t;
 typedef uint32_t frg_bit_width_t;
 typedef uint32_t frg_requirement_number_t;
 typedef uint32_t frg_proposal_number_t;
@@ -33,7 +33,7 @@ typedef uint32_t frg_message_count_t;
 typedef int32_t frg_recursion_depth_t;
 typedef uint32_t frg_ast_node_count_t;
 
-bool frg_is_valid_base(frg_int_base_t base);
+bool frg_is_valid_base(frg_base_t base);
 
 bool frg_is_valid_bit_width_int(frg_bit_width_t bit_width);
 

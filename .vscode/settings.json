@@ -70,7 +70,10 @@
         "compile.h": "c",
         "type_operations.h": "c",
         "set": "c",
-        "utilities.h": "c"
+        "utilities.h": "c",
+        "initialization.h": "c",
+        "lexical_casts.h": "c",
+        "source_context.h": "c"
     },
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [

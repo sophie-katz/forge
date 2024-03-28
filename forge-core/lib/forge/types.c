@@ -15,7 +15,7 @@
 
 #include <forge/types.h>
 
-bool frg_is_valid_base(frg_int_base_t base) {
+bool frg_is_valid_base(frg_base_t base) {
   return base == 2 || base == 8 || base == 10 || base == 16;
 }
 

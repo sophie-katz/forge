@@ -26,7 +26,8 @@ void tearDown() {
 
 int callback_counter = 0;
 
-void callback(const frg_message_buffer_t* message_buffer) {
+void callback(const frg_message_buffer_t* message_buffer, void* mut_user_data) {
+  TEST_ASSERT_NULL(mut_user_data);
   TEST_ASSERT_NOT_NULL(message_buffer);
   callback_counter++;
 }

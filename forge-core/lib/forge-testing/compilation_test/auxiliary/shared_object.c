@@ -24,7 +24,8 @@ GString* frg_testing_test_compilation_auxiliary_shared_object(
   frg_assert_pointer_non_null(context_linked->shared_library_handle);
 
   if (options->on_shared_library_handle != NULL) {
-    options->on_shared_library_handle(context_linked->shared_library_handle);
+    options->on_shared_library_handle(context_linked->shared_library_handle,
+                                      options->mut_user_data);
   }
 
   return NULL;

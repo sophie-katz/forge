@@ -16,7 +16,8 @@
 #pragma once
 
 #include <forge/enums.h>
-#include <forge/lexical_casts.h>
+#include <forge/lexical_casts/float.h>
+#include <forge/lexical_casts/uint.h>
 #include <forge/parsing/domain.h>
 #include <forge/types.h>
 #include <glib.h>

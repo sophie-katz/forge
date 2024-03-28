@@ -393,3 +393,70 @@ void _frg_message_emit_child_from_source_range(frg_message_buffer_t* mut_message
 
   va_end(args);
 }
+
+size_t frg_message_buffer_query_count(const frg_message_buffer_t* message_buffer,
+                                      const frg_message_query_t* query) {
+  frg_assert_pointer_non_null(message_buffer);
+  frg_assert_pointer_non_null(query);
+
+  size_t count = 0;
+
+  for (GList* iter = message_buffer->_messages; iter != NULL; iter = iter->next) {
+    frg_message_t* message = (frg_message_t*)iter->data;
+
+    if (frg_message_matches_query(message, query)) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+frg_message_buffer_query_single_result_t frg_message_buffer_query_single(
+  frg_message_t** out_message,
+  const frg_message_buffer_t* message_buffer,
+  const frg_message_query_t* query) {
+  frg_assert_pointer_non_null(message_buffer);
+  frg_assert_pointer_non_null(query);
+
+  *out_message = NULL;
+
+  for (GList* iter = message_buffer->_messages; iter != NULL; iter = iter->next) {
+    frg_message_t* message = (frg_message_t*)iter->data;
+
+    if (frg_message_matches_query(message, query)) {
+      if (*out_message == NULL) {
+        *out_message = message;
+      } else {
+        // The order that messages appear in _messages is not guaranteed to be stable,
+        // so we just null it out to prevent unexpected behavior.
+        *out_message = NULL;
+        return FRG_MESSAGE_BUFFER_QUERY_RESULT_MULTIPLE;
+      }
+    }
+  }
+
+  if (*out_message == NULL) {
+    return FRG_MESSAGE_BUFFER_QUERY_RESULT_NONE;
+  } else {
+    return FRG_MESSAGE_BUFFER_QUERY_RESULT_SINGLE;
+  }
+}
+
+GList* frg_message_buffer_query(const frg_message_buffer_t* message_buffer,
+                                const frg_message_query_t* query) {
+  frg_assert_pointer_non_null(message_buffer);
+  frg_assert_pointer_non_null(query);
+
+  GList* results = NULL;
+
+  for (GList* iter = message_buffer->_messages; iter != NULL; iter = iter->next) {
+    frg_message_t* message = (frg_message_t*)iter->data;
+
+    if (frg_message_matches_query(message, query)) {
+      results = g_list_append(results, message);
+    }
+  }
+
+  return results;
+}

@@ -13,23 +13,25 @@
 // You should have received a copy of the GNU General Public License along with Forge.
 // If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <forge/lexical_casts/utilities.h>
+#include <unity.h>
 
-#include <forge/lexical_casts/float.h>
-#include <forge/lexical_casts/uint.h>
-#include <forge/parsing/domain.h>
+void setUp() {}
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_uint_result_t value;
-} frg_parsing_union_uint_t;
+void tearDown() {}
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  frg_parse_float_result_t value;
-} frg_parsing_union_float_t;
+void test_is_char_printable() {
+  TEST_ASSERT(frg_is_char_printable('a'));
+  TEST_ASSERT(frg_is_char_printable(' '));
+  TEST_ASSERT_FALSE(frg_is_char_printable('\t'));
+  TEST_ASSERT_FALSE(frg_is_char_printable('\033'));
+  TEST_ASSERT_FALSE(frg_is_char_printable(0));
+  TEST_ASSERT_FALSE(frg_is_char_printable(0x80));
+  TEST_ASSERT(frg_is_char_printable(0xa3));
+}
 
-typedef struct {
-  frg_parsing_range_t source_range;
-  GString* value;
-} frg_parsing_union_symbol_t;
+int main() {
+  UNITY_BEGIN();
+  RUN_TEST(test_is_char_printable);
+  return UNITY_END();
+}

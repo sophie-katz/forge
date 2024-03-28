@@ -382,13 +382,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_i8(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_i8              = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 8;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_i8            = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 8;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
 
   return node;
 }
@@ -399,13 +401,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_i16(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_i16             = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 16;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_i16           = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 16;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
 
   return node;
 }
@@ -416,13 +420,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_i32(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_i32             = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 32;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_i32           = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 32;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
 
   return node;
 }
@@ -433,13 +439,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_i64(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_i64             = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 64;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_i64           = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 64;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
 
   return node;
 }
@@ -450,13 +458,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_u8(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_u8              = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 8;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_u8            = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 8;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
 
   return node;
 }
@@ -467,13 +477,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_u16(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_u16             = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 16;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_u16           = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 16;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
 
   return node;
 }
@@ -484,13 +496,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_u32(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_u32             = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 32;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_u32           = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 32;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
 
   return node;
 }
@@ -501,13 +515,15 @@ frg_ast_node_value_int_t* frg_ast_node_value_int_new_u64(
 
   frg_ast_node_value_int_t* node = frg_malloc(sizeof(frg_ast_node_value_int_t));
 
-  node->base.kind                = FRG_AST_NODE_KIND_VALUE_INT;
-  node->base.source_range        = *source_range;
-  node->value.as_u64             = value;
-  node->type.base.kind           = FRG_AST_NODE_KIND_TYPE_INT;
-  node->type.base.source_range   = frg_global_parsing_range_null;
-  node->type.bit_width           = 64;
-  node->type.flags               = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
+  memset(&node->value, 0, sizeof(node->value));
+
+  node->base.kind              = FRG_AST_NODE_KIND_VALUE_INT;
+  node->base.source_range      = *source_range;
+  node->value.as_u64           = value;
+  node->type.base.kind         = FRG_AST_NODE_KIND_TYPE_INT;
+  node->type.base.source_range = frg_global_parsing_range_null;
+  node->type.bit_width         = 64;
+  node->type.flags             = FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED;
 
   return node;
 }

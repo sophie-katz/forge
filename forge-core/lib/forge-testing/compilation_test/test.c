@@ -17,6 +17,7 @@
 #include <forge-testing/compilation_test/auxiliary/ast.h>
 #include <forge-testing/compilation_test/auxiliary/llvm_ir.h>
 #include <forge-testing/compilation_test/auxiliary/shared_object.h>
+#include <forge-testing/compilation_test/auxiliary/verification.h>
 #include <forge-testing/compilation_test/phases/codegen.h>
 #include <forge-testing/compilation_test/phases/initialization.h>
 #include <forge-testing/compilation_test/phases/linking.h>
@@ -68,6 +69,29 @@ GString* _frg_testing_test_compilation_check_parsing_early_exit(
   }
 
   return NULL;
+}
+
+GString* _frg_testing_test_compilation_check_verification_early_exit(
+  const frg_testing_compilation_test_options_t* options,
+  const GString* verification_message) {
+  frg_assert_pointer_non_null(options);
+
+  if (options->kind == FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY) {
+    if (verification_message == NULL) {
+      return g_string_new("Verification succeeded unexpectedly");
+    } else {
+      return NULL;
+    }
+  } else {
+    if (verification_message == NULL) {
+      return NULL;
+    } else {
+      GString* message = g_string_new(NULL);
+      g_string_printf(
+        message, "Verification failed unexpectedly: %s", verification_message->str);
+      return message;
+    }
+  }
 }
 
 GString* _frg_testing_test_compilation_check_codegen_early_exit(
@@ -153,6 +177,23 @@ GString* frg_testing_test_compilation_take_message(
 
   // Run auxiliary tests: AST
   message = frg_testing_test_compilation_auxiliary_ast(options, context_parsed);
+  if (message != NULL) {
+    frg_testing_compilation_test_context_parsed_destroy(context_parsed);
+    frg_testing_compilation_test_context_initialized_destroy(context_initialized);
+    return message;
+  }
+
+  // Run auxiliary tests: verification
+  GString* verification_message = frg_testing_test_compilation_auxiliary_verification(
+    options, context_initialized, context_parsed);
+
+  // Early exit if verification failed positively or negatively
+  message = _frg_testing_test_compilation_check_verification_early_exit(
+    options, verification_message);
+  if (verification_message != NULL) {
+    g_string_free(verification_message, TRUE);
+  }
+
   if (message != NULL) {
     frg_testing_compilation_test_context_parsed_destroy(context_parsed);
     frg_testing_compilation_test_context_initialized_destroy(context_initialized);

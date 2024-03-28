@@ -65,8 +65,14 @@ GString* _frg_testing_test_initialization_phase_parse_format_source_path(
   frg_assert_pointer_non_null(options);
   frg_assert_string_non_empty(options->name);
 
+  GString* name
+    = frg_testing_string_substituter_run(options->string_substituter, options->name);
+
   GString* source_path = g_string_new(NULL);
-  g_string_printf(source_path, "test-compilation-%s.frg", options->name);
+  g_string_printf(source_path, "test-compilation-%s.frg", name->str);
+
+  g_string_free(name, TRUE);
+
   return source_path;
 }
 
@@ -75,18 +81,25 @@ frg_stream_input_t* _frg_testing_test_initialization_phase_parse_create_input_st
   frg_assert_pointer_non_null(options);
   frg_assert_pointer_non_null(options->source_text);
 
-  size_t length             = strlen(options->source_text);
+  // TODO: This is not that efficient
 
-  char* source_buffer       = frg_malloc(length + 2);
-  source_buffer[length]     = 0;
-  source_buffer[length + 1] = 0;
+  GString* source_text = frg_testing_string_substituter_run(options->string_substituter,
+                                                            options->source_text);
 
-  memcpy(source_buffer, options->source_text, length);
+  char* source_buffer  = frg_malloc(source_text->len + 2);
+  source_buffer[source_text->len]     = 0;
+  source_buffer[source_text->len + 1] = 0;
 
-  return frg_stream_input_new_buffer_with_length(
+  memcpy(source_buffer, source_text->str, source_text->len);
+
+  frg_stream_input_t* stream = frg_stream_input_new_buffer_with_length(
     source_buffer,
-    length + 2,
+    source_text->len + 2,
     FRG_STREAM_INPUT_FLAG_OWNED | FRG_STREAM_INPUT_FLAG_EXTRA_NULL_BYTE);
+
+  g_string_free(source_text, TRUE);
+
+  return stream;
 }
 
 frg_testing_compilation_test_context_initialized_t*
@@ -137,7 +150,7 @@ GString* frg_testing_test_compilation_phase_cleanup_initialization(
 
   // Run message callback if set
   if (options->on_messages != NULL) {
-    options->on_messages(context_initialized->message_buffer);
+    options->on_messages(context_initialized->message_buffer, options->mut_user_data);
   }
 
   // Cleanup memory

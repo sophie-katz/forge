@@ -48,3 +48,133 @@ const char* frg_ast_declaration_function_argument_name_get(const frg_ast_node_t*
                                                          ->property))
     ->name->str;
 }
+
+void frg_ast_value_int_print(frg_stream_output_t* mut_stream,
+                             const frg_ast_node_value_int_t* node,
+                             frg_base_t base,
+                             frg_column_number_t separate_every_n) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_base(base));
+  frg_assert_int_non_negative(separate_every_n);
+
+  if (node->type.flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) {
+    frg_ast_value_int_print_unsigned(mut_stream, node, base, separate_every_n);
+  } else {
+    frg_ast_value_int_print_signed(mut_stream, node, base, separate_every_n);
+  }
+}
+
+void frg_ast_value_int_print_type(frg_stream_output_t* mut_stream,
+                                  const frg_ast_node_value_int_t* node) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_bit_width_int(node->type.bit_width));
+
+  frg_print_uint_suffix(mut_stream,
+                        (node->type.flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) == 0,
+                        node->type.bit_width);
+}
+
+void frg_ast_value_int_print_unsigned(frg_stream_output_t* mut_stream,
+                                      const frg_ast_node_value_int_t* node,
+                                      frg_base_t base,
+                                      frg_column_number_t separate_every_n) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_base(base));
+  frg_assert_int_non_negative(separate_every_n);
+
+  switch (node->type.bit_width) {
+  case 8:
+    frg_print_uint(mut_stream, node->value.as_u8, base, separate_every_n);
+    break;
+  case 16:
+    frg_print_uint(mut_stream, node->value.as_u16, base, separate_every_n);
+    break;
+  case 32:
+    frg_print_uint(mut_stream, node->value.as_u32, base, separate_every_n);
+    break;
+  case 64:
+    frg_print_uint(mut_stream, node->value.as_u64, base, separate_every_n);
+    break;
+  default:
+    frg_die("Unsupported bit width: %u", node->type.bit_width);
+  }
+}
+
+void frg_ast_value_int_print_signed(frg_stream_output_t* mut_stream,
+                                    const frg_ast_node_value_int_t* node,
+                                    frg_base_t base,
+                                    frg_column_number_t separate_every_n) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_base(base));
+  frg_assert_int_non_negative(separate_every_n);
+
+  switch (node->type.bit_width) {
+  case 8:
+    if (node->value.as_i8 < 0) {
+      frg_stream_output_write_character(mut_stream, '-');
+      frg_print_uint(mut_stream, -node->value.as_i8, base, separate_every_n);
+    } else {
+      frg_print_uint(mut_stream, node->value.as_i8, base, separate_every_n);
+    }
+    break;
+  case 16:
+    if (node->value.as_i16 < 0) {
+      frg_stream_output_write_character(mut_stream, '-');
+      frg_print_uint(mut_stream, -node->value.as_i16, base, separate_every_n);
+    } else {
+      frg_print_uint(mut_stream, node->value.as_i16, base, separate_every_n);
+    }
+    break;
+  case 32:
+    if (node->value.as_i32 < 0) {
+      frg_stream_output_write_character(mut_stream, '-');
+      frg_print_uint(mut_stream, -node->value.as_i32, base, separate_every_n);
+    } else {
+      frg_print_uint(mut_stream, node->value.as_i32, base, separate_every_n);
+    }
+    break;
+  case 64:
+    if (node->value.as_i64 < 0) {
+      frg_stream_output_write_character(mut_stream, '-');
+      frg_print_uint(mut_stream, -node->value.as_i64, base, separate_every_n);
+    } else {
+      frg_print_uint(mut_stream, node->value.as_i64, base, separate_every_n);
+    }
+    break;
+  default:
+    frg_die("Unsupported bit width: %u", node->type.bit_width);
+  }
+}
+
+void frg_ast_value_float_print(frg_stream_output_t* mut_stream,
+                               const frg_ast_node_value_float_t* node,
+                               frg_base_t base,
+                               frg_column_number_t separate_every_n) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_base(base));
+  frg_assert_int_non_negative(separate_every_n);
+
+  switch (node->type.bit_width) {
+  case 32:
+    frg_print_float(mut_stream, node->value.as_f32, base, separate_every_n, false);
+    break;
+  case 64:
+    frg_print_float(mut_stream, node->value.as_f64, base, separate_every_n, false);
+    break;
+  default:
+    frg_die("Unsupported bit width: %u", node->type.bit_width);
+  }
+}
+
+void frg_ast_value_float_print_type(frg_stream_output_t* mut_stream,
+                                    const frg_ast_node_value_float_t* node) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+
+  frg_print_float_suffix(mut_stream, node->type.bit_width);
+}

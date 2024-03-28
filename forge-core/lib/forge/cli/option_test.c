@@ -264,8 +264,11 @@ void test_argument_long_without_value() {
 
   TEST_ASSERT_GREATER_THAN(0, message_buffer->error_count);
 
-  TEST_ASSERT(frg_message_buffer_has_message_with_text_equal_to(
-    message_buffer, "Argument '--long-argument <value>' must have a value passed"));
+  frg_message_query_t query = frg_message_query_empty;
+  query.with_severity       = FRG_MESSAGE_SEVERITY_FATAL_ERROR;
+  query.with_text = "Argument '--long-argument <value>' must have a value passed";
+
+  TEST_ASSERT_EQUAL(1, frg_message_buffer_query_count(message_buffer, &query));
 
   frg_cli_option_destroy(option);
   frg_message_buffer_destroy(message_buffer);
@@ -290,10 +293,14 @@ void test_argument_long_with_argument_instead_of_value() {
 
   TEST_ASSERT_GREATER_THAN(0, message_buffer->error_count);
 
-  TEST_ASSERT(frg_message_buffer_has_message_with_text_equal_to(
-    message_buffer,
-    "Argument '----long-argument <value>' expects to have a value passed, but '-a' is "
-    "an argument not a value"));
+  frg_message_query_t query = frg_message_query_empty;
+  query.with_severity       = FRG_MESSAGE_SEVERITY_FATAL_ERROR;
+  query.with_text
+    = "Argument '----long-argument <value>' expects to have a value passed, but '-a' "
+      "is "
+      "an argument not a value";
+
+  TEST_ASSERT_EQUAL(1, frg_message_buffer_query_count(message_buffer, &query));
 
   frg_cli_option_destroy(option);
   frg_message_buffer_destroy(message_buffer);

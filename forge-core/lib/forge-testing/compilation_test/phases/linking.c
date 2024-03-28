@@ -56,8 +56,11 @@ gchar* _frg_testing_test_compilation_phase_linking_format_path(
   gchar* current_dir = g_get_current_dir();
 
   // Build object path
-  GString* filename  = g_string_new(NULL);
-  g_string_printf(filename, "test-compilation-%s.%s", options->name, extension);
+  GString* name
+    = frg_testing_string_substituter_run(options->string_substituter, options->name);
+
+  GString* filename = g_string_new(NULL);
+  g_string_printf(filename, "test-compilation-%s.%s", name->str, extension);
 
   // Join path
   gchar* path = g_build_filename(current_dir, filename->str, NULL);
@@ -65,6 +68,7 @@ gchar* _frg_testing_test_compilation_phase_linking_format_path(
   // Free temporary strings
   g_string_free(filename, TRUE);
   g_free(current_dir);
+  g_string_free(name, TRUE);
 
   // Return path
   return path;

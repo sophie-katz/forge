@@ -51,6 +51,7 @@ const frg_parsing_location_t* frg_parsing_token_reader_get_current_location(
 char frg_parsing_token_reader_get_current_character(
   const frg_parsing_token_reader_t* reader) {
   frg_assert(reader != NULL);
+  frg_assert(reader->_current_character != NULL);
 
   return *reader->_current_character;
 }

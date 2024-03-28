@@ -26,7 +26,8 @@ void tearDown() {
 
 int callback_counter = 0;
 
-void callback(const frg_ast_node_t* ast_node) {
+void callback(const frg_ast_node_t* ast_node, void* mut_user_data) {
+  TEST_ASSERT_NULL(mut_user_data);
   TEST_ASSERT_NOT_NULL(ast_node);
   callback_counter++;
 }

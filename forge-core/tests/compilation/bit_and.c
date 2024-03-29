@@ -1869,6 +1869,8 @@ void _callback_on_messages_unsupported_type_both(
   frg_message_t* message_left  = (frg_message_t*)g_list_nth_data(messages, 0);
   frg_message_t* message_right = (frg_message_t*)g_list_nth_data(messages, 1);
 
+  g_list_free(messages);
+
   TEST_ASSERT_EQUAL(2, message_left->source_range.start.line_number);
   TEST_ASSERT_EQUAL(10, message_left->source_range.start.column_number);
   TEST_ASSERT_EQUAL(4, message_left->source_range.length);

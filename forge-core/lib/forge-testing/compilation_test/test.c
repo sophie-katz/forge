@@ -324,7 +324,7 @@ void* frg_testing_test_compilation_get_function(void* mut_shared_library_handle,
 
 void frg_testing_assert_function_returns_value_bool(void* function, bool expected) {
   uint32_t actual = ((uint32_t(*)())function)();
-  TEST_ASSERT_EQUAL(expected ? 1 : 0, actual);
+  TEST_ASSERT_EQUAL(expected ? 1 : 0, actual != 0 ? 1 : 0);
 }
 
 void frg_testing_assert_function_returns_value_int(

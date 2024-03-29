@@ -651,78 +651,57 @@ void frg_ast_debug_printer_value_int(frg_stream_output_t* mut_stream,
     &options_next);
 
   frg_debug_print_newline(mut_stream, options_next.indentation);
-  if ((((const frg_ast_node_value_int_t*)node)->type.flags
-       & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED)
-      == 0) {
-    switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
-    case 8:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%ii8",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_i8);
-      break;
-    case 16:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%ii16",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_i16);
-      break;
-    case 32:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%ii32",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_i32);
-      break;
-    case 64:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%lii64",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_i64);
-      break;
-    default:
-      frg_debug_print_property(
-        mut_stream,
-        "value",
-        "%li (defaulting to i64 since bit width %u is not supported)",
-        ((const frg_ast_node_value_int_t*)node)->value.as_i64,
-        ((const frg_ast_node_value_int_t*)node)->type.bit_width);
-      break;
-    }
-  } else {
-    switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
-    case 8:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%uu8",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_u8);
-      break;
-    case 16:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%uu16",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_u16);
-      break;
-    case 32:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%uu32",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_u32);
-      break;
-    case 64:
-      frg_debug_print_property(mut_stream,
-                               "value",
-                               "%luu64",
-                               ((const frg_ast_node_value_int_t*)node)->value.as_u64);
-      break;
-    default:
-      frg_debug_print_property(
-        mut_stream,
-        "value",
-        "%lu (defaulting to u64 since bit width %u is not supported)",
-        ((const frg_ast_node_value_int_t*)node)->value.as_u64,
-        ((const frg_ast_node_value_int_t*)node)->type.bit_width);
-      break;
-    }
+  switch (frg_get_case_for_type_int(&((const frg_ast_node_value_int_t*)node)->type)) {
+  case frg_get_case_for_int_attributes(true, 8):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%ii8",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_i8);
+    break;
+  case frg_get_case_for_int_attributes(true, 16):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%ii16",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_i16);
+    break;
+  case frg_get_case_for_int_attributes(true, 32):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%ii32",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_i32);
+    break;
+  case frg_get_case_for_int_attributes(true, 64):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%lii64",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_i64);
+    break;
+  case frg_get_case_for_int_attributes(false, 8):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%uu8",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_u8);
+    break;
+  case frg_get_case_for_int_attributes(false, 16):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%uu16",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_u16);
+    break;
+  case frg_get_case_for_int_attributes(false, 32):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%uu32",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_u32);
+    break;
+  case frg_get_case_for_int_attributes(false, 64):
+    frg_debug_print_property(mut_stream,
+                             "value",
+                             "%luu64",
+                             ((const frg_ast_node_value_int_t*)node)->value.as_u64);
+    break;
+  default:
+    frg_die("Unexpected bit width");
   }
 }
 

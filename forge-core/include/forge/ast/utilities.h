@@ -26,13 +26,13 @@ const char* frg_ast_declaration_name_get(const frg_ast_node_t* node);
 
 const char* frg_ast_declaration_function_argument_name_get(const frg_ast_node_t* node);
 
+void frg_ast_type_int_print(frg_stream_output_t* mut_stream,
+                            const frg_ast_node_type_int_t* node);
+
 void frg_ast_value_int_print(frg_stream_output_t* mut_stream,
                              const frg_ast_node_value_int_t* node,
                              frg_base_t base,
                              frg_column_number_t separate_every_n);
-
-void frg_ast_value_int_print_type(frg_stream_output_t* mut_stream,
-                                  const frg_ast_node_value_int_t* node);
 
 void frg_ast_value_int_print_signed(frg_stream_output_t* mut_stream,
                                     const frg_ast_node_value_int_t* node,
@@ -44,10 +44,13 @@ void frg_ast_value_int_print_unsigned(frg_stream_output_t* mut_stream,
                                       frg_base_t base,
                                       frg_column_number_t separate_every_n);
 
+void frg_ast_type_float_print(frg_stream_output_t* mut_stream,
+                              const frg_ast_node_type_float_t* node);
+
 void frg_ast_value_float_print(frg_stream_output_t* mut_stream,
                                const frg_ast_node_value_float_t* node,
                                frg_base_t base,
                                frg_column_number_t separate_every_n);
 
-void frg_ast_value_int_print_type(frg_stream_output_t* mut_stream,
-                                  const frg_ast_node_value_int_t* node);
+frg_int_attributes_case_t frg_get_case_for_type_int(
+  const frg_ast_node_type_int_t* type);

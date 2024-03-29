@@ -25,3 +25,11 @@ void frg_testing_test_compilation(
 
 void* frg_testing_test_compilation_get_function(void* mut_shared_library_handle,
                                                 const char* name);
+
+void frg_testing_assert_function_returns_value_bool(void* function, bool expected);
+
+void frg_testing_assert_function_returns_value_int(
+  void* function, const frg_ast_node_value_int_t* expected);
+
+void frg_testing_assert_function_returns_value_float(
+  void* function, const frg_ast_node_value_float_t* expected);

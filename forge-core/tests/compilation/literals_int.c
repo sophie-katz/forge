@@ -82,29 +82,9 @@ void _callback_on_shared_library_handle(void* mut_shared_library_handle,
   const frg_test_literals_int_parameters_t* parameters
     = (const frg_test_literals_int_parameters_t*)mut_user_data;
 
-  frg_ast_node_value_int_t actual_value;
-
-  memset(&actual_value.value, 0, sizeof(actual_value.value));
-
-  uint8_t (*f_8)();
-  uint16_t (*f_16)();
-  uint32_t (*f_32)();
-  uint64_t (*f_64)();
-
-  switch (parameters->expected_value.type.bit_width) {
-  case 8:
-    f_8 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u8, f_8());
-  case 16:
-    f_16 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u16, f_16());
-  case 32:
-    f_32 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u32, f_32());
-  case 64:
-    f_64 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    TEST_ASSERT_EQUAL(parameters->expected_value.value.as_u64, f_64());
-  }
+  frg_testing_assert_function_returns_value_int(
+    frg_testing_test_compilation_get_function(mut_shared_library_handle, "f"),
+    &parameters->expected_value);
 }
 
 void _test_parameters(const frg_test_literals_int_parameters_t* parameters) {
@@ -115,60 +95,11 @@ void _test_parameters(const frg_test_literals_int_parameters_t* parameters) {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  frg_testing_string_substituter_add_printf(
-    options->string_substituter,
-    "forge-type",
-    "%c%u",
-    parameters->expected_value.type.flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED ? 'u'
-                                                                                : 'i',
-    parameters->expected_value.type.bit_width);
-
-  frg_testing_string_substituter_add_printf(options->string_substituter,
-                                            "bit-width",
-                                            "%u",
-                                            parameters->expected_value.type.bit_width);
-
-  frg_testing_string_substituter_add_printf(options->string_substituter,
-                                            "flags",
-                                            "%s",
-                                            parameters->expected_value.type.flags
-                                                & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED
-                                              ? "unsigned"
-                                              : "none");
-
-  frg_testing_string_substituter_add_str(
-    options->string_substituter, "value-text", parameters->value_text);
-
-  frg_stream_output_t* stream
-    = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);
-
-  frg_ast_value_int_print_unsigned(stream, &parameters->expected_value, 10, 0);
-
-  frg_testing_string_substituter_add_string(
-    options->string_substituter,
-    "value-decimal-unsigned",
-    frg_stream_output_destroy_take_buffer(stream));
-
-  stream = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);
-
-  frg_ast_value_int_print_signed(stream, &parameters->expected_value, 10, 0);
-
-  frg_testing_string_substituter_add_string(
-    options->string_substituter,
-    "value-decimal-signed",
-    frg_stream_output_destroy_take_buffer(stream));
-
-  stream = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);
-
-  frg_ast_value_int_print(stream, &parameters->expected_value, 10, 0);
-
-  frg_testing_string_substituter_add_string(
-    options->string_substituter,
-    "value-decimal",
-    frg_stream_output_destroy_take_buffer(stream));
+  frg_testing_compilation_test_options_string_substituter_add_value_int(
+    options, "value", parameters->value_text, &parameters->expected_value);
 
   options->kind                     = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
-  options->name                     = "return-%(forge-type)-%(value-text)";
+  options->name                     = "return-%(value-type-keyword)-%(value-text)";
   options->on_ast                   = _callback_on_ast;
   options->on_messages              = _callback_on_messages;
   options->on_shared_library_handle = _callback_on_shared_library_handle;
@@ -176,7 +107,7 @@ void _test_parameters(const frg_test_literals_int_parameters_t* parameters) {
 
   // clang-format off
   options->source_text =
-    "fn f() -> %(forge-type) {\n"
+    "fn f() -> %(value-type-keyword) {\n"
     "  return %(value-text);\n"
     "}\n"
   ;
@@ -190,24 +121,24 @@ void _test_parameters(const frg_test_literals_int_parameters_t* parameters) {
     "      variadic-positional-arguments = [null]\n"
     "      variadic-keyword-arguments = [null]\n"
     "      return-type = [type-int]\n"
-    "        flags = %(flags)\n"
-    "        bit-width = %(bit-width)\n"
+    "        flags = %(value-type-flags)\n"
+    "        bit-width = %(value-type-bit-width)\n"
     "    body = [statement-block]\n"
     "      statements[0] = [statement-return]\n"
     "        value = [value-int]\n"
     "          type = [type-int]\n"
-    "            flags = %(flags)\n"
-    "            bit-width = %(bit-width)\n"
-    "          value = %(value-decimal)%(forge-type)"
+    "            flags = %(value-type-flags)\n"
+    "            bit-width = %(value-type-bit-width)\n"
+    "          value = %(value)%(value-type-keyword)"
   ;
 
   options->llvm_ir =
     "; ModuleID = 'forge'\n"
     "source_filename = \"forge\"\n"
     "\n"
-    "define i%(bit-width) @f() {\n"
+    "define i%(value-type-bit-width) @f() {\n"
     "entry:\n"
-    "  ret i%(bit-width) %(value-decimal-signed)\n"
+    "  ret i%(value-type-bit-width) %(value-signed)\n"
     "}\n"
   ;
   // clang-format on

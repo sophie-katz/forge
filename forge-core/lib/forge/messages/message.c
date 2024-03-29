@@ -325,7 +325,7 @@ _frg_message_print_sample_line_result_t _frg_message_print_sample_line(
     = { .characters_before = 0, .characters_within = 0 };
 
   while (**text_iterator != 0 && (**text_iterator != '\n' && **text_iterator != '\r')) {
-    if (*text_offset >= sample_start && *text_offset <= sample_start + sample_length) {
+    if (*text_offset >= sample_start && *text_offset < sample_start + sample_length) {
       frg_stream_output_set_color(mut_stream, color);
       frg_stream_output_write_character(mut_stream, **text_iterator);
       frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);

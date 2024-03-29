@@ -21,6 +21,7 @@
 extern "C" {
 #include <forge/assert.h>
 #include <forge/ast/node_kind_info.h>
+#include <forge/ast/utilities.h>
 
 llvm::Type* _frg_codegen_generate_type(llvm::LLVMContext& ctx,
                                        frg_ast_scope_t* mut_scope,
@@ -151,7 +152,7 @@ void _frg_codegen_generate_statement(llvm::IRBuilder<>& builder,
     switch (node->kind) {
     case FRG_AST_NODE_KIND_STATEMENT_RETURN:
       value = _frg_codegen_generate_value(
-        ctx, mut_scope, ((const frg_ast_node_statement_return_t*)node)->value);
+        builder, ctx, mut_scope, ((const frg_ast_node_statement_return_t*)node)->value);
 
       builder.CreateRet(value);
 
@@ -162,7 +163,7 @@ void _frg_codegen_generate_statement(llvm::IRBuilder<>& builder,
   } else if ((frg_ast_node_kind_info_get(node->kind)->flags
               & FRG_AST_NODE_KIND_FLAG_VALUE)
              != 0) {
-    value = _frg_codegen_generate_value(ctx, mut_scope, node);
+    value = _frg_codegen_generate_value(builder, ctx, mut_scope, node);
 
     builder.Insert(value);
   } else {
@@ -170,7 +171,8 @@ void _frg_codegen_generate_statement(llvm::IRBuilder<>& builder,
   }
 }
 
-llvm::Value* _frg_codegen_generate_value(llvm::LLVMContext& ctx,
+llvm::Value* _frg_codegen_generate_value(llvm::IRBuilder<>& builder,
+                                         llvm::LLVMContext& ctx,
                                          frg_ast_scope_t* mut_scope,
                                          const frg_ast_node_t* node) {
   frg_assert_pointer_non_null(mut_scope);
@@ -184,69 +186,53 @@ llvm::Value* _frg_codegen_generate_value(llvm::LLVMContext& ctx,
       return llvm::ConstantInt::getFalse(ctx);
     }
   case FRG_AST_NODE_KIND_VALUE_INT:
-    if ((((const frg_ast_node_value_int_t*)node)->type.flags
-         & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED)
-        != 0) {
-      switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
-      case 8:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt8Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_u8,
-          false);
-        break;
-      case 16:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt16Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_u16,
-          false);
-        break;
-      case 32:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt32Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_u32,
-          false);
-        break;
-      case 64:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt64Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_u64,
-          false);
-        break;
-      default:
-        frg_die("Unsupported unsigned integer bit width %u",
-                ((const frg_ast_node_value_int_t*)node)->type.bit_width);
-      }
-    } else {
-      switch (((const frg_ast_node_value_int_t*)node)->type.bit_width) {
-      case 8:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt8Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_i8,
-          false);
-        break;
-      case 16:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt16Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_i16,
-          false);
-        break;
-      case 32:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt32Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_i32,
-          false);
-        break;
-      case 64:
-        return llvm::ConstantInt::get(
-          llvm::Type::getInt64Ty(ctx),
-          ((const frg_ast_node_value_int_t*)node)->value.as_i64,
-          false);
-        break;
-      default:
-        frg_die("Unsupported unsigned integer bit width %u",
-                ((const frg_ast_node_value_int_t*)node)->type.bit_width);
-      }
+    switch (frg_get_case_for_type_int(&((const frg_ast_node_value_int_t*)node)->type)) {
+    case frg_get_case_for_int_attributes(true, 8):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt8Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_i8,
+        false);
+    case frg_get_case_for_int_attributes(true, 16):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt16Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_i16,
+        false);
+    case frg_get_case_for_int_attributes(true, 32):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt32Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_i32,
+        false);
+    case frg_get_case_for_int_attributes(true, 64):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt64Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_i64,
+        false);
+    case frg_get_case_for_int_attributes(false, 8):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt8Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_u8,
+        false);
+    case frg_get_case_for_int_attributes(false, 16):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt16Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_u16,
+        false);
+    case frg_get_case_for_int_attributes(false, 32):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt32Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_u32,
+        false);
+    case frg_get_case_for_int_attributes(false, 64):
+      return llvm::ConstantInt::get(
+        llvm::Type::getInt64Ty(ctx),
+        ((const frg_ast_node_value_int_t*)node)->value.as_u64,
+        false);
+    default:
+      frg_die("Unexpected bit width");
     }
+  case FRG_AST_NODE_KIND_VALUE_BIT_NOT:
+    return builder.CreateNot(_frg_codegen_generate_value(
+      builder, ctx, mut_scope, ((const frg_ast_node_value_unary_t*)node)->operand));
   default:
     frg_die_ast_kind_not_yet_supported(node->kind);
   }

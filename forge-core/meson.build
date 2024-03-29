@@ -1070,6 +1070,27 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
+    test_integration_compilation_bit_not = executable(
+        'test-integration-compilation-bit-not',
+        'tests/compilation/bit_not.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/bit_not.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_bit_not
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
     test_integration_nodes = executable(
         'test-integration-nodes',
         'tests/nodes.c',

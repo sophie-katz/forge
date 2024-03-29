@@ -79,24 +79,9 @@ void _callback_on_shared_library_handle(void* mut_shared_library_handle,
   const frg_test_literals_float_parameters_t* parameters
     = (const frg_test_literals_float_parameters_t*)mut_user_data;
 
-  frg_ast_node_value_float_t actual_value;
-
-  memset(&actual_value.value, 0, sizeof(actual_value.value));
-
-  frg_f32_t (*f_32)();
-  frg_f64_t (*f_64)();
-
-  switch (parameters->expected_value.type.bit_width) {
-  case 32:
-    f_32 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    actual_value.value.as_f32 = f_32();
-  case 64:
-    f_64 = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-    actual_value.value.as_f64 = f_64();
-  }
-
-  TEST_ASSERT_EQUAL_MEMORY(
-    &parameters->expected_value.value, &actual_value.value, sizeof(actual_value.value));
+  frg_testing_assert_function_returns_value_float(
+    frg_testing_test_compilation_get_function(mut_shared_library_handle, "f"),
+    &parameters->expected_value);
 }
 
 void _test_parameters(const frg_test_literals_float_parameters_t* parameters) {

@@ -32,9 +32,18 @@ typedef uint32_t frg_subitem_number_t;
 typedef uint32_t frg_message_count_t;
 typedef int32_t frg_recursion_depth_t;
 typedef uint32_t frg_ast_node_count_t;
+typedef int32_t frg_int_attributes_case_t;
 
 bool frg_is_valid_base(frg_base_t base);
 
 bool frg_is_valid_bit_width_int(frg_bit_width_t bit_width);
 
 bool frg_is_valid_bit_width_float(frg_bit_width_t bit_width);
+
+frg_int_attributes_case_t frg_get_case_for_int_attributes(bool is_signed,
+                                                          frg_bit_width_t bit_width);
+
+#define frg_get_case_for_int_attributes(is_signed, bit_width)                          \
+  ((frg_int_attributes_case_t)((is_signed)                                             \
+                                 ? -((frg_int_attributes_case_t)(bit_width))           \
+                                 : ((frg_int_attributes_case_t)(bit_width))))

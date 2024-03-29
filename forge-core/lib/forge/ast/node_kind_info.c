@@ -569,7 +569,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT]._type_resolver
-    = frg_verification_type_resolver_value_unary_ident;
+    = frg_verification_type_resolver_value_unary_ident_int_only;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND].name = "value-bit-and";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND].flags
@@ -663,7 +663,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._type_resolver
-    = frg_verification_type_resolver_value_unary_ident;
+    = frg_verification_type_resolver_value_unary_ident_numeric_only;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].name = "value-add";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].flags
@@ -1065,7 +1065,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT]._type_resolver
-    = frg_verification_type_resolver_value_unary_ident;
+    = frg_verification_type_resolver_value_unary_ident_numeric_only;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN].name
     = "value-subtract-assign";
@@ -1098,7 +1098,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT]._type_resolver
-    = frg_verification_type_resolver_value_unary_ident;
+    = frg_verification_type_resolver_value_unary_ident_numeric_only;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN].name
     = "value-multiply-assign";

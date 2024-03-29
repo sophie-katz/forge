@@ -26,6 +26,7 @@
 #include <forge-testing/compilation_test/utilities.h>
 #include <forge/assert.h>
 #include <forge/ast/print_debug.h>
+#include <forge/ast/utilities.h>
 #include <unity.h>
 
 GString* _frg_testing_test_compilation_check_initialization_early_exit(
@@ -319,4 +320,55 @@ void* frg_testing_test_compilation_get_function(void* mut_shared_library_handle,
   }
 
   return symbol;
+}
+
+void frg_testing_assert_function_returns_value_bool(void* function, bool expected) {
+  uint32_t actual = ((uint32_t(*)())function)();
+  TEST_ASSERT_EQUAL(expected ? 1 : 0, actual);
+}
+
+void frg_testing_assert_function_returns_value_int(
+  void* function, const frg_ast_node_value_int_t* expected) {
+  switch (frg_get_case_for_type_int(&expected->type)) {
+  case frg_get_case_for_int_attributes(true, 8):
+    TEST_ASSERT_EQUAL(expected->value.as_i8, ((int8_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(true, 16):
+    TEST_ASSERT_EQUAL(expected->value.as_i16, ((int16_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(true, 32):
+    TEST_ASSERT_EQUAL(expected->value.as_i32, ((int32_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(true, 64):
+    TEST_ASSERT_EQUAL(expected->value.as_i64, ((int64_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(false, 8):
+    TEST_ASSERT_EQUAL(expected->value.as_u8, ((uint8_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(false, 16):
+    TEST_ASSERT_EQUAL(expected->value.as_u16, ((uint16_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(false, 32):
+    TEST_ASSERT_EQUAL(expected->value.as_u32, ((uint32_t(*)())function)());
+    break;
+  case frg_get_case_for_int_attributes(false, 64):
+    TEST_ASSERT_EQUAL(expected->value.as_u64, ((uint64_t(*)())function)());
+    break;
+  default:
+    frg_die("Unexpected bit width");
+  }
+}
+
+void frg_testing_assert_function_returns_value_float(
+  void* function, const frg_ast_node_value_float_t* expected) {
+  switch (expected->type.bit_width) {
+  case 32:
+    TEST_ASSERT_EQUAL(expected->value.as_f32, ((frg_f32_t(*)())function)());
+    break;
+  case 64:
+    TEST_ASSERT_EQUAL(expected->value.as_f64, ((frg_f64_t(*)())function)());
+    break;
+  default:
+    frg_die("Unexpected bit width");
+  }
 }

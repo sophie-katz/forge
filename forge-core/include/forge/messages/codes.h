@@ -913,3 +913,31 @@
     g_string_free(__frg_et_5_buffer_expected, TRUE);                                   \
     g_string_free(__frg_et_5_buffer_actual, TRUE);                                     \
   }
+
+#define frg_emit_message_et_6_operator_unexpected_operand_type(message_buffer,         \
+                                                               source_range,           \
+                                                               operator_name,          \
+                                                               operand_name,           \
+                                                               expected_type_name,     \
+                                                               operand_type)           \
+  {                                                                                    \
+    frg_stream_output_t* __frg_et_6_stream                                             \
+      = frg_stream_output_new_buffer(FRG_STREAM_OUTPUT_FLAG_NONE);                     \
+                                                                                       \
+    frg_formatting_print_formatted(__frg_et_6_stream, (operand_type), 0);              \
+                                                                                       \
+    GString* __frg_et_6_buffer                                                         \
+      = frg_stream_output_destroy_take_buffer(__frg_et_6_stream);                      \
+                                                                                       \
+    frg_message_emit_from_source_range((message_buffer),                               \
+                                       (source_range),                                 \
+                                       FRG_MESSAGE_SEVERITY_ERROR,                     \
+                                       "ET-6",                                         \
+                                       "Operator %s's %s must be %s, but is '%s'",     \
+                                       (operator_name),                                \
+                                       (operand_name),                                 \
+                                       (expected_type_name),                           \
+                                       __frg_et_6_buffer->str);                        \
+                                                                                       \
+    g_string_free(__frg_et_6_buffer, TRUE);                                            \
+  }

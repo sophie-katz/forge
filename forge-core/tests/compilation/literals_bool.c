@@ -71,10 +71,9 @@ void _callback_on_shared_library_handle(void* mut_shared_library_handle,
   const frg_test_literals_bool_parameters_t* parameters
     = (const frg_test_literals_bool_parameters_t*)mut_user_data;
 
-  uint32_t (*f)()
-    = frg_testing_test_compilation_get_function(mut_shared_library_handle, "f");
-
-  TEST_ASSERT_EQUAL(parameters->expected_value ? 1 : 0, f());
+  frg_testing_assert_function_returns_value_bool(
+    frg_testing_test_compilation_get_function(mut_shared_library_handle, "f"),
+    parameters->expected_value);
 }
 
 void _test_parameters(const frg_test_literals_bool_parameters_t* parameters) {

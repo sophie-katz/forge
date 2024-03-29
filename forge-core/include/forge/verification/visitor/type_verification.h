@@ -17,7 +17,11 @@
 
 #include <forge/ast/visitor.h>
 
-frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_type_symbol(
+frg_ast_visitor_status_t
+  frg_verification_type_verification_handle_enter_statement_return(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
+
+frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_bit_not(
   frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents);
 
 void frg_verification_type_verification_add_handlers(frg_ast_visitor_t* mut_visitor);

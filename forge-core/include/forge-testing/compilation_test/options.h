@@ -41,6 +41,7 @@ typedef struct {
     on_shared_library_handle;
   void* mut_user_data;
   frg_testing_string_substituter_t* string_substituter;
+  GList* _string_substituter_keys;
 } frg_testing_compilation_test_options_t;
 
 frg_testing_compilation_test_options_t*
@@ -51,3 +52,25 @@ void frg_testing_compilation_test_options_destroy(
 
 void frg_testing_compilation_test_options_validate(
   const frg_testing_compilation_test_options_t* options);
+
+void frg_testing_compilation_test_options_string_substituter_add_type_int(
+  frg_testing_compilation_test_options_t* mut_options,
+  const char* basename,
+  const frg_ast_node_type_int_t* type);
+
+void frg_testing_compilation_test_options_string_substituter_add_value_int(
+  frg_testing_compilation_test_options_t* mut_options,
+  const char* basename,
+  const char* text,
+  const frg_ast_node_value_int_t* type);
+
+void frg_testing_compilation_test_options_string_substituter_add_type_float(
+  frg_testing_compilation_test_options_t* mut_options,
+  const char* basename,
+  const frg_ast_node_type_float_t* type);
+
+void frg_testing_compilation_test_options_string_substituter_add_value_float(
+  frg_testing_compilation_test_options_t* mut_options,
+  const char* basename,
+  const char* text,
+  const frg_ast_node_value_float_t* type);

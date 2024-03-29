@@ -38,7 +38,8 @@ void _frg_codegen_generate_statement(llvm::IRBuilder<>& builder,
                                      frg_ast_scope_t* mut_scope,
                                      const frg_ast_node_t* node);
 
-llvm::Value* _frg_codegen_generate_value(llvm::LLVMContext& ctx,
+llvm::Value* _frg_codegen_generate_value(llvm::IRBuilder<>& builder,
+                                         llvm::LLVMContext& ctx,
                                          frg_ast_scope_t* mut_scope,
                                          const frg_ast_node_t* node);
 }

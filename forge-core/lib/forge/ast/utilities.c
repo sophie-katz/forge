@@ -73,6 +73,17 @@ const char* frg_ast_declaration_function_argument_name_get(const frg_ast_node_t*
     ->name->str;
 }
 
+void frg_ast_type_int_print(frg_stream_output_t* mut_stream,
+                            const frg_ast_node_type_int_t* node) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_bit_width_int(node->bit_width));
+
+  frg_print_uint_suffix(mut_stream,
+                        (node->flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) == 0,
+                        node->bit_width);
+}
+
 void frg_ast_value_int_print(frg_stream_output_t* mut_stream,
                              const frg_ast_node_value_int_t* node,
                              frg_base_t base,
@@ -87,17 +98,6 @@ void frg_ast_value_int_print(frg_stream_output_t* mut_stream,
   } else {
     frg_ast_value_int_print_signed(mut_stream, node, base, separate_every_n);
   }
-}
-
-void frg_ast_value_int_print_type(frg_stream_output_t* mut_stream,
-                                  const frg_ast_node_value_int_t* node) {
-  frg_assert_pointer_non_null(mut_stream);
-  frg_assert_pointer_non_null(node);
-  frg_assert(frg_is_valid_bit_width_int(node->type.bit_width));
-
-  frg_print_uint_suffix(mut_stream,
-                        (node->type.flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) == 0,
-                        node->type.bit_width);
 }
 
 void frg_ast_value_int_print_unsigned(frg_stream_output_t* mut_stream,
@@ -174,6 +174,15 @@ void frg_ast_value_int_print_signed(frg_stream_output_t* mut_stream,
   }
 }
 
+void frg_ast_type_float_print(frg_stream_output_t* mut_stream,
+                              const frg_ast_node_type_float_t* node) {
+  frg_assert_pointer_non_null(mut_stream);
+  frg_assert_pointer_non_null(node);
+  frg_assert(frg_is_valid_bit_width_float(node->bit_width));
+
+  frg_print_float_suffix(mut_stream, node->bit_width);
+}
+
 void frg_ast_value_float_print(frg_stream_output_t* mut_stream,
                                const frg_ast_node_value_float_t* node,
                                frg_base_t base,
@@ -195,10 +204,10 @@ void frg_ast_value_float_print(frg_stream_output_t* mut_stream,
   }
 }
 
-void frg_ast_value_float_print_type(frg_stream_output_t* mut_stream,
-                                    const frg_ast_node_value_float_t* node) {
-  frg_assert_pointer_non_null(mut_stream);
-  frg_assert_pointer_non_null(node);
+frg_int_attributes_case_t frg_get_case_for_type_int(
+  const frg_ast_node_type_int_t* type) {
+  frg_assert_pointer_non_null(type);
 
-  frg_print_float_suffix(mut_stream, node->type.bit_width);
+  return frg_get_case_for_int_attributes(
+    (type->flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) == 0, type->bit_width);
 }

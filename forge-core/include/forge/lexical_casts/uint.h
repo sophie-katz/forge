@@ -30,6 +30,7 @@ void frg_print_uint(frg_stream_output_t* mut_stream,
                     frg_base_t base,
                     frg_column_number_t separate_every_n);
 
+// TODO: Move and rename this
 void frg_print_uint_suffix(frg_stream_output_t* mut_stream,
                            bool is_signed,
                            frg_bit_width_t bit_width);

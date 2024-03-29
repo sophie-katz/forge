@@ -1233,7 +1233,8 @@ const frg_ast_node_kind_info_t* frg_ast_node_kind_info_get(frg_ast_node_kind_t k
     _frg_ast_node_kind_info_table_init();
   }
 
-  frg_assert(kind >= 0 && kind < FRG_AST_NODE_KIND_COUNT);
+  frg_assert_int_non_negative(kind);
+  frg_assert_int_less_than(kind, FRG_AST_NODE_KIND_COUNT);
 
   return &_frg_ast_node_kind_info_table[kind];
 }

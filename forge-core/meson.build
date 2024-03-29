@@ -1091,6 +1091,69 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
+    test_integration_compilation_bit_and = executable(
+        'test-integration-compilation-bit-and',
+        'tests/compilation/bit_and.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/bit_and.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_bit_and
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_bit_or = executable(
+        'test-integration-compilation-bit-or',
+        'tests/compilation/bit_or.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/bit_or.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_bit_or
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_bit_xor = executable(
+        'test-integration-compilation-bit-xor',
+        'tests/compilation/bit_xor.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/bit_xor.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_bit_xor
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
     test_integration_nodes = executable(
         'test-integration-nodes',
         'tests/nodes.c',

@@ -81,7 +81,7 @@
       }                                                                                \
     }
 
-  #define frg_assert_int_less_than_or_equal_toss_than(lhs, rhs)                        \
+  #define frg_assert_int_less_than(lhs, rhs)                                           \
     {                                                                                  \
       if (!((lhs) < (rhs))) {                                                          \
         frg_die(                                                                       \

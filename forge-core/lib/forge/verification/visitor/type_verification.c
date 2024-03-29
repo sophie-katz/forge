@@ -68,10 +68,6 @@ frg_ast_visitor_status_t
                                                  &statement_return->value->source_range,
                                                  expected,
                                                  actual);
-
-    frg_ast_node_destroy(actual);
-
-    return FRG_AST_VISITOR_STATUS_OK;
   }
 
   frg_ast_node_destroy(actual);
@@ -95,7 +91,7 @@ frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_b
     verifier->mut_message_buffer, verifier->mut_scope, value_unary->operand);
 
   if (resolved == NULL) {
-    return FRG_AST_VISITOR_STATUS_SKIP;
+    return FRG_AST_VISITOR_STATUS_OK;
   }
 
   if (resolved->kind != FRG_AST_NODE_KIND_TYPE_INT) {
@@ -106,13 +102,81 @@ frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_b
       "operand",
       "int",
       resolved);
-
-    frg_ast_node_destroy(resolved);
-
-    return FRG_AST_VISITOR_STATUS_SKIP;
   }
 
   frg_ast_node_destroy(resolved);
+
+  return FRG_AST_VISITOR_STATUS_OK;
+}
+
+frg_ast_visitor_status_t
+  frg_verification_type_verification_handle_enter_value_bit_binary(
+    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
+  frg_assert_pointer_non_null(mut_node);
+  frg_assert_pointer_non_null(*mut_node);
+  frg_assert((*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_AND
+             || (*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_OR
+             || (*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_XOR);
+  frg_assert_pointer_non_null(mut_user_data);
+
+  frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
+
+  const frg_ast_node_value_binary_t* value_binary
+    = (const frg_ast_node_value_binary_t*)(*mut_node);
+
+  const char* operator_name;
+
+  switch (value_binary->base.kind) {
+  case FRG_AST_NODE_KIND_VALUE_BIT_AND:
+    operator_name = "&";
+    break;
+  case FRG_AST_NODE_KIND_VALUE_BIT_OR:
+
+    operator_name = "|";
+    break;
+  case FRG_AST_NODE_KIND_VALUE_BIT_XOR:
+    operator_name = "^";
+    break;
+  default:
+    frg_die_unexpected_enum_value(value_binary->base.kind);
+  }
+
+  frg_ast_node_t* type_left = frg_verification_resolve_type(
+    verifier->mut_message_buffer, verifier->mut_scope, value_binary->left);
+
+  if (type_left == NULL) {
+    return FRG_AST_VISITOR_STATUS_OK;
+  }
+
+  if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT) {
+    frg_emit_message_et_6_operator_unexpected_operand_type(
+      verifier->mut_message_buffer,
+      &value_binary->left->source_range,
+      operator_name,
+      "left-hand side",
+      "integer",
+      type_left);
+  }
+
+  frg_ast_node_t* type_right = frg_verification_resolve_type(
+    verifier->mut_message_buffer, verifier->mut_scope, value_binary->right);
+
+  if (type_right == NULL) {
+    return FRG_AST_VISITOR_STATUS_OK;
+  }
+
+  if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT) {
+    frg_emit_message_et_6_operator_unexpected_operand_type(
+      verifier->mut_message_buffer,
+      &value_binary->right->source_range,
+      operator_name,
+      "right-hand side",
+      "integer",
+      type_right);
+  }
+
+  frg_ast_node_destroy(type_left);
+  frg_ast_node_destroy(type_right);
 
   return FRG_AST_VISITOR_STATUS_OK;
 }
@@ -127,4 +191,19 @@ void frg_verification_type_verification_add_handlers(frg_ast_visitor_t* mut_visi
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_NOT);
   handler_value_bit_not->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
     = frg_verification_type_verification_handle_enter_value_bit_not;
+
+  frg_ast_visitor_handler_t* handler_value_bit_and
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_AND);
+  handler_value_bit_and->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_bit_binary;
+
+  frg_ast_visitor_handler_t* handler_value_bit_or
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_OR);
+  handler_value_bit_or->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_bit_binary;
+
+  frg_ast_visitor_handler_t* handler_value_bit_xor
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_XOR);
+  handler_value_bit_xor->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_bit_binary;
 }

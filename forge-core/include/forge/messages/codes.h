@@ -525,7 +525,7 @@
 #define frg_message_emit_es_4_escape_x_expects_2_hex_digits(                           \
   message_buffer, source_range, digit_count)                                           \
   {                                                                                    \
-    frg_assert_int_less_than_or_equal_toss_than((digit_count), 2);                     \
+    frg_assert_int_less_than((digit_count), 2);                                        \
                                                                                        \
     frg_message_t* __frg_es_4_message = frg_message_emit_from_source_range(            \
       (message_buffer),                                                                \

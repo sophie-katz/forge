@@ -44,8 +44,7 @@ void _frg_parsing_source_seek_to_line_start(frg_parsing_source_t* mut_source,
   frg_assert_int_greater_than_or_equal_to(start->line_number, 1);
   frg_assert_int_greater_than_or_equal_to(start->column_number, 1);
   frg_assert(strcmp(start->path, mut_source->path) == 0);
-  frg_assert_int_less_than_or_equal_toss_than(
-    start->offset, frg_stream_get_length(mut_source->stream));
+  frg_assert_int_less_than(start->offset, frg_stream_get_length(mut_source->stream));
 
   frg_stream_input_seek_to_offset(
     mut_source->stream,
@@ -67,8 +66,8 @@ GString* frg_parsing_source_load_range(frg_parsing_source_t* mut_source,
   frg_assert_int_greater_than_or_equal_to(range->start.line_number, 1);
   frg_assert_int_greater_than_or_equal_to(range->start.column_number, 1);
   frg_assert(strcmp(range->start.path, mut_source->path) == 0);
-  frg_assert_int_less_than_or_equal_toss_than(
-    range->start.offset, frg_stream_get_length(mut_source->stream));
+  frg_assert_int_less_than(range->start.offset,
+                           frg_stream_get_length(mut_source->stream));
   frg_assert_int_less_than_or_equal_to(range->start.offset + range->length,
                                        frg_stream_get_length(mut_source->stream));
 

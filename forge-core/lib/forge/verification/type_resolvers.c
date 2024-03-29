@@ -479,6 +479,12 @@ frg_ast_node_t* frg_verification_type_resolver_value_binary_containing(
     return NULL;
   }
 
+  if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT
+      && type_left->kind != FRG_AST_NODE_KIND_TYPE_FLOAT) {
+    frg_ast_node_destroy(type_left);
+    return NULL;
+  }
+
   frg_ast_node_t* type_right = frg_verification_resolve_type(
     mut_message_buffer, scope, ((frg_ast_node_value_binary_t*)node)->right);
 
@@ -486,16 +492,23 @@ frg_ast_node_t* frg_verification_type_resolver_value_binary_containing(
     return NULL;
   }
 
+  if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT
+      && type_right->kind != FRG_AST_NODE_KIND_TYPE_FLOAT) {
+    frg_ast_node_destroy(type_left);
+    frg_ast_node_destroy(type_right);
+    return NULL;
+  }
+
   frg_ast_node_t* type_containing
     = frg_verification_get_numeric_containing_type(type_left, type_right);
-
-  frg_ast_node_destroy(type_left);
-  frg_ast_node_destroy(type_right);
 
   if (type_containing == NULL) {
     frg_emit_message_it_1_no_containing_type(
       mut_message_buffer, &node->source_range, type_left, type_right);
   }
+
+  frg_ast_node_destroy(type_left);
+  frg_ast_node_destroy(type_right);
 
   return type_containing;
 }

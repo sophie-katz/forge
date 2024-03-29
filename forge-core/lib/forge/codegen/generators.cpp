@@ -233,6 +233,24 @@ llvm::Value* _frg_codegen_generate_value(llvm::IRBuilder<>& builder,
   case FRG_AST_NODE_KIND_VALUE_BIT_NOT:
     return builder.CreateNot(_frg_codegen_generate_value(
       builder, ctx, mut_scope, ((const frg_ast_node_value_unary_t*)node)->operand));
+  case FRG_AST_NODE_KIND_VALUE_BIT_AND:
+    return builder.CreateAnd(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_BIT_OR:
+    return builder.CreateOr(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_BIT_XOR:
+    return builder.CreateXor(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
   default:
     frg_die_ast_kind_not_yet_supported(node->kind);
   }

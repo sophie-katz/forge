@@ -136,7 +136,7 @@ bool _frg_cli_option_set_parse_next_long(frg_message_buffer_t* mut_message_buffe
   frg_assert_pointer_non_null(argv);
   frg_assert_int_greater_than_or_equal_to(*mut_argi, 0);
   frg_assert_int_greater_than(argc, 0);
-  frg_assert_int_less_than_or_equal_toss_than(*mut_argi, argc);
+  frg_assert_int_less_than(*mut_argi, argc);
   frg_assert_string_non_empty(argv[*mut_argi]);
   frg_assert_int_equal_to(argv[*mut_argi][0], '-');
   frg_assert_int_equal_to(argv[*mut_argi][1], '-');
@@ -172,7 +172,7 @@ bool _frg_cli_option_set_parse_next_short(frg_message_buffer_t* mut_message_buff
   frg_assert_pointer_non_null(argv);
   frg_assert_int_greater_than_or_equal_to(*mut_argi, 0);
   frg_assert_int_greater_than(argc, 0);
-  frg_assert_int_less_than_or_equal_toss_than(*mut_argi, argc);
+  frg_assert_int_less_than(*mut_argi, argc);
   frg_assert_string_non_empty(argv[*mut_argi]);
   frg_assert_int_equal_to(argv[*mut_argi][0], '-');
 
@@ -201,7 +201,7 @@ bool frg_cli_option_set_parse_next(frg_message_buffer_t* mut_message_buffer,
   frg_assert_pointer_non_null(argv);
   frg_assert_int_greater_than_or_equal_to(*mut_argi, 0);
   frg_assert_int_greater_than(argc, 0);
-  frg_assert_int_less_than_or_equal_toss_than(*mut_argi, argc);
+  frg_assert_int_less_than(*mut_argi, argc);
   frg_assert_string_non_empty(argv[*mut_argi]);
   frg_assert_int_equal_to(argv[*mut_argi][0], '-');
 

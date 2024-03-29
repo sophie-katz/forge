@@ -251,6 +251,18 @@ llvm::Value* _frg_codegen_generate_value(llvm::IRBuilder<>& builder,
         builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
       _frg_codegen_generate_value(
         builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT:
+    return builder.CreateShl(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT:
+    return builder.CreateLShr(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
   default:
     frg_die_ast_kind_not_yet_supported(node->kind);
   }

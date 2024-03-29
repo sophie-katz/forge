@@ -1154,6 +1154,48 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
+    test_integration_compilation_bit_shift_left = executable(
+        'test-integration-compilation-bit-shift-left',
+        'tests/compilation/bit_shift_left.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/bit_shift_left.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_bit_shift_left
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_bit_shift_right = executable(
+        'test-integration-compilation-bit-shift-right',
+        'tests/compilation/bit_shift_right.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/bit_shift_right.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_bit_shift_right
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
     test_integration_nodes = executable(
         'test-integration-nodes',
         'tests/nodes.c',

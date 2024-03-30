@@ -211,3 +211,15 @@ frg_int_attributes_case_t frg_get_case_for_type_int(
   return frg_get_case_for_int_attributes(
     (type->flags & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED) == 0, type->bit_width);
 }
+
+const frg_ast_node_t* frg_ast_get_surrounding_node_with_kind(const GList* parents,
+                                                             frg_ast_node_kind_t kind) {
+  for (const GList* it = parents; it != NULL; it = it->next) {
+    const frg_ast_node_t* parent = it->data;
+    if (parent->kind == kind) {
+      return parent;
+    }
+  }
+
+  return NULL;
+}

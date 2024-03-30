@@ -22,18 +22,6 @@
 #include <forge/verification/verifier.h>
 #include <forge/verification/visitor/type_verification.h>
 
-const frg_ast_node_declaration_function_t* _frg_get_surrounding_declaration_function(
-  const GList* parents) {
-  const frg_ast_node_t* parent = NULL;
-  for (const GList* it = parents; it != NULL; it = it->next) {
-    parent = it->data;
-    if (parent->kind == FRG_AST_NODE_KIND_DECLARATION_FUNCTION) {
-      return (const frg_ast_node_declaration_function_t*)parent;
-    }
-  }
-  return NULL;
-}
-
 frg_ast_visitor_status_t
   frg_verification_type_verification_handle_enter_statement_return(
     frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
@@ -48,7 +36,9 @@ frg_ast_visitor_status_t
     = (const frg_ast_node_statement_return_t*)(*mut_node);
 
   const frg_ast_node_declaration_function_t* surrounding_declaration_function
-    = _frg_get_surrounding_declaration_function(parents);
+    = (const frg_ast_node_declaration_function_t*)
+      frg_ast_get_surrounding_node_with_kind(parents,
+                                             FRG_AST_NODE_KIND_DECLARATION_FUNCTION);
 
   if (surrounding_declaration_function == NULL) {
     frg_die_message_no_code_yet();
@@ -75,11 +65,13 @@ frg_ast_visitor_status_t
   return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_bit_not(
+frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_unary(
   frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
   frg_assert_pointer_non_null(mut_node);
   frg_assert_pointer_non_null(*mut_node);
-  frg_assert_int_equal_to((*mut_node)->kind, FRG_AST_NODE_KIND_VALUE_BIT_NOT);
+  frg_assert((frg_ast_node_kind_info_get((*mut_node)->kind)->flags
+              & FRG_AST_NODE_KIND_FLAG_VALUE_UNARY)
+             != 0);
   frg_assert_pointer_non_null(mut_user_data);
 
   frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
@@ -94,14 +86,43 @@ frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_b
     return FRG_AST_VISITOR_STATUS_OK;
   }
 
-  if (resolved->kind != FRG_AST_NODE_KIND_TYPE_INT) {
-    frg_emit_message_et_6_operator_unexpected_operand_type(
-      verifier->mut_message_buffer,
-      &value_unary->operand->source_range,
-      "~",
-      "operand",
-      "int",
-      resolved);
+  switch (value_unary->base.kind) {
+  case FRG_AST_NODE_KIND_VALUE_BIT_NOT:
+    if (resolved->kind != FRG_AST_NODE_KIND_TYPE_INT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_unary->operand->source_range,
+        frg_ast_node_kind_info_get(value_unary->base.kind)->operator_symbol,
+        "operand",
+        "integer",
+        resolved);
+    }
+    break;
+  case FRG_AST_NODE_KIND_VALUE_NEGATE:
+    if (resolved->kind != FRG_AST_NODE_KIND_TYPE_INT
+        && resolved->kind != FRG_AST_NODE_KIND_TYPE_FLOAT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_unary->operand->source_range,
+        frg_ast_node_kind_info_get(value_unary->base.kind)->operator_symbol,
+        "operand",
+        "numeric",
+        resolved);
+    }
+    break;
+  case FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT:
+    if (resolved->kind != FRG_AST_NODE_KIND_TYPE_BOOL) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_unary->operand->source_range,
+        frg_ast_node_kind_info_get(value_unary->base.kind)->operator_symbol,
+        "operand",
+        "'bool'",
+        resolved);
+    }
+    break;
+  default:
+    frg_die_unexpected_enum_value(value_unary->base.kind);
   }
 
   frg_ast_node_destroy(resolved);
@@ -109,14 +130,13 @@ frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_b
   return FRG_AST_VISITOR_STATUS_OK;
 }
 
-frg_ast_visitor_status_t
-  frg_verification_type_verification_handle_enter_value_bit_binary(
-    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
+frg_ast_visitor_status_t frg_verification_type_verification_handle_enter_value_binary(
+  frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
   frg_assert_pointer_non_null(mut_node);
   frg_assert_pointer_non_null(*mut_node);
-  frg_assert((*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_AND
-             || (*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_OR
-             || (*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_XOR);
+  frg_assert((frg_ast_node_kind_info_get((*mut_node)->kind)->flags
+              & FRG_AST_NODE_KIND_FLAG_VALUE_BINARY)
+             != 0);
   frg_assert_pointer_non_null(mut_user_data);
 
   frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
@@ -124,124 +144,136 @@ frg_ast_visitor_status_t
   const frg_ast_node_value_binary_t* value_binary
     = (const frg_ast_node_value_binary_t*)(*mut_node);
 
-  const char* operator_name;
+  frg_ast_node_t* type_left = frg_verification_resolve_type(
+    verifier->mut_message_buffer, verifier->mut_scope, value_binary->left);
+
+  if (type_left == NULL) {
+    return FRG_AST_VISITOR_STATUS_OK;
+  }
+
+  frg_ast_node_t* type_right = frg_verification_resolve_type(
+    verifier->mut_message_buffer, verifier->mut_scope, value_binary->right);
+
+  if (type_right == NULL) {
+    frg_ast_node_destroy(type_left);
+    return FRG_AST_VISITOR_STATUS_OK;
+  }
 
   switch (value_binary->base.kind) {
   case FRG_AST_NODE_KIND_VALUE_BIT_AND:
-    operator_name = "&";
-    break;
   case FRG_AST_NODE_KIND_VALUE_BIT_OR:
-    operator_name = "|";
-    break;
   case FRG_AST_NODE_KIND_VALUE_BIT_XOR:
-    operator_name = "^";
+    if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->left->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "left-hand side",
+        "integer",
+        type_left);
+    }
+
+    if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->right->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "right-hand side",
+        "integer",
+        type_right);
+    }
+
     break;
-  default:
-    frg_die_unexpected_enum_value(value_binary->base.kind);
-  }
-
-  frg_ast_node_t* type_left = frg_verification_resolve_type(
-    verifier->mut_message_buffer, verifier->mut_scope, value_binary->left);
-
-  if (type_left == NULL) {
-    return FRG_AST_VISITOR_STATUS_OK;
-  }
-
-  if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT) {
-    frg_emit_message_et_6_operator_unexpected_operand_type(
-      verifier->mut_message_buffer,
-      &value_binary->left->source_range,
-      operator_name,
-      "left-hand side",
-      "integer",
-      type_left);
-  }
-
-  frg_ast_node_t* type_right = frg_verification_resolve_type(
-    verifier->mut_message_buffer, verifier->mut_scope, value_binary->right);
-
-  if (type_right == NULL) {
-    return FRG_AST_VISITOR_STATUS_OK;
-  }
-
-  if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT) {
-    frg_emit_message_et_6_operator_unexpected_operand_type(
-      verifier->mut_message_buffer,
-      &value_binary->right->source_range,
-      operator_name,
-      "right-hand side",
-      "integer",
-      type_right);
-  }
-
-  frg_ast_node_destroy(type_left);
-  frg_ast_node_destroy(type_right);
-
-  return FRG_AST_VISITOR_STATUS_OK;
-}
-
-frg_ast_visitor_status_t
-  frg_verification_type_verification_handle_enter_value_bit_shift(
-    frg_ast_node_t** mut_node, void* mut_user_data, const GList* parents) {
-  frg_assert_pointer_non_null(mut_node);
-  frg_assert_pointer_non_null(*mut_node);
-  frg_assert((*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT
-             || (*mut_node)->kind == FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT);
-  frg_assert_pointer_non_null(mut_user_data);
-
-  frg_verification_verifier_t* verifier = (frg_verification_verifier_t*)mut_user_data;
-
-  const frg_ast_node_value_binary_t* value_binary
-    = (const frg_ast_node_value_binary_t*)(*mut_node);
-
-  const char* operator_name;
-
-  switch (value_binary->base.kind) {
   case FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT:
-    operator_name = "<<";
-    break;
   case FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT:
-    operator_name = ">>";
+    if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->left->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "left-hand side",
+        "integer",
+        type_left);
+    }
+
+    if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT
+        || ((const frg_ast_node_type_int_t*)type_right)->flags
+             != FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED
+        || ((const frg_ast_node_type_int_t*)type_right)->bit_width != 32) {
+      // frg_message_t* message =
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->right->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "right-hand side",
+        "'u32'",
+        type_right);
+
+      // TODO: Make this note work
+      // frg_message_emit_child(
+      //   verifier->mut_message_buffer, message, FRG_MESSAGE_SEVERITY_NOTE, "NT-1");
+    }
+
+    break;
+  case FRG_AST_NODE_KIND_VALUE_LOGICAL_AND:
+  case FRG_AST_NODE_KIND_VALUE_LOGICAL_OR:
+    if (type_left->kind != FRG_AST_NODE_KIND_TYPE_BOOL) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->left->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "left-hand side",
+        "'bool'",
+        type_left);
+    }
+
+    if (type_right->kind != FRG_AST_NODE_KIND_TYPE_BOOL) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->right->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "right-hand side",
+        "'bool'",
+        type_right);
+    }
+
+    break;
+  case FRG_AST_NODE_KIND_VALUE_ADD:
+  case FRG_AST_NODE_KIND_VALUE_SUBTRACT:
+  case FRG_AST_NODE_KIND_VALUE_MULTIPLY:
+  case FRG_AST_NODE_KIND_VALUE_DIVIDE:
+  case FRG_AST_NODE_KIND_VALUE_DIVIDE_INT:
+  case FRG_AST_NODE_KIND_VALUE_MODULO:
+  case FRG_AST_NODE_KIND_VALUE_EXPONENTIATE:
+  case FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN:
+  case FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO:
+  case FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN:
+  case FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN_OR_EQUAL_TO:
+    if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT
+        && type_left->kind != FRG_AST_NODE_KIND_TYPE_FLOAT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->left->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "left-hand side",
+        "numeric",
+        type_left);
+    }
+
+    if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT
+        && type_right->kind != FRG_AST_NODE_KIND_TYPE_FLOAT) {
+      frg_emit_message_et_6_operator_unexpected_operand_type(
+        verifier->mut_message_buffer,
+        &value_binary->right->source_range,
+        frg_ast_node_kind_info_get(value_binary->base.kind)->operator_symbol,
+        "right-hand side",
+        "numeric",
+        type_right);
+    }
+
     break;
   default:
     frg_die_unexpected_enum_value(value_binary->base.kind);
-  }
-
-  frg_ast_node_t* type_left = frg_verification_resolve_type(
-    verifier->mut_message_buffer, verifier->mut_scope, value_binary->left);
-
-  if (type_left == NULL) {
-    return FRG_AST_VISITOR_STATUS_OK;
-  }
-
-  if (type_left->kind != FRG_AST_NODE_KIND_TYPE_INT) {
-    frg_emit_message_et_6_operator_unexpected_operand_type(
-      verifier->mut_message_buffer,
-      &value_binary->left->source_range,
-      operator_name,
-      "left-hand side",
-      "integer",
-      type_left);
-  }
-
-  frg_ast_node_t* type_right = frg_verification_resolve_type(
-    verifier->mut_message_buffer, verifier->mut_scope, value_binary->right);
-
-  if (type_right == NULL) {
-    return FRG_AST_VISITOR_STATUS_OK;
-  }
-
-  if (type_right->kind != FRG_AST_NODE_KIND_TYPE_INT
-      || ((const frg_ast_node_type_int_t*)type_right)->flags
-           != FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED
-      || ((const frg_ast_node_type_int_t*)type_right)->bit_width != 32) {
-    frg_emit_message_et_6_operator_unexpected_operand_type(
-      verifier->mut_message_buffer,
-      &value_binary->right->source_range,
-      operator_name,
-      "right-hand side",
-      "'u32'",
-      type_right);
   }
 
   frg_ast_node_destroy(type_left);
@@ -259,30 +291,50 @@ void frg_verification_type_verification_add_handlers(frg_ast_visitor_t* mut_visi
   frg_ast_visitor_handler_t* handler_value_bit_not
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_NOT);
   handler_value_bit_not->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_type_verification_handle_enter_value_bit_not;
+    = frg_verification_type_verification_handle_enter_value_unary;
 
   frg_ast_visitor_handler_t* handler_value_bit_and
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_AND);
   handler_value_bit_and->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_type_verification_handle_enter_value_bit_binary;
+    = frg_verification_type_verification_handle_enter_value_binary;
 
   frg_ast_visitor_handler_t* handler_value_bit_or
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_OR);
   handler_value_bit_or->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_type_verification_handle_enter_value_bit_binary;
+    = frg_verification_type_verification_handle_enter_value_binary;
 
   frg_ast_visitor_handler_t* handler_value_bit_xor
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_XOR);
   handler_value_bit_xor->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_type_verification_handle_enter_value_bit_binary;
+    = frg_verification_type_verification_handle_enter_value_binary;
 
   frg_ast_visitor_handler_t* handler_value_bit_shift_left
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT);
   handler_value_bit_shift_left->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_type_verification_handle_enter_value_bit_shift;
+    = frg_verification_type_verification_handle_enter_value_binary;
 
   frg_ast_visitor_handler_t* handler_value_bit_shift_right
     = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT);
   handler_value_bit_shift_right->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
-    = frg_verification_type_verification_handle_enter_value_bit_shift;
+    = frg_verification_type_verification_handle_enter_value_binary;
+
+  frg_ast_visitor_handler_t* handler_value_logical_not
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT);
+  handler_value_logical_not->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_unary;
+
+  frg_ast_visitor_handler_t* handler_value_logical_and
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_LOGICAL_AND);
+  handler_value_logical_and->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_binary;
+
+  frg_ast_visitor_handler_t* handler_value_logical_or
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_LOGICAL_OR);
+  handler_value_logical_or->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_binary;
+
+  frg_ast_visitor_handler_t* handler_value_negate
+    = frg_ast_visitor_add_handler(mut_visitor, FRG_AST_NODE_KIND_VALUE_NEGATE);
+  handler_value_negate->event_callbacks[FRG_AST_VISITOR_EVENT_ENTER]
+    = frg_verification_type_verification_handle_enter_value_unary;
 }

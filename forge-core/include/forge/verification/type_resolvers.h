@@ -133,6 +133,11 @@ frg_ast_node_t* frg_verification_type_resolver_value_unary_ident_numeric_only(
   const frg_ast_scope_t* scope,
   const frg_ast_node_t* node);
 
+frg_ast_node_t* frg_verification_type_resolver_value_negate(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node);
+
 frg_ast_node_t* frg_verification_type_resolver_value_binary_containing(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,

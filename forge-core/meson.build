@@ -1196,6 +1196,90 @@ if should_build_tests
         is_parallel: test_is_parallel,
     )
 
+    test_integration_compilation_logical_not = executable(
+        'test-integration-compilation-logical-not',
+        'tests/compilation/logical_not.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/logical_not.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_logical_not
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_logical_and = executable(
+        'test-integration-compilation-logical-and',
+        'tests/compilation/logical_and.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/logical_and.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_logical_and
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_logical_or = executable(
+        'test-integration-compilation-logical-or',
+        'tests/compilation/logical_or.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/logical_or.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_logical_or
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
+    test_integration_compilation_negate_int = executable(
+        'test-integration-compilation-negate-int',
+        'tests/compilation/negate_int.c',
+        include_directories: include_directories,
+        link_with: [library_forge, library_forge_testing],
+        dependencies: dependencies + [
+            dependency_unity
+        ]
+    )
+
+    test(
+        'tests/compilation/negate_int.c',
+        program_bash,
+        args: [
+            test_wrapper,
+            test_integration_compilation_negate_int
+        ],
+        timeout: test_timeout_seconds,
+        is_parallel: test_is_parallel,
+    )
+
     test_integration_nodes = executable(
         'test-integration-nodes',
         'tests/nodes.c',

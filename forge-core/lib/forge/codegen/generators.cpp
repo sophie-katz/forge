@@ -263,6 +263,27 @@ llvm::Value* _frg_codegen_generate_value(llvm::IRBuilder<>& builder,
         builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
       _frg_codegen_generate_value(
         builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT:
+    return builder.CreateCmp(
+      llvm::CmpInst::Predicate::ICMP_EQ,
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_unary_t*)node)->operand),
+      llvm::ConstantInt::get(llvm::Type::getInt1Ty(ctx), 0, false));
+  case FRG_AST_NODE_KIND_VALUE_LOGICAL_AND:
+    return builder.CreateLogicalAnd(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_LOGICAL_OR:
+    return builder.CreateLogicalOr(
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->left),
+      _frg_codegen_generate_value(
+        builder, ctx, mut_scope, ((const frg_ast_node_value_binary_t*)node)->right));
+  case FRG_AST_NODE_KIND_VALUE_NEGATE:
+    return builder.CreateNeg(_frg_codegen_generate_value(
+      builder, ctx, mut_scope, ((const frg_ast_node_value_unary_t*)node)->operand));
   default:
     frg_die_ast_kind_not_yet_supported(node->kind);
   }

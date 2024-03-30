@@ -74,23 +74,27 @@ GString* _frg_testing_test_compilation_check_parsing_early_exit(
 
 GString* _frg_testing_test_compilation_check_verification_early_exit(
   const frg_testing_compilation_test_options_t* options,
+  const frg_testing_compilation_test_context_initialized_t* context_initialized,
   const GString* verification_message) {
   frg_assert_pointer_non_null(options);
+  frg_assert_pointer_non_null(context_initialized);
 
   if (options->kind == FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY) {
-    if (verification_message == NULL) {
+    if (context_initialized->message_buffer->error_count == 0
+        && verification_message == NULL) {
       return g_string_new("Verification succeeded unexpectedly");
     } else {
       return NULL;
     }
   } else {
-    if (verification_message == NULL) {
-      return NULL;
-    } else {
+    if (verification_message != NULL) {
       GString* message = g_string_new(NULL);
-      g_string_printf(
-        message, "Verification failed unexpectedly: %s", verification_message->str);
+      g_string_printf(message,
+                      "Verification failed unexpectedly with message: %s",
+                      verification_message->str);
       return message;
+    } else {
+      return NULL;
     }
   }
 }
@@ -190,7 +194,7 @@ GString* frg_testing_test_compilation_take_message(
 
   // Early exit if verification failed positively or negatively
   message = _frg_testing_test_compilation_check_verification_early_exit(
-    options, verification_message);
+    options, context_initialized, verification_message);
   if (verification_message != NULL) {
     g_string_free(verification_message, TRUE);
   }
@@ -201,83 +205,85 @@ GString* frg_testing_test_compilation_take_message(
     return message;
   }
 
-  // Run phase: codegen
-  frg_testing_compilation_test_context_codegen_t* context_codegen
-    = frg_testing_test_compilation_phase_run_codegen(context_parsed);
+  if (context_initialized->message_buffer->error_count == 0) {
+    // Run phase: codegen
+    frg_testing_compilation_test_context_codegen_t* context_codegen
+      = frg_testing_test_compilation_phase_run_codegen(context_parsed);
 
-  // Early exit if codegen failed
-  message = _frg_testing_test_compilation_check_codegen_early_exit(context_parsed,
-                                                                   context_codegen);
-  if (message != NULL) {
+    // Early exit if codegen failed
+    message = _frg_testing_test_compilation_check_codegen_early_exit(context_parsed,
+                                                                     context_codegen);
+    if (message != NULL) {
+      if (context_codegen != NULL) {
+        frg_testing_compilation_test_context_codegen_destroy(context_codegen);
+      }
+
+      frg_testing_compilation_test_context_parsed_destroy(context_parsed);
+      frg_testing_compilation_test_context_initialized_destroy(context_initialized);
+
+      return message;
+    }
+
+    // Run auxiliary tests: LLVM IR
+    message = frg_testing_test_compilation_auxiliary_llvm_ir(options, context_codegen);
+    if (message != NULL) {
+      frg_testing_compilation_test_context_codegen_destroy(context_codegen);
+      frg_testing_compilation_test_context_parsed_destroy(context_parsed);
+      frg_testing_compilation_test_context_initialized_destroy(context_initialized);
+      return message;
+    }
+
+    // Run phase: linking
+    frg_testing_compilation_test_context_linked_t* context_linked
+      = frg_testing_test_compilation_phase_run_linking(
+        &message, options, context_initialized, context_codegen);
+    if (message != NULL) {
+      if (context_linked != NULL) {
+        frg_testing_compilation_test_context_linked_destroy(context_linked);
+      }
+
+      frg_testing_compilation_test_context_codegen_destroy(context_codegen);
+      frg_testing_compilation_test_context_parsed_destroy(context_parsed);
+      frg_testing_compilation_test_context_initialized_destroy(context_initialized);
+
+      return message;
+    }
+
+    // Early exit if linking failed
+    message = _frg_testing_test_compilation_check_linking_early_exit(
+      context_parsed, context_codegen, context_linked);
+    if (message != NULL) {
+      if (context_linked != NULL) {
+        frg_testing_compilation_test_context_linked_destroy(context_linked);
+      }
+
+      frg_testing_compilation_test_context_codegen_destroy(context_codegen);
+      frg_testing_compilation_test_context_parsed_destroy(context_parsed);
+      frg_testing_compilation_test_context_initialized_destroy(context_initialized);
+
+      return message;
+    }
+
+    // Run auxiliary tests: shared object
+    message
+      = frg_testing_test_compilation_auxiliary_shared_object(options, context_linked);
+    if (message != NULL) {
+      frg_testing_compilation_test_context_linked_destroy(context_linked);
+      frg_testing_compilation_test_context_codegen_destroy(context_codegen);
+      frg_testing_compilation_test_context_parsed_destroy(context_parsed);
+      frg_testing_compilation_test_context_initialized_destroy(context_initialized);
+      return message;
+    }
+
+    // Cleanup phase: linking
+    if (context_linked != NULL) {
+      frg_testing_compilation_test_context_linked_destroy(context_linked);
+    }
+
+    // Cleanup phase: codegen
     if (context_codegen != NULL) {
       frg_testing_compilation_test_context_codegen_destroy(context_codegen);
     }
-
-    frg_testing_compilation_test_context_parsed_destroy(context_parsed);
-    frg_testing_compilation_test_context_initialized_destroy(context_initialized);
-
-    return message;
-  }
-
-  // Run auxiliary tests: LLVM IR
-  message = frg_testing_test_compilation_auxiliary_llvm_ir(options, context_codegen);
-  if (message != NULL) {
-    frg_testing_compilation_test_context_codegen_destroy(context_codegen);
-    frg_testing_compilation_test_context_parsed_destroy(context_parsed);
-    frg_testing_compilation_test_context_initialized_destroy(context_initialized);
-    return message;
-  }
-
-  // Run phase: linking
-  frg_testing_compilation_test_context_linked_t* context_linked
-    = frg_testing_test_compilation_phase_run_linking(
-      &message, options, context_initialized, context_codegen);
-  if (message != NULL) {
-    if (context_linked != NULL) {
-      frg_testing_compilation_test_context_linked_destroy(context_linked);
-    }
-
-    frg_testing_compilation_test_context_codegen_destroy(context_codegen);
-    frg_testing_compilation_test_context_parsed_destroy(context_parsed);
-    frg_testing_compilation_test_context_initialized_destroy(context_initialized);
-
-    return message;
-  }
-
-  // Early exit if linking failed
-  message = _frg_testing_test_compilation_check_linking_early_exit(
-    context_parsed, context_codegen, context_linked);
-  if (message != NULL) {
-    if (context_linked != NULL) {
-      frg_testing_compilation_test_context_linked_destroy(context_linked);
-    }
-
-    frg_testing_compilation_test_context_codegen_destroy(context_codegen);
-    frg_testing_compilation_test_context_parsed_destroy(context_parsed);
-    frg_testing_compilation_test_context_initialized_destroy(context_initialized);
-
-    return message;
-  }
-
-  // Run auxiliary tests: shared object
-  message
-    = frg_testing_test_compilation_auxiliary_shared_object(options, context_linked);
-  if (message != NULL) {
-    frg_testing_compilation_test_context_linked_destroy(context_linked);
-    frg_testing_compilation_test_context_codegen_destroy(context_codegen);
-    frg_testing_compilation_test_context_parsed_destroy(context_parsed);
-    frg_testing_compilation_test_context_initialized_destroy(context_initialized);
-    return message;
-  }
-
-  // Cleanup phase: linking
-  if (context_linked != NULL) {
-    frg_testing_compilation_test_context_linked_destroy(context_linked);
-  }
-
-  // Cleanup phase: codegen
-  if (context_codegen != NULL) {
-    frg_testing_compilation_test_context_codegen_destroy(context_codegen);
   }
 
   // Cleanup phase: parsing

@@ -470,6 +470,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE].operator_symbol
+    = "*";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DEREFERENCE]._cloner
@@ -486,6 +488,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS].operator_symbol
+    = "&";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_GET_ADDRESS]._cloner
@@ -545,6 +549,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS].operator_symbol = ".";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ACCESS]._cloner
@@ -560,6 +565,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT].operator_symbol = "~";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_NOT]._cloner
@@ -575,6 +581,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND].operator_symbol = "&";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND]._cloner
@@ -590,6 +597,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR].operator_symbol = "|";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR]._cloner
@@ -605,6 +613,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR].operator_symbol = "^";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR]._cloner
@@ -621,6 +630,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT].operator_symbol
+    = "<<";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT]._cloner
@@ -638,6 +649,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT].operator_symbol
+    = ">>";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT]._cloner
@@ -654,6 +667,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE].operator_symbol = "-";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._cloner
@@ -663,12 +677,13 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._visitor_acceptor
     = frg_ast_visitor_acceptor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NEGATE]._type_resolver
-    = frg_verification_type_resolver_value_unary_ident_numeric_only;
+    = frg_verification_type_resolver_value_negate;
 
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].name = "value-add";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD].operator_symbol = "+";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD]._cloner
@@ -685,6 +700,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT].operator_symbol = "-";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT]._cloner
@@ -701,6 +717,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY].operator_symbol = "*";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY]._cloner
@@ -716,6 +733,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE].operator_symbol = "/";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE]._cloner
@@ -732,6 +750,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT].operator_symbol
+    = "//";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT]._cloner
@@ -747,6 +767,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO].operator_symbol = "%";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO]._cloner
@@ -763,6 +784,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE].operator_symbol
+    = "**";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE]._cloner
@@ -778,6 +801,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS].operator_symbol = "==";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EQUALS]._cloner
@@ -794,6 +818,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS].operator_symbol
+    = "!=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_NOT_EQUALS]._cloner
@@ -810,6 +836,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN].operator_symbol
+    = "<";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN]._cloner
@@ -826,6 +854,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO]
+    .operator_symbol
+    = "<=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_LESS_THAN_OR_EQUAL_TO]
     ._destructor
     = frg_ast_destructor_value_binary;
@@ -847,6 +878,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN].operator_symbol
+    = ">";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN]._cloner
@@ -866,6 +899,9 @@ void _frg_ast_node_kind_info_table_init() {
     .flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN_OR_EQUAL_TO]
+    .operator_symbol
+    = ">=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_IS_GREATER_THAN_OR_EQUAL_TO]
     ._destructor
     = frg_ast_destructor_value_binary;
@@ -887,6 +923,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT].operator_symbol
+    = "!";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_NOT]._cloner
@@ -903,6 +941,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND].operator_symbol
+    = "&&";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND]._cloner
@@ -919,6 +959,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR].operator_symbol
+    = "||";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR]._cloner
@@ -934,6 +976,7 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN].operator_symbol = "=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ASSIGN]._cloner
@@ -950,6 +993,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN].operator_symbol
+    = "&=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_AND_ASSIGN]._cloner
@@ -967,6 +1012,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN].operator_symbol
+    = "|=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_OR_ASSIGN]._cloner
@@ -983,6 +1030,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN].operator_symbol
+    = "^=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_XOR_ASSIGN]._cloner
@@ -1000,6 +1049,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT_ASSIGN]
+    .operator_symbol
+    = "<<=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_LEFT_ASSIGN]
     ._destructor
     = frg_ast_destructor_value_binary;
@@ -1021,6 +1073,9 @@ void _frg_ast_node_kind_info_table_init() {
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT_ASSIGN]
+    .operator_symbol
+    = ">>=";
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT_ASSIGN]
     ._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_BIT_SHIFT_RIGHT_ASSIGN]._cloner
@@ -1040,6 +1095,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN].operator_symbol
+    = "+=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_ADD_ASSIGN]._cloner
@@ -1056,6 +1113,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT].operator_symbol
+    = "++";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_INCREMENT]._cloner
@@ -1072,6 +1131,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN].operator_symbol
+    = "-=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_SUBTRACT_ASSIGN]._cloner
@@ -1089,6 +1150,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_UNARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT].operator_symbol
+    = "--";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT]._destructor
     = frg_ast_destructor_value_unary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DECREMENT]._cloner
@@ -1105,6 +1168,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN].operator_symbol
+    = "*=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MULTIPLY_ASSIGN]._cloner
@@ -1122,6 +1187,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN].operator_symbol
+    = "/=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_ASSIGN]._cloner
@@ -1138,6 +1205,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN]
+    .operator_symbol
+    = "//=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_DIVIDE_INT_ASSIGN]._cloner
@@ -1157,6 +1227,8 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN].operator_symbol
+    = "%=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_MODULO_ASSIGN]._cloner
@@ -1173,6 +1245,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN]
+    .operator_symbol
+    = "**=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_EXPONENTIATE_ASSIGN]._cloner
@@ -1192,6 +1267,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN]
+    .operator_symbol
+    = "&&=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_AND_ASSIGN]._cloner
@@ -1211,6 +1289,9 @@ void _frg_ast_node_kind_info_table_init() {
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN].flags
     = FRG_AST_NODE_KIND_FLAG_VALUE | FRG_AST_NODE_KIND_FLAG_VALUE_BINARY
     | FRG_AST_NODE_KIND_FLAG_HAS_CHILDREN;
+  _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN]
+    .operator_symbol
+    = "||=";
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN]._destructor
     = frg_ast_destructor_value_binary;
   _frg_ast_node_kind_info_table[FRG_AST_NODE_KIND_VALUE_LOGICAL_OR_ASSIGN]._cloner

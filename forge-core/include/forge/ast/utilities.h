@@ -54,3 +54,6 @@ void frg_ast_value_float_print(frg_stream_output_t* mut_stream,
 
 frg_int_attributes_case_t frg_get_case_for_type_int(
   const frg_ast_node_type_int_t* type);
+
+const frg_ast_node_t* frg_ast_get_surrounding_node_with_kind(const GList* parents,
+                                                             frg_ast_node_kind_t kind);

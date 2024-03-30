@@ -176,7 +176,7 @@ void test_mismatched() {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
+  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY;
   options->name        = "function-return-type-mismatched";
   options->on_ast      = _callback_on_ast_mismatched;
   options->on_messages = _callback_on_messages_mismatched;

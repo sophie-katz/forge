@@ -1737,7 +1737,7 @@ void test_unsupported_type_left() {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
+  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY;
   options->name        = "bit-and-unsupported-type-left";
   options->on_messages = _callback_on_messages_unsupported_type_left;
 
@@ -1810,7 +1810,7 @@ void test_unsupported_type_right() {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
+  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY;
   options->name        = "bit-and-unsupported-type-right";
   options->on_messages = _callback_on_messages_unsupported_type_right;
 
@@ -1895,7 +1895,7 @@ void test_unsupported_type_both() {
 
   // Configure options
   // -----------------------------------------------------------------------------------
-  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_SUCCESS;
+  options->kind        = FRG_TESTING_COMPILATION_TEST_KIND_EXPECT_UNABLE_TO_VERIFY;
   options->name        = "bit-and-unsupported-type-both";
   options->on_messages = _callback_on_messages_unsupported_type_both;
 

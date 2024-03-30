@@ -459,6 +459,37 @@ frg_ast_node_t* frg_verification_type_resolver_value_unary_ident_numeric_only(
   }
 }
 
+frg_ast_node_t* frg_verification_type_resolver_value_negate(
+  frg_message_buffer_t* mut_message_buffer,
+  const frg_ast_scope_t* scope,
+  const frg_ast_node_t* node) {
+  frg_assert_pointer_non_null(mut_message_buffer);
+  frg_assert_pointer_non_null(scope);
+  frg_assert_pointer_non_null(node);
+  frg_assert_int_equal_to(node->kind, FRG_AST_NODE_KIND_VALUE_NEGATE);
+
+  frg_assert_pointer_non_null(((frg_ast_node_value_unary_t*)node)->operand);
+
+  frg_ast_node_t* result = frg_verification_resolve_type(
+    mut_message_buffer, scope, ((frg_ast_node_value_unary_t*)node)->operand);
+
+  if (result->kind == FRG_AST_NODE_KIND_TYPE_INT) {
+    if ((((frg_ast_node_type_int_t*)result)->flags
+         & FRG_AST_NODE_TYPE_INT_FLAG_UNSIGNED)
+        != 0) {
+      ((frg_ast_node_type_int_t*)result)->flags = FRG_AST_NODE_TYPE_INT_FLAG_NONE;
+      return result;
+    } else {
+      return result;
+    }
+  } else if (result->kind == FRG_AST_NODE_KIND_TYPE_FLOAT) {
+    return result;
+  } else {
+    frg_ast_node_destroy(result);
+    return NULL;
+  }
+}
+
 frg_ast_node_t* frg_verification_type_resolver_value_binary_containing(
   frg_message_buffer_t* mut_message_buffer,
   const frg_ast_scope_t* scope,

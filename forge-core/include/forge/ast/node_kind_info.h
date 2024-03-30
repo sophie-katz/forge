@@ -47,6 +47,7 @@ typedef frg_ast_node_t* (*frg_ast_type_resolver_t)(
 typedef struct {
   const char* name;
   frg_ast_node_kind_flags_t flags;
+  const char* operator_symbol;
   frg_ast_destructor_t _destructor;
   frg_ast_cloner_t _cloner;
   frg_ast_comparer_t _comparer;

@@ -13,8 +13,4 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge documentation
-
-This is where Forge is documented. Different projects within the monorepo have their own documentation, so this is everything that is not project-specific. It is split into two categories: for developers and for users.
-
-See subdirectories for more information.
+Assets used by the documentation or that should be stored in source control.

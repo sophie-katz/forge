@@ -1,18 +1,16 @@
 <!--
-Copyright (c) 2023-2024 Sophie Katz
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-This file is part of Forge.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-Forge is free software: you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation, either version
-3 of the License, or (at your option) any later version.
+You should have received a copy of the GNU General Public License along with this
+program. If not, see <https://www.gnu.org/licenses/>.
 
-Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with Forge. If
-not, see <https://www.gnu.org/licenses/>.
+Copyright 2023-2024 Sophie Katz
 -->
 
 # Naming convention
@@ -34,16 +32,16 @@ These are general guidelines, but there are exceptions described below:
 - All symbols should be prefixed with `frg_`.
 - All symbols should be in `snake_case`.
 - **All symbols should be descriptive:**
-    - Favor longer and more descriptive names over abbreviations.
-    - We all have intellisense so abbreviations just make the code less readable with limited benefit.
+  - Favor longer and more descriptive names over abbreviations.
+  - We all have intellisense so abbreviations just make the code less readable with limited benefit.
 - **All symbols should be prefixed with their module name:**
-    - If a file is in the `forge/ast/**` directory, then the module name is `ast`.
-    - So all symbols declared within the `forge/ast/**` directory would have the prefix `frg_ast_`.
-    - There are no nested modules, so symbols declared within `forge/ast/kind_info.h` would not have the prefix `frg_ast_kind_info_`.
-    - Symbols that only contain the module name are usually not allowed; for example a symbol like `frg_ast` is not allowed.
+  - If a file is in the `forge/ast/**` directory, then the module name is `ast`.
+  - So all symbols declared within the `forge/ast/**` directory would have the prefix `frg_ast_`.
+  - There are no nested modules, so symbols declared within `forge/ast/kind_info.h` would not have the prefix `frg_ast_kind_info_`.
+  - Symbols that only contain the module name are usually not allowed; for example a symbol like `frg_ast` is not allowed.
 - **All symbols should be in the singular form**
-    - Instead of writing a symbol like `nodes_add`, write `node_add`.
-    - This also helps to group related symbols together better.
+  - Instead of writing a symbol like `nodes_add`, write `node_add`.
+  - This also helps to group related symbols together better.
 
 ## Types
 
@@ -104,6 +102,7 @@ frg_ast_kind_info_t FRG_AST_GLOBAL_KIND_INFO_TABLE[FRG_AST_KIND_COUNT];
 ## Function arguments
 
 All function arguments are, by default, assumed to either:
+
 - Be passed into the function as constant.
 - Be passed into the function as mutable, but the function takes ownership.
 
@@ -157,5 +156,6 @@ There is some part of the codebase that is written in C++ (code generation using
 ## Local variables
 
 While there are intentionally no guidelines for local variables to aid in faster development, it is suggested that variable names be descriptive.
+
 - A variable named `index` provides much for context than a variable named `i`.
 - A variable named `current_ast_node` provides much more context than `node`.

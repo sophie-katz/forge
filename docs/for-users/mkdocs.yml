@@ -1,17 +1,15 @@
-# Copyright (c) 2023-2024 Sophie Katz
+# This program is free software: you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software Foundation,
+# either version 3 of the License, or (at your option) any later version.
 #
-# This file is part of Forge.
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE. See the GNU General Public License for more details.
 #
-# Forge is free software: you can redistribute it and/or modify it under the terms of
-# the GNU General Public License as published by the Free Software Foundation, either
-# version 3 of the License, or (at your option) any later version.
+# You should have received a copy of the GNU General Public License along with this
+# program. If not, see <https://www.gnu.org/licenses/>.
 #
-# Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-# PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with Forge. If
-# not, see <https://www.gnu.org/licenses/>.
+# Copyright 2023-2024 Sophie Katz
 
 site_name: Forge Documentation
 theme:
@@ -46,24 +44,24 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 nav:
-  - 'Home': 'index.md'
-  - 'Guide':
-    - 'Hello, world': 'guide/hello-world.md'
-  - 'Specification':
-    - 'How to use': 'specification/how-to-use.md'
-    - 'Requirements':
-      - 'Requirement-1: Boolean literals': 'specification/requirements/Requirement-1-boolean-literals.md'
-      - 'Requirement-2: Integer literals': 'specification/requirements/Requirement-2-integer-literals.md'
-      - 'Requirement-3: Float literals': 'specification/requirements/Requirement-3-float-literals.md'
-      - 'Requirement-4: String literals': 'specification/requirements/Requirement-4-string-literals.md'
-      - 'Requirement-5: Character literals': 'specification/requirements/Requirement-5-character-literals.md'
-      - 'Requirement-6: File naming': 'specification/requirements/Requirement-6-file-naming.md'
-      - 'Requirement-7: Operators': 'specification/requirements/Requirement-7-operators.md'
-      - 'Requirement-8: Operator precedence': 'specification/requirements/Requirement-8-operator-precedence.md'
-      - 'Requirement-9: Union declarations': 'specification/requirements/Requirement-9-union-declarations.md'
-      - 'Requirement-10: Struct declarations': 'specification/requirements/Requirement-10-struct-declarations.md'
-      - 'Requirement-11: Dynamic objects': 'specification/requirements/Requirement-11-dynamic-objects.md'
-      - 'Requirement-12: Interface declarations': 'specification/requirements/Requirement-12-interface-declarations.md'
-      - 'Requirement-13: Numeric containing types': 'specification/requirements/Requirement-13-numeric-containing-types.md'
-  - 'Reference':
-    - 'Message codes': 'reference/message-codes.md'
+  - "Home": "index.md"
+  - "Guide":
+      - "Hello, world": "guide/hello-world.md"
+  - "Specification":
+      - "How to use": "specification/how-to-use.md"
+      - "Requirements":
+          - "Requirement-1: Boolean literals": "specification/requirements/Requirement-1-boolean-literals.md"
+          - "Requirement-2: Integer literals": "specification/requirements/Requirement-2-integer-literals.md"
+          - "Requirement-3: Float literals": "specification/requirements/Requirement-3-float-literals.md"
+          - "Requirement-4: String literals": "specification/requirements/Requirement-4-string-literals.md"
+          - "Requirement-5: Character literals": "specification/requirements/Requirement-5-character-literals.md"
+          - "Requirement-6: File naming": "specification/requirements/Requirement-6-file-naming.md"
+          - "Requirement-7: Operators": "specification/requirements/Requirement-7-operators.md"
+          - "Requirement-8: Operator precedence": "specification/requirements/Requirement-8-operator-precedence.md"
+          - "Requirement-9: Union declarations": "specification/requirements/Requirement-9-union-declarations.md"
+          - "Requirement-10: Struct declarations": "specification/requirements/Requirement-10-struct-declarations.md"
+          - "Requirement-11: Dynamic objects": "specification/requirements/Requirement-11-dynamic-objects.md"
+          - "Requirement-12: Interface declarations": "specification/requirements/Requirement-12-interface-declarations.md"
+          - "Requirement-13: Numeric containing types": "specification/requirements/Requirement-13-numeric-containing-types.md"
+  - "Reference":
+      - "Message codes": "reference/message-codes.md"

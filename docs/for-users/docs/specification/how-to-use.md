@@ -1,18 +1,16 @@
 <!--
-Copyright (c) 2023-2024 Sophie Katz
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-This file is part of Forge.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-Forge is free software: you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation, either version
-3 of the License, or (at your option) any later version.
+You should have received a copy of the GNU General Public License along with this
+program. If not, see <https://www.gnu.org/licenses/>.
 
-Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with Forge. If
-not, see <https://www.gnu.org/licenses/>.
+Copyright 2023-2024 Sophie Katz
 -->
 
 # How to use the Forge specification
@@ -27,14 +25,15 @@ It contains the following sections:
 
 There should be a clear distinction between what is a requirement and what is a proposal:
 
-- *A requirement* says "this is how the language is defined." They should be explicit and should be written from the perspective of someone implementing a compiler for the language.
-- *A proposal* says "this is how the language could be changed." Ideally, when a proposal is accepted it should cause an update to the requirements and to the compiler.
+- _A requirement_ says "this is how the language is defined." They should be explicit and should be written from the perspective of someone implementing a compiler for the language.
+- _A proposal_ says "this is how the language could be changed." Ideally, when a proposal is accepted it should cause an update to the requirements and to the compiler.
 
 ## Requirements
 
 These are parts of the language specification. One requirement is supposed to define a single language feature or a behavior for how language features fit together. They use the `Requirement-v*` templates.
 
-Some helpful tools are *(tools valid as of 2023-12-24)*:
+Some helpful tools are _(tools valid as of 2023-12-24)_:
+
 - [regex101](https://regex101.com/) for testing regular expressions.
 - [EBNF Evaluator](https://mdkrajnak.github.io/ebnftest/) for testing EBNF notation.
 

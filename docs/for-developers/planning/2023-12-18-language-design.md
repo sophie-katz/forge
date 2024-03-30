@@ -1,18 +1,16 @@
 <!--
-Copyright (c) 2023-2024 Sophie Katz
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-This file is part of Forge.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-Forge is free software: you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation, either version
-3 of the License, or (at your option) any later version.
+You should have received a copy of the GNU General Public License along with this
+program. If not, see <https://www.gnu.org/licenses/>.
 
-Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with Forge. If
-not, see <https://www.gnu.org/licenses/>.
+Copyright 2023-2024 Sophie Katz
 -->
 
 > [!WARNING]  
@@ -63,10 +61,10 @@ not, see <https://www.gnu.org/licenses/>.
 
 - Interfaces? Abstract classes? Structs?
 - Algebraic data types
-    - Can do algebra with data types
-    - You can pass in data types with duck-typed constrants
-    - Data types have interfaces
-    - Any interface can be fit to any data
+  - Can do algebra with data types
+  - You can pass in data types with duck-typed constrants
+  - Data types have interfaces
+  - Any interface can be fit to any data
 
 # Example
 
@@ -244,6 +242,7 @@ fn f(a: A..., kw b: B...) {}
 Simplified AST is a subset of the full grammar that lacks any syntactic sugar. Every aspect of the simplified AST can be passed directly to the interpreter or to codegen.
 
 It contains:
+
 - Signed and unsigned integer types
 - Floating point types
 - Structs

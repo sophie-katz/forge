@@ -1,42 +1,40 @@
-// Copyright (c) 2023-2024 Sophie Katz
+// This program is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software Foundation,
+// either version 3 of the License, or (at your option) any later version.
 //
-// This file is part of Forge.
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+// PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //
-// Forge is free software: you can redistribute it and/or modify it under the terms of
-// the GNU General Public License as published by the Free Software Foundation, either
-// version 3 of the License, or (at your option) any later version.
+// You should have received a copy of the GNU General Public License along with this
+// program. If not, see <https://www.gnu.org/licenses/>.
 //
-// Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-// PURPOSE. See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along with Forge.
-// If not, see <https://www.gnu.org/licenses/>.
+// Copyright 2023-2024 Sophie Katz
 
 #pragma once
 
-#define FRG_VERSION_MAJOR @version_major@
-#define FRG_VERSION_MINOR @version_minor@
-#define FRG_VERSION_PATCH @version_patch@
-#define FRG_VERSION_LABEL "@version_label@"
-#define FRG_GIT_COMMIT_SHA "@git_commit_sha@"
-#define FRG_COMPILER_ID "@compiler_id@"
-#define FRG_COMPILER_VERSION "@compiler_version@"
-#define FRG_LINKER_ID "@linker_id@"
-#define FRG_HOST_MACHINE_CPU "@host_machine_cpu@"
+#define FRG_VERSION_MAJOR       @version_major @
+#define FRG_VERSION_MINOR       @version_minor @
+#define FRG_VERSION_PATCH       @version_patch @
+#define FRG_VERSION_LABEL       "@version_label@"
+#define FRG_GIT_COMMIT_SHA      "@git_commit_sha@"
+#define FRG_COMPILER_ID         "@compiler_id@"
+#define FRG_COMPILER_VERSION    "@compiler_version@"
+#define FRG_LINKER_ID           "@linker_id@"
+#define FRG_HOST_MACHINE_CPU    "@host_machine_cpu@"
 #define FRG_HOST_MACHINE_SYSTEM "@host_machine_system@"
-#define FRG_LLVM_VERSION_MAJOR @llvm_version_major@
-#define FRG_LLVM_VERSION_MINOR @llvm_version_minor@
-#define FRG_LLVM_VERSION_PATCH @llvm_version_patch@
+#define FRG_LLVM_VERSION_MAJOR  @llvm_version_major @
+#define FRG_LLVM_VERSION_MINOR  @llvm_version_minor @
+#define FRG_LLVM_VERSION_PATCH  @llvm_version_patch @
 
-#if @should_build_tests@ == 1
-    #define FRG_SHOULD_BUILD_TESTS 1
+#if @should_build_tests @ == 1
+  #define FRG_SHOULD_BUILD_TESTS 1
 #endif
 
-#if @should_build_asserts@ == 1
-    #define FRG_SHOULD_BUILD_ASSERTS 1
+#if @should_build_asserts @ == 1
+  #define FRG_SHOULD_BUILD_ASSERTS 1
 #endif
 
-#if @always_print_internal_message_prefix@ == 1
-    #define FRG_ALWAYS_PRINT_INTERNAL_MESSAGE_PREFIX 1
+#if @always_print_internal_message_prefix @ == 1
+  #define FRG_ALWAYS_PRINT_INTERNAL_MESSAGE_PREFIX 1
 #endif

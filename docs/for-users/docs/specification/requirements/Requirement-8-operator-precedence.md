@@ -1,18 +1,16 @@
 <!--
-Copyright (c) 2023-2024 Sophie Katz
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-This file is part of Forge.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-Forge is free software: you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation, either version
-3 of the License, or (at your option) any later version.
+You should have received a copy of the GNU General Public License along with this
+program. If not, see <https://www.gnu.org/licenses/>.
 
-Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with Forge. If
-not, see <https://www.gnu.org/licenses/>.
+Copyright 2023-2024 Sophie Katz
 -->
 
 # Requirement-8: Operator precedence
@@ -30,25 +28,25 @@ Forge's list of operators is relatively similar to Python's. For reference: http
 
 ## Description
 
-Precedence | Operators
----------- | ---------
-15         | `.`, `()`
-14         | `++`, `--`
-13         | `**`
-12         | `-` (unary), `~`
-11         | `*`, `/`, `//`, `%`
-10         | `+`, `-` (binary)
-9          | `<<`, `>>`
-8          | `&`
-7          | `^`
-6          | <code>&#124;</code>
-5          | `==`, `!=`, `<`, `<=`, `>`, `>=`
-4          | `!`
-3          | `&&`
-2          | <code>&#124;&#124;</code>
-1          | `=`, `&=`, <code>&#124;=</code>, `^=`, `<<=`, `>>=`, `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, `**=`, `&&=`, <code>&#124;&#124;=</code>
+| Precedence | Operators                                                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 15         | `.`, `()`                                                                                                                          |
+| 14         | `++`, `--`                                                                                                                         |
+| 13         | `**`                                                                                                                               |
+| 12         | `-` (unary), `~`                                                                                                                   |
+| 11         | `*`, `/`, `//`, `%`                                                                                                                |
+| 10         | `+`, `-` (binary)                                                                                                                  |
+| 9          | `<<`, `>>`                                                                                                                         |
+| 8          | `&`                                                                                                                                |
+| 7          | `^`                                                                                                                                |
+| 6          | <code>&#124;</code>                                                                                                                |
+| 5          | `==`, `!=`, `<`, `<=`, `>`, `>=`                                                                                                   |
+| 4          | `!`                                                                                                                                |
+| 3          | `&&`                                                                                                                               |
+| 2          | <code>&#124;&#124;</code>                                                                                                          |
+| 1          | `=`, `&=`, <code>&#124;=</code>, `^=`, `<<=`, `>>=`, `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, `**=`, `&&=`, <code>&#124;&#124;=</code> |
 
->[!NOTE]  
+> [!NOTE]  
 > Higher precedence numbers are more tightly binding.
 
 ## Examples

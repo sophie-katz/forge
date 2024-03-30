@@ -1,18 +1,16 @@
 <!--
-Copyright (c) 2023-2024 Sophie Katz
+This program is free software: you can redistribute it and/or modify it under the terms
+of the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
 
-This file is part of Forge.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-Forge is free software: you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation, either version
-3 of the License, or (at your option) any later version.
+You should have received a copy of the GNU General Public License along with this
+program. If not, see <https://www.gnu.org/licenses/>.
 
-Forge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with Forge. If
-not, see <https://www.gnu.org/licenses/>.
+Copyright 2023-2024 Sophie Katz
 -->
 
 # Struct conventions
@@ -23,8 +21,8 @@ not, see <https://www.gnu.org/licenses/>.
 - [Getters and setters](#getters-and-setters)
 - [Recursive structs](#recursive-structs)
 - [Forward declarations](#forward-declarations)
-    - [Circular file dependencies](#circular-file-dependencies)
-    - [Circular struct dependencies](#circular-struct-dependencies)
+  - [Circular file dependencies](#circular-file-dependencies)
+  - [Circular struct dependencies](#circular-struct-dependencies)
 - [Non-owned fields](#non-owned-fields)
 - [Opaque structs](#opaque-structs)
 
@@ -120,7 +118,6 @@ void frg_struct_name_recursive_set(
 ```
 
 Otherwise, `a->b` would have the type `struct frg_b_t*` which wouldn't match `frg_b_t*` for all other uses of the property.
-
 
 ## Forward declarations
 

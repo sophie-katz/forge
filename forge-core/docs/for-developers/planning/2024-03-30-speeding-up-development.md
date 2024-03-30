@@ -12,5 +12,3 @@ program. If not, see <https://www.gnu.org/licenses/>.
 
 Copyright 2023-2024 Sophie Katz
 -->
-
-Descriptions of the architecture of Forge and its components.

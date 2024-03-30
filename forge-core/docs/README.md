@@ -13,6 +13,6 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge language support
+# Forge Core documentation
 
-Preliminary support for the [Forge programming language](https://github.com/sophie-katz/forge). Right now it is syntax highlighting only.
+This is where Forge Core specific documentation goes.

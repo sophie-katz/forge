@@ -13,14 +13,20 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge compiler
+# Forge Core
 
 This is the reference implementation of Forge. It follows the specification in the [user documentation](../docs/for-users/).
 
-- [Getting started](#getting-started)
-- [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)
+- [System setup](#system-setup)
+- [Building](#building)
+- [Generating code coverage](#generating-code-coverage)
+- [Formatting](#formatting)
+- [Linting](#linting)
+- [API documentation &#x2197;](https://sophie-katz.github.io/forge/compiler-api/index.html)
 
 ## System setup
+
+Follow these instructions to set up your system to build the Forge compiler.
 
 ### VS Code dockerized development environment (recommended)
 
@@ -65,7 +71,7 @@ meson test -C build
 ./build/forge --help
 ```
 
-## Building in watch mode
+### Watch mode
 
 You will need to install [`fswatch`](https://github.com/emcrisostomo/fswatch) to do this.
 

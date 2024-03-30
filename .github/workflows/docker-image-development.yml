@@ -11,6 +11,8 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
+# Rebuild Docker image used for CI pipeline.
+
 name: Development Docker image
 
 on:
@@ -19,6 +21,14 @@ on:
       - main
     paths:
       - docker/Dockerfile.development
+  workflow_dispatch:
+  schedule:
+    # Run every Friday at midnight UTC
+    - cron: "0 0 * * 5"
+
+concurrency:
+  group: "docker-image"
+  cancel-in-progress: false
 
 jobs:
   build_and_push:

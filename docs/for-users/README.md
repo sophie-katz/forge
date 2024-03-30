@@ -15,7 +15,9 @@ Copyright 2023-2024 Sophie Katz
 
 # User documentation
 
-To preview, run:
+This is the user documentation that is published for Forge. It is published by a GitHub action automatically when it gets committed to the `main` branch.
+
+To preview locally for development, run:
 
 ```shell
 . .venv/bin/activate

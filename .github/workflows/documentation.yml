@@ -11,6 +11,8 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
+# Rebuild documentation.
+
 name: Documentation
 
 on:

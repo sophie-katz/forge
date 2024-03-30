@@ -11,6 +11,8 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
+# Run CI on the main branch whenever commits are pushed.
+
 name: CI
 
 on:

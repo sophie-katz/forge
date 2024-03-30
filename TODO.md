@@ -17,6 +17,14 @@ Copyright 2023-2024 Sophie Katz
 
 # Low priority
 
+- [x] Clean up readmes to describe codebase organization
+- [ ] Clean up main readme and links
+- [ ] Update user documentation
+- [ ] Update developer documentation
+- [ ] Improve linting
+- [ ] Improve code coverage
+- [ ] Document how to keep codebase up to date
+
 # Backlog
 
 - [ ] Make sure all paths are absolute so we don't accidentally open a file twice

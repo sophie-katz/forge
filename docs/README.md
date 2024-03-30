@@ -13,6 +13,6 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge language support
+# Forge documentation
 
-Preliminary support for the [Forge programming language](https://github.com/sophie-katz/forge). Right now it is syntax highlighting only.
+This is where Forge is documented. Different projects within the monorepo have their own documentation, so this is everything that is not project-specific. It is split into two categories: for developers and for users.

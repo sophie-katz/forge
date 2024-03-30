@@ -11,6 +11,8 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
+# Run CI on feature branchs whenever PRs are created.
+
 name: CI for pull request
 
 on:

@@ -13,6 +13,6 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge language support
+# Docker images and containers
 
-Preliminary support for the [Forge programming language](https://github.com/sophie-katz/forge). Right now it is syntax highlighting only.
+This directory contains code for building images and containers for Forge. See the comments in the files for more info.

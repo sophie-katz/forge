@@ -19,10 +19,14 @@ Copyright 2023-2024 Sophie Katz
 
 ---
 
-This repository is a monorepo with multiple projects. See the readmes for those projects for more information:
+This repository is a monorepo with multiple projects. You can follow these links to learn more:
 
-- [Forge Core](./forge-core/)
-- [**User documentation**](https://sophie-katz.github.io/forge/)
-- [Developer documentation](./docs/for-developers/)
-- [**Docker images**](https://hub.docker.com/r/sophiekatz/forge-development)
-- [VS Code extension](./forge-vscode-extension/)
+- **Projects**
+  - [Forge Core](./forge-core/)
+  - [Forge documentation template](./forge-documentation-template/)
+  - [VS Code extension](./forge-vscode-extension/)
+- **Documentation**
+  - [For users &#x2197;](https://sophie-katz.github.io/forge/)
+  - [For developers](./docs/for-developers/)
+- **Resources**
+  - [Docker images &#x2197;](https://hub.docker.com/r/sophiekatz/forge-development)

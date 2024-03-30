@@ -11,7 +11,24 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
-ARG DEBIAN_TAG=bookworm-slim
+# Development Docker image
+# --------------------------------------------------------------------------------------
+# This is to keep a consistent development environment across different machines.
+# Although it is important for compilers to work across many different platforms, it
+# should be CI's job to test that - not developers.
+#
+# Use the `ENABLE_NODE` build argument to optionally enable Node.JS and NPM.
+
+# Versions
+ARG DEBIAN_VERSION_NAME=bookworm
+ARG DEBIAN_TAG=${DEBIAN_VERSION_NAME}-slim
+ARG PYTHON_MINOR_VERSION=12
+ARG PYTHON_VERSION=3.${PYTHON_MINOR_VERSION}
+ARG LLVM_VERSION=17
+ARG NVM_VERSION=0.39.7
+ARG NODE_VERSION=20
+
+# Conditions
 ARG ENABLE_NODE=
 
 FROM debian:${DEBIAN_TAG}
@@ -33,48 +50,48 @@ RUN apt-get update -y && \
         man \
         ninja-build \
         python3-pip \
-        python3.11 \
-        python3.11-venv \
+        python${PYTHON_VERSION} \
+        python${PYTHON_VERSION}-venv \
         software-properties-common \
         valgrind \
         wget \
     ;
 
 # Install LLVM and Clang
-RUN echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-17 main" > /etc/apt/sources.list.d/apt.llvm.org.list && \
+RUN echo "deb http://apt.llvm.org/${DEBIAN_VERSION_NAME}/ llvm-toolchain-${DEBIAN_VERSION_NAME}-${LLVM_VERSION} main" > /etc/apt/sources.list.d/apt.llvm.org.list && \
     wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
     apt-get update -y && \
     apt-get install -y \
-        clang-17 \
-        clang-format-17 \
-        clang-tidy-17 \
-        clang-tools-17 \
-        clangd-17 \
-        libc++-17-dev \
-        libc++abi-17-dev \
-        libclang-17-dev \
-        libclang-common-17-dev \
-        libclang-cpp17-dev \
-        libclang-rt-17-dev \
-        libomp-17-dev \
-        libpolly-17-dev \
-        libunwind-17-dev \
-        lld-17 \
-        lldb-17 \
-        llvm-17-dev \
-        llvm-17-tools \
+        clang-${LLVM_VERSION} \
+        clang-format-${LLVM_VERSION} \
+        clang-tidy-${LLVM_VERSION} \
+        clang-tools-${LLVM_VERSION} \
+        clangd-${LLVM_VERSION} \
+        libc++-${LLVM_VERSION}-dev \
+        libc++abi-${LLVM_VERSION}-dev \
+        libclang-${LLVM_VERSION}-dev \
+        libclang-common-${LLVM_VERSION}-dev \
+        libclang-cpp${LLVM_VERSION}-dev \
+        libclang-rt-${LLVM_VERSION}-dev \
+        libomp-${LLVM_VERSION}-dev \
+        libpolly-${LLVM_VERSION}-dev \
+        libunwind-${LLVM_VERSION}-dev \
+        lld-${LLVM_VERSION} \
+        lldb-${LLVM_VERSION} \
+        llvm-${LLVM_VERSION}-dev \
+        llvm-${LLVM_VERSION}-tools \
     ;
 
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 100 && \
-    update-alternatives --install /usr/bin/cc cc /usr/bin/clang-17 100 && \
-    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100 && \
-    update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-17 100 && \
-    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-17 100 && \
-    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 100 && \
-    update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-17 100 && \
-    update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-17 100 && \
-    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-17 100 && \
-    update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-17 100
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/lldb lldb /usr/bin/lldb-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${LLVM_VERSION} 100 && \
+    update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-${LLVM_VERSION} 100
 
 # Create non-root user
 RUN useradd -m -s /bin/bash dev && \
@@ -84,10 +101,9 @@ RUN useradd -m -s /bin/bash dev && \
 
 # Install Node.JS
 RUN if [ -n "${ENABLE_NODE}" ]; then \
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash; \
-
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash; \
         . /home/dev/.nvm/nvm.sh && \
-        nvm install v20 && \
+        nvm install v${NODE_VERSION} && \
         corepack enable; \
     fi
 

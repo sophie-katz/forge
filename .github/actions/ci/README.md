@@ -13,6 +13,11 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge language support
+# CI action
 
-Preliminary support for the [Forge programming language](https://github.com/sophie-katz/forge). Right now it is syntax highlighting only.
+Runs a series of checks against the Forge codebase to ensure that:
+
+- It builds
+- It passes automated tests
+- It passes style checks
+- It passes linting checks

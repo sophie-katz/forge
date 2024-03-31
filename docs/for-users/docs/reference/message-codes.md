@@ -21,6 +21,8 @@ The compiler generates a number of different messages, all of which can be ident
 <severity><domain><source><number>
 ```
 
+You can find a list of message codes defined in [`codes.h`](https://github.com/sophie-katz/forge/blob/main/forge-core/include/forge/messages/codes.h).
+
 ## Severity
 
 `<severity>` can be any of the following:
@@ -50,8 +52,7 @@ Messages from `FS` and `C` domains are displayed without error codes.
 
 `<source>` helps identify if any plugins are responsible for the message. They are defined by the plugin but any messages emitted by the Forge compiler itself have `-` as the source.
 
-## Index
+## Examples
 
-| Code   | Description | Example |
-| ------ | ----------- | ------- |
-| `FC-1` |             |         |
+- `FFS-2`: Cannot open file for writing. It has fatal severity, is from the filesystem domain, the source `-` meaning that it is built-in, and it has the number `2`.
+- `ES-9`: Multiple characters in character literal. It has error severity, is from the syntax, the source `-` meaning that it is built-in, and has the number `9`.

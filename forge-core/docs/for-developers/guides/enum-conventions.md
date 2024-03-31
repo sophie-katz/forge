@@ -19,7 +19,7 @@ Enums should use this declaration style:
 
 ```c
 typedef enum {
-
+    ...
 } frg_enum_name_t;
 ```
 

@@ -17,14 +17,23 @@ Copyright 2023-2024 Sophie Katz
 
 Changing even simple language features often results in many changes in many places in the codebase. These are all of the places that you may have to update:
 
+- [Testing](#testing)
 - [AST](#ast)
   - [Node kind enumerator](#node-kind-enumerator)
   - [Structs](#structs)
   - [Node kind info](#node-kind-info)
+- [Verification](#verification)
 - [Code generation](#code-generation)
 - [Parsing](#parsing)
   - [Lexer](#lexer)
   - [Parser](#parser)
+
+## Testing
+
+Compilation tests must be written for any new language features. These are defined in [`forge/tests/compilation/`](../../../tests/compilation/).
+
+> [!IMPORTANT]  
+> Tests should always be written first!
 
 ## AST
 
@@ -44,8 +53,7 @@ This may involve changing functions associated with the relevant node kinds, whi
 
 ## Verification
 
-> [!NOTE]  
-> **TODO:** Add in instructions for updating verification code.
+Verification code is defined in [`forge/verification/`](../../../lib/forge/verification/).
 
 ## Code generation
 

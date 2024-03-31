@@ -11,28 +11,23 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.DS_Store
-.pnp.*
-.venv/
-.yarn/*
-*.local
-*.log
-*.log*
-*.o
-*.so
-*.tsbuildinfo
-*.vsix
-build/
-coverage
-dist
-dist-ssr
-logs
-node_modules
-playwright-report/
-test-results/
-__pycache__/
+"""
+Usage: python3 doxygen.py <Doxygen binary>
+
+Runs Doxygen to generate API documentation.
+"""
+
+import subprocess
+import sys
+from common import *
+
+doxygen_path = sys.argv[1]
+
+sys.exit(
+    subprocess.run(
+        [
+            doxygen_path
+        ],
+        cwd=get_source_directory()
+    ).returncode
+)

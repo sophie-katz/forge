@@ -13,15 +13,4 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# User documentation
-
-This is the user documentation that is published for Forge. It is published by a GitHub action automatically when it gets committed to the `main` branch.
-
-To preview locally for development, run:
-
-```shell
-. .venv/bin/activate
-pip3 install -r requirements.txt
-cd docs/for-users
-mkdocs serve
-```
+When adding new subprojects, also update [`../scripts/check_subprojects.py`](../scripts/check_subprojects.py).

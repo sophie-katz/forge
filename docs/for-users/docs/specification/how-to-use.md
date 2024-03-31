@@ -25,14 +25,14 @@ It contains the following sections:
 
 There should be a clear distinction between what is a requirement and what is a proposal:
 
-- _A requirement_ says "this is how the language is defined." They should be explicit and should be written from the perspective of someone implementing a compiler for the language.
-- _A proposal_ says "this is how the language could be changed." Ideally, when a proposal is accepted it should cause an update to the requirements and to the compiler.
+- _Requirements_ say "this is how the language is defined." They should be explicit and should be written from the perspective of someone implementing a compiler for the language.
+- _Proposals_ say "this is how the language could be changed." Ideally, when a proposal is accepted it should cause an update to the requirements and to the compiler.
 
 ## Requirements
 
 These are parts of the language specification. One requirement is supposed to define a single language feature or a behavior for how language features fit together. They use the `Requirement-v*` templates.
 
-Some helpful tools are _(tools valid as of 2023-12-24)_:
+Some helpful tools are _(tools valid as of 2024-03-31)_:
 
 - [regex101](https://regex101.com/) for testing regular expressions.
 - [EBNF Evaluator](https://mdkrajnak.github.io/ebnftest/) for testing EBNF notation.
@@ -80,3 +80,6 @@ In the requirement or proposal, subitems should be referenced like `(subitem 1)`
 ## Templates
 
 These are versioned templates for how different parts of the specification should be written. When adding a new document always copy from a template and fill in the suggested sections.
+
+- [`Proposal-v0.md`](https://github.com/sophie-katz/forge/blob/main/docs/for-users/docs/specification/templates/Proposal-v0.md)
+- [`Requirement-v0.md`](https://github.com/sophie-katz/forge/blob/main/docs/for-users/docs/specification/templates/Requirement-v0.md)

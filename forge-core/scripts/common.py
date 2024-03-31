@@ -11,28 +11,14 @@
 #
 # Copyright 2023-2024 Sophie Katz
 
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.DS_Store
-.pnp.*
-.venv/
-.yarn/*
-*.local
-*.log
-*.log*
-*.o
-*.so
-*.tsbuildinfo
-*.vsix
-build/
-coverage
-dist
-dist-ssr
-logs
-node_modules
-playwright-report/
-test-results/
-__pycache__/
+"""Common utilities for all scripts."""
+
+import pathlib
+
+def get_source_directory() -> pathlib.Path:
+    result = pathlib.Path(__file__).parent.parent
+
+    assert (result / "meson.build").exists()
+
+    return result
+

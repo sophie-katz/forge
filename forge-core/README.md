@@ -24,73 +24,39 @@ This is the reference implementation of Forge. It follows the specification in t
 - [Linting](#linting)
 - [API documentation &#x2197;](https://sophie-katz.github.io/forge/compiler-api/index.html)
 
-## System setup
-
-Follow these instructions to set up your system to build the Forge compiler.
-
-### VS Code dockerized development environment (recommended)
-
-Follow [these instructions](../docs/for-developers/guides/vscode-dockerized-development-environment.md) to get the Dockerized development environment up and running in VS Code. This will automatically have all the dependencies installed.
-
-### Manual setup
-
-To build the Forge compiler you need these installed on your system:
-
-- [Python 3](https://www.python.org/)
-- [CMake](https://cmake.org/)
-- [Glib 2.0](https://docs.gtk.org/glib/)
-- [LLVM](https://llvm.org/)
-  - [Debian/Ubuntu packages](https://apt.llvm.org/)
-  - [macOS package](https://formulae.brew.sh/formula/llvm)
-- [Doxygen](https://www.doxygen.nl/index.html) (only needed for building API documentation)
-
 ## Building
 
+Follow the [Getting Started](../docs/for-developers//guides//getting-started.md) guide first before building.
+
 ```shell
-# Clone this repository
-git clone https://github.com/sophie-katz/forge.git
-
-# Init submodules
-cd forge
-git submodule update --init
-
-# Install Python dependencies
-python3 -m venv .venv
-. .venv/bin/activate
-pip3 install -r requirements.txt
-
 # Build the Core
 cd forge-core
 meson setup build
 meson compile -C build
 
 # Run tests
-meson test -C build
+meson test -C build --print-errorlogs -q
 
 # Run Forge
 ./build/forge --help
 ```
 
-### Watch mode
-
-You will need to install [`fswatch`](https://github.com/emcrisostomo/fswatch) to do this.
-
-Run this command to watch the `forge-core` directory for changes and rebuild the compiler when changes are detected:
-
-```shell
-fswatch -o . | xargs -n1 -I{} meson compile -C build
-```
-
-You can also run this to watch a dump of the AST:
-
-```shell
-fswatch -o .. | xargs -n1 -I{} bash -c "clear && ./build/forge dump-ast ../example.frg"
-```
-
 ## Generating code coverage
 
 ```shell
-meson compile -C build && \
+# When switching between code coverage modes, always delete the build directory
+rm -rf build
+meson setup build
+
+# For everything
+meson configure build -Dbuildtype=debug -Db_coverage=true -Dtest_mode=fast -Dtest_only_changed=false -Dshould_build_integration_tests=true -Dshould_build_demos=true && \
+    meson compile -C build && \
+    meson test -C build && \
+    ninja coverage-html -C build
+
+# For only unit tests (can be helpful for improving unit tests specifically)
+meson configure build -Dbuildtype=debug -Db_coverage=true -Dtest_mode=fast -Dtest_only_changed=false -Dshould_build_integration_tests=false -Dshould_build_demos=false && \
+    meson compile -C build && \
     meson test -C build && \
     ninja coverage-html -C build
 ```
@@ -104,17 +70,11 @@ ninja clang-format -C build
 ## Linting
 
 ```shell
-for file in $(find include -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
-    $(find lib -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
-    $(find src -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \
-    $(find tests -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp'); do
-    clang-tidy --warnings-as-errors --config-file=.clang-tidy "$file" -- -Iinclude -Ibuild -Isubprojects/utf8proc -Isubprojects/Unity/src $(pkg-config --cflags glib-2.0) $(llvm-config --cflags)
-
-    if [ $? -ne 0 ]; then
-        break
-    fi
-done
+ninja lint -C build
 ```
 
-> [!NOTE]  
-> This is very much not complete and is just a POC.
+## API documentation
+
+```shell
+ninja doxygen -C build
+```

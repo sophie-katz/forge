@@ -20,5 +20,89 @@ option(
         'disabled'
     ],
     value: 'fast',
-    description: 'In what mode to run automated tests'
+    description: 'In what mode to run automated tests. Fast runs the test binary directly. Full uses Valgrind to perform additional memory safety checks.'
+)
+
+option(
+    'test_only_changed',
+    type: 'boolean',
+    value: true,
+    description: 'Only run tests that have changed since the last successful run.'
+)
+
+option(
+    'should_build_integration_tests',
+    type: 'boolean',
+    value: true
+)
+
+option(
+    'should_build_demos',
+    type: 'boolean',
+    value: true
+)
+
+option(
+    'python_binary',
+    type: 'string',
+    value: 'python3',
+    description: 'What binary to use for Python. The system path will be searched for this binary.'
+)
+
+option(
+    'git_binary',
+    type: 'string',
+    value: 'git',
+    description: 'What binary to use for Git. The system path will be searched for this binary.'
+)
+
+
+option(
+    'flex_binary',
+    type: 'string',
+    value: 'flex',
+    description: 'What binary to use for Flex. The system path will be searched for this binary.'
+)
+
+option(
+    'bison_binary',
+    type: 'string',
+    value: 'bison',
+    description: 'What binary to use for Bison. The system path will be searched for this binary.'
+)
+
+option(
+    'pkg_config_binary',
+    type: 'string',
+    value: 'pkg-config',
+    description: 'What binary to use for pkg-config. The system path will be searched for this binary.'
+)
+
+
+option(
+    'llvm_config_binary',
+    type: 'string',
+    value: 'llvm-config',
+    description: 'What binary to use for llvm-config. The system path will be searched for this binary.'
+)
+
+option(
+    'clang_tidy_binary',
+    type: 'string',
+    value: 'clang-tidy',
+    description: 'What binary to use for Clang Tidy. The system path will be searched for this binary.'
+)
+
+option(
+    'doxygen_binary',
+    type: 'string',
+    value: 'doxygen',
+    description: 'What binary to use for Doxygen. The system path will be searched for this binary.'
+)
+
+option(
+    'glib2_valgrind_suppression_file',
+    type: 'string',
+    value: '/usr/share/glib-2.0/valgrind/glib.supp',
+    description: 'Where the glib.supp file is installed to.'
 )

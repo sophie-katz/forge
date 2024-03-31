@@ -17,6 +17,8 @@ Copyright 2023-2024 Sophie Katz
 
 These are all the places where dependency versions are defined. To keep Forge up to date, go through these and update as necessary:
 
+- `.vscode/settings.json`
+  - Update `C_Cpp.default.includePath`
 - `docker/Dockerfile.development`
 - `forge-core/meson.build`
 - `forge-core/subprojects/*`

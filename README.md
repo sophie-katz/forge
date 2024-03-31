@@ -26,6 +26,7 @@ This repository is a monorepo with multiple projects. You can follow these links
   - [Forge documentation template](./forge-documentation-template/)
   - [VS Code extension](./forge-vscode-extension/)
 - **Documentation**
+  - [Getting started](./docs/for-developers/guides/getting-started.md)
   - [For users &#x2197;](https://sophie-katz.github.io/forge/)
   - [For developers](./docs/for-developers/)
 - **Resources**

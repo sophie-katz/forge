@@ -6,9 +6,9 @@
     "git.ignoreSubmodules": true,
     "C_Cpp.default.cStandard": "gnu17",
     "C_Cpp.default.includePath": [
-        "/opt/homebrew/Cellar/glib/2.78.3/include/glib-2.0",
-        "/opt/homebrew/Cellar/glib/2.78.3/lib/glib-2.0/include",
-        "/opt/homebrew/Cellar/llvm/17.0.6/include",
+        "/opt/homebrew/Cellar/glib/*/include/glib-2.0",
+        "/opt/homebrew/Cellar/glib/*/lib/glib-2.0/include",
+        "/opt/homebrew/Cellar/llvm/*/include",
         "/usr/include/glib-2.0",
         "/usr/lib/aarch64-linux-gnu/glib-2.0/include",
         "/usr/lib/llvm-17/include",
@@ -74,7 +74,8 @@
         "initialization.h": "c",
         "lexical_casts.h": "c",
         "source_context.h": "c",
-        "sstream": "c"
+        "sstream": "c",
+        "build_configuration.h.in": "plaintext"
     },
     "C_Cpp.doxygen.generateOnType": false,
     "cSpell.words": [

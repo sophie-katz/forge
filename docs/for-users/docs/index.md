@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 <!--
 This program is free software: you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software Foundation, either
@@ -19,9 +25,7 @@ Copyright 2023-2024 Sophie Katz
 
 ---
 
-This is the user documentation for the Forge programming language.
+This is the user documentation for the Forge programming language. You can follow these links to learn more:
 
-- [Guide](./guide/hello-world.md)
-- [Language specification](./specification/how-to-use.md)
-- [**Core**](https://github.com/sophie-katz/forge/tree/main/forge-core)
-  - [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)
+- [**GitHub**](https://github.com/sophie-katz/forge)
+- [**API documentation**](https://sophie-katz.github.io/forge/compiler-api/index.html)

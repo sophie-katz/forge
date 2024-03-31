@@ -18,13 +18,14 @@ Copyright 2023-2024 Sophie Katz
 This requirement is part of the [Forge language specification](../how-to-use.md). It uses v0 of the requirement template.
 
 **Start date:** 2024-01-05
+
 **Fully supported as of Forge version:** 0.1.0
 
 It defines the precedence, or order of operations, for the operators in the language.
 
 ## Background
 
-Forge's list of operators is relatively similar to Python's. For reference: https://docs.python.org/3/reference/expressions.html#operator-precedence. This order of operations is based heavily on Python.
+Forge's list of operators and their precedence is relatively similar to [Python's](https://docs.python.org/3/reference/expressions.html#operator-precedencehttps://docs.python.org/3/reference/expressions.html#operator-precedence).
 
 ## Description
 
@@ -46,8 +47,9 @@ Forge's list of operators is relatively similar to Python's. For reference: http
 | 2          | <code>&#124;&#124;</code>                                                                                                          |
 | 1          | `=`, `&=`, <code>&#124;=</code>, `^=`, `<<=`, `>>=`, `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, `**=`, `&&=`, <code>&#124;&#124;=</code> |
 
-> [!NOTE]  
-> Higher precedence numbers are more tightly binding.
+!!! note
+
+    Higher precedence numbers are more tightly binding.
 
 ## Examples
 

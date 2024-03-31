@@ -20,8 +20,8 @@ These are all the places where dependency versions are defined. To keep Forge up
 - `.vscode/settings.json`
   - Update `C_Cpp.default.includePath`
 - `docker/Dockerfile.development`
-- `forge-core/meson.build`
-- `forge-core/subprojects/*`
+- `forge-compiler/meson.build`
+- `forge-compiler/subprojects/*`
   - Update submodule commits
 - `forge-documentation-template/package.json`
 - `forge-vscode-extension/package.json`

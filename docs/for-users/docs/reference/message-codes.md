@@ -21,7 +21,7 @@ The compiler generates a number of different messages, all of which can be ident
 <severity><domain><source><number>
 ```
 
-You can find a list of message codes defined in [`codes.h`](https://github.com/sophie-katz/forge/blob/main/forge-core/include/forge/messages/codes.h).
+You can find a list of message codes defined in [`codes.h`](https://github.com/sophie-katz/forge/blob/main/forge-compiler/include/forge/messages/codes.h).
 
 ## Severity
 

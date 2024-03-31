@@ -13,7 +13,7 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge Core
+# Forge compiler
 
 This is the reference implementation of Forge. It follows the specification in the [user documentation](../docs/for-users/).
 
@@ -29,8 +29,8 @@ This is the reference implementation of Forge. It follows the specification in t
 Follow the [Getting Started](../docs/for-developers//guides//getting-started.md) guide first before building.
 
 ```shell
-# Build the Core
-cd forge-core
+# Build the compiler
+cd forge-compiler
 meson setup build
 meson compile -C build
 

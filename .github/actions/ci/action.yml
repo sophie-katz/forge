@@ -28,8 +28,8 @@ runs:
         . .venv/bin/activate
         pip3.11 install meson
 
-    - name: Build Core
-      working-directory: forge-core
+    - name: Build compiler
+      working-directory: forge-compiler
       shell: bash
       run: |
         . ../.venv/bin/activate
@@ -38,14 +38,14 @@ runs:
         meson compile -C build
 
     - name: Run tests
-      working-directory: forge-core
+      working-directory: forge-compiler
       shell: bash
       run: |
         . ../.venv/bin/activate 
         meson test -v -C build
 
     - name: Check style
-      working-directory: forge-core
+      working-directory: forge-compiler
       shell: bash
       run: |
         if ninja clang-format -C build 2>&1 | grep -q "File reformatted:"; then
@@ -54,7 +54,7 @@ runs:
         fi
 
     - name: Lint
-      working-directory: forge-core
+      working-directory: forge-compiler
       shell: bash
       run: |
         for file in $(find include -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp') \

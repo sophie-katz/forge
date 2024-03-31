@@ -13,6 +13,4 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-# Forge Core documentation
-
-This is where Forge Core specific documentation goes.
+Descriptions of the architecture of the Forge compiler.

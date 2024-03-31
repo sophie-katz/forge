@@ -19,7 +19,7 @@ This guide is heavily based off of https://wiki.wxwidgets.org/Valgrind_Suppressi
 
 ## Identify a binary with memory leaks
 
-Memory leaks are usually detected by the [full test wrapper](../../../forge-core/scripts/test_wrapper_full.bash) or by running the `forge` binary with `valgrind`.
+Memory leaks are usually detected by the [full test wrapper](../../../forge-compiler/scripts/test_wrapper_full.bash) or by running the `forge` binary with `valgrind`.
 
 Run a given command line with a Forge binary like so:
 
@@ -130,7 +130,7 @@ Use `*`, `?`, and `...` wildcards to make the suppression more general. Also rep
 }
 ```
 
-Then add/merge the new suppressions into the existing [`forge.supp`](../../../forge-core/forge.supp) file.
+Then add/merge the new suppressions into the existing [`forge.supp`](../../../forge-compiler/forge.supp) file.
 
 Then re-run the `valgrind` command to confirm it worked:
 

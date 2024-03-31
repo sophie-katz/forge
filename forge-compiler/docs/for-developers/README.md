@@ -13,4 +13,4 @@ program. If not, see <https://www.gnu.org/licenses/>.
 Copyright 2023-2024 Sophie Katz
 -->
 
-Documentation intended for developers of Forge Core.
+Documentation intended for developers of the Forge compiler.

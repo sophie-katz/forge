@@ -1,9 +1,6 @@
-[submodule "forge-core/subprojects/Unity"]
-	path = forge-core/subprojects/Unity
-	url = https://github.com/ThrowTheSwitch/Unity.git
-[submodule "forge-core/subprojects/doxygen-awesome-css"]
-	path = forge-core/subprojects/doxygen-awesome-css
+[submodule "forge-compiler/subprojects/doxygen-awesome-css"]
+	path = forge-compiler/subprojects/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css.git
-[submodule "forge-core/subprojects/utf8proc"]
-	path = forge-core/subprojects/utf8proc
+[submodule "forge-compiler/subprojects/utf8proc"]
+	path = forge-compiler/subprojects/utf8proc
 	url = https://github.com/JuliaStrings/utf8proc.git

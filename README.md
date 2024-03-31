@@ -22,7 +22,7 @@ Copyright 2023-2024 Sophie Katz
 This repository is a monorepo with multiple projects. You can follow these links to learn more:
 
 - **Projects**
-  - [Forge Core](./forge-core/)
+  - [Forge compiler](./forge-compiler/)
   - [Forge documentation template](./forge-documentation-template/)
   - [VS Code extension](./forge-vscode-extension/)
 - **Documentation**

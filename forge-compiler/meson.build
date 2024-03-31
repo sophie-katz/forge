@@ -14,7 +14,7 @@
 # Project definition
 # --------------------------------------------------------------------------------------
 project(
-    'forge-core',
+    'forge-compiler',
     'c',
     'cpp',
     default_options: [
@@ -114,7 +114,6 @@ program_clang_tidy = find_program(
 
 program_doxygen = find_program(
     get_option('doxygen_binary'),
-    required: true,
     version: ['>=1.9.4', '<2']
 )
 

@@ -127,7 +127,7 @@ void _frg_message_print_prefix_internal(frg_stream_output_t* mut_stream,
 
     frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_BRIGHT_BLACK);
     frg_stream_output_write_printf(mut_stream,
-                                   "[internally from forge-core/%s:%d]\n",
+                                   "[internally from forge-compiler/%s:%d]\n",
                                    log_path_resolved,
                                    log_line_number);
     frg_stream_output_set_color(mut_stream, FRG_STREAM_OUTPUT_COLOR_RESET);

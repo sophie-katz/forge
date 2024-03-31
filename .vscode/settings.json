@@ -12,10 +12,10 @@
         "/usr/include/glib-2.0",
         "/usr/lib/aarch64-linux-gnu/glib-2.0/include",
         "/usr/lib/llvm-17/include",
-        "${workspaceFolder}/forge-core/build",
-        "${workspaceFolder}/forge-core/include",
-        "${workspaceFolder}/forge-core/subprojects/Unity/src",
-        "${workspaceFolder}/forge-core/subprojects/utf8proc"
+        "${workspaceFolder}/forge-compiler/build",
+        "${workspaceFolder}/forge-compiler/include",
+        "${workspaceFolder}/forge-compiler/subprojects/Unity/src",
+        "${workspaceFolder}/forge-compiler/subprojects/utf8proc"
     ],
     "files.associations": {
         "*.in": "cpp",

@@ -21,7 +21,7 @@ on:
       - main
     paths:
       - ".github/**"
-      - "forge-core/**"
+      - "forge-compiler/**"
   workflow_dispatch:
 
 jobs:

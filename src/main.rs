@@ -3,6 +3,7 @@ use std::process;
 use cli::args::parse_cli_args;
 
 mod cli;
+mod lexing;
 mod message;
 mod source;
 

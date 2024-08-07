@@ -8,6 +8,7 @@ lazy_static! {
             "1" => true,
             _ => false,
         },
+        // If unset, default to true
         Err(_) => true,
     };
 }

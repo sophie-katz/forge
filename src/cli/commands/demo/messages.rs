@@ -25,7 +25,7 @@ impl DemoMessagesArgs {
         let mut source_context = SourceContext::new();
 
         let source = source_context
-            .add_from_str("test.frg".to_owned(), source_text)
+            .add_from_str("test.frg", source_text)
             .unwrap();
 
         let mut message_context = MessageContext::new();

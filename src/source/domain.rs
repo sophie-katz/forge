@@ -1,6 +1,7 @@
 use std::{cell::RefCell, fmt::Debug};
 
 use super::error::SourceError;
+use std::fs;
 
 pub type SourceId = usize;
 pub type SourceOffset = usize;
@@ -133,7 +134,7 @@ impl SourceContext {
         }
     }
 
-    pub fn add_raw(&mut self, path: String, data: Vec<u8>) -> Result<SourceRef, SourceError> {
+    pub fn add_raw(&mut self, path: &str, data: Vec<u8>) -> Result<SourceRef, SourceError> {
         if path.is_empty() {
             return Err(SourceError::EmptyPath);
         }
@@ -141,7 +142,7 @@ impl SourceContext {
         let id = self.next_id();
 
         self.sources.push(SourceData {
-            path,
+            path: path.to_owned(),
             data,
             line_offset_index: RefCell::new(None),
         });
@@ -149,12 +150,13 @@ impl SourceContext {
         Ok(SourceRef { context: self, id })
     }
 
-    pub fn add_from_str(&mut self, path: String, data: &str) -> Result<SourceRef, SourceError> {
+    pub fn add_from_str(&mut self, path: &str, data: &str) -> Result<SourceRef, SourceError> {
         self.add_raw(path, data.as_bytes().to_vec())
     }
 
-    pub fn add_from_file(&mut self, _path: String) -> Result<SourceRef, SourceError> {
-        todo!()
+    pub fn add_from_file(&mut self, path: &str) -> Result<SourceRef, SourceError> {
+        let data = fs::read(path)?;
+        self.add_raw(path, data)
     }
 
     fn next_id(&mut self) -> SourceId {
@@ -183,6 +185,14 @@ impl<'source_context> SourceLocation<'source_context> {
             line_number: 1,
             column_number: 1,
         }
+    }
+
+    pub fn bytes_between(&self, other: &Self) -> &[u8] {
+        &self.source.data()[self.offset..other.offset]
+    }
+
+    pub fn string_between(&self, other: &Self) -> String {
+        String::from_utf8_lossy(self.bytes_between(other)).to_string()
     }
 }
 

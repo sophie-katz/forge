@@ -31,7 +31,7 @@ fn write_message(
 
 fn write_message_location(writer: &mut impl WriteColor, message: &Message) -> io::Result<()> {
     if let Some(source) = message.source() {
-        writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
+        writer.set_color(ColorSpec::new().set_dimmed(true))?;
 
         write!(writer, "{}", source.path())?;
 
@@ -59,27 +59,27 @@ fn write_message_severity(writer: &mut impl WriteColor, severity: Severity) -> i
             writer.set_color(&ColorSpec::new())?;
         }
         Severity::Error => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Red)).set_bold(true))?;
+            writer.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
             write!(writer, "error:")?;
             writer.set_color(&ColorSpec::new())?;
         }
         Severity::Warning => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Yellow)).set_bold(true))?;
+            writer.set_color(ColorSpec::new().set_fg(Some(Color::Yellow)))?;
             write!(writer, "warning:")?;
             writer.set_color(&ColorSpec::new())?;
         }
         Severity::Info => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)).set_bold(true))?;
+            writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
             write!(writer, "info:")?;
             writer.set_color(&ColorSpec::new())?;
         }
         Severity::Fix => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Green)).set_bold(true))?;
+            writer.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
             write!(writer, "fix:")?;
             writer.set_color(&ColorSpec::new())?;
         }
         Severity::Suggestion => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Blue)).set_bold(true))?;
+            writer.set_color(ColorSpec::new().set_fg(Some(Color::Blue)))?;
             write!(writer, "suggestion:")?;
             writer.set_color(&ColorSpec::new())?;
         }
@@ -89,7 +89,7 @@ fn write_message_severity(writer: &mut impl WriteColor, severity: Severity) -> i
             writer.set_color(&ColorSpec::new())?;
         }
         Severity::Debug => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Magenta)).set_bold(true))?;
+            writer.set_color(ColorSpec::new().set_fg(Some(Color::Magenta)))?;
             write!(writer, "debug:")?;
             writer.set_color(&ColorSpec::new())?;
         }
@@ -189,10 +189,11 @@ fn write_message_source_line(
         }) && last_column_number.map_or(true, |last_column_number| {
             reader.current_location().column_number <= last_column_number
         }) {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
-
             if underline {
+                writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)).set_dimmed(true))?;
                 write!(writer, "{}", choose_unicode("\u{2594}", "^"))?;
+            } else {
+                writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
             }
         } else {
             writer.set_color(&ColorSpec::new())?;
@@ -217,13 +218,9 @@ fn write_message_source_line(
 }
 
 fn write_message_text(writer: &mut impl WriteColor, text: &str) -> io::Result<()> {
-    writer.set_color(ColorSpec::new().set_bold(true))?;
-
-    write!(writer, " {}", text)?;
-
     writer.set_color(&ColorSpec::new())?;
 
-    writeln!(writer)?;
+    writeln!(writer, " {}", text)?;
 
     Ok(())
 }
@@ -241,7 +238,7 @@ pub fn write_message_context(
     }
 
     if message_context.error_count() > 0 && message_context.warning_count() == 0 {
-        writer.set_color(ColorSpec::new().set_fg(Some(Color::Red)).set_bold(true))?;
+        writer.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
 
         writeln!(
             writer,
@@ -256,7 +253,7 @@ pub fn write_message_context(
 
         writer.set_color(&ColorSpec::new())?;
     } else if message_context.error_count() == 0 && message_context.warning_count() > 0 {
-        writer.set_color(ColorSpec::new().set_fg(Some(Color::Yellow)).set_bold(true))?;
+        writer.set_color(ColorSpec::new().set_fg(Some(Color::Yellow)))?;
 
         writeln!(
             writer,
@@ -271,7 +268,7 @@ pub fn write_message_context(
 
         writer.set_color(&ColorSpec::new())?;
     } else if message_context.error_count() > 0 && message_context.warning_count() > 0 {
-        writer.set_color(ColorSpec::new().set_fg(Some(Color::Red)).set_bold(true))?;
+        writer.set_color(ColorSpec::new().set_fg(Some(Color::Red)))?;
 
         write!(
             writer,
@@ -284,7 +281,7 @@ pub fn write_message_context(
             }
         )?;
 
-        writer.set_color(ColorSpec::new().set_fg(Some(Color::Yellow)).set_bold(true))?;
+        writer.set_color(ColorSpec::new().set_fg(Some(Color::Yellow)))?;
 
         writeln!(
             writer,

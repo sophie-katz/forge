@@ -6,4 +6,6 @@ pub enum SourceError {
     EmptyPath,
     #[error("line number cannot be zero")]
     LineNumberCannotBeZero,
+    #[error("io error: {0}")]
+    Io(#[from] std::io::Error),
 }

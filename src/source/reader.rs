@@ -60,6 +60,14 @@ impl<'source_context> SourceReader<'source_context> {
     pub fn current_location(&self) -> &SourceLocation<'source_context> {
         &self.current_location
     }
+
+    pub fn save_state(&self) -> SourceLocation<'source_context> {
+        self.current_location.clone()
+    }
+
+    pub fn restore_state(&mut self, state: SourceLocation<'source_context>) {
+        self.current_location = state;
+    }
 }
 
 #[cfg(test)]
@@ -70,7 +78,7 @@ mod tests {
     #[test]
     fn test_empty_source() {
         let mut source_context = SourceContext::new();
-        let source = source_context.add_from_str("--".to_string(), "").unwrap();
+        let source = source_context.add_from_str("--", "").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
         assert_eq!(reader.is_more(), false);
@@ -84,7 +92,7 @@ mod tests {
     #[test]
     fn test_simple() {
         let mut source_context = SourceContext::new();
-        let source = source_context.add_from_str("--".to_string(), "ab").unwrap();
+        let source = source_context.add_from_str("--", "ab").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
         assert_eq!(reader.is_more(), true);
@@ -112,9 +120,7 @@ mod tests {
     #[test]
     fn test_unix_newline() {
         let mut source_context = SourceContext::new();
-        let source = source_context
-            .add_from_str("--".to_string(), "a\nb\n")
-            .unwrap();
+        let source = source_context.add_from_str("--", "a\nb\n").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
         assert_eq!(reader.is_more(), true);
@@ -157,9 +163,7 @@ mod tests {
     #[test]
     fn test_dos_newline() {
         let mut source_context = SourceContext::new();
-        let source = source_context
-            .add_from_str("--".to_string(), "a\r\nb\r\n")
-            .unwrap();
+        let source = source_context.add_from_str("--", "a\r\nb\r\n").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
         assert_eq!(reader.is_more(), true);

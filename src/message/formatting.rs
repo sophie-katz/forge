@@ -68,31 +68,30 @@ fn write_message_severity(writer: &mut impl WriteColor, severity: Severity) -> i
             write!(writer, "warning:")?;
             writer.set_color(&ColorSpec::new())?;
         }
-        Severity::Info => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
-            write!(writer, "info:")?;
-            writer.set_color(&ColorSpec::new())?;
-        }
-        Severity::Fix => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
-            write!(writer, "fix:")?;
-            writer.set_color(&ColorSpec::new())?;
-        }
+        // Severity::Info => {
+        //     writer.set_color(ColorSpec::new().set_fg(Some(Color::Cyan)))?;
+        //     write!(writer, "info:")?;
+        //     writer.set_color(&ColorSpec::new())?;
+        // }
+        // Severity::Fix => {
+        //     writer.set_color(ColorSpec::new().set_fg(Some(Color::Green)))?;
+        //     write!(writer, "fix:")?;
+        //     writer.set_color(&ColorSpec::new())?;
+        // }
         Severity::Suggestion => {
             writer.set_color(ColorSpec::new().set_fg(Some(Color::Blue)))?;
             write!(writer, "suggestion:")?;
             writer.set_color(&ColorSpec::new())?;
-        }
-        Severity::Note => {
-            writer.set_color(ColorSpec::new().set_dimmed(true).set_bold(true))?;
-            write!(writer, "note:")?;
-            writer.set_color(&ColorSpec::new())?;
-        }
-        Severity::Debug => {
-            writer.set_color(ColorSpec::new().set_fg(Some(Color::Magenta)))?;
-            write!(writer, "debug:")?;
-            writer.set_color(&ColorSpec::new())?;
-        }
+        } // Severity::Note => {
+          //     writer.set_color(ColorSpec::new().set_dimmed(true).set_bold(true))?;
+          //     write!(writer, "note:")?;
+          //     writer.set_color(&ColorSpec::new())?;
+          // }
+          // Severity::Debug => {
+          //     writer.set_color(ColorSpec::new().set_fg(Some(Color::Magenta)))?;
+          //     write!(writer, "debug:")?;
+          //     writer.set_color(&ColorSpec::new())?;
+          // }
     }
 
     Ok(())

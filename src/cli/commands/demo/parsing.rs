@@ -1,19 +1,20 @@
 use termcolor::{ColorChoice, StandardStream};
 
 use crate::{
-    lexing::lexer::lex,
+    lexing::{lexer::lex, reader::TokenReader},
     message::{
         domain::{Message, MessageContext, Severity},
         formatting::write_message_context,
     },
+    parsing::parser::parse,
     source::domain::SourceContext,
 };
 
-pub struct DemoLexingArgs {
+pub struct DemoParsingArgs {
     pub source: String,
 }
 
-impl DemoLexingArgs {
+impl DemoParsingArgs {
     pub fn run(self) -> bool {
         let mut source_context = SourceContext::new();
         let mut message_context = MessageContext::new();
@@ -38,16 +39,24 @@ impl DemoLexingArgs {
 
         let tokens = lex(source, &mut message_context);
 
+        let mut token_reader = TokenReader::new(tokens);
+
+        let declarations = parse(&mut token_reader, &mut message_context);
+
         write_message_context(
             &mut StandardStream::stdout(ColorChoice::Auto),
             &message_context,
         )
         .unwrap();
 
-        for token in tokens {
-            println!("{}", token);
-        }
+        if let Some(declarations) = declarations {
+            for declaration in declarations {
+                println!("{:#?}", declaration);
+            }
 
-        true
+            true
+        } else {
+            false
+        }
     }
 }

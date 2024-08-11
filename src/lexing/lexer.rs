@@ -1,4 +1,5 @@
 use crate::{
+    domain::{ValueFloat, ValueIntUnsigned, ValueWidth},
     message::domain::{Message, MessageContext, Severity},
     source::{
         domain::{SourceLocation, SourceRef},
@@ -14,7 +15,7 @@ use super::{
 fn lex_next_symbol<'source_context>(
     reader: &mut SourceReader<'source_context>,
 ) -> Token<'source_context> {
-    let first = reader.save_state();
+    let first = reader.current_location().clone();
 
     while let Some(byte) = reader.peek_next() {
         match byte {
@@ -30,73 +31,193 @@ fn lex_next_symbol<'source_context>(
 
     // Handle keywords with symbols being a fallback
     if bytes_between == [b'a', b's'] {
-        Token::new(TokenValue::KeywordAs, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordAs,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'b', b'o', b'o', b'l'] {
-        Token::new(TokenValue::KeywordBool, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordBool,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'c', b'o', b'n', b's', b't'] {
-        Token::new(TokenValue::KeywordConst, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordConst,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'e', b'n', b'u', b'm'] {
-        Token::new(TokenValue::KeywordEnum, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordEnum,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'e', b'x', b'p', b'l', b'i', b'c', b'i', b't'] {
         Token::new(
             TokenValue::KeywordExplicit,
             first,
-            reader.current_location(),
+            reader.current_location().clone(),
         )
     } else if bytes_between == [b'f', b'3', b'2'] {
-        Token::new(TokenValue::KeywordF32, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordF32,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'f', b'6', b'4'] {
-        Token::new(TokenValue::KeywordF64, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordF64,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'f', b'n'] {
-        Token::new(TokenValue::KeywordFn, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordFn,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'i', b'1', b'6'] {
-        Token::new(TokenValue::KeywordI16, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordI16,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'i', b'3', b'2'] {
-        Token::new(TokenValue::KeywordI32, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordI32,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'i', b'6', b'4'] {
-        Token::new(TokenValue::KeywordI64, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordI64,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'i', b'8'] {
-        Token::new(TokenValue::KeywordI8, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordI8,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'i', b'n', b't'] {
-        Token::new(TokenValue::KeywordInt, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordInt,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'i', b's', b'i', b'z', b'e'] {
-        Token::new(TokenValue::KeywordISize, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordISize,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'l', b'e', b't'] {
-        Token::new(TokenValue::KeywordLet, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordLet,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'n', b'e', b'v', b'e', b'r'] {
-        Token::new(TokenValue::KeywordNever, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordNever,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'n', b'u', b'l', b'l'] {
-        Token::new(TokenValue::KeywordNull, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordNull,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'p', b'r', b'o', b'p'] {
-        Token::new(TokenValue::KeywordProp, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordProp,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'r', b'e', b't', b'u', b'r', b'n'] {
-        Token::new(TokenValue::KeywordReturn, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordReturn,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'n', b'e', b'v', b'e', b'r'] {
-        Token::new(TokenValue::KeywordNever, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordNever,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b's', b'e', b'l', b'f'] {
-        Token::new(TokenValue::KeywordSelf, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordSelf,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b't', b'y', b'p', b'e'] {
-        Token::new(TokenValue::KeywordType, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordType,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'u', b'1', b'6'] {
-        Token::new(TokenValue::KeywordU16, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordU16,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'u', b'3', b'2'] {
-        Token::new(TokenValue::KeywordU32, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordU32,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'u', b'6', b'4'] {
-        Token::new(TokenValue::KeywordU64, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordU64,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'u', b'8'] {
-        Token::new(TokenValue::KeywordU8, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordU8,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'u', b'i', b'n', b't'] {
-        Token::new(TokenValue::KeywordUInt, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordUInt,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'u', b's', b'i', b'z', b'e'] {
-        Token::new(TokenValue::KeywordUSize, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordUSize,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'v', b'o', b'i', b'd'] {
-        Token::new(TokenValue::KeywordVoid, first, reader.current_location())
+        Token::new(
+            TokenValue::KeywordVoid,
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b't', b'r', b'u', b'e'] {
-        Token::new(TokenValue::Bool(true), first, reader.current_location())
+        Token::new(
+            TokenValue::Bool(true),
+            first,
+            reader.current_location().clone(),
+        )
     } else if bytes_between == [b'f', b'a', b'l', b's', b'e'] {
-        Token::new(TokenValue::Bool(false), first, reader.current_location())
+        Token::new(
+            TokenValue::Bool(false),
+            first,
+            reader.current_location().clone(),
+        )
     } else {
-        Token::new(TokenValue::Symbol, first, reader.current_location())
+        Token::new(TokenValue::Symbol, first, reader.current_location().clone())
     }
 }
 
@@ -143,40 +264,43 @@ fn lex_next_number<'source_context>(
 
     if found_period {
         if let Some(token_value) = parse_float(&first, reader.current_location(), message_context) {
-            Token::new(token_value, first, reader.current_location())
+            Token::new(token_value, first, reader.current_location().clone())
         } else {
             Token::new(
-                TokenValue::Float {
+                TokenValue::Float(ValueFloat {
                     value: 0.0,
-                    width: 8,
-                },
+                    width: ValueWidth::FixedByteSize(8),
+                }),
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             )
         }
     } else {
         if let Some(token_value) = parse_int(&first, reader.current_location(), message_context) {
-            Token::new(token_value, first, reader.current_location())
+            Token::new(token_value, first, reader.current_location().clone())
         } else {
             Token::new(
-                TokenValue::UnsignedInt { value: 0, width: 4 },
+                TokenValue::IntUnsigned(ValueIntUnsigned {
+                    value: 0,
+                    width: ValueWidth::FixedByteSize(4),
+                }),
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             )
         }
     }
 }
 
 fn lex_next_character<'source_context>(
-    reader: &mut SourceReader<'source_context>,
-    message_context: &mut MessageContext<'source_context>,
+    _reader: &mut SourceReader<'source_context>,
+    _message_context: &mut MessageContext<'source_context>,
 ) -> Token<'source_context> {
     todo!()
 }
 
 fn lex_next_string<'source_context>(
-    reader: &mut SourceReader<'source_context>,
-    message_context: &mut MessageContext<'source_context>,
+    _reader: &mut SourceReader<'source_context>,
+    _message_context: &mut MessageContext<'source_context>,
 ) -> Token<'source_context> {
     todo!()
 }
@@ -217,7 +341,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::LeftParenthesis,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b')' => {
@@ -225,7 +349,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::RightParenthesis,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b'{' => {
@@ -233,7 +357,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::LeftCurlyBrace,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b'}' => {
@@ -241,7 +365,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::RightCurlyBrace,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b'[' => {
@@ -249,7 +373,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::LeftSquareBracket,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b']' => {
@@ -257,7 +381,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::RightSquareBracket,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
 
@@ -274,7 +398,7 @@ fn lex_next_token<'source_context>(
                     Some(Token::new(
                         TokenValue::Ellipsis,
                         first,
-                        reader.current_location(),
+                        reader.current_location().clone(),
                     ))
                 } else {
                     let mut message = Message::new_from_range(
@@ -297,7 +421,7 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::Period,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -306,7 +430,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::Comma,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b':' => {
@@ -314,7 +438,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::Colon,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b';' => {
@@ -322,7 +446,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::Semicolon,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
 
@@ -332,7 +456,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::BitNegate,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b'&' => {
@@ -343,13 +467,13 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::BoolAnd,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::BitAnd,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -361,13 +485,13 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::BoolAnd,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::BitAnd,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -376,7 +500,7 @@ fn lex_next_token<'source_context>(
             Some(Token::new(
                 TokenValue::BitXor,
                 first,
-                reader.current_location(),
+                reader.current_location().clone(),
             ))
         }
         b'<' => {
@@ -387,20 +511,20 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::BitShiftLeft,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else if let Some(b'=') = reader.peek_next() {
                 reader.read_next();
                 Some(Token::new(
                     TokenValue::LessThanOrEqualTo,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::LessThan,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -412,20 +536,20 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::BitShiftRight,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else if let Some(b'=') = reader.peek_next() {
                 reader.read_next();
                 Some(Token::new(
                     TokenValue::GreaterThanOrEqualTo,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::GreaterThan,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -437,13 +561,13 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::NotEquals,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::BoolNot,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -455,27 +579,27 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::RightArrow,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else if let Some(b'-') = reader.peek_next() {
                 reader.read_next();
                 Some(Token::new(
                     TokenValue::Decrement,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else if let Some(b'=') = reader.peek_next() {
                 reader.read_next();
                 Some(Token::new(
                     TokenValue::SubtractAssign,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::Subtract,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -487,20 +611,20 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::Increment,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else if let Some(b'=') = reader.peek_next() {
                 reader.read_next();
                 Some(Token::new(
                     TokenValue::AddAssign,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::Add,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -515,13 +639,13 @@ fn lex_next_token<'source_context>(
                     Some(Token::new(
                         TokenValue::ExponentiateAssign,
                         first,
-                        reader.current_location(),
+                        reader.current_location().clone(),
                     ))
                 } else {
                     Some(Token::new(
                         TokenValue::Exponentiate,
                         first,
-                        reader.current_location(),
+                        reader.current_location().clone(),
                     ))
                 }
             } else if let Some(b'=') = reader.peek_next() {
@@ -529,13 +653,13 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::MultiplyAssign,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::Multiply,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -547,13 +671,13 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::ModulateAssign,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::Modulate,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -565,13 +689,13 @@ fn lex_next_token<'source_context>(
                 Some(Token::new(
                     TokenValue::Equals,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             } else {
                 Some(Token::new(
                     TokenValue::Assign,
                     first,
-                    reader.current_location(),
+                    reader.current_location().clone(),
                 ))
             }
         }
@@ -616,9 +740,7 @@ pub fn lex<'source_context>(
 
 #[cfg(test)]
 mod tests {
-    use termcolor::{ColorChoice, StandardStream};
-
-    use crate::{message::formating::write_message_context, source::domain::SourceContext};
+    use crate::source::domain::SourceContext;
 
     use super::*;
 
@@ -661,7 +783,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Symbol);
-        assert_eq!(tokens[0].length, 1);
     }
 
     #[test]
@@ -679,7 +800,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Symbol);
-        assert_eq!(tokens[0].length, 15);
     }
 
     #[test]
@@ -699,7 +819,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Symbol);
-        assert_eq!(tokens[0].length, 3);
     }
 
     #[test]
@@ -715,7 +834,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::KeywordUSize);
-        assert_eq!(tokens[0].length, 5);
     }
 
     #[test]
@@ -731,7 +849,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Bool(true));
-        assert_eq!(tokens[0].length, 4);
     }
 
     #[test]
@@ -754,12 +871,11 @@ mod tests {
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(
             tokens[0].value,
-            TokenValue::UnsignedInt {
+            TokenValue::IntUnsigned(ValueIntUnsigned {
                 value: 53,
-                width: 4
-            }
+                width: ValueWidth::FixedByteSize(4)
+            })
         );
-        assert_eq!(tokens[0].length, 2);
     }
 
     #[test]
@@ -782,12 +898,11 @@ mod tests {
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(
             tokens[0].value,
-            TokenValue::Float {
+            TokenValue::Float(ValueFloat {
                 value: 5.3,
-                width: 8
-            }
+                width: ValueWidth::FixedByteSize(8)
+            })
         );
-        assert_eq!(tokens[0].length, 3);
     }
 
     #[test]
@@ -803,7 +918,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Comma);
-        assert_eq!(tokens[0].length, 1);
     }
 
     #[test]
@@ -819,7 +933,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Period);
-        assert_eq!(tokens[0].length, 1);
     }
 
     #[test]
@@ -835,7 +948,6 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Ellipsis);
-        assert_eq!(tokens[0].length, 3);
     }
 
     #[test]
@@ -877,22 +989,20 @@ mod tests {
         assert_eq!(tokens.len(), 5);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Symbol);
-        assert_eq!(tokens[0].length, 1);
         assert_eq!(tokens[1].first.offset, 1);
         assert_eq!(tokens[1].value, TokenValue::Add);
-        assert_eq!(tokens[1].length, 1);
         assert_eq!(tokens[2].first.offset, 2);
         assert_eq!(
             tokens[2].value,
-            TokenValue::UnsignedInt { value: 5, width: 4 }
+            TokenValue::IntUnsigned(ValueIntUnsigned {
+                value: 5,
+                width: ValueWidth::FixedByteSize(4)
+            })
         );
-        assert_eq!(tokens[2].length, 1);
         assert_eq!(tokens[3].first.offset, 3);
         assert_eq!(tokens[3].value, TokenValue::Colon);
-        assert_eq!(tokens[3].length, 1);
         assert_eq!(tokens[4].first.offset, 4);
         assert_eq!(tokens[4].value, TokenValue::Symbol);
-        assert_eq!(tokens[4].length, 4);
     }
 
     #[test]
@@ -908,9 +1018,7 @@ mod tests {
         assert_eq!(tokens.len(), 2);
         assert_eq!(tokens[0].first.offset, 0);
         assert_eq!(tokens[0].value, TokenValue::Increment);
-        assert_eq!(tokens[0].length, 2);
         assert_eq!(tokens[1].first.offset, 2);
         assert_eq!(tokens[1].value, TokenValue::Add);
-        assert_eq!(tokens[1].length, 1);
     }
 }

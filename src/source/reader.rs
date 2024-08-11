@@ -1,26 +1,35 @@
 use super::domain::SourceLocation;
 
-pub struct SourceReader<'source_context> {
+#[derive(Clone)]
+pub struct SourceReaderState<'source_context> {
     current_location: SourceLocation<'source_context>,
+}
+
+pub struct SourceReader<'source_context> {
+    state: SourceReaderState<'source_context>,
 }
 
 impl<'source_context> SourceReader<'source_context> {
     pub fn new(initial_location: SourceLocation<'source_context>) -> Self {
         SourceReader {
-            current_location: initial_location,
+            state: SourceReaderState {
+                current_location: initial_location,
+            },
         }
     }
 
     pub fn is_more(&self) -> bool {
-        self.current_location.offset < self.current_location.source.data().len()
+        self.state.current_location.offset < self.state.current_location.source.data().len()
     }
 
     pub fn peek_next(&self) -> Option<u8> {
         if self.is_more() {
-            if self.current_location.source.data()[self.current_location.offset] == b'\r' {
+            if self.state.current_location.source.data()[self.state.current_location.offset]
+                == b'\r'
+            {
                 Some(b'\n')
             } else {
-                Some(self.current_location.source.data()[self.current_location.offset])
+                Some(self.state.current_location.source.data()[self.state.current_location.offset])
             }
         } else {
             None
@@ -32,41 +41,41 @@ impl<'source_context> SourceReader<'source_context> {
             return None;
         }
 
-        let byte = self.current_location.source.data()[self.current_location.offset];
+        let byte = self.state.current_location.source.data()[self.state.current_location.offset];
 
-        self.current_location.offset += 1;
+        self.state.current_location.offset += 1;
 
         if byte == b'\n' {
-            self.current_location.line_number += 1;
-            self.current_location.column_number = 1;
+            self.state.current_location.line_number += 1;
+            self.state.current_location.column_number = 1;
 
             Some(b'\n')
         } else if byte == b'\r' {
             if self.peek_next() == Some(b'\n') {
-                self.current_location.offset += 1;
+                self.state.current_location.offset += 1;
             }
 
-            self.current_location.line_number += 1;
-            self.current_location.column_number = 1;
+            self.state.current_location.line_number += 1;
+            self.state.current_location.column_number = 1;
 
             Some(b'\n')
         } else {
-            self.current_location.column_number += 1;
+            self.state.current_location.column_number += 1;
 
             Some(byte)
         }
     }
 
     pub fn current_location(&self) -> &SourceLocation<'source_context> {
-        &self.current_location
+        &self.state.current_location
     }
 
-    pub fn save_state(&self) -> SourceLocation<'source_context> {
-        self.current_location.clone()
+    pub fn save_state(&self) -> SourceReaderState<'source_context> {
+        self.state.clone()
     }
 
-    pub fn restore_state(&mut self, state: SourceLocation<'source_context>) {
-        self.current_location = state;
+    pub fn restore_state(&mut self, state: SourceReaderState<'source_context>) {
+        self.state = state;
     }
 }
 

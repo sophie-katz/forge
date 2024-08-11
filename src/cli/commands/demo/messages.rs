@@ -4,7 +4,7 @@ use termcolor::{ColorChoice, StandardStream};
 use crate::{
     message::{
         domain::{Message, MessageContext, Severity},
-        formating::write_message_context,
+        formatting::write_message_context,
     },
     source::domain::SourceContext,
 };

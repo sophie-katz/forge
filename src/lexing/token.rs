@@ -1,8 +1,12 @@
 use std::fmt;
 
-use chumsky::chain::Chain;
+use crate::{
+    domain::{ValueFloat, ValueIntUnsigned},
+    source::domain::SourceLocation,
+};
 
-use crate::source::domain::SourceLocation;
+#[cfg(test)]
+use crate::source::domain::SourceContext;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum TokenValue {
@@ -38,11 +42,11 @@ pub enum TokenValue {
 
     // Literals
     Bool(bool),
-    UnsignedInt { value: u64, width: u32 },
-    SignedInt { value: i64, width: u32 },
-    Float { value: f64, width: u32 },
-    Character { value: Vec<u8>, byte_flag: bool },
-    String { value: Vec<u8>, byte_flag: bool },
+    IntUnsigned(ValueIntUnsigned),
+    // IntSigned(ValueIntSigned),
+    Float(ValueFloat),
+    // Character { value: Vec<u8>, byte_flag: bool },
+    // String { value: Vec<u8>, byte_flag: bool },
 
     // Symbols
     Symbol,
@@ -73,12 +77,12 @@ pub enum TokenValue {
     BoolNot,
     BoolAnd,
     BoolOr,
-    Negate,
     Add,
     Increment,
     Subtract,
     Decrement,
     Multiply,
+    Divide,
     Exponentiate,
     Modulate,
     LessThan,
@@ -138,11 +142,11 @@ impl fmt::Display for TokenValue {
                 true => write!(f, "true"),
                 false => write!(f, "false"),
             },
-            TokenValue::UnsignedInt { value, width } => write!(f, "{}u{}", value, width * 8),
-            TokenValue::SignedInt { value, width } => write!(f, "{}i{}", value, width * 8),
-            TokenValue::Float { value, width } => write!(f, "{}f{}", value, width * 8),
-            TokenValue::Character { .. } => todo!(),
-            TokenValue::String { .. } => todo!(),
+            TokenValue::IntUnsigned(value) => write!(f, "{}", value),
+            // TokenValue::IntSigned(value) => write!(f, "{}", value),
+            TokenValue::Float(value) => write!(f, "{}", value),
+            // TokenValue::Character { .. } => todo!(),
+            // TokenValue::String { .. } => todo!(),
             TokenValue::Symbol => write!(f, "symbol"),
             TokenValue::LeftParenthesis => write!(f, "'('"),
             TokenValue::RightParenthesis => write!(f, "')'"),
@@ -165,12 +169,12 @@ impl fmt::Display for TokenValue {
             TokenValue::BoolNot => write!(f, "'!'"),
             TokenValue::BoolAnd => write!(f, "'&&'"),
             TokenValue::BoolOr => write!(f, "'||'"),
-            TokenValue::Negate => write!(f, "'!'"),
             TokenValue::Add => write!(f, "'+'"),
             TokenValue::Increment => write!(f, "'++'"),
             TokenValue::Subtract => write!(f, "'-'"),
             TokenValue::Decrement => write!(f, "'--'"),
             TokenValue::Multiply => write!(f, "'*'"),
+            TokenValue::Divide => write!(f, "'/'"),
             TokenValue::Exponentiate => write!(f, "'**'"),
             TokenValue::Modulate => write!(f, "'%'"),
             TokenValue::LessThan => write!(f, "'<'"),
@@ -200,19 +204,25 @@ impl fmt::Display for TokenValue {
 pub struct Token<'source_context> {
     pub value: TokenValue,
     pub first: SourceLocation<'source_context>,
-    pub length: usize,
+    pub last: SourceLocation<'source_context>,
 }
 
 impl<'source_context> Token<'source_context> {
     pub fn new(
         value: TokenValue,
         first: SourceLocation<'source_context>,
-        last: &SourceLocation<'source_context>,
+        last: SourceLocation<'source_context>,
     ) -> Self {
+        assert!(first.offset <= last.offset);
+        Self { value, first, last }
+    }
+
+    #[cfg(test)]
+    pub fn new_test(value: TokenValue, source_context: &'source_context SourceContext) -> Self {
         Self {
             value,
-            first,
-            length: last.offset - first.offset,
+            first: SourceLocation::new_test(source_context),
+            last: SourceLocation::new_test(source_context),
         }
     }
 }
@@ -221,11 +231,8 @@ impl fmt::Display for Token<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "[{: >4}:{: >2}+{: >5}+{: >2}] {}",
-            self.first.line_number,
-            self.first.column_number,
-            self.first.offset,
-            self.length,
+            "{: <12} {}",
+            format!("[{}]", self.first).to_string(),
             self.value
         )
     }

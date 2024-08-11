@@ -1,6 +1,6 @@
-use std::{cell::RefCell, fmt::Debug};
+use std::{cell::RefCell, fmt};
 
-use super::error::SourceError;
+use super::error::ErrorSource;
 use std::fs;
 
 pub type SourceId = usize;
@@ -48,13 +48,13 @@ impl SourceData {
     fn get_line_offset(
         &self,
         line_number: LineNumber,
-    ) -> Result<Option<SourceOffset>, SourceError> {
+    ) -> Result<Option<SourceOffset>, ErrorSource> {
         if !self.line_offset_index.borrow().is_some() {
             self.build_line_offset_index();
         }
 
         if line_number < 1 {
-            return Err(SourceError::LineNumberCannotBeZero);
+            return Err(ErrorSource::LineNumberCannotBeZero);
         }
 
         if line_number == 1 {
@@ -89,7 +89,7 @@ impl<'source_context> SourceRef<'source_context> {
     pub fn get_first_location_of_line(
         &self,
         line_number: LineNumber,
-    ) -> Result<Option<SourceLocation>, SourceError> {
+    ) -> Result<Option<SourceLocation>, ErrorSource> {
         if let Some(offset) = self.context.sources[self.id].get_line_offset(line_number)? {
             Ok(Some(SourceLocation {
                 source: *self,
@@ -103,13 +103,19 @@ impl<'source_context> SourceRef<'source_context> {
     }
 }
 
-impl<'source_context> Debug for SourceRef<'source_context> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<'source_context> fmt::Debug for SourceRef<'source_context> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // TODO: See if this is best practice or not
         f.debug_struct("SourceRef")
             .field("id", &self.id)
             .field("path()", &self.path())
             .finish()
+    }
+}
+
+impl<'source_context> fmt::Display for SourceRef<'source_context> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.path())
     }
 }
 
@@ -134,9 +140,9 @@ impl SourceContext {
         }
     }
 
-    pub fn add_raw(&mut self, path: &str, data: Vec<u8>) -> Result<SourceRef, SourceError> {
+    pub fn add_raw(&mut self, path: &str, data: Vec<u8>) -> Result<SourceRef, ErrorSource> {
         if path.is_empty() {
-            return Err(SourceError::EmptyPath);
+            return Err(ErrorSource::EmptyPath);
         }
 
         let id = self.next_id();
@@ -150,11 +156,11 @@ impl SourceContext {
         Ok(SourceRef { context: self, id })
     }
 
-    pub fn add_from_str(&mut self, path: &str, data: &str) -> Result<SourceRef, SourceError> {
+    pub fn add_from_str(&mut self, path: &str, data: &str) -> Result<SourceRef, ErrorSource> {
         self.add_raw(path, data.as_bytes().to_vec())
     }
 
-    pub fn add_from_file(&mut self, path: &str) -> Result<SourceRef, SourceError> {
+    pub fn add_from_file(&mut self, path: &str) -> Result<SourceRef, ErrorSource> {
         let data = fs::read(path)?;
         self.add_raw(path, data)
     }
@@ -187,12 +193,36 @@ impl<'source_context> SourceLocation<'source_context> {
         }
     }
 
+    #[cfg(test)]
+    pub fn new_test(source: &'source_context SourceContext) -> Self {
+        SourceLocation {
+            source: SourceRef {
+                context: &source,
+                id: 0,
+            },
+            offset: 0,
+            line_number: 1,
+            column_number: 1,
+        }
+    }
+
     pub fn bytes_between(&self, other: &Self) -> &[u8] {
+        assert!(self.offset <= other.offset);
         &self.source.data()[self.offset..other.offset]
     }
 
     pub fn string_between(&self, other: &Self) -> String {
         String::from_utf8_lossy(self.bytes_between(other)).to_string()
+    }
+}
+
+impl<'source> fmt::Display for SourceLocation<'source> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}:{}+{}",
+            self.line_number, self.column_number, self.offset
+        )
     }
 }
 

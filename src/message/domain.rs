@@ -2,18 +2,18 @@ use std::{cmp::Ordering, collections::HashMap};
 
 use sorted_vec::SortedVec;
 
-use crate::source::domain::{ColumnNumber, LineNumber, SourceLocation, SourceOffset, SourceRef};
+use crate::source::domain::{ColumnNumber, LineNumber, SourceLocation, SourceRef};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Severity {
     FatalError,
     Error,
     Warning,
-    Info,
-    Fix,
+    // Info,
+    // Fix,
     Suggestion,
-    Note,
-    Debug,
+    // Note,
+    // Debug,
 }
 
 impl Severity {

@@ -1,2 +1,2 @@
 pub mod domain;
-pub mod formating;
+pub mod formatting;

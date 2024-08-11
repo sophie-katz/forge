@@ -1,4 +1,5 @@
 use crate::{
+    domain::{ValueFloat, ValueIntUnsigned, ValueWidth},
     message::domain::{Message, MessageContext, Severity},
     source::domain::SourceLocation,
 };
@@ -11,7 +12,10 @@ pub fn parse_int<'source_context>(
     message_context: &mut MessageContext<'source_context>,
 ) -> Option<TokenValue> {
     match first.string_between(last).parse::<u64>() {
-        Ok(value) => Some(TokenValue::UnsignedInt { value, width: 4 }),
+        Ok(value) => Some(TokenValue::IntUnsigned(ValueIntUnsigned {
+            value,
+            width: ValueWidth::FixedByteSize(4),
+        })),
         Err(err) => {
             message_context.add(Message::new_from_range(
                 Severity::Error,
@@ -30,7 +34,10 @@ pub fn parse_float<'source_context>(
     message_context: &mut MessageContext<'source_context>,
 ) -> Option<TokenValue> {
     match first.string_between(last).parse::<f64>() {
-        Ok(value) => Some(TokenValue::Float { value, width: 8 }),
+        Ok(value) => Some(TokenValue::Float(ValueFloat {
+            value,
+            width: ValueWidth::FixedByteSize(8),
+        })),
         Err(err) => {
             message_context.add(Message::new_from_range(
                 Severity::Error,

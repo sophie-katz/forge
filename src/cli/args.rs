@@ -1,4 +1,6 @@
-use super::commands::demo::{lexing::DemoLexingArgs, messages::DemoMessagesArgs};
+use super::commands::demo::{
+    lexing::DemoLexingArgs, messages::DemoMessagesArgs, parsing::DemoParsingArgs,
+};
 use clap::{command, Arg, Command};
 
 pub fn parse_cli_args() -> bool {
@@ -14,6 +16,13 @@ pub fn parse_cli_args() -> bool {
                             .help("The path of the source file to lex")
                             .required(true),
                     ),
+                )
+                .subcommand(
+                    Command::new("parsing").arg(
+                        Arg::new("source")
+                            .help("The path of the source file to lex")
+                            .required(true),
+                    ),
                 ),
         )
         .get_matches();
@@ -23,6 +32,11 @@ pub fn parse_cli_args() -> bool {
             return DemoMessagesArgs {}.run();
         } else if let Some(args) = matches.subcommand_matches("lexing") {
             return DemoLexingArgs {
+                source: args.get_one::<String>("source").unwrap().clone(),
+            }
+            .run();
+        } else if let Some(args) = matches.subcommand_matches("parsing") {
+            return DemoParsingArgs {
                 source: args.get_one::<String>("source").unwrap().clone(),
             }
             .run();

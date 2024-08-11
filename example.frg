@@ -1,5 +1,3 @@
-import std.io.*;
-
-fn main() {
+fn main() -> void {
     print(5);
 }

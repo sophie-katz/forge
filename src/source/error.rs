@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum SourceError {
+pub enum ErrorSource {
     #[error("empty path")]
     EmptyPath,
     #[error("line number cannot be zero")]

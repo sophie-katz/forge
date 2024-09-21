@@ -10,3 +10,4 @@ lazy_static = "1.5.0"
 sorted-vec = "0.8.3"
 termcolor = "1.4.1"
 thiserror = "1.0.62"
+inkwell = { version = "0.5.0", features = ["llvm17-0"] }

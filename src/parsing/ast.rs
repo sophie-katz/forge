@@ -1,14 +1,38 @@
-use crate::domain::{ValueFloat, ValueIntUnsigned, ValueWidth};
+use std::fmt;
 
-#[derive(Clone, Debug, PartialEq)]
+use crate::{
+    domain::{ValueFloat, ValueIntUnsigned, ValueWidth},
+    visitor::{Accept, Visit},
+};
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Symbol {
     pub name: Vec<u8>,
+}
+
+impl fmt::Display for Symbol {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", String::from_utf8_lossy(&self.name))
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct FunctionArgument {
     pub name: Option<Symbol>,
     pub r#type: Option<Box<Type>>,
+}
+
+impl<Visitor> Accept<FunctionArgument, Visitor> for FunctionArgument
+where
+    Visitor: Visit<FunctionArgument> + Visit<Type>,
+{
+    fn accept(&self, visitor: &mut Visitor) {
+        visitor.visit(self);
+
+        if let Some(r#type) = &self.r#type {
+            r#type.accept(visitor);
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -18,7 +42,7 @@ pub struct TypeFunction {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum Type {
+pub enum TypeBasic {
     // Basic
     Bool,
     IntUnsigned(ValueWidth),
@@ -30,8 +54,11 @@ pub enum Type {
 
     // Symbols
     Symbol { name: Symbol },
+}
 
-    // Functions
+#[derive(Clone, Debug, PartialEq)]
+pub enum Type {
+    Basic(TypeBasic),
     Function(TypeFunction),
 }
 

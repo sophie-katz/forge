@@ -7,7 +7,7 @@ use crate::{
 use super::{
     ast::{
         Declaration, FunctionArgument, FunctionName, OperatorBinary, OperatorUnary, Statement,
-        Symbol, Type, TypeFunction, Value,
+        Symbol, Type, TypeBasic, TypeFunction, Value,
     },
     fragments::{
         check_token, parse_first_of, parse_operation_binary, parse_operation_unary_postfix,
@@ -19,68 +19,68 @@ use super::{
     matchers::{match_any_token, match_token_with_condition, match_token_with_value},
 };
 
-fn parse_type_basic<'source_context>(
+fn parse_type_basic_keyword<'source_context>(
     token_reader: &mut TokenReader<'source_context>,
     _message_context: &mut MessageContext<'source_context>,
-) -> Option<Type> {
+) -> Option<TypeBasic> {
     // Get token or return none if there are no more
     let token = read_token_or_return_none(token_reader, match_any_token())?;
 
     // Match value and optionally output AST
     match token.value {
-        TokenValue::KeywordBool => Some(Type::Bool),
-        TokenValue::KeywordF32 => Some(Type::Float(ValueWidth::FixedByteSize(4))),
-        TokenValue::KeywordF64 => Some(Type::Float(ValueWidth::FixedByteSize(8))),
-        TokenValue::KeywordI16 => Some(Type::IntSigned(ValueWidth::FixedByteSize(2))),
-        TokenValue::KeywordI32 => Some(Type::IntSigned(ValueWidth::FixedByteSize(4))),
-        TokenValue::KeywordI64 => Some(Type::IntSigned(ValueWidth::FixedByteSize(8))),
-        TokenValue::KeywordI8 => Some(Type::IntSigned(ValueWidth::FixedByteSize(1))),
-        TokenValue::KeywordInt => Some(Type::IntSigned(ValueWidth::Auto)),
-        TokenValue::KeywordISize => Some(Type::IntSigned(ValueWidth::PointerSize)),
-        TokenValue::KeywordNever => Some(Type::Never),
-        TokenValue::KeywordNull => Some(Type::Null),
-        TokenValue::KeywordU16 => Some(Type::IntUnsigned(ValueWidth::FixedByteSize(2))),
-        TokenValue::KeywordU32 => Some(Type::IntUnsigned(ValueWidth::FixedByteSize(4))),
-        TokenValue::KeywordU64 => Some(Type::IntUnsigned(ValueWidth::FixedByteSize(8))),
-        TokenValue::KeywordU8 => Some(Type::IntUnsigned(ValueWidth::FixedByteSize(1))),
-        TokenValue::KeywordUInt => Some(Type::IntUnsigned(ValueWidth::Auto)),
-        TokenValue::KeywordUSize => Some(Type::IntUnsigned(ValueWidth::PointerSize)),
-        TokenValue::KeywordVoid => Some(Type::Void),
+        TokenValue::KeywordBool => Some(TypeBasic::Bool),
+        TokenValue::KeywordF32 => Some(TypeBasic::Float(ValueWidth::FixedByteSize(4))),
+        TokenValue::KeywordF64 => Some(TypeBasic::Float(ValueWidth::FixedByteSize(8))),
+        TokenValue::KeywordI16 => Some(TypeBasic::IntSigned(ValueWidth::FixedByteSize(2))),
+        TokenValue::KeywordI32 => Some(TypeBasic::IntSigned(ValueWidth::FixedByteSize(4))),
+        TokenValue::KeywordI64 => Some(TypeBasic::IntSigned(ValueWidth::FixedByteSize(8))),
+        TokenValue::KeywordI8 => Some(TypeBasic::IntSigned(ValueWidth::FixedByteSize(1))),
+        TokenValue::KeywordInt => Some(TypeBasic::IntSigned(ValueWidth::Auto)),
+        TokenValue::KeywordISize => Some(TypeBasic::IntSigned(ValueWidth::PointerSize)),
+        TokenValue::KeywordNever => Some(TypeBasic::Never),
+        TokenValue::KeywordNull => Some(TypeBasic::Null),
+        TokenValue::KeywordU16 => Some(TypeBasic::IntUnsigned(ValueWidth::FixedByteSize(2))),
+        TokenValue::KeywordU32 => Some(TypeBasic::IntUnsigned(ValueWidth::FixedByteSize(4))),
+        TokenValue::KeywordU64 => Some(TypeBasic::IntUnsigned(ValueWidth::FixedByteSize(8))),
+        TokenValue::KeywordU8 => Some(TypeBasic::IntUnsigned(ValueWidth::FixedByteSize(1))),
+        TokenValue::KeywordUInt => Some(TypeBasic::IntUnsigned(ValueWidth::Auto)),
+        TokenValue::KeywordUSize => Some(TypeBasic::IntUnsigned(ValueWidth::PointerSize)),
+        TokenValue::KeywordVoid => Some(TypeBasic::Void),
         _ => None,
     }
 }
 
-fn parse_type_symbol<'source_context>(
+fn parse_type_basic_symbol<'source_context>(
     token_reader: &mut TokenReader<'source_context>,
     _message_context: &mut MessageContext<'source_context>,
-) -> Option<Type> {
+) -> Option<TypeBasic> {
     // Get token or return none if there are no more
     let token =
         read_token_or_return_none(token_reader, match_token_with_value(&TokenValue::Symbol))?;
 
     // Output AST
-    Some(Type::Symbol {
+    Some(TypeBasic::Symbol {
         name: Symbol {
             name: token.first.bytes_between(&token.last).to_vec(),
         },
     })
 }
 
-fn parse_type_term<'source_context>(
+fn parse_type_basic<'source_context>(
     token_reader: &mut TokenReader<'source_context>,
     message_context: &mut MessageContext<'source_context>,
-) -> Option<Type> {
+) -> Option<TypeBasic> {
     parse_first_of(
         token_reader,
         message_context,
-        &[&parse_type_basic, &parse_type_symbol],
+        &[&parse_type_basic_keyword, &parse_type_basic_symbol],
     )
 }
 
 fn parse_type_function<'source_context>(
     token_reader: &mut TokenReader<'source_context>,
     message_context: &mut MessageContext<'source_context>,
-) -> Option<Type> {
+) -> Option<TypeFunction> {
     // Parse arguments
     let arguments = parse_repeated_bound_separated_or_error_and_return_none(
         token_reader,
@@ -113,10 +113,10 @@ fn parse_type_function<'source_context>(
         "expected return type".to_owned(),
     )?;
 
-    Some(Type::Function(TypeFunction {
+    Some(TypeFunction {
         arguments,
         return_type: Some(Box::new(return_type)),
-    }))
+    })
 }
 
 fn parse_type<'source_context>(
@@ -126,7 +126,20 @@ fn parse_type<'source_context>(
     parse_first_of(
         token_reader,
         message_context,
-        &[&parse_type_function, &parse_type_term],
+        &[
+            &|token_reader, message_context| {
+                Some(Type::Function(parse_type_function(
+                    token_reader,
+                    message_context,
+                )?))
+            },
+            &|token_reader, message_context| {
+                Some(Type::Basic(parse_type_basic(
+                    token_reader,
+                    message_context,
+                )?))
+            },
+        ],
     )
 }
 
@@ -763,7 +776,7 @@ mod tests {
 
         assert_eq!(
             parse_type_basic(&mut token_reader, &mut message_context),
-            Some(Type::Bool)
+            Some(TypeBasic::Bool)
         );
 
         assert_eq!(token_reader.is_more(), false);
@@ -789,15 +802,15 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_type_symbol_good() {
+    fn test_type_basic_symbol_good() {
         let source_context = SourceContext::new();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();
 
         assert_eq!(
-            parse_type_symbol(&mut token_reader, &mut message_context),
-            Some(Type::Symbol {
+            parse_type_basic_symbol(&mut token_reader, &mut message_context),
+            Some(TypeBasic::Symbol {
                 name: Symbol { name: Vec::new() }
             })
         );
@@ -807,7 +820,7 @@ mod tests {
     }
 
     #[test]
-    fn test_type_symbol_bad() {
+    fn test_type_basic_symbol_bad() {
         let source_context = SourceContext::new();
         let mut token_reader = TokenReader::new(vec![Token::new_test(
             TokenValue::KeywordAs,
@@ -816,7 +829,7 @@ mod tests {
         let mut message_context = MessageContext::new();
 
         assert_eq!(
-            parse_type_symbol(&mut token_reader, &mut message_context),
+            parse_type_basic_symbol(&mut token_reader, &mut message_context),
             None
         );
 

@@ -22,18 +22,18 @@ pub struct FunctionArgument {
     pub r#type: Option<Box<Type>>,
 }
 
-impl<Visitor> Accept<FunctionArgument, Visitor> for FunctionArgument
-where
-    Visitor: Visit<FunctionArgument> + Visit<Type>,
-{
-    fn accept(&self, visitor: &mut Visitor) {
-        visitor.visit(self);
+// impl<Visitor> Accept<FunctionArgument, Visitor> for FunctionArgument
+// where
+//     Visitor: Visit<FunctionArgument> + Visit<Type>,
+// {
+//     fn accept(&self, visitor: &mut Visitor) {
+//         visitor.visit(self);
 
-        if let Some(r#type) = &self.r#type {
-            r#type.accept(visitor);
-        }
-    }
-}
+//         if let Some(r#type) = &self.r#type {
+//             r#type.accept(visitor);
+//         }
+//     }
+// }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TypeFunction {

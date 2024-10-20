@@ -86,7 +86,7 @@ mod tests {
 
     #[test]
     fn test_empty_source() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let source = source_context.add_from_str("--", "").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_simple() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let source = source_context.add_from_str("--", "ab").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn test_unix_newline() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let source = source_context.add_from_str("--", "a\nb\n").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 
@@ -171,7 +171,7 @@ mod tests {
 
     #[test]
     fn test_dos_newline() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let source = source_context.add_from_str("--", "a\r\nb\r\n").unwrap();
         let mut reader = SourceReader::new(SourceLocation::new(source));
 

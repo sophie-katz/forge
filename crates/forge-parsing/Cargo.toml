@@ -1,0 +1,9 @@
+[package]
+name = "forge-parsing"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+thiserror = "1.0.63"
+unicode-ident = "1.0.13"
+unicode-segmentation = "1.12.0"

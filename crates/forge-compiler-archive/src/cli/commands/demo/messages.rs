@@ -22,7 +22,7 @@ impl DemoMessagesArgs {
         "#}
         .trim();
 
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
 
         let source = source_context
             .add_from_str("test.frg", source_text)

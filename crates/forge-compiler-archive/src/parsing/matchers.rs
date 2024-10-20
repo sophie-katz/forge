@@ -26,7 +26,7 @@ mod tests {
 
     #[test]
     fn test_match_any_token() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
 
         let token = Token::new_test(TokenValue::Symbol, &source_context);
         assert!(match_any_token()(&token));
@@ -37,7 +37,7 @@ mod tests {
 
     #[test]
     fn test_match_token_with_condition() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
 
         let token = Token::new_test(TokenValue::Symbol, &source_context);
         assert!(match_token_with_condition(|token_value| {
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn test_match_token_with_value() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
 
         let token = Token::new_test(TokenValue::Symbol, &source_context);
         assert!(match_token_with_value(&TokenValue::Symbol)(&token));

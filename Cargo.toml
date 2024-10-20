@@ -1,2 +1,9 @@
 [workspace]
-members = ["crates/forge-compiler"]
+members = [
+    "crates/forge-cli",
+    "crates/forge-compiler",
+    "crates/forge-parsing",
+    "crates/forge-reporting",
+    "crates/forge-tree",
+]
+resolver = "2"

@@ -1,0 +1,11 @@
+[package]
+name = "forge-reporting"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+forge-parsing = { path = "../forge-parsing" }
+lazy_static = "1.5.0"
+sorted-vec = "0.8.3"
+termcolor = "1.4.1"
+unicode-segmentation = "1.12.0"

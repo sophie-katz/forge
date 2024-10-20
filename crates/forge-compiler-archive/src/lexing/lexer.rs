@@ -746,7 +746,7 @@ mod tests {
 
     #[test]
     fn empty() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "").unwrap();
@@ -759,7 +759,7 @@ mod tests {
 
     #[test]
     fn whitespace_only() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", " \t\n\r\n  ").unwrap();
@@ -772,7 +772,7 @@ mod tests {
 
     #[test]
     fn symbol_underscore() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "_").unwrap();
@@ -787,7 +787,7 @@ mod tests {
 
     #[test]
     fn symbol_simple() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context
@@ -804,7 +804,7 @@ mod tests {
 
     #[test]
     fn symbol_unicode() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source_text = "♥";
@@ -823,7 +823,7 @@ mod tests {
 
     #[test]
     fn keyword_usize() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "usize").unwrap();
@@ -838,7 +838,7 @@ mod tests {
 
     #[test]
     fn keyword_true() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "true").unwrap();
@@ -853,7 +853,7 @@ mod tests {
 
     #[test]
     fn int() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "53").unwrap();
@@ -880,7 +880,7 @@ mod tests {
 
     #[test]
     fn float() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "5.3").unwrap();
@@ -907,7 +907,7 @@ mod tests {
 
     #[test]
     fn comma() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", ",").unwrap();
@@ -922,7 +922,7 @@ mod tests {
 
     #[test]
     fn period() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", ".").unwrap();
@@ -937,7 +937,7 @@ mod tests {
 
     #[test]
     fn ellipsis() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "...").unwrap();
@@ -952,7 +952,7 @@ mod tests {
 
     #[test]
     fn two_periods() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "..").unwrap();
@@ -965,7 +965,7 @@ mod tests {
 
     #[test]
     fn invalid_character() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "`").unwrap();
@@ -978,7 +978,7 @@ mod tests {
 
     #[test]
     fn multiple() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "a+5:asdf").unwrap();
@@ -1007,7 +1007,7 @@ mod tests {
 
     #[test]
     fn greedy() {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = source_context.add_from_str("--", "+++").unwrap();

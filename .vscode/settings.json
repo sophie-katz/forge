@@ -1,8 +1,14 @@
 {
     "editor.formatOnSave": true,
     "cSpell.words": [
+        "codegen",
         "Exponentiate",
         "indoc",
+        "nsdkfjhskdf",
         "termcolor"
-    ]
+    ],
+    "editor.rulers": [
+        100,
+    ],
+    "rust-analyzer.check.command": "clippy"
 }

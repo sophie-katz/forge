@@ -767,7 +767,7 @@ mod tests {
 
     #[test]
     fn test_type_bool_good() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![Token::new_test(
             TokenValue::KeywordBool,
             &source_context,
@@ -785,7 +785,7 @@ mod tests {
 
     #[test]
     fn test_type_bool_bad() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![Token::new_test(
             TokenValue::KeywordAs,
             &source_context,
@@ -803,7 +803,7 @@ mod tests {
     #[test]
     #[ignore]
     fn test_type_basic_symbol_good() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();
@@ -821,7 +821,7 @@ mod tests {
 
     #[test]
     fn test_type_basic_symbol_bad() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![Token::new_test(
             TokenValue::KeywordAs,
             &source_context,
@@ -838,7 +838,7 @@ mod tests {
 
     #[test]
     fn test_parse_value_call() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Bool(true), &source_context),
             Token::new_test(TokenValue::LeftParenthesis, &source_context),
@@ -860,7 +860,7 @@ mod tests {
 
     #[test]
     fn test_parse_statement_value() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Bool(true), &source_context),
             Token::new_test(TokenValue::Semicolon, &source_context),
@@ -879,7 +879,7 @@ mod tests {
     #[test]
     #[ignore]
     fn test_parse_declaration_variable() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::KeywordLet, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),

@@ -15,7 +15,7 @@ pub struct DemoLexingArgs {
 
 impl DemoLexingArgs {
     pub fn run(self) -> bool {
-        let mut source_context = SourceContext::new();
+        let mut source_context = SourceContext::default();
         let mut message_context = MessageContext::new();
 
         let source = match source_context.add_from_file(self.source.as_str()) {

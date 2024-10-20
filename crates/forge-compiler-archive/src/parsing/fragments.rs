@@ -369,7 +369,7 @@ mod tests {
 
     #[test]
     fn test_check_token_matching() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
 
@@ -378,7 +378,7 @@ mod tests {
 
     #[test]
     fn test_check_token_not_matching() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
 
@@ -397,7 +397,7 @@ mod tests {
 
     #[test]
     fn test_read_token_or_return_none_matching() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
 
@@ -406,7 +406,7 @@ mod tests {
 
     #[test]
     fn test_read_token_or_return_none_not_matching() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
 
@@ -435,7 +435,7 @@ mod tests {
 
     #[test]
     fn read_token_or_error_and_return_none_matching() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();
@@ -453,7 +453,7 @@ mod tests {
 
     #[test]
     fn read_token_or_error_and_return_none_not_matching() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();
@@ -503,7 +503,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_separated_or_error_and_return_none_simple() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::LeftParenthesis, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -532,7 +532,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_separated_or_error_and_return_none_no_closer() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::LeftParenthesis, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -560,7 +560,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_separated_or_error_and_return_none_no_opener() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Symbol, &source_context),
             Token::new_test(TokenValue::Comma, &source_context),
@@ -588,7 +588,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_separated_or_error_and_return_none_no_separator() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::LeftParenthesis, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -616,7 +616,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_or_error_and_return_none_simple() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::LeftParenthesis, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -643,7 +643,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_or_error_and_return_none_no_closer() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::LeftParenthesis, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -669,7 +669,7 @@ mod tests {
 
     #[test]
     fn test_parse_repeated_bound_or_error_and_return_none_no_opener() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Symbol, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -695,7 +695,7 @@ mod tests {
 
     #[test]
     fn test_parse_operation_unary_prefix_operation() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Subtract, &source_context),
             Token::new_test(TokenValue::Symbol, &source_context),
@@ -740,7 +740,7 @@ mod tests {
 
     #[test]
     fn test_parse_operation_unary_prefix_fallback() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();
@@ -780,7 +780,7 @@ mod tests {
 
     #[test]
     fn test_parse_operation_unary_postfix_operation() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Symbol, &source_context),
             Token::new_test(TokenValue::Subtract, &source_context),
@@ -817,7 +817,7 @@ mod tests {
 
     #[test]
     fn test_parse_operation_unary_postfix_fallback() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();
@@ -849,7 +849,7 @@ mod tests {
 
     #[test]
     fn test_parse_operation_binary_operation() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader = TokenReader::new(vec![
             Token::new_test(TokenValue::Symbol, &source_context),
             Token::new_test(TokenValue::Add, &source_context),
@@ -900,7 +900,7 @@ mod tests {
 
     #[test]
     fn test_parse_operation_binary_fallback() {
-        let source_context = SourceContext::new();
+        let source_context = SourceContext::default();
         let mut token_reader =
             TokenReader::new(vec![Token::new_test(TokenValue::Symbol, &source_context)]);
         let mut message_context = MessageContext::new();

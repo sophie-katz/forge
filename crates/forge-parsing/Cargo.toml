@@ -1,5 +1,6 @@
 [package]
 name = "forge-parsing"
+description = "A language-agnostic parsing crate using recursive descent"
 version = "0.1.0"
 edition = "2021"
 

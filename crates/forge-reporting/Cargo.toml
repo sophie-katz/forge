@@ -1,5 +1,6 @@
 [package]
 name = "forge-reporting"
+description = "Pretty error reporting"
 version = "0.1.0"
 edition = "2021"
 

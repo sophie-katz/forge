@@ -1,5 +1,6 @@
 [package]
 name = "forge-cli"
+description = "Command line interface for the Forge compiler"
 version = "0.1.0"
 edition = "2021"
 

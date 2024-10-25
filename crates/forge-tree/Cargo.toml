@@ -1,5 +1,6 @@
 [package]
 name = "forge-tree"
+description = "A syntax tree for the Forge language"
 version = "0.1.0"
 edition = "2021"
 

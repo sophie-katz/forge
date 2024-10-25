@@ -1,5 +1,6 @@
 [package]
 name = "forge-compiler"
+description = "The Forge compiler"
 version = "0.1.0"
 edition = "2021"
 
